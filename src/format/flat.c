@@ -62,5 +62,5 @@ static int _flat_disas(FormatPlugin * format, int (*callback)(
 	if(fstat(fileno(format->helper->fp), &st) != 0)
 		return -error_set_code(1, "%s: %s", format->helper->filename,
 				strerror(errno));
-	return callback(format, NULL, 0, st.st_size, 0);
+	return callback(format, ".data", 0, st.st_size, 0);
 }

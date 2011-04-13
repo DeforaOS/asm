@@ -62,10 +62,12 @@ typedef uint32_t ArchOperand;
 
 /* flags */
 # define AOF_FILTER	0x1
-# define AOF_IMPLICIT	0x1		/* for registers */
-# define AOF_SIGNED	0x2		/* for immediate */
-# define AOF_SOFFSET	0x4
-# define AOF_OFFSETSIZE	0x8		/* for registers */
+# define AOF_SOFFSET	0x2
+/* for immediate */
+# define AOF_SIGNED	0x4
+/* for registers */
+# define AOF_IMPLICIT	0x4
+# define AOF_OFFSETSIZE	0x8
 
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)

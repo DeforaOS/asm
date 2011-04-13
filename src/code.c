@@ -287,11 +287,23 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt)
 {
+	size_t size;
+	char buf[8];
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	/* FIXME implement */
-	return -1;
+	if((size = AO_GET_SIZE(ai->opcode)) > sizeof(buf))
+		return -1; /* XXX report error */
+	if(size > 0)
+	{
+		memcpy(buf, &ai->value, size);
+		if(fwrite(&buf, size, 1, code->fp) != 1)
+			return -error_set_code(1, "%s: %s", code->filename,
+					strerror(errno));
+	}
+	/* FIXME implement operands */
+	return 0;
 }
 #if 0
 	switch(AO_GET_SIZE(ai->opcode))

@@ -188,10 +188,10 @@ static int _instruction_variable(Code * code, ArchInstruction * ai,
 static int _instruction_variable_dregister(Code * code, ArchOperand operand,
 		char const * name);
 static int _instruction_variable_immediate(Code * code, ArchOperand operand,
-		void * value);
+		void * value, int swap);
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
-static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
-		ArchOperand operand, AsOperand * aso);
+static int _instruction_variable_operand(Code * code, ArchOperand operand,
+		AsOperand * aso);
 static int _instruction_variable_register(Code * code, ArchOperand operand,
 		char const * name);
 
@@ -311,7 +311,7 @@ static int _instruction_variable(Code * code, ArchInstruction * ai,
 			operand = ai->op3;
 		else
 			return -1; /* XXX report error */
-		if(_instruction_variable_operand(code, ai, operand, operands[i])
+		if(_instruction_variable_operand(code, operand, operands[i])
 				!= 0)
 			return -1;
 	}
@@ -339,11 +339,11 @@ static int _instruction_variable_dregister(Code * code, ArchOperand operand,
 	}
 	else
 		value <<= AO_GET_OFFSET(operand);
-	return _instruction_variable_immediate(code, operand, &value);
+	return _instruction_variable_immediate(code, operand, &value, 0);
 }
 
 static int _instruction_variable_immediate(Code * code, ArchOperand operand,
-		void * value)
+		void * value, int swap)
 {
 	size_t size;
 	void * buf;
@@ -352,7 +352,7 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 	uint32_t u32;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s()\n", __func__);
+	fprintf(stderr, "DEBUG: %s(%d)\n", __func__, swap);
 #endif
 	if((size = AO_GET_SIZE(operand)) == 0)
 		return -error_set_code(1, "%s", "Empty immediate value");
@@ -365,21 +365,26 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 	else if(size <= 16)
 	{
 		u16 = *(uint16_t*)value;
-		u16 = htons(u16);
+		if(swap)
+			u16 = htons(u16);
 		buf = &u16;
 		size = 2;
 	}
-	else if(size <= 24) /* FIXME merge with 32 */
+	else if(size <= 24) /* FIXME merge with 32? */
 	{
 		u32 = *(uint32_t*)value;
-		u32 = htonl(u32 << 8);
+		if(swap)
+			u32 = htonl(u32 << 8);
+		else
+			u32 <<= 8;
 		buf = &u32;
 		size = 3;
 	}
 	else if(size <= 32)
 	{
 		u32 = *(uint32_t*)value;
-		u32 = htonl(u32);
+		if(swap)
+			u32 = htonl(u32);
 		buf = &u32;
 		size = 4;
 	}
@@ -393,17 +398,20 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai)
 {
-	return _instruction_variable_immediate(code, ai->opcode, &ai->value);
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() 0x%x\n", __func__, ai->value);
+#endif
+	return _instruction_variable_immediate(code, ai->opcode, &ai->value, 1);
 }
 
-static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
-		ArchOperand operand, AsOperand * aso)
+static int _instruction_variable_operand(Code * code, ArchOperand operand,
+		AsOperand * aso)
 {
 	switch(AO_GET_TYPE(operand))
 	{
 		case AOT_IMMEDIATE:
 			return _instruction_variable_immediate(code, operand,
-					aso->value);
+					aso->value, 1);
 		case AOT_DREGISTER:
 			return _instruction_variable_dregister(code, operand,
 					aso->value);
@@ -420,10 +428,26 @@ static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 static int _instruction_variable_register(Code * code, ArchOperand operand,
 		char const * name)
 {
+	ArchRegister * ar;
+	uint32_t value;
+	uint32_t offset;
+
+	/* FIXME consider merging with _instruction_variable_dregister() */
 	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
 		return 0;
-	/* FIXME implement */
-	return -error_set_code(1, "%s: %s", name, strerror(ENOSYS));
+	if((ar = arch_get_register_by_name(code->arch, name)) == NULL)
+		return -1;
+	/* FIXME really implement */
+	value = ar->id;
+	if(AO_GET_FLAGS(operand) & AOF_OFFSETSIZE)
+	{
+		offset = AO_GET_OFFSET(operand);
+		operand &= ~(AOM_OFFSET | AOM_SIZE);
+		operand |= (offset << AOD_SIZE);
+	}
+	else
+		value <<= AO_GET_OFFSET(operand);
+	return _instruction_variable_immediate(code, operand, &value, 0);
 }
 #if 0
 	switch(AO_GET_SIZE(ai->opcode))

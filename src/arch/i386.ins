@@ -12,8 +12,8 @@
 #define OP_AX		AO_REGISTER(AOF_IMPLICIT, 0, W, REG_ax_id)
 
 /* helpers */
-#define OP1F		(1 << AOD_SIZE)
-#define OP2F		(2 << AOD_SIZE)
+#define OP1F		(8 << AOD_SIZE)
+#define OP2F		(16 << AOD_SIZE)
 #define OP_RM8		AO_DREGISTER(AOF_OFFSETSIZE, 8, 8)
 #define OP_RMW		AO_DREGISTER(AOF_OFFSETSIZE, 8, W)
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)

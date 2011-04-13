@@ -1,0 +1,180 @@
+/* $Id$ */
+/* generic */
+/* registers */
+#define OP_RD		AO_REGISTER(0, 25, 5)
+
+/* conditional branching */
+/* opcodes */
+#define bn		0x0
+#define be		0x1
+#define bz		be
+#define ble		0x2
+#define bl		0x3
+#define bleu		0x4
+#define blu		0x5
+#define bneg		0x6
+#define ba		0x8
+#define bne		0x9
+#define bnz		bne
+#define bg		0xa
+#define bge		0xb
+#define bgu		0xc
+#define bgeu		0xd
+#define bcc		bgeu
+/* flags */
+#define OPCBF		(4 << AOD_SIZE)
+/* helpers */
+#define OPCB(opcode)	(opcode << 25 | 0x2 << 22)
+#define OPCB_U22	AO_IMMEDIATE(0, 0, 21)
+
+/* integer arithmetic */
+/* opcodes */
+#define add		0x0
+#define and		0x1
+#define or		0x2
+#define xor		0x3
+#define sub		0x4
+#define andn		0x5
+#define orn		0x6
+#define xnor		0x7
+#define umul		0xa
+#define smul		0xb
+#define udiv		0xe
+#define sdiv		0xf
+#define addcc		(0x10 | add)
+#define andcc		(0x10 | and)
+#define orcc		(0x10 | or)
+#define xorcc		(0x10 | xor)
+#define subcc		(0x10 | sub)
+#define andncc		(0x10 | andn)
+#define orncc		(0x10 | orn)
+#define xnorcc		(0x10 | xnor)
+#define umulcc		(0x10 | umul)
+#define smulcc		(0x10 | smul)
+#define udivcc		(0x10 | udiv)
+#define sdivcc		(0x10 | sdiv)
+/* flags */
+#define OPIA1F		(4 << AOD_SIZE)
+#define OPIA2F		(4 << AOD_SIZE)
+/* registers */
+#define OPIA_RS1	AO_REGISTER(0, 14, 5)
+#define OPIA_RS2	AO_REGISTER(0, 0, 5)
+/* helpers */
+#define OPIA1(opcode)	(0x80000000 | opcode << 19)
+#define OPIA2(opcode)	(0x80000000 | opcode << 19 | 0x1 << 13)
+#define OPIA_S12	AO_IMMEDIATE(AOF_SIGNED, 0, 12)
+#define OPIA_U12	AO_IMMEDIATE(AOF_SIGNED, 0, 12)
+
+/* load store */
+/* opcodes */
+#define ld		0x0
+#define ldub		0x1
+#define lduh		0x2
+#define ldd		0x3
+#define st		0x4
+#define stb		0x5
+#define sth		0x6
+#define std		0x7
+#define ldsb		0x9
+#define ldsh		0xa
+/* flags */
+#define OPLS1F		(4 << AOD_SIZE)
+#define OPLS2F		(4 << AOD_SIZE)
+/* registers */
+#define OPLS_RS1	AO_DREGISTER(0, 14, 5)
+#define OPLS_RS12	AO_DREGISTER2(AOF_FILTER, 0)
+/* helpers */
+#define OPLS1(opcode)	(0xc0000000 | (opcode << 19))
+#define OPLS2(opcode)	(0xc0000000 | (opcode << 19) | (0x1 << 13))
+
+/* sethi */
+/* opcodes */
+#define sethi		0x4
+/* flags */
+#define OPSHF		(4 << AOD_SIZE)
+/* helpers */
+#define OPSH(opcode)	(opcode << 22)
+#define OPSH_U21	AO_IMMEDIATE(AOF_SOFFSET, 10, 21)
+
+
+/* instructions */
+{ "add",	OPIA1(add),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "add",	OPIA2(add),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "addcc",	OPIA1(addcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "addcc",	OPIA2(addcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "and",	OPIA1(and),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "and",	OPIA2(and),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "andcc",	OPIA1(andcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "andcc",	OPIA2(andcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "andn",	OPIA1(andn),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "andn",	OPIA2(andn),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "andncc",	OPIA1(andncc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "andncc",	OPIA2(andncc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "ba",		OPCB(ba),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "be",		OPCB(be),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bg",		OPCB(bg),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bge",	OPCB(bge),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bgeu",	OPCB(bgeu),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bl",		OPCB(bl),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "ble",	OPCB(ble),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "blu",	OPCB(blu),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bn",		OPCB(bn),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bne",	OPCB(bne),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bneg",	OPCB(bneg),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bnz",	OPCB(bnz),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "bz",		OPCB(bz),	OPCBF,	OPCB_U22, AOT_NONE, AOT_NONE	},
+{ "ld",		OPLS1(ld),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ld",		OPLS1(ld),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "ldd",	OPLS1(ldd),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ldd",	OPLS1(ldd),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "ldsb",	OPLS1(ldsb),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ldsb",	OPLS1(ldsb),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "ldsh",	OPLS1(ldsh),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ldsh",	OPLS1(ldsh),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "ldub",	OPLS1(ldub),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ldub",	OPLS1(ldub),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "lduh",	OPLS1(lduh),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "lduh",	OPLS1(lduh),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
+{ "or",		OPIA1(or),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "or",		OPIA2(or),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "orcc",	OPIA1(orcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "orcc",	OPIA2(orcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "orn",	OPIA1(orn),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "orn",	OPIA2(orn),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "orncc",	OPIA1(orncc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "orncc",	OPIA2(orncc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "sethi",	OPSH(sethi),	OPSHF,	OPSH_U21, OP_RD,    AOT_NONE	},
+{ "sdiv",	OPIA1(sdiv),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "sdiv",	OPIA2(sdiv),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "sdivcc",	OPIA1(sdivcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "sdivcc",	OPIA2(sdivcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "smul",	OPIA1(smul),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "smul",	OPIA2(smul),	OPIA2F, OPIA_RS1, OPIA_S12, OP_RD	},
+{ "smulcc",	OPIA1(smulcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "smulcc",	OPIA2(smulcc),	OPIA2F, OPIA_RS1, OPIA_S12, OP_RD	},
+{ "st",		OPLS1(st),	OPLS1F,	OP_RD,    OPLS_RS1, AOT_NONE	},
+{ "st",		OPLS1(st),	OPLS1F,	OP_RD,    OPLS_RS12,AOT_NONE	},
+{ "stb",	OPLS1(stb),	OPLS1F,	OP_RD,    OPLS_RS1, AOT_NONE	},
+{ "stb",	OPLS1(stb),	OPLS1F,	OP_RD,    OPLS_RS12,AOT_NONE	},
+{ "std",	OPLS1(std),	OPLS1F,	OP_RD,    OPLS_RS1, AOT_NONE	},
+{ "std",	OPLS1(std),	OPLS1F,	OP_RD,    OPLS_RS12,AOT_NONE	},
+{ "sth",	OPLS1(sth),	OPLS1F,	OP_RD,    OPLS_RS1, AOT_NONE	},
+{ "sth",	OPLS1(sth),	OPLS1F,	OP_RD,    OPLS_RS12,AOT_NONE	},
+{ "sub",	OPIA1(sub),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "subcc",	OPIA1(subcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "udiv",	OPIA1(udiv),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "udiv",	OPIA2(udiv),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "udivcc",	OPIA1(udivcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "udivcc",	OPIA2(udivcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "umul",	OPIA1(umul),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "umul",	OPIA2(umul),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "umulcc",	OPIA1(umulcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "umulcc",	OPIA2(umulcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "xnor",	OPIA1(xnor),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "xnor",	OPIA2(xnor),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "xnorcc",	OPIA1(xnorcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "xnorcc",	OPIA2(xnorcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "xor",	OPIA1(xor),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "xor",	OPIA2(xor),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},
+{ "xorcc",	OPIA1(xorcc),	OPIA1F, OPIA_RS1, OPIA_RS2, OP_RD	},
+{ "xorcc",	OPIA2(xorcc),	OPIA2F, OPIA_RS1, OPIA_U12, OP_RD	},

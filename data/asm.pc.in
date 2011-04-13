@@ -1,0 +1,11 @@
+prefix=PREFIX
+includedir=${prefix}/include
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+
+Name: cpp
+Description: DeforaOS Development assembler
+Version: VERSION
+Requires: cpp
+Cflags: -I${includedir}
+Libs: -Wl,-R${libdir} -L${libdir} -las

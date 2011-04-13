@@ -62,6 +62,7 @@ typedef uint32_t ArchOperand;
 
 /* flags */
 # define AOF_FILTER	0x1
+# define AOF_IMPLICIT	0x1		/* for registers */
 # define AOF_SIGNED	0x2		/* for immediate */
 # define AOF_SOFFSET	0x3
 
@@ -75,9 +76,9 @@ typedef uint32_t ArchOperand;
 # define AO_IMMEDIATE(flags, offset, size)	((AOT_IMMEDIATE << AOD_TYPE) \
 		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
 		| (size << AOD_SIZE))
-# define AO_REGISTER(flags, offset, size)	((AOT_REGISTER << AOD_TYPE) \
+# define AO_REGISTER(flags, offset, size, id)	((AOT_REGISTER << AOD_TYPE) \
 		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
-		| (size << AOD_SIZE))
+		| (size << AOD_SIZE) | (id << AOD_VALUE))
 # define AO_DREGISTER(flags, offset, dsize)	((AOT_DREGISTER << AOD_TYPE) \
 		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
 		| (dsize << AOD_SIZE))

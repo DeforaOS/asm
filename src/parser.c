@@ -555,7 +555,7 @@ static int _operand(State * state)
 								0, 0);
 					else
 						(*p)->operand = AO_REGISTER(0,
-								0, 0);
+								0, 0, 0);
 					/* FIXME check errors */
 					(*p)->value = strdup(string);
 					break;

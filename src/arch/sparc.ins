@@ -1,7 +1,7 @@
 /* $Id$ */
 /* generic */
 /* registers */
-#define OP_RD		AO_REGISTER(0, 25, 5)
+#define OP_RD		AO_REGISTER(0, 25, 5, 0)
 
 /* conditional branching */
 /* opcodes */
@@ -57,8 +57,8 @@
 #define OPIA1F		(4 << AOD_SIZE)
 #define OPIA2F		(4 << AOD_SIZE)
 /* registers */
-#define OPIA_RS1	AO_REGISTER(0, 14, 5)
-#define OPIA_RS2	AO_REGISTER(0, 0, 5)
+#define OPIA_RS1	AO_REGISTER(0, 14, 5, 0)
+#define OPIA_RS2	AO_REGISTER(0, 0, 5, 0)
 /* helpers */
 #define OPIA1(opcode)	(0x80000000 | opcode << 19)
 #define OPIA2(opcode)	(0x80000000 | opcode << 19 | 0x1 << 13)

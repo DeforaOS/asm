@@ -190,6 +190,8 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
 static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 		ArchOperand operand, AsOperand * aso);
+static int _instruction_variable_register(Code * code, ArchOperand operand,
+		char const * name);
 
 int code_instruction(Code * code, char const * name, AsOperand ** operands,
 		size_t operands_cnt)
@@ -326,33 +328,38 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	switch((size = AO_GET_SIZE(operand)))
+	if((size = AO_GET_SIZE(operand)) == 0)
+		return -error_set_code("%s", "Empty immediate value");
+	else if(size <= 8)
 	{
-		case 0:
-			break;
-		case sizeof(u8):
-			u8 = *(uint8_t*)value;
-			buf = &u8;
-			break;
-		case sizeof(u16):
-			u16 = *(uint16_t*)value;
-			u16 = htons(u16);
-			buf = &u16;
-			break;
-		case 3: /* XXX check */
-			u32 = *(uint32_t*)value;
-			u32 = htonl(u32 << 8);
-			buf = &u32;
-			break;
-		case sizeof(u32):
-			u32 = *(uint32_t*)value;
-			u32 = htonl(u32);
-			buf = &u32;
-			break;
-		default:
-			return -1; /* XXX return error */
+		u8 = *(uint8_t*)value;
+		buf = &u8;
+		size = 1;
 	}
-	if(size > 0 && fwrite(buf, size, 1, code->fp) != 1)
+	else if(size <= 16)
+	{
+		u16 = *(uint16_t*)value;
+		u16 = htons(u16);
+		buf = &u16;
+		size = 2;
+	}
+	else if(size <= 24) /* FIXME merge with 32 */
+	{
+		u32 = *(uint32_t*)value;
+		u32 = htonl(u32 << 8);
+		buf = &u32;
+		size = 3;
+	}
+	else if(size <= 32)
+	{
+		u32 = *(uint32_t*)value;
+		u32 = htonl(u32);
+		buf = &u32;
+		size = 4;
+	}
+	else
+		return -error_set_code(1, "%u: Size not implemented", size);
+	if(fwrite(buf, size, 1, code->fp) != 1)
 		return -error_set_code(1, "%s: %s", code->filename, strerror(
 					errno));
 	return 0;
@@ -371,11 +378,23 @@ static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 		case AOT_IMMEDIATE:
 			return _instruction_variable_immediate(code, operand,
 					aso->value);
+		case AOT_REGISTER:
+			return _instruction_variable_register(code, operand,
+					aso->value);
 		default:
 			/* FIXME implement */
-			return -1;
+			return -error_set_code(1, "%s", strerror(ENOSYS));
 	}
 	return 0;
+}
+
+static int _instruction_variable_register(Code * code, ArchOperand operand,
+		char const * name)
+{
+	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
+		return 0;
+	/* FIXME implement */
+	return -error_set_code(1, "%s: %s", name, strerror(ENOSYS));
 }
 #if 0
 	switch(AO_GET_SIZE(ai->opcode))

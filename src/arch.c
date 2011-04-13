@@ -163,8 +163,8 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 
 
 /* arch_get_instruction_by_operands */
-static int _operands_operands(ArchInstruction * ai, AsOperand ** operands,
-		size_t operands_cnt);
+static int _operands_operands(Arch * arch, ArchInstruction * ai,
+		AsOperand ** operands, size_t operands_cnt);
 
 ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 		char const * name, AsOperand ** operands, size_t operands_cnt)
@@ -183,7 +183,7 @@ ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 		if(strcmp(ai->name, name) != 0)
 			continue;
 		found = 1;
-		if(_operands_operands(ai, operands, operands_cnt) == 0)
+		if(_operands_operands(arch, ai, operands, operands_cnt) == 0)
 			return ai;
 	}
 	error_set_code(1, "%s \"%s\"", found ? "Invalid arguments to"
@@ -191,11 +191,12 @@ ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 	return NULL;
 }
 
-static int _operands_operands(ArchInstruction * ai, AsOperand ** operands,
-		size_t operands_cnt)
+static int _operands_operands(Arch * arch, ArchInstruction * ai,
+		AsOperand ** operands, size_t operands_cnt)
 {
 	size_t i;
 	uint32_t operand;
+	ArchRegister * ar;
 
 	for(i = 0; i < operands_cnt; i++)
 	{
@@ -203,12 +204,30 @@ static int _operands_operands(ArchInstruction * ai, AsOperand ** operands,
 			return -1;
 		operand = (i == 0) ? ai->op1 : ((i == 1) ? ai->op2 : ai->op3);
 #ifdef DEBUG
-		fprintf(stderr, "DEBUG: %s() %lu %u, %u\n", __func__, i,
-				AO_GET_TYPE(operand),
+		fprintf(stderr, "DEBUG: %s() operand %lu, type %u, type %u\n",
+				__func__, i, AO_GET_TYPE(operand),
 				AO_GET_TYPE(operands[i]->operand));
 #endif
 		if(AO_GET_TYPE(operand) != AO_GET_TYPE(operands[i]->operand))
 			return -1;
+		switch(AO_GET_TYPE(operand))
+		{
+			case AOT_REGISTER:
+				/* check if it exists */
+				ar = arch_get_register_by_name(arch,
+						operands[i]->value);
+				if(ar == NULL)
+					return -1;
+				/* for implicit instructions it must match */
+				if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
+				{
+					if(AO_GET_SIZE(operand) != ar->size)
+						return -1;
+					if(AO_GET_VALUE(operand) != ar->id)
+						return -1;
+				}
+				break;
+		}
 		/* FIXME check AOF_SIGNED */
 	}
 	return 0;
@@ -248,6 +267,9 @@ ArchRegister * arch_get_register_by_name(Arch * arch, char const * name)
 {
 	size_t i;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
 	for(i = 0; i < arch->registers_cnt; i++)
 		if(strcmp(arch->plugin->registers[i].name, name) == 0)
 			return &arch->plugin->registers[i];

@@ -1,6 +1,6 @@
 PACKAGE	= asm
 VERSION	= 0.1.1
-SUBDIRS	= data include src
+SUBDIRS	= data include src test
 RM	= rm -f
 LN	= ln -f
 TAR	= tar -czvf
@@ -64,6 +64,9 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/pe.c \
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
+		$(PACKAGE)-$(VERSION)/test/sparc.S \
+		$(PACKAGE)-$(VERSION)/test/Makefile \
+		$(PACKAGE)-$(VERSION)/test/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/COPYING \
 		$(PACKAGE)-$(VERSION)/config.h \

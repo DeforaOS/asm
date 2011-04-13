@@ -156,7 +156,7 @@ static int _parser_error(State * state, char const * format, ...)
 {
 	va_list ap;
 
-	fputs("as: ", stderr);
+	fputs("asm: ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),
 				", line ", token_get_line(state->token));
@@ -173,7 +173,7 @@ static int _parser_warning(State * state, char const * format, ...)
 {
 	va_list ap;
 
-	fputs("as: ", stderr);
+	fputs("asm: ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),
 				", line ", token_get_line(state->token));

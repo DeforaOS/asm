@@ -185,6 +185,11 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 		AsOperand * aso, uint32_t * pu);
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
+static int _instruction_variable_immediate(Code * code, ArchOperand operand,
+		void * value);
+static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
+static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
+		ArchOperand operand, AsOperand * aso);
 
 int code_instruction(Code * code, char const * name, AsOperand ** operands,
 		size_t operands_cnt)
@@ -287,22 +292,89 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt)
 {
+	size_t i;
+	ArchOperand operand;
+
+	if(_instruction_variable_opcode(code, ai) != 0)
+		return -1;
+	for(i = 0; i < operands_cnt; i++)
+	{
+		if(i == 0)
+			operand = ai->op1;
+		else if(i == 1)
+			operand = ai->op2;
+		else if(i == 2)
+			operand = ai->op3;
+		else
+			return -1; /* XXX report error */
+		if(_instruction_variable_operand(code, ai, operand, operands[i])
+				!= 0)
+			return -1;
+	}
+	return 0;
+}
+
+static int _instruction_variable_immediate(Code * code, ArchOperand operand,
+		void * value)
+{
 	size_t size;
-	char buf[8];
+	void * buf;
+	uint8_t u8;
+	uint16_t u16;
+	uint32_t u32;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if((size = AO_GET_SIZE(ai->opcode)) > sizeof(buf))
-		return -1; /* XXX report error */
-	if(size > 0)
+	switch((size = AO_GET_SIZE(operand)))
 	{
-		memcpy(buf, &ai->value, size);
-		if(fwrite(&buf, size, 1, code->fp) != 1)
-			return -error_set_code(1, "%s: %s", code->filename,
-					strerror(errno));
+		case 0:
+			break;
+		case sizeof(u8):
+			u8 = *(uint8_t*)value;
+			buf = &u8;
+			break;
+		case sizeof(u16):
+			u16 = *(uint16_t*)value;
+			u16 = htons(u16);
+			buf = &u16;
+			break;
+		case 3: /* XXX check */
+			u32 = *(uint32_t*)value;
+			u32 = htonl(u32 << 8);
+			buf = &u32;
+			break;
+		case sizeof(u32):
+			u32 = *(uint32_t*)value;
+			u32 = htonl(u32);
+			buf = &u32;
+			break;
+		default:
+			return -1; /* XXX return error */
 	}
-	/* FIXME implement operands */
+	if(size > 0 && fwrite(buf, size, 1, code->fp) != 1)
+		return -error_set_code(1, "%s: %s", code->filename, strerror(
+					errno));
+	return 0;
+}
+
+static int _instruction_variable_opcode(Code * code, ArchInstruction * ai)
+{
+	return _instruction_variable_immediate(code, ai->opcode, &ai->value);
+}
+
+static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
+		ArchOperand operand, AsOperand * aso)
+{
+	switch(AO_GET_TYPE(operand))
+	{
+		case AOT_IMMEDIATE:
+			return _instruction_variable_immediate(code, operand,
+					aso->value);
+		default:
+			/* FIXME implement */
+			return -1;
+	}
 	return 0;
 }
 #if 0

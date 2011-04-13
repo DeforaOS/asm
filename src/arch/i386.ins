@@ -1,4 +1,9 @@
 /* helpers */
 #define OP1F		(1 << AOD_SIZE)
+#define OP2F		(2 << AOD_SIZE)
+#define OP_U8		AO_IMMEDIATE(0, 0, 1)
 
+{ "aaa",	0x37,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "aad",	0xd5a0,		OP2F, AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "aad",	0xd5,		OP1F, OP_U8,    AOT_NONE, AOT_NONE	},
 { "nop",	0x90,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},

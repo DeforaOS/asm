@@ -165,6 +165,7 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 /* arch_get_instruction_by_operands */
 static int _operands_operands(Arch * arch, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
+static int _operands_operands_immediate(uint32_t operand, AsOperand * aso);
 
 ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 		char const * name, AsOperand ** operands, size_t operands_cnt)
@@ -212,6 +213,19 @@ static int _operands_operands(Arch * arch, ArchInstruction * ai,
 			return -1;
 		switch(AO_GET_TYPE(operand))
 		{
+			case AOT_IMMEDIATE:
+				if(_operands_operands_immediate(operand,
+							operands[i]) != 0)
+					return -1;
+				break;
+			case AOT_DREGISTER:
+				/* check if it exists */
+				ar = arch_get_register_by_name(arch,
+						operands[i]->value);
+				if(ar == NULL)
+					return -1;
+				/* FIXME implement the rest */
+				break;
 			case AOT_REGISTER:
 				/* check if it exists */
 				ar = arch_get_register_by_name(arch,
@@ -228,8 +242,31 @@ static int _operands_operands(Arch * arch, ArchInstruction * ai,
 				}
 				break;
 		}
-		/* FIXME check AOF_SIGNED */
 	}
+	return 0;
+}
+
+static int _operands_operands_immediate(uint32_t operand, AsOperand * aso)
+{
+	unsigned long value;
+	long lvalue;
+	unsigned long max;
+
+	/* check if the size fits */
+	if(AO_GET_FLAGS(operand) & AOF_SIGNED)
+	{
+		lvalue = *(unsigned long*)aso->value;
+		value = (lvalue >= 0) ? lvalue : -lvalue;
+	}
+	else
+		value = *(unsigned long*)aso->value;
+	/* apply negative offset */
+	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
+		value >>= AO_GET_OFFSET(operand);
+	max = 1;
+	max <<= AO_GET_SIZE(operand) + 1;
+	if(value > max - 1)
+		return -1;
 	return 0;
 }
 

@@ -14,6 +14,8 @@
 /* helpers */
 #define OP1F		(1 << AOD_SIZE)
 #define OP2F		(2 << AOD_SIZE)
+#define OP_RM8		AO_DREGISTER(AOF_OFFSETSIZE, 8, 8)
+#define OP_RMW		AO_DREGISTER(AOF_OFFSETSIZE, 8, W)
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
 #define OP_UW		AO_IMMEDIATE(0, 0, W)
 
@@ -23,6 +25,8 @@
 { "aam",	0xd40a,		OP2F, AOT_NONE, AOT_NONE, AOT_NONE	},
 { "aam",	0xd4,		OP1F, OP_U8,    AOT_NONE, AOT_NONE	},
 { "aas",	0x3f,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8,   OP_U8,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW,   OP_UW,    AOT_NONE	},
 { "adc",	0x14,		OP1F, OP_U8,	OP_al,    AOT_NONE	},
 { "adc",	0x15,		OP1F, OP_UW,	OP_AX,    AOT_NONE	},
 { "nop",	0x90,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},

@@ -27,6 +27,7 @@
 enum
 {
 #include "i386.reg"
+	REG_size_count
 };
 #undef REG
 
@@ -35,6 +36,7 @@ enum
 enum
 {
 #include "i386.reg"
+	REG_id_count
 };
 #undef REG
 

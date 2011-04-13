@@ -185,6 +185,8 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 		AsOperand * aso, uint32_t * pu);
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
+static int _instruction_variable_dregister(Code * code, ArchOperand operand,
+		char const * name);
 static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 		void * value);
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
@@ -316,6 +318,30 @@ static int _instruction_variable(Code * code, ArchInstruction * ai,
 	return 0;
 }
 
+static int _instruction_variable_dregister(Code * code, ArchOperand operand,
+		char const * name)
+{
+	ArchRegister * ar;
+	uint32_t value;
+	uint32_t offset;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
+	if((ar = arch_get_register_by_name(code->arch, name)) == NULL)
+		return -1;
+	value = ar->id;
+	if(AO_GET_FLAGS(operand) & AOF_OFFSETSIZE)
+	{
+		offset = AO_GET_OFFSET(operand);
+		operand &= ~(AOM_OFFSET | AOM_SIZE);
+		operand |= (offset << AOD_SIZE);
+	}
+	else
+		value <<= AO_GET_OFFSET(operand);
+	return _instruction_variable_immediate(code, operand, &value);
+}
+
 static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 		void * value)
 {
@@ -329,7 +355,7 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if((size = AO_GET_SIZE(operand)) == 0)
-		return -error_set_code("%s", "Empty immediate value");
+		return -error_set_code(1, "%s", "Empty immediate value");
 	else if(size <= 8)
 	{
 		u8 = *(uint8_t*)value;
@@ -377,6 +403,9 @@ static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 	{
 		case AOT_IMMEDIATE:
 			return _instruction_variable_immediate(code, operand,
+					aso->value);
+		case AOT_DREGISTER:
+			return _instruction_variable_dregister(code, operand,
 					aso->value);
 		case AOT_REGISTER:
 			return _instruction_variable_register(code, operand,

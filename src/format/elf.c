@@ -23,6 +23,12 @@
 #include <elf.h>
 #include "Asm/format.h"
 
+/* portability */
+#define Elf64_Quarter		unsigned char
+#ifndef EM_486
+# define EM_486			6
+#endif
+
 
 /* ELF */
 /* private */

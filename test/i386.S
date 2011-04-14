@@ -5,10 +5,10 @@
 	aam
 	aam	$0x42
 	aas
-	adc	$0x42, %al
-	adc	$0x42, %eax
+	adc	%al, $0x42
+	adc	%eax, $0x42
 	adc	[%eax], $0x42
-	adc	[%ecx], $0x42
-	adc	[%eax], $0x42434445
-	adc	[%ecx], $0x42434445
+	adc	%ecx, $0x42
+	adc	[%edx], $0x42434445
+	adc	%ebx, $0x42434445
 	nop

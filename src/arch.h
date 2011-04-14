@@ -49,5 +49,11 @@ ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 ArchRegister * arch_get_register(Arch * arch, size_t index);
 ArchRegister * arch_get_register_by_id(Arch * arch, unsigned int id);
 ArchRegister * arch_get_register_by_name(Arch * arch, char const * name);
+ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
+		uint32_t size);
+
+/* useful */
+int arch_filter(Arch * arch, ArchInstruction * ai, unsigned char * buf,
+		size_t size);
 
 #endif /* !ASM_ARCH_H */

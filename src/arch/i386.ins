@@ -14,8 +14,10 @@
 /* helpers */
 #define OP1F		(8 << AOD_SIZE)
 #define OP2F		(16 << AOD_SIZE)
-#define OP_RM8		AO_DREGISTER(AOF_OFFSETSIZE, 8, 8)
-#define OP_RMW		AO_DREGISTER(AOF_OFFSETSIZE, 8, W)
+#define OP_RM8_D	AO_DREGISTER(AOF_SOFFSET, 8, 8)
+#define OP_RM8_R	AO_REGISTER(AOF_SOFFSET | AOF_FILTER, 8, 8, 0)
+#define OP_RMW_D	AO_DREGISTER(AOF_SOFFSET, 8, W)
+#define OP_RMW_R	AO_REGISTER(AOF_SOFFSET | AOF_FILTER, 8, W, 0)
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
 #define OP_UW		AO_IMMEDIATE(0, 0, W)
 
@@ -25,8 +27,10 @@
 { "aam",	0xd40a,		OP2F, AOT_NONE, AOT_NONE, AOT_NONE	},
 { "aam",	0xd4,		OP1F, OP_U8,    AOT_NONE, AOT_NONE	},
 { "aas",	0x3f,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "adc",	0x80,		OP1F, OP_RM8,   OP_U8,    AOT_NONE	},
-{ "adc",	0x81,		OP1F, OP_RMW,   OP_UW,    AOT_NONE	},
-{ "adc",	0x14,		OP1F, OP_U8,	OP_al,    AOT_NONE	},
-{ "adc",	0x15,		OP1F, OP_UW,	OP_AX,    AOT_NONE	},
+{ "adc",	0x14,		OP1F, OP_al,	OP_U8,    AOT_NONE	},
+{ "adc",	0x15,		OP1F, OP_AX,	OP_UW,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_D, OP_U8,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_R, OP_U8,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_D, OP_UW,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_R, OP_UW,    AOT_NONE	},
 { "nop",	0x90,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},

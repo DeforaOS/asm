@@ -16,6 +16,9 @@
 
 
 #include <stddef.h>
+#ifdef DEBUG
+# include <stdio.h>
+#endif
 #include "Asm/arch.h"
 
 
@@ -57,6 +60,15 @@ static ArchInstruction _i386_instructions[] =
 #include "null.ins"
 };
 
+
+/* prototypes */
+static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
+		unsigned char * buf, size_t size);
+
+
+/* public */
+/* variables */
+/* plug-in */
 ArchPlugin arch_plugin =
 {
 	"i386",
@@ -64,5 +76,19 @@ ArchPlugin arch_plugin =
 	NULL,
 	_i386_registers,
 	_i386_instructions,
-	NULL
+	_i386_filter
 };
+
+
+
+/* functions */
+static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
+		unsigned char * buf, size_t size)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() 0x%x\n", __func__, buf[0]);
+#endif
+	/* the filter function is only set for mod r/m bytes at the moment */
+	buf[0] |= 0xc0;
+	return 0;
+}

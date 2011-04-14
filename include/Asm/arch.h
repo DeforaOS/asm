@@ -67,7 +67,6 @@ typedef uint32_t ArchOperand;
 # define AOF_SIGNED	0x4
 /* for registers */
 # define AOF_IMPLICIT	0x4
-# define AOF_OFFSETSIZE	0x8
 
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
@@ -77,11 +76,11 @@ typedef uint32_t ArchOperand;
 # define AO_GET_VALUE(operand)	((operand & AOM_VALUE) >> AOD_VALUE)
 
 # define AO_IMMEDIATE(flags, offset, size)	((AOT_IMMEDIATE << AOD_TYPE) \
-		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
-		| (size << AOD_SIZE))
+		| ((flags) << AOD_FLAGS) | ((offset) << AOD_OFFSET) \
+		| ((size) << AOD_SIZE))
 # define AO_REGISTER(flags, offset, size, id)	((AOT_REGISTER << AOD_TYPE) \
-		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
-		| (size << AOD_SIZE) | (id << AOD_VALUE))
+		| ((flags) << AOD_FLAGS) | ((offset) << AOD_OFFSET) \
+		| ((size) << AOD_SIZE) | ((id) << AOD_VALUE))
 # define AO_DREGISTER(flags, offset, dsize)	((AOT_DREGISTER << AOD_TYPE) \
 		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
 		| (dsize << AOD_SIZE))
@@ -114,7 +113,8 @@ struct _ArchPlugin
 	ArchDescription * description;
 	ArchRegister * registers;
 	ArchInstruction * instructions;
-	int (*filter)(ArchPlugin * arch, ArchInstruction * instruction);
+	int (*filter)(ArchPlugin * arch, ArchInstruction * instruction,
+			unsigned char * buf, size_t size);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

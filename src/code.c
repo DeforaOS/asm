@@ -42,6 +42,11 @@ struct _Code
 };
 
 
+/* prototypes */
+static int _code_filter(Code * code, ArchInstruction * ai, unsigned char * buf,
+		size_t size);
+
+
 /* functions */
 /* code_new */
 Code * code_new(char const * arch, char const * format)
@@ -185,15 +190,15 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 		AsOperand * aso, uint32_t * pu);
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
-static int _instruction_variable_dregister(Code * code, ArchOperand operand,
-		char const * name);
-static int _instruction_variable_immediate(Code * code, ArchOperand operand,
-		void * value, int swap);
+static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
+		ArchOperand operand, char const * name);
+static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
+		ArchOperand operand, void * value, int swap);
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
-static int _instruction_variable_operand(Code * code, ArchOperand operand,
-		AsOperand * aso);
-static int _instruction_variable_register(Code * code, ArchOperand operand,
-		char const * name);
+static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
+		ArchOperand operand, AsOperand * aso);
+static int _instruction_variable_register(Code * code, ArchInstruction * ai,
+		ArchOperand operand, char const * name);
 
 int code_instruction(Code * code, char const * name, AsOperand ** operands,
 		size_t operands_cnt)
@@ -208,7 +213,7 @@ int code_instruction(Code * code, char const * name, AsOperand ** operands,
 			", 3 0x%x\n", name, ai->value, ai->op1, ai->op2,
 			ai->op3);
 #endif
-	if(code->description != NULL && code->description->instruction_size)
+	if(code->description != NULL && code->description->instruction_size > 0)
 		return _instruction_fixed(code, ai, operands, operands_cnt);
 	return _instruction_variable(code, ai, operands, operands_cnt);
 }
@@ -311,39 +316,42 @@ static int _instruction_variable(Code * code, ArchInstruction * ai,
 			operand = ai->op3;
 		else
 			return -1; /* XXX report error */
-		if(_instruction_variable_operand(code, operand, operands[i])
+		if(_instruction_variable_operand(code, ai, operand, operands[i])
 				!= 0)
 			return -1;
 	}
 	return 0;
 }
 
-static int _instruction_variable_dregister(Code * code, ArchOperand operand,
-		char const * name)
+static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
+		ArchOperand operand, char const * name)
 {
 	ArchRegister * ar;
 	uint32_t value;
-	uint32_t offset;
+	uint32_t size;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+	fprintf(stderr, "DEBUG: %s(0x%08x, \"%s\")\n", __func__, operand, name);
 #endif
-	if((ar = arch_get_register_by_name(code->arch, name)) == NULL)
+	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
+		return 0;
+	if((ar = arch_get_register_by_name_size(code->arch, name, AO_GET_SIZE(
+						operand))) == NULL)
 		return -1;
 	value = ar->id;
-	if(AO_GET_FLAGS(operand) & AOF_OFFSETSIZE)
+	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
 	{
-		offset = AO_GET_OFFSET(operand);
+		size = AO_GET_OFFSET(operand);
 		operand &= ~(AOM_OFFSET | AOM_SIZE);
-		operand |= (offset << AOD_SIZE);
+		operand |= (size << AOD_SIZE);
 	}
 	else
 		value <<= AO_GET_OFFSET(operand);
-	return _instruction_variable_immediate(code, operand, &value, 0);
+	return _instruction_variable_immediate(code, ai, operand, &value, 0);
 }
 
-static int _instruction_variable_immediate(Code * code, ArchOperand operand,
-		void * value, int swap)
+static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
+		ArchOperand operand, void * value, int swap)
 {
 	size_t size;
 	void * buf;
@@ -390,6 +398,8 @@ static int _instruction_variable_immediate(Code * code, ArchOperand operand,
 	}
 	else
 		return -error_set_code(1, "%u: Size not implemented", size);
+	if(AO_GET_FLAGS(operand) & AOF_FILTER)
+		_code_filter(code, ai, buf, size);
 	if(fwrite(buf, size, 1, code->fp) != 1)
 		return -error_set_code(1, "%s: %s", code->filename, strerror(
 					errno));
@@ -401,22 +411,27 @@ static int _instruction_variable_opcode(Code * code, ArchInstruction * ai)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() 0x%x\n", __func__, ai->value);
 #endif
-	return _instruction_variable_immediate(code, ai->opcode, &ai->value, 1);
+	return _instruction_variable_immediate(code, ai, ai->opcode, &ai->value,
+			1);
 }
 
-static int _instruction_variable_operand(Code * code, ArchOperand operand,
-		AsOperand * aso)
+static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
+		ArchOperand operand, AsOperand * aso)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%08x) opcode=0x%x\n", __func__,
+			ai->name, operand, ai->value);
+#endif
 	switch(AO_GET_TYPE(operand))
 	{
 		case AOT_IMMEDIATE:
-			return _instruction_variable_immediate(code, operand,
-					aso->value, 1);
+			return _instruction_variable_immediate(code, ai,
+					operand, aso->value, 0);
 		case AOT_DREGISTER:
-			return _instruction_variable_dregister(code, operand,
-					aso->value);
+			return _instruction_variable_dregister(code, ai,
+					operand, aso->value);
 		case AOT_REGISTER:
-			return _instruction_variable_register(code, operand,
+			return _instruction_variable_register(code, ai, operand,
 					aso->value);
 		default:
 			/* FIXME implement */
@@ -425,9 +440,15 @@ static int _instruction_variable_operand(Code * code, ArchOperand operand,
 	return 0;
 }
 
-static int _instruction_variable_register(Code * code, ArchOperand operand,
-		char const * name)
+static int _instruction_variable_register(Code * code, ArchInstruction * ai,
+		ArchOperand operand, char const * name)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
+	return _instruction_variable_dregister(code, ai, operand, name);
+}
+#if 0
 	ArchRegister * ar;
 	uint32_t value;
 	uint32_t offset;
@@ -447,8 +468,9 @@ static int _instruction_variable_register(Code * code, ArchOperand operand,
 	}
 	else
 		value <<= AO_GET_OFFSET(operand);
-	return _instruction_variable_immediate(code, operand, &value, 0);
+	return _instruction_variable_immediate(code, ai, operand, &value, 0);
 }
+#endif
 #if 0
 	switch(AO_GET_SIZE(ai->opcode))
 	{
@@ -634,4 +656,14 @@ int code_section(Code * code, char const * section)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
 #endif
 	return format_section(code->format, section);
+}
+
+
+/* private */
+/* functions */
+/* plug-in */
+static int _code_filter(Code * code, ArchInstruction * ai, unsigned char * buf,
+		size_t size)
+{
+	return arch_filter(code->arch, ai, buf, size);
 }

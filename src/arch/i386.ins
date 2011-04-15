@@ -1,23 +1,29 @@
 /* platform-specific */
-#if defined(ARCH_amd64)
-# define W		32
-#elif defined(ARCH_i386_real)
+#if defined(ARCH_i386_real) /* i386 in real mode */
 # define W		16
-#else /* i386 and compatible */
+# define REG_AX_id	REG_ax_id
+#else /* i386 and compatible in 32-bit protected mode */
 # define W		32
+# define REG_AX_id	REG_eax_id
 #endif
 
 /* registers */
-#define OP_al		AO_REGISTER(AOF_IMPLICIT, 0, REG_al_size, REG_al_id)
-#define OP_AX		AO_REGISTER(AOF_IMPLICIT, 0, W, REG_ax_id)
+#define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
+#define OP_AX		AO_REGISTER(AOF_IMPLICIT, W, REG_AX_id)
 
 /* helpers */
 #define OP1F		(8 << AOD_SIZE)
 #define OP2F		(16 << AOD_SIZE)
-#define OP_RM8_D	AO_DREGISTER(AOF_SOFFSET, 8, 8)
-#define OP_RM8_R	AO_REGISTER(AOF_SOFFSET | AOF_FILTER, 8, 8, 0)
-#define OP_RMW_D	AO_DREGISTER(AOF_SOFFSET, 8, W)
-#define OP_RMW_R	AO_REGISTER(AOF_SOFFSET | AOF_FILTER, 8, W, 0)
+/* mod r/m byte */
+#define OP_RM8_D0	AO_DREGISTER(0, 0, 8, 0)
+#define OP_RM8_D8	AO_DREGISTER(0, 8, 8, 0)
+#define OP_RM8_DW	AO_DREGISTER(0, W, 8, 0)
+#define OP_RM8_RW	AO_REGISTER(0, 8, 0)
+#define OP_RMW_D0	AO_DREGISTER(0, 0, W, 0)
+#define OP_RMW_D8	AO_DREGISTER(0, 8, W, 0)
+#define OP_RMW_DW	AO_DREGISTER(0, W, W, 0)
+#define OP_RMW_RW	AO_REGISTER(0, W, 0)
+/* immediate values */
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
 #define OP_UW		AO_IMMEDIATE(0, 0, W)
 
@@ -29,8 +35,12 @@
 { "aas",	0x3f,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
 { "adc",	0x14,		OP1F, OP_al,	OP_U8,    AOT_NONE	},
 { "adc",	0x15,		OP1F, OP_AX,	OP_UW,    AOT_NONE	},
-{ "adc",	0x80,		OP1F, OP_RM8_D, OP_U8,    AOT_NONE	},
-{ "adc",	0x80,		OP1F, OP_RM8_R, OP_U8,    AOT_NONE	},
-{ "adc",	0x81,		OP1F, OP_RMW_D, OP_UW,    AOT_NONE	},
-{ "adc",	0x81,		OP1F, OP_RMW_R, OP_UW,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_D0,OP_U8,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_D8,OP_U8,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_DW,OP_U8,    AOT_NONE	},
+{ "adc",	0x80,		OP1F, OP_RM8_RW,OP_U8,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_D0,OP_UW,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_D8,OP_UW,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_DW,OP_UW,    AOT_NONE	},
+{ "adc",	0x81,		OP1F, OP_RMW_RW,OP_UW,    AOT_NONE	},
 { "nop",	0x90,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},

@@ -40,11 +40,11 @@ typedef struct _ArchDescription
 /* operands */
 typedef uint32_t ArchOperand;
 # define AOT_NONE	0x0
-# define AOT_CONSTANT	0x1		/* flags | offset |   size |  value */
+# define AOT_CONSTANT	0x1		/* flags |      0 |   size |  value */
 # define AOT_IMMEDIATE	0x2		/* flags | offset |      0 |   size */
-# define AOT_REGISTER	0x3		/* flags | offset |   size |     id */
-# define AOT_DREGISTER	0x4		/* flags | offset |  dsize |     id */
-# define AOT_DREGISTER2	0x5		/* flags | offset |    did |     id */
+# define AOT_REGISTER	0x3		/* flags |      0 |   size |     id */
+# define AOT_DREGISTER	0x4		/* flags |  dsize |  rsize |     id */
+# define AOT_DREGISTER2	0x5		/* flags |    did |  rsize |     id */
 
 /* displacement */
 # define AOD_FLAGS	24
@@ -71,21 +71,34 @@ typedef uint32_t ArchOperand;
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
 # define AO_GET_OFFSET(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)
+# define AO_GET_DSIZE(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)
+# define AO_GET_RSIZE(operand)	((operand & AOM_SIZE) >> AOD_SIZE)
 # define AO_GET_SIZE(operand)	((operand & AOM_SIZE) >> AOD_SIZE)
 # define AO_GET_TYPE(operand)	((operand & AOM_TYPE) >> AOD_TYPE)
 # define AO_GET_VALUE(operand)	((operand & AOM_VALUE) >> AOD_VALUE)
 
-# define AO_IMMEDIATE(flags, offset, size)	((AOT_IMMEDIATE << AOD_TYPE) \
-		| ((flags) << AOD_FLAGS) | ((offset) << AOD_OFFSET) \
-		| ((size) << AOD_SIZE))
-# define AO_REGISTER(flags, offset, size, id)	((AOT_REGISTER << AOD_TYPE) \
-		| ((flags) << AOD_FLAGS) | ((offset) << AOD_OFFSET) \
-		| ((size) << AOD_SIZE) | ((id) << AOD_VALUE))
-# define AO_DREGISTER(flags, offset, dsize)	((AOT_DREGISTER << AOD_TYPE) \
-		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET) \
-		| (dsize << AOD_SIZE))
-# define AO_DREGISTER2(flags, offset)	((AOT_DREGISTER2 << AOD_TYPE) \
-		| (flags << AOD_FLAGS) | (offset << AOD_OFFSET))
+# define AO_IMMEDIATE(flags, offset, size) \
+		((AOT_IMMEDIATE << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((offset) << AOD_OFFSET) \
+		 | ((size) << AOD_SIZE))
+# define AO_REGISTER(flags, size, id) \
+		((AOT_REGISTER << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((size) << AOD_SIZE) \
+		 | ((id) << AOD_VALUE))
+# define AO_DREGISTER(flags, dsize, rsize, id) \
+		((AOT_DREGISTER << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((dsize) << AOD_OFFSET) \
+		 | ((rsize) << AOD_SIZE) \
+		 | ((id) << AOD_VALUE))
+# define AO_DREGISTER2(flags, did, dsize, id) \
+		((AOT_DREGISTER2 << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((did) << AOD_OFFSET) \
+		 | ((dsize) << AOD_SIZE) \
+		 | ((id) << AOD_VALUE))
 
 typedef struct _ArchInstruction
 {
@@ -114,7 +127,7 @@ struct _ArchPlugin
 	ArchRegister * registers;
 	ArchInstruction * instructions;
 	int (*filter)(ArchPlugin * arch, ArchInstruction * instruction,
-			unsigned char * buf, size_t size);
+			ArchOperand operand, unsigned char * buf, size_t size);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

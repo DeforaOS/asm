@@ -39,11 +39,6 @@ static ArchInstruction _sparc_instructions[] =
 };
 
 
-/* prototypes */
-/* plug-in */
-static int _sparc_filter(ArchPlugin * arch, ArchInstruction * instruction);
-
-
 /* protected */
 /* variables */
 ArchPlugin arch_plugin =
@@ -53,15 +48,5 @@ ArchPlugin arch_plugin =
 	&_sparc_description,
 	_sparc_registers,
 	_sparc_instructions,
-	_sparc_filter
+	NULL
 };
-
-
-/* private */
-/* functions */
-/* sparc_filter */
-static int _sparc_filter(ArchPlugin * arch, ArchInstruction * instruction)
-{
-	/* FIXME implement */
-	return 0;
-}

@@ -165,6 +165,8 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 /* arch_get_instruction_by_operands */
 static int _operands_operands(Arch * arch, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
+static int _operands_operands_dregister(Arch * arch, uint32_t operand,
+		AsOperand * aso);
 static int _operands_operands_immediate(uint32_t operand, AsOperand * aso);
 static int _operands_operands_register(Arch * arch, uint32_t operand,
 		AsOperand * aso);
@@ -220,6 +222,10 @@ static int _operands_operands(Arch * arch, ArchInstruction * ai,
 					return -1;
 				break;
 			case AOT_DREGISTER:
+				if(_operands_operands_dregister(arch, operand,
+							operands[i]) != 0)
+					return -1;
+				break;
 			case AOT_REGISTER:
 				if(_operands_operands_register(arch, operand,
 							operands[i]) != 0)
@@ -227,6 +233,29 @@ static int _operands_operands(Arch * arch, ArchInstruction * ai,
 				break;
 		}
 	}
+	return 0;
+}
+
+static int _operands_operands_dregister(Arch * arch, uint32_t operand,
+		AsOperand * aso)
+{
+	unsigned long dereference;
+	unsigned long max;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %ld\n", __func__, aso->dereference);
+#endif
+	if(_operands_operands_register(arch, operand, aso) != 0)
+		return -1;
+	if(aso->dereference == 0)
+		return 0;
+	dereference = (aso->dereference > 0) ? aso->dereference
+		: -aso->dereference;
+	/* check if the size fits */
+	max = 1;
+	max <<= AO_GET_DSIZE(operand);
+	if(dereference > max - 1)
+		return -1;
 	return 0;
 }
 
@@ -248,7 +277,7 @@ static int _operands_operands_immediate(uint32_t operand, AsOperand * aso)
 	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
 		value >>= AO_GET_OFFSET(operand);
 	max = 1;
-	max <<= AO_GET_SIZE(operand) + 1;
+	max <<= AO_GET_SIZE(operand);
 	if(value > max - 1)
 		return -1;
 	return 0;
@@ -257,24 +286,24 @@ static int _operands_operands_immediate(uint32_t operand, AsOperand * aso)
 static int _operands_operands_register(Arch * arch, uint32_t operand,
 		AsOperand * aso)
 {
-	ArchRegister * ar;
 	ArchDescription * desc;
+	uint32_t size;
+	ArchRegister * ar;
 
+	/* obtain the size */
+	if((desc = arch->plugin->description) != NULL
+			&& desc->instruction_size != 0)
+		size = desc->instruction_size;
+	else
+		size = AO_GET_SIZE(operand);
 	/* check if it exists */
-	ar = arch_get_register_by_name(arch, aso->value);
-	if(ar == NULL)
-		return -1;
-	/* check the size only for variable-length opcode encoding */
-	desc = arch->plugin->description;
-	if((desc == NULL || desc->instruction_size == 0)
-			&& AO_GET_SIZE(operand) != ar->size)
+	if((ar = arch_get_register_by_name_size(arch, aso->value, size))
+			== NULL)
 		return -1;
 	/* for implicit instructions it must match */
-	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
-	{
-		if(AO_GET_VALUE(operand) != ar->id)
-			return -1;
-	}
+	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT
+			&& AO_GET_VALUE(operand) != ar->id)
+		return -1;
 	return 0;
 }
 
@@ -342,8 +371,8 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_filter */
-int arch_filter(Arch * arch, ArchInstruction * instruction, unsigned char * buf,
-		size_t size)
+int arch_filter(Arch * arch, ArchInstruction * instruction, ArchOperand operand,
+		unsigned char * buf, size_t size)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
@@ -351,5 +380,6 @@ int arch_filter(Arch * arch, ArchInstruction * instruction, unsigned char * buf,
 	if(arch->plugin->filter == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Instruction filter required but not defined");
-	return arch->plugin->filter(arch->plugin, instruction, buf, size);
+	return arch->plugin->filter(arch->plugin, instruction, operand, buf,
+			size);
 }

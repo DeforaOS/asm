@@ -63,7 +63,7 @@ static ArchInstruction _i386_instructions[] =
 
 /* prototypes */
 static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
-		unsigned char * buf, size_t size);
+		ArchOperand operand, unsigned char * buf, size_t size);
 
 
 /* public */
@@ -83,12 +83,20 @@ ArchPlugin arch_plugin =
 
 /* functions */
 static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
-		unsigned char * buf, size_t size)
+		ArchOperand operand, unsigned char * buf, size_t size)
 {
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() 0x%x\n", __func__, buf[0]);
+	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%08x) buf[0]=0x%02x\n", __func__,
+			instruction->name, operand, buf[0]);
 #endif
 	/* the filter function is only set for mod r/m bytes at the moment */
-	buf[0] |= 0xc0;
+	if(AO_GET_TYPE(operand) == AOT_REGISTER)
+		buf[0] |= 0xc0;
+	else if(AO_GET_TYPE(operand) == AOT_DREGISTER
+			&& AO_GET_DSIZE(operand) == W)
+		buf[0] |= 0x80;
+	else if(AO_GET_TYPE(operand) == AOT_DREGISTER
+			&& AO_GET_DSIZE(operand) == 8)
+		buf[0] |= 0x40;
 	return 0;
 }

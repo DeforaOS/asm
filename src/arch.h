@@ -53,7 +53,7 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 		uint32_t size);
 
 /* useful */
-int arch_filter(Arch * arch, ArchInstruction * ai, unsigned char * buf,
-		size_t size);
+int arch_filter(Arch * arch, ArchInstruction * ai, ArchOperand operand,
+		unsigned char * buf, size_t size);
 
 #endif /* !ASM_ARCH_H */

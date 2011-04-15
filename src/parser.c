@@ -512,6 +512,7 @@ static int _operand(State * state)
 			state->operands = p;
 			p = &state->operands[state->operands_cnt];
 			(*p)->operand = 0;
+			(*p)->dereference = 0;
 			(*p)->value = NULL;
 			(*p)->value2 = NULL;
 			switch(token_get_code(state->token))
@@ -552,10 +553,10 @@ static int _operand(State * state)
 				case AS_CODE_REGISTER:
 					if(code == AS_CODE_OPERATOR_LBRACKET)
 						(*p)->operand = AO_DREGISTER(0,
-								0, 0);
+								0, 0, 0);
 					else
 						(*p)->operand = AO_REGISTER(0,
-								0, 0, 0);
+								0, 0);
 					/* FIXME check errors */
 					(*p)->value = strdup(string);
 					break;
@@ -580,11 +581,19 @@ static int _operand(State * state)
 				ret |= _space(state);
 			/* FIXME register or immediate value */
 			p = &state->operands[state->operands_cnt - 1]; /* XXX */
+			string = token_get_string(state->token);
 			switch(token_get_code(state->token))
 			{
+				case AS_CODE_IMMEDIATE:
+					(*p)->operand = AO_DREGISTER(0, 0, 0,
+							0);
+					(*p)->dereference = strtoul(string + 1,
+							NULL, 0);
+					break;
 				case AS_CODE_REGISTER:
 					/* FIXME check everything... */
-					(*p)->operand = AO_DREGISTER2(0, 0);
+					(*p)->operand = AO_DREGISTER2(0, 0, 0,
+							0);
 					(*p)->value2 = strdup(string);
 					break;
 			}

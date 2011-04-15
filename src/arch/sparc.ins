@@ -1,7 +1,7 @@
 /* $Id$ */
 /* generic */
 /* registers */
-#define OP_RD		AO_REGISTER(0, 25, 5, 0)
+#define OP_RD		AO_REGISTER(0, 32, 0)
 
 /* conditional branching */
 /* opcodes */
@@ -57,8 +57,8 @@
 #define OPIA1F		(4 << AOD_SIZE)
 #define OPIA2F		(4 << AOD_SIZE)
 /* registers */
-#define OPIA_RS1	AO_REGISTER(0, 14, 5, 0)
-#define OPIA_RS2	AO_REGISTER(0, 0, 5, 0)
+#define OPIA_RS1	AO_REGISTER(0, 32, 0)
+#define OPIA_RS2	AO_REGISTER(0, 32, 0)
 /* helpers */
 #define OPIA1(opcode)	(0x80000000 | opcode << 19)
 #define OPIA2(opcode)	(0x80000000 | opcode << 19 | 0x1 << 13)
@@ -81,8 +81,9 @@
 #define OPLS1F		(4 << AOD_SIZE)
 #define OPLS2F		(4 << AOD_SIZE)
 /* registers */
-#define OPLS_RS1	AO_DREGISTER(0, 14, 5)
-#define OPLS_RS12	AO_DREGISTER2(AOF_FILTER, 0)
+#define OPLS_RS1	AO_DREGISTER(0, 12, 32, 0)
+#define OPLS_RS1D	AO_DREGISTER(0, 0, 32, 0)
+#define OPLS_RS12	AO_DREGISTER2(0, 32, 32, 0)
 /* helpers */
 #define OPLS1(opcode)	(0xc0000000 | (opcode << 19))
 #define OPLS2(opcode)	(0xc0000000 | (opcode << 19) | (0x1 << 13))
@@ -94,7 +95,7 @@
 #define OPSHF		(4 << AOD_SIZE)
 /* helpers */
 #define OPSH(opcode)	(opcode << 22)
-#define OPSH_U21	AO_IMMEDIATE(AOF_SOFFSET, 10, 21)
+#define OPSH_U21	AO_IMMEDIATE(AOF_SOFFSET, 10, 22)
 
 
 /* instructions */
@@ -131,7 +132,7 @@
 { "ldsb",	OPLS1(ldsb),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
 { "ldsh",	OPLS1(ldsh),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
 { "ldsh",	OPLS1(ldsh),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
-{ "ldub",	OPLS1(ldub),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
+{ "ldub",	OPLS1(ldub),	OPLS1F,	OPLS_RS1D, OP_RD,    AOT_NONE	},
 { "ldub",	OPLS1(ldub),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},
 { "lduh",	OPLS1(lduh),	OPLS1F,	OPLS_RS1, OP_RD,    AOT_NONE	},
 { "lduh",	OPLS1(lduh),	OPLS1F,	OPLS_RS12,OP_RD,    AOT_NONE	},

@@ -43,8 +43,8 @@ struct _Code
 
 
 /* prototypes */
-static int _code_filter(Code * code, ArchInstruction * ai, unsigned char * buf,
-		size_t size);
+static int _code_filter(Code * code, ArchInstruction * ai, ArchOperand operand,
+		unsigned char * buf, size_t size);
 
 
 /* functions */
@@ -191,14 +191,14 @@ static int _instruction_fixed_register(Code * code, ArchOperand operand,
 static int _instruction_variable(Code * code, ArchInstruction * ai,
 		AsOperand ** operands, size_t operands_cnt);
 static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
-		ArchOperand operand, char const * name);
+		ArchOperand operand, AsOperand * aso);
 static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
 		ArchOperand operand, void * value, int swap);
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
 static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 		ArchOperand operand, AsOperand * aso);
 static int _instruction_variable_register(Code * code, ArchInstruction * ai,
-		ArchOperand operand, char const * name);
+		ArchOperand operand, AsOperand * aso);
 
 int code_instruction(Code * code, char const * name, AsOperand ** operands,
 		size_t operands_cnt)
@@ -324,30 +324,25 @@ static int _instruction_variable(Code * code, ArchInstruction * ai,
 }
 
 static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
-		ArchOperand operand, char const * name)
+		ArchOperand operand, AsOperand * aso)
 {
-	ArchRegister * ar;
 	uint32_t value;
-	uint32_t size;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(0x%08x, \"%s\")\n", __func__, operand, name);
 #endif
-	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
-		return 0;
-	if((ar = arch_get_register_by_name_size(code->arch, name, AO_GET_SIZE(
-						operand))) == NULL)
+	if(_instruction_variable_register(code, ai, operand, aso) != 0)
 		return -1;
-	value = ar->id;
-	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
+	/* write de-referencing value if expected */
+	if(AO_GET_DSIZE(operand) > 0)
 	{
-		size = AO_GET_OFFSET(operand);
-		operand &= ~(AOM_OFFSET | AOM_SIZE);
-		operand |= (size << AOD_SIZE);
+		value = aso->dereference;
+		operand = AO_IMMEDIATE(0, 0, AO_GET_DSIZE(operand));
+		if(_instruction_variable_immediate(code, ai, operand, &value,
+					0) != 0)
+			return -1;
 	}
-	else
-		value <<= AO_GET_OFFSET(operand);
-	return _instruction_variable_immediate(code, ai, operand, &value, 0);
+	return 0;
 }
 
 static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
@@ -360,7 +355,8 @@ static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
 	uint32_t u32;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(%d)\n", __func__, swap);
+	fprintf(stderr, "DEBUG: %s(%d) size=%u\n", __func__, swap,
+			AO_GET_SIZE(operand));
 #endif
 	if((size = AO_GET_SIZE(operand)) == 0)
 		return -error_set_code(1, "%s", "Empty immediate value");
@@ -399,7 +395,7 @@ static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
 	else
 		return -error_set_code(1, "%u: Size not implemented", size);
 	if(AO_GET_FLAGS(operand) & AOF_FILTER)
-		_code_filter(code, ai, buf, size);
+		_code_filter(code, ai, operand, buf, size);
 	if(fwrite(buf, size, 1, code->fp) != 1)
 		return -error_set_code(1, "%s: %s", code->filename, strerror(
 					errno));
@@ -429,10 +425,10 @@ static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 					operand, aso->value, 0);
 		case AOT_DREGISTER:
 			return _instruction_variable_dregister(code, ai,
-					operand, aso->value);
+					operand, aso);
 		case AOT_REGISTER:
 			return _instruction_variable_register(code, ai, operand,
-					aso->value);
+					aso);
 		default:
 			/* FIXME implement */
 			return -error_set_code(1, "%s", strerror(ENOSYS));
@@ -441,12 +437,35 @@ static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
 }
 
 static int _instruction_variable_register(Code * code, ArchInstruction * ai,
-		ArchOperand operand, char const * name)
+		ArchOperand operand, AsOperand * aso)
 {
+	char const * name = aso->value;
+	ArchRegister * ar;
+	uint32_t value;
+
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+	fprintf(stderr, "DEBUG: %s(0x%08x, \"%s\")\n", __func__, operand, name);
 #endif
-	return _instruction_variable_dregister(code, ai, operand, name);
+	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT)
+		return 0;
+	if((ar = arch_get_register_by_name_size(code->arch, name, AO_GET_SIZE(
+						operand))) == NULL)
+		return -1;
+	value = ar->id;
+#if 0
+	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
+	{
+		size = AO_GET_OFFSET(operand);
+		operand &= ~(AOM_OFFSET | AOM_SIZE);
+		operand |= (size << AOD_SIZE);
+	}
+	else
+		value <<= AO_GET_OFFSET(operand);
+#else
+	operand &= ~(AOM_SIZE);
+	operand |= (8 << AOD_SIZE);
+#endif
+	return _instruction_variable_immediate(code, ai, operand, &value, 0);
 }
 #if 0
 	ArchRegister * ar;
@@ -662,8 +681,8 @@ int code_section(Code * code, char const * section)
 /* private */
 /* functions */
 /* plug-in */
-static int _code_filter(Code * code, ArchInstruction * ai, unsigned char * buf,
-		size_t size)
+static int _code_filter(Code * code, ArchInstruction * ai, ArchOperand operand,
+		unsigned char * buf, size_t size)
 {
-	return arch_filter(code->arch, ai, buf, size);
+	return arch_filter(code->arch, ai, operand, buf, size);
 }

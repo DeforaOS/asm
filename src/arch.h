@@ -18,8 +18,8 @@
 #ifndef ASM_ARCH_H
 # define ASM_ARCH_H
 
-# include <sys/types.h>
 # include <stdint.h>
+# include <stdio.h>
 # include "Asm.h"
 
 
@@ -43,8 +43,8 @@ ArchInstruction * arch_get_instruction(Arch * arch, size_t index);
 ArchInstruction * arch_get_instruction_by_name(Arch * arch, char const * name);
 ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 		uint32_t opcode);
-ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
-		char const * name, AsOperand ** operands, size_t operands_cnt);
+ArchInstruction * arch_get_instruction_by_call(Arch * arch,
+		ArchInstructionCall * call);
 
 ArchRegister * arch_get_register(Arch * arch, size_t index);
 ArchRegister * arch_get_register_by_id(Arch * arch, unsigned int id);
@@ -53,7 +53,10 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 		uint32_t size);
 
 /* useful */
-int arch_filter(Arch * arch, ArchInstruction * ai, ArchOperand operand,
-		unsigned char * buf, size_t size);
+int arch_init(Arch * arch, char const * filename, FILE * fp);
+int arch_exit(Arch * arch);
+
+int arch_write(Arch * arch, ArchInstruction * instruction,
+		ArchInstructionCall * call);
 
 #endif /* !ASM_ARCH_H */

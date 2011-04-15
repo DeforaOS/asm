@@ -46,8 +46,7 @@ int code_close(Code * code);
 ArchInstruction * code_decode(Code * code, char const * buffer, size_t * size);
 
 int code_function(Code * code, char const * function);
-int code_instruction(Code * code, char const * name, AsOperand ** operands,
-		size_t operands_cnt);
+int code_instruction(Code * code, ArchInstructionCall * call);
 int code_section(Code * code, char const * section);
 
 #endif /* !ASM_CODE_H */

@@ -16,10 +16,8 @@
 
 
 #include <stddef.h>
-#ifdef DEBUG
-# include <stdio.h>
-#endif
-#include "Asm/arch.h"
+#include <string.h>
+#include "Asm.h"
 
 
 /* i386 */
@@ -62,8 +60,8 @@ static ArchInstruction _i386_instructions[] =
 
 
 /* prototypes */
-static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchOperand operand, unsigned char * buf, size_t size);
+static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call);
 
 
 /* public */
@@ -71,32 +69,53 @@ static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
 /* plug-in */
 ArchPlugin arch_plugin =
 {
+	NULL,
 	"i386",
-	"elf",
 	NULL,
 	_i386_registers,
 	_i386_instructions,
-	_i386_filter
+	_i386_write,
+	NULL
 };
 
 
 
 /* functions */
-static int _i386_filter(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchOperand operand, unsigned char * buf, size_t size)
+static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call)
 {
+	unsigned char * buf;
+	uint32_t size;
+	uint8_t u8;
+	uint16_t u16;
+	uint32_t u32;
+
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%08x) buf[0]=0x%02x\n", __func__,
-			instruction->name, operand, buf[0]);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	/* the filter function is only set for mod r/m bytes at the moment */
-	if(AO_GET_TYPE(operand) == AOT_REGISTER)
-		buf[0] |= 0xc0;
-	else if(AO_GET_TYPE(operand) == AOT_DREGISTER
-			&& AO_GET_DSIZE(operand) == W)
-		buf[0] |= 0x80;
-	else if(AO_GET_TYPE(operand) == AOT_DREGISTER
-			&& AO_GET_DSIZE(operand) == 8)
-		buf[0] |= 0x40;
+	/* opcode */
+	size = (AO_GET_SIZE(instruction->flags) >> 3);
+	switch(size)
+	{
+		case 0:
+			break;
+		case sizeof(u8):
+			u8 = instruction->opcode;
+			buf = &u8;
+			break;
+		case sizeof(u16):
+			u16 = _htob16(instruction->opcode);
+			buf = &u16;
+			break;
+		case sizeof(u32):
+			u32 = _htob32(instruction->opcode);
+			buf = &u32;
+			break;
+		default:
+			return -1;
+	}
+	if(size > 0 && fwrite(buf, size, 1, plugin->helper->fp) != 1)
+		return -1;
+	/* FIXME implement the rest */
 	return 0;
 }

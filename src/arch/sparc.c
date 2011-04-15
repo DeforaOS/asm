@@ -16,13 +16,13 @@
 
 
 #include <stddef.h>
-#include "Asm/arch.h"
+#include "Asm.h"
 
 
 /* sparc */
 /* private */
 /* variables */
-static ArchDescription _sparc_description = { ARCH_ENDIAN_BIG, 32, 32 };
+static ArchDescription _sparc_description = { "elf", ARCH_ENDIAN_BIG, 32, 32 };
 
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _sparc_registers[] =
@@ -39,14 +39,39 @@ static ArchInstruction _sparc_instructions[] =
 };
 
 
+/* prototypes */
+/* plug-in */
+static int _sparc_write(ArchPlugin * arch, ArchInstruction * instruction,
+		ArchInstructionCall * call);
+
+
 /* protected */
 /* variables */
 ArchPlugin arch_plugin =
 {
+	NULL,
 	"sparc",
-	"elf",
 	&_sparc_description,
 	_sparc_registers,
 	_sparc_instructions,
+	_sparc_write,
 	NULL
 };
+
+
+/* private */
+/* functions */
+/* plug-in */
+/* sparc_write */
+static int _sparc_write(ArchPlugin * arch, ArchInstruction * instruction,
+		ArchInstructionCall * call)
+{
+	uint32_t buf;
+
+	buf = instruction->opcode;
+	/* FIXME implement the rest */
+	buf = _htob32(buf);
+	if(fwrite(&buf, sizeof(buf), 1, arch->helper->fp) != 1)
+		return -1;
+	return 0;
+}

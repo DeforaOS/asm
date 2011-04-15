@@ -19,9 +19,10 @@
 # define DEVEL_ASM_ARCH_H
 
 # include <stdint.h>
+# include <stdio.h>
 
 
-/* AsArch */
+/* AsmArch */
 /* types */
 typedef enum _ArchEndian
 {
@@ -32,19 +33,22 @@ typedef enum _ArchEndian
 
 typedef struct _ArchDescription
 {
+	char const * format;		/* default format */
 	ArchEndian endian;
 	uint32_t alignment;
 	uint32_t instruction_size;	/* 0 if not constant */
 } ArchDescription;
 
 /* operands */
-typedef uint32_t ArchOperand;
-# define AOT_NONE	0x0
-# define AOT_CONSTANT	0x1		/* flags |      0 |   size |  value */
-# define AOT_IMMEDIATE	0x2		/* flags | offset |      0 |   size */
-# define AOT_REGISTER	0x3		/* flags |      0 |   size |     id */
-# define AOT_DREGISTER	0x4		/* flags |  dsize |  rsize |     id */
-# define AOT_DREGISTER2	0x5		/* flags |    did |  rsize |     id */
+typedef enum _ArchOperandType
+{
+	AOT_NONE	= 0x0,
+	AOT_CONSTANT	= 0x1,		/* flags |      0 |   size |  value */
+	AOT_IMMEDIATE	= 0x2,		/* flags | offset |      0 |   size */
+	AOT_REGISTER	= 0x3,		/* flags |      0 |   size |     id */
+	AOT_DREGISTER	= 0x4,		/* flags |  dsize |  rsize |     id */
+	AOT_DREGISTER2	= 0x5		/* flags |    did |  rsize |     id */
+} ArchOperandType;
 
 /* displacement */
 # define AOD_FLAGS	24
@@ -62,11 +66,10 @@ typedef uint32_t ArchOperand;
 
 /* flags */
 # define AOF_FILTER	0x1
-# define AOF_SOFFSET	0x2
 /* for immediate */
-# define AOF_SIGNED	0x4
+# define AOF_SIGNED	0x2
 /* for registers */
-# define AOF_IMPLICIT	0x4
+# define AOF_IMPLICIT	0x2
 
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
@@ -100,15 +103,59 @@ typedef uint32_t ArchOperand;
 		 | ((dsize) << AOD_SIZE) \
 		 | ((id) << AOD_VALUE))
 
+typedef struct _ArchOperand
+{
+	ArchOperandType type;
+	union
+	{
+		/* AOT_DREGISTER */
+		struct
+		{
+			char * name;
+			int64_t offset;
+		} dregister;
+
+		/* AOT_DREGISTER2 */
+		struct
+		{
+			char * name;
+			char * name2;
+		} dregister2;
+
+		/* AOT_IMMEDIATE */
+		struct
+		{
+			uint64_t value;
+			int negative;
+		} immediate;
+
+		/* AOT_REGISTER */
+		struct
+		{
+			char * name;
+		} _register;
+		/* FIXME complete */
+	} value;
+} ArchOperand;
+
+typedef uint32_t ArchOperandDefinition;
+
 typedef struct _ArchInstruction
 {
 	char * name;
-	uint32_t value;
-	ArchOperand opcode;
-	ArchOperand op1;
-	ArchOperand op2;
-	ArchOperand op3;
+	uint32_t opcode;
+	ArchOperandDefinition flags;
+	ArchOperandDefinition op1;
+	ArchOperandDefinition op2;
+	ArchOperandDefinition op3;
 } ArchInstruction;
+
+typedef struct _ArchInstructionCall
+{
+	char * name;
+	ArchOperand operands[3];
+	size_t operands_cnt;
+} ArchInstructionCall;
 
 typedef struct _ArchRegister
 {
@@ -117,17 +164,29 @@ typedef struct _ArchRegister
 	uint32_t id;
 } ArchRegister;
 
+typedef struct _ArchPluginHelper
+{
+	char const * filename;
+	FILE * fp;
+	void * priv;
+} ArchPluginHelper;
+
 typedef struct _ArchPlugin ArchPlugin;
 
 struct _ArchPlugin
 {
+	ArchPluginHelper * helper;
+
 	char const * name;
-	char const * format;				/* default format */
+
 	ArchDescription * description;
 	ArchRegister * registers;
 	ArchInstruction * instructions;
-	int (*filter)(ArchPlugin * arch, ArchInstruction * instruction,
-			ArchOperand operand, unsigned char * buf, size_t size);
+
+	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
+			ArchInstructionCall * call);
+	/* FIXME complete and implement */
+	int (*read)(ArchPlugin * arch);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

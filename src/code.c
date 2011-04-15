@@ -42,11 +42,6 @@ struct _Code
 };
 
 
-/* prototypes */
-static int _code_filter(Code * code, ArchInstruction * ai, ArchOperand operand,
-		unsigned char * buf, size_t size);
-
-
 /* functions */
 /* code_new */
 Code * code_new(char const * arch, char const * format)
@@ -121,10 +116,11 @@ char const * code_get_format_name(Code * code)
 /* code_close */
 int code_close(Code * code)
 {
-	int ret;
+	int ret = 0;
 
-	ret = format_exit(code->format);
-	if(fclose(code->fp) != 0)
+	ret |= arch_exit(code->arch);
+	ret |= format_exit(code->format);
+	if(fclose(code->fp) != 0 && ret == 0)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
 	return ret;
@@ -183,36 +179,37 @@ int code_function(Code * code, char const * function)
 
 /* code_instruction */
 static int _instruction_fixed(Code * code, ArchInstruction * ai,
-		AsOperand ** operands, size_t operands_cnt);
-static int _instruction_fixed_immediate(ArchOperand operand, AsOperand * aso,
+		ArchOperand ** operands, size_t operands_cnt);
+static int _instruction_fixed_immediate(ArchOperand operand, ArchOperand * ao,
 		uint32_t * pu);
 static int _instruction_fixed_register(Code * code, ArchOperand operand,
-		AsOperand * aso, uint32_t * pu);
+		ArchOperand * ao, uint32_t * pu);
 static int _instruction_variable(Code * code, ArchInstruction * ai,
-		AsOperand ** operands, size_t operands_cnt);
+		ArchOperand ** operands, size_t operands_cnt);
 static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
-		ArchOperand operand, AsOperand * aso);
+		ArchOperand operand, ArchOperand * ao);
 static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
 		ArchOperand operand, void * value, int swap);
 static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
 static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
-		ArchOperand operand, AsOperand * aso);
+		ArchOperand operand, ArchOperand * ao);
 static int _instruction_variable_register(Code * code, ArchInstruction * ai,
-		ArchOperand operand, AsOperand * aso);
+		ArchOperand operand, ArchOperand * ao);
 
-int code_instruction(Code * code, char const * name, AsOperand ** operands,
-		size_t operands_cnt)
+int code_instruction(Code * code, ArchInstructionCall * call)
 {
 	ArchInstruction * ai;
 
-	if((ai = arch_get_instruction_by_operands(code->arch, name, operands,
-					operands_cnt)) == NULL)
+	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
 		return -1;
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: instruction %s, opcode 0x%x, 1 0x%x, 2 0x%x"
-			", 3 0x%x\n", name, ai->value, ai->op1, ai->op2,
+			", 3 0x%x\n", call->name, ai->opcode, ai->op1, ai->op2,
 			ai->op3);
 #endif
+	return arch_write(code->arch, ai, call);
+}
+#if 0
 	if(code->description != NULL && code->description->instruction_size > 0)
 		return _instruction_fixed(code, ai, operands, operands_cnt);
 	return _instruction_variable(code, ai, operands, operands_cnt);
@@ -490,6 +487,7 @@ static int _instruction_variable_register(Code * code, ArchInstruction * ai,
 	return _instruction_variable_immediate(code, ai, operand, &value, 0);
 }
 #endif
+#endif
 #if 0
 	switch(AO_GET_SIZE(ai->opcode))
 	{
@@ -655,7 +653,8 @@ int code_open(Code * code, char const * filename)
 		return -1;
 	if((code->fp = fopen(filename, "w+")) == NULL)
 		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	if(format_init(code->format, code->filename, code->fp) != 0)
+	if(format_init(code->format, code->filename, code->fp) != 0
+			|| arch_init(code->arch, code->filename, code->fp) != 0)
 	{
 		fclose(code->fp);
 		code->fp = NULL;
@@ -675,14 +674,4 @@ int code_section(Code * code, char const * section)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
 #endif
 	return format_section(code->format, section);
-}
-
-
-/* private */
-/* functions */
-/* plug-in */
-static int _code_filter(Code * code, ArchInstruction * ai, ArchOperand operand,
-		unsigned char * buf, size_t size)
-{
-	return arch_filter(code->arch, ai, operand, buf, size);
 }

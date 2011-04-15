@@ -25,12 +25,18 @@
 #include "arch.h"
 #include "../config.h"
 
+/* macros */
+#ifndef abs
+# define abs(a) ((a) >= 0 ? (a) : -(a))
+#endif
+
 
 /* Arch */
 /* private */
 /* types */
 struct _Arch
 {
+	ArchPluginHelper helper;
 	Plugin * handle;
 	ArchPlugin * plugin;
 	size_t instructions_cnt;
@@ -66,6 +72,7 @@ Arch * arch_new(char const * name)
 		plugin_delete(handle);
 		return NULL;
 	}
+	memset(&a->helper, 0, sizeof(a->helper));
 	a->handle = handle;
 	a->plugin = plugin;
 	a->instructions_cnt = 0;
@@ -99,8 +106,9 @@ ArchDescription * arch_get_description(Arch * arch)
 /* arch_get_format */
 char const * arch_get_format(Arch * arch)
 {
-	if(arch->plugin->format != NULL)
-		return arch->plugin->format;
+	if(arch->plugin->description != NULL
+			&& arch->plugin->description->format != NULL)
+		return arch->plugin->description->format;
 	return "elf";
 }
 
@@ -144,7 +152,7 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 		ai = &arch->plugin->instructions[i];
 		if(AO_GET_SIZE(ai->opcode) != size)
 			continue;
-		if(ai->value == opcode)
+		if(ai->opcode == opcode)
 			return ai;
 	}
 #if 0
@@ -162,17 +170,18 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 }
 
 
-/* arch_get_instruction_by_operands */
-static int _operands_operands(Arch * arch, ArchInstruction * ai,
-		AsOperand ** operands, size_t operands_cnt);
-static int _operands_operands_dregister(Arch * arch, uint32_t operand,
-		AsOperand * aso);
-static int _operands_operands_immediate(uint32_t operand, AsOperand * aso);
-static int _operands_operands_register(Arch * arch, uint32_t operand,
-		AsOperand * aso);
+/* arch_get_instruction_by_call */
+static int _call_operands(Arch * arch, ArchInstruction * ai,
+		ArchInstructionCall * call);
+static int _call_operands_dregister(Arch * arch,
+		ArchOperandDefinition definition, ArchOperand * operand);
+static int _call_operands_immediate(ArchOperandDefinition definition,
+		ArchOperand * operand);
+static int _call_operands_register(Arch * arch,
+		ArchOperandDefinition definition, ArchOperand * operand);
 
-ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
-		char const * name, AsOperand ** operands, size_t operands_cnt)
+ArchInstruction * arch_get_instruction_by_call(Arch * arch,
+		ArchInstructionCall * call)
 {
 	size_t i;
 	ArchInstruction * ai;
@@ -185,50 +194,51 @@ ArchInstruction * arch_get_instruction_by_operands(Arch * arch,
 	{
 		ai = &arch->plugin->instructions[i];
 		/* FIXME use a (sorted) hash table */
-		if(strcmp(ai->name, name) != 0)
+		if(strcmp(ai->name, call->name) != 0)
 			continue;
 		found = 1;
-		if(_operands_operands(arch, ai, operands, operands_cnt) == 0)
+		if(_call_operands(arch, ai, call) == 0)
 			return ai;
 	}
 	error_set_code(1, "%s \"%s\"", found ? "Invalid arguments to"
-			: "Unknown instruction", name);
+			: "Unknown instruction", call->name);
 	return NULL;
 }
 
-static int _operands_operands(Arch * arch, ArchInstruction * ai,
-		AsOperand ** operands, size_t operands_cnt)
+static int _call_operands(Arch * arch, ArchInstruction * ai,
+		ArchInstructionCall * call)
 {
 	size_t i;
-	uint32_t operand;
+	ArchOperandDefinition definition;
+	ArchOperand * operand;
 
-	for(i = 0; i < operands_cnt; i++)
+	for(i = 0; i < call->operands_cnt; i++)
 	{
-		if(i >= 3)
-			return -1;
-		operand = (i == 0) ? ai->op1 : ((i == 1) ? ai->op2 : ai->op3);
+		definition = (i == 0) ? ai->op1 : ((i == 1) ? ai->op2
+				: ai->op3);
+		operand = &call->operands[i];
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() operand %lu, type %u, type %u\n",
-				__func__, i, AO_GET_TYPE(operand),
-				AO_GET_TYPE(operands[i]->operand));
+				__func__, i, AO_GET_TYPE(definition),
+				AO_GET_TYPE(operand->definition));
 #endif
-		if(AO_GET_TYPE(operand) != AO_GET_TYPE(operands[i]->operand))
+		if(AO_GET_TYPE(definition) != operand->type)
 			return -1;
-		switch(AO_GET_TYPE(operand))
+		switch(AO_GET_TYPE(definition))
 		{
 			case AOT_IMMEDIATE:
-				if(_operands_operands_immediate(operand,
-							operands[i]) != 0)
+				if(_call_operands_immediate(definition, operand)
+						!= 0)
 					return -1;
 				break;
 			case AOT_DREGISTER:
-				if(_operands_operands_dregister(arch, operand,
-							operands[i]) != 0)
+				if(_call_operands_dregister(arch, definition,
+							operand) != 0)
 					return -1;
 				break;
 			case AOT_REGISTER:
-				if(_operands_operands_register(arch, operand,
-							operands[i]) != 0)
+				if(_call_operands_register(arch, definition,
+							operand) != 0)
 					return -1;
 				break;
 		}
@@ -236,56 +246,48 @@ static int _operands_operands(Arch * arch, ArchInstruction * ai,
 	return 0;
 }
 
-static int _operands_operands_dregister(Arch * arch, uint32_t operand,
-		AsOperand * aso)
+static int _call_operands_dregister(Arch * arch,
+		ArchOperandDefinition definition, ArchOperand * operand)
 {
-	unsigned long dereference;
-	unsigned long max;
+	uint64_t offset;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %ld\n", __func__, aso->dereference);
+	fprintf(stderr, "DEBUG: %s() %ld\n", __func__, ao->dereference);
 #endif
-	if(_operands_operands_register(arch, operand, aso) != 0)
+	if(_call_operands_register(arch, definition, operand) != 0)
 		return -1;
-	if(aso->dereference == 0)
+	/* check if there is an offset applied */
+	if(operand->value.dregister.offset == 0)
 		return 0;
-	dereference = (aso->dereference > 0) ? aso->dereference
-		: -aso->dereference;
-	/* check if the size fits */
-	max = 1;
-	max <<= AO_GET_DSIZE(operand);
-	if(dereference > max - 1)
+	/* check if the offset fits */
+	offset = abs(operand->value.dregister.offset);
+	offset >>= AO_GET_DSIZE(definition);
+	if(offset > 0)
 		return -1;
 	return 0;
 }
 
-static int _operands_operands_immediate(uint32_t operand, AsOperand * aso)
+static int _call_operands_immediate(ArchOperandDefinition definition,
+		ArchOperand * operand)
 {
-	unsigned long value;
-	long lvalue;
-	unsigned long max;
+	uint64_t value;
+	uint32_t size;
 
 	/* check if the size fits */
-	if(AO_GET_FLAGS(operand) & AOF_SIGNED)
-	{
-		lvalue = *(unsigned long*)aso->value;
-		value = (lvalue >= 0) ? lvalue : -lvalue;
-	}
-	else
-		value = *(unsigned long*)aso->value;
-	/* apply negative offset */
-	if(AO_GET_FLAGS(operand) & AOF_SOFFSET)
-		value >>= AO_GET_OFFSET(operand);
-	max = 1;
-	max <<= AO_GET_SIZE(operand);
-	if(value > max - 1)
+	value = operand->value.immediate.value;
+	if((size = AO_GET_SIZE(definition)) > 0
+			&& AO_GET_FLAGS(definition) & AOF_SIGNED)
+		size--;
+	value >>= size;
+	if(value > 0)
 		return -1;
 	return 0;
 }
 
-static int _operands_operands_register(Arch * arch, uint32_t operand,
-		AsOperand * aso)
+static int _call_operands_register(Arch * arch,
+		ArchOperandDefinition definition, ArchOperand * operand)
 {
+	char const * name = operand->value._register.name;
 	ArchDescription * desc;
 	uint32_t size;
 	ArchRegister * ar;
@@ -295,14 +297,13 @@ static int _operands_operands_register(Arch * arch, uint32_t operand,
 			&& desc->instruction_size != 0)
 		size = desc->instruction_size;
 	else
-		size = AO_GET_SIZE(operand);
+		size = AO_GET_SIZE(definition);
 	/* check if it exists */
-	if((ar = arch_get_register_by_name_size(arch, aso->value, size))
-			== NULL)
+	if((ar = arch_get_register_by_name_size(arch, name, size)) == NULL)
 		return -1;
 	/* for implicit instructions it must match */
-	if(AO_GET_FLAGS(operand) & AOF_IMPLICIT
-			&& AO_GET_VALUE(operand) != ar->id)
+	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT
+			&& AO_GET_VALUE(definition) != ar->id)
 		return -1;
 	return 0;
 }
@@ -370,16 +371,34 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 
 /* useful */
-/* arch_filter */
-int arch_filter(Arch * arch, ArchInstruction * instruction, ArchOperand operand,
-		unsigned char * buf, size_t size)
+/* arch_exit */
+int arch_exit(Arch * arch)
+{
+	memset(&arch->helper, 0, sizeof(arch->helper));
+	return 0;
+}
+
+
+/* arch_init */
+int arch_init(Arch * arch, char const * filename, FILE * fp)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
+			(void *)fp);
+#endif
+	arch->helper.filename = filename;
+	arch->helper.fp = fp;
+	arch->plugin->helper = &arch->helper;
+	return 0;
+}
+
+
+/* arch_write */
+int arch_write(Arch * arch, ArchInstruction * instruction,
+		ArchInstructionCall * call)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	if(arch->plugin->filter == NULL)
-		return -error_set_code(1, "%s: %s", arch->plugin->name,
-				"Instruction filter required but not defined");
-	return arch->plugin->filter(arch->plugin, instruction, operand, buf,
-			size);
+	return arch->plugin->write(arch->plugin, instruction, call);
 }

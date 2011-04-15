@@ -26,15 +26,6 @@
 /* types */
 typedef struct _As As;
 
-typedef struct _AsOperand
-{
-	ArchOperand operand;
-	/* FIXME should be a union */
-	int dereference;
-	void * value;
-	void * value2;
-} AsOperand;
-
 typedef enum _AsPluginType { ASPT_ARCH = 0, ASPT_FORMAT } AsPluginType;
 
 

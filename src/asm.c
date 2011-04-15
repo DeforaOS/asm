@@ -194,23 +194,24 @@ int as_function(As * as, char const * name)
 /* as_instruction */
 int as_instruction(As * as, char const * name, unsigned int operands_cnt, ...)
 {
-	int ret;
+	ArchInstructionCall call;
 	va_list ap;
-	AsOperand ** ao = NULL;
 	size_t i;
+	ArchOperand * operand;
 
-	if(operands_cnt != 0)
+	memset(&call, 0, sizeof(call));
+	call.name = name;
+	if((call.operands_cnt = operands_cnt) != 0)
 	{
-		if((ao = malloc(sizeof(*ao) * operands_cnt)) == NULL)
-			return error_set_code(1, "%s", strerror(errno));
 		va_start(ap, operands_cnt);
-		for(i = 0; i < operands_cnt; i++)
-			ao[i] = va_arg(ap, AsOperand *);
+		for(i = 0; i < 3 && i < operands_cnt; i++)
+		{
+			operand = va_arg(ap, ArchOperand *);
+			memcpy(&call.operands[i], operand, sizeof(*operand));
+		}
 		va_end(ap);
 	}
-	ret = code_instruction(as->code, name, ao, operands_cnt);
-	free(ao);
-	return ret;
+	return code_instruction(as->code, &call);
 }
 
 

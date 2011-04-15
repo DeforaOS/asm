@@ -30,11 +30,10 @@
 /* types */
 struct _Format
 {
-	char * name;
 	char * arch;
 	FormatPluginHelper helper;
-	FormatPlugin * plugin;
 	Plugin * handle;
+	FormatPlugin * plugin;
 };
 
 
@@ -60,8 +59,8 @@ Format * format_new(char const * format, char const * arch)
 		plugin_delete(handle);
 		return NULL;
 	}
-	f->name = string_new(format);
 	f->arch = string_new(arch);
+	memset(&f->helper, 0, sizeof(f->helper));
 	f->plugin = plugin;
 	f->handle = handle;
 	if(f->arch == NULL)
@@ -78,7 +77,6 @@ void format_delete(Format * format)
 {
 	plugin_delete(format->handle);
 	string_delete(format->arch);
-	string_delete(format->name);
 	object_delete(format);
 }
 
@@ -87,7 +85,7 @@ void format_delete(Format * format)
 /* format_get_name */
 char const * format_get_name(Format * format)
 {
-	return format->name;
+	return format->plugin->name;
 }
 
 

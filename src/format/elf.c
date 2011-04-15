@@ -21,7 +21,7 @@
 #include <string.h>
 #include <errno.h>
 #include <elf.h>
-#include "Asm/format.h"
+#include "Asm.h"
 
 /* portability */
 #define Elf64_Quarter		unsigned char

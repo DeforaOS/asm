@@ -34,9 +34,16 @@ typedef struct _State
 	unsigned int error_cnt;
 	unsigned int warning_cnt;
 	Code * code;
-	char * operator;
-	AsOperand ** operands;
+	ArchInstructionCall call;
+#if 0
+	char const * name;
+	struct
+	{
+		ArchOperandDefinition definition;
+		ArchOperand operand;
+	} operands[3];
 	size_t operands_cnt;
+#endif
 } State;
 
 
@@ -209,7 +216,6 @@ int parser(Code * code, char const * infile)
 				" warning(s)");
 	if(state.token != NULL)
 		token_delete(state.token);
-	free(state.operands);
 	return state.error_cnt;
 }
 
@@ -386,7 +392,6 @@ static int _instruction(State * state)
 	/* operator [ space [ operand_list ] ] newline */
 {
 	int ret;
-	size_t i;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -398,22 +403,14 @@ static int _instruction(State * state)
 		if(_parser_in_set(state, TS_OPERAND_LIST))
 			ret |= _operand_list(state);
 	}
-	if(state->operator != NULL)
+	if(state->call.name != NULL)
 	{
-		if(code_instruction(state->code, state->operator,
-					state->operands, state->operands_cnt))
+		if(code_instruction(state->code, &state->call) != 0)
 			ret |= _parser_error(state, "%s", error_get());
-		free(state->operator);
-		state->operator = NULL;
+		free(state->call.name);
 	}
-	for(i = 0; i < state->operands_cnt; i++)
-	{
-		free(state->operands[i]->value2);
-		free(state->operands[i]->value);
-		free(state->operands[i]);
-	}
-	/* optimized free(state->operands); out */
-	state->operands_cnt = 0;
+	/* FIXME memory leak (register names...) */
+	memset(&state->call, 0, sizeof(state->call));
 	return ret | _newline(state);
 }
 
@@ -423,7 +420,6 @@ static int _operator(State * state)
 	/* WORD */
 {
 	char const * string;
-	char * operator = NULL;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -433,12 +429,11 @@ static int _operator(State * state)
 		_parser_scan(state);
 		return 1;
 	}
-	if((operator = strdup(string)) == NULL)
+	if((state->call.name = strdup(string)) == NULL)
 		return error_set_code(1, "%s", strerror(errno));
 	/* optimized free(state->operator); out */
-	state->operator = operator;
 #ifdef DEBUG
-	fprintf(stderr, "%s \"%s\"\n", "DEBUG: operator", operator);
+	fprintf(stderr, "%s \"%s\"\n", "DEBUG: operator", string);
 #endif
 	return _parser_scan(state);
 }
@@ -478,9 +473,7 @@ static int _operand(State * state)
 	int ret = 0;
 	TokenCode code;
 	char const * string;
-	AsOperand ** p;
-	unsigned long * l;
-	unsigned long * u;
+	ArchOperand * p;
 
 	if(state->token == NULL)
 		return 1;
@@ -499,74 +492,40 @@ static int _operand(State * state)
 		fprintf(stderr, "%s%s\"\n", "DEBUG: new operand: \"",
 				token_get_string(state->token));
 #endif
-		if((p = realloc(state->operands, (state->operands_cnt + 1)
-						* sizeof(*p))) == NULL)
-			ret |= _parser_error(state, "%s", strerror(errno));
-		else if((p[state->operands_cnt] = malloc(sizeof(**p))) == NULL)
+		p = &state->call.operands[state->call.operands_cnt];
+		switch(token_get_code(state->token))
 		{
-			state->operands = p;
-			ret |= _parser_error(state, "%s", strerror(errno));
+			case AS_CODE_OPERATOR_MINUS:
+				ret |= _parser_scan(state);
+				/* FIXME check if a number */
+				string = token_get_string(state->token);
+				if(string == NULL)
+					break;
+				p->type = AOT_IMMEDIATE;
+				/* FIXME also true for numbers? */
+				p->value.immediate.value = strtoul(string + 1,
+						NULL, 0);
+				p->value.immediate.negative = 1;
+				break;
+			case AS_CODE_IMMEDIATE:
+			case AS_CODE_NUMBER:
+				p->type = AOT_IMMEDIATE;
+				/* FIXME also true for numbers? */
+				p->value.immediate.value = strtoul(string + 1,
+						NULL, 0);
+				break;
+			case AS_CODE_REGISTER:
+				p->type = (code == AS_CODE_OPERATOR_LBRACKET)
+					? AOT_DREGISTER : AOT_REGISTER;
+				/* FIXME check errors */
+				p->value._register.name = strdup(string);
+				break;
+			default:
+				ret |= _parser_error(state, "%s",
+						"Expected value");
+				break;
 		}
-		else
-		{
-			state->operands = p;
-			p = &state->operands[state->operands_cnt];
-			(*p)->operand = 0;
-			(*p)->dereference = 0;
-			(*p)->value = NULL;
-			(*p)->value2 = NULL;
-			switch(token_get_code(state->token))
-			{
-				case AS_CODE_OPERATOR_MINUS:
-					ret |= _parser_scan(state);
-					/* FIXME check if a number */
-					string = token_get_string(state->token);
-					if(string == NULL)
-						break;
-					(*p)->operand = AO_IMMEDIATE(AOF_SIGNED,
-							0, 0);
-					if((l = malloc(sizeof(*l))) == NULL)
-					{
-						ret |= _parser_error(state,
-								"%s", strerror(
-									errno));
-						break;
-					}
-					/* FIXME also true for numbers? */
-					*l = -strtoul(string + 1, NULL, 0);
-					(*p)->value = l;
-					break;
-				case AS_CODE_IMMEDIATE:
-				case AS_CODE_NUMBER:
-					(*p)->operand = AO_IMMEDIATE(0, 0, 0);
-					if((u = malloc(sizeof(*u))) == NULL)
-					{
-						ret |= _parser_error(state,
-								"%s", strerror(
-									errno));
-						break;
-					}
-					/* FIXME also true for numbers? */
-					*u = strtoul(string + 1, NULL, 0);
-					(*p)->value = u;
-					break;
-				case AS_CODE_REGISTER:
-					if(code == AS_CODE_OPERATOR_LBRACKET)
-						(*p)->operand = AO_DREGISTER(0,
-								0, 0, 0);
-					else
-						(*p)->operand = AO_REGISTER(0,
-								0, 0);
-					/* FIXME check errors */
-					(*p)->value = strdup(string);
-					break;
-				default:
-					ret |= _parser_error(state, "%s",
-							"Expected value");
-					break;
-			}
-			state->operands_cnt++;
-		}
+		state->call.operands_cnt++;
 	}
 	ret |= _parser_scan(state);
 	if(code == AS_CODE_OPERATOR_LBRACKET)
@@ -574,27 +533,29 @@ static int _operand(State * state)
 
 		if(_parser_in_set(state, TS_SPACE))
 			ret |= _space(state);
+		/* FIXME implement AS_CODE_OPERATOR_MINUS too */
 		if(_parser_is_code(state, AS_CODE_OPERATOR_PLUS))
 		{
 			ret |= _parser_scan(state);
 			if(_parser_in_set(state, TS_SPACE))
 				ret |= _space(state);
-			/* FIXME register or immediate value */
-			p = &state->operands[state->operands_cnt - 1]; /* XXX */
+			/* XXX this is quite ugly */
+			p = &state->call.operands[state->call.operands_cnt - 1];
 			string = token_get_string(state->token);
 			switch(token_get_code(state->token))
 			{
 				case AS_CODE_IMMEDIATE:
-					(*p)->operand = AO_DREGISTER(0, 0, 0,
-							0);
-					(*p)->dereference = strtoul(string + 1,
-							NULL, 0);
+					p->value.dregister.offset = strtoul(
+							string + 1, NULL, 0);
 					break;
 				case AS_CODE_REGISTER:
 					/* FIXME check everything... */
-					(*p)->operand = AO_DREGISTER2(0, 0, 0,
-							0);
-					(*p)->value2 = strdup(string);
+					p->type = AOT_DREGISTER2;
+					p->value.dregister2.name2 = strdup(
+							string);
+					break;
+				default:
+					/* FIXME report an error */
 					break;
 			}
 			ret |= _parser_scan(state);

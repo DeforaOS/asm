@@ -51,7 +51,7 @@ asm.o: asm.c ../include/Asm.h code.h parser.h asm.h ../config.h
 code.o: code.c ../include/Asm.h arch.h code.h
 	$(CC) $(libasm_CFLAGS) -c code.c
 
-format.o: format.c format.h
+format.o: format.c format.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c format.c
 
 parser.o: parser.c parser.h

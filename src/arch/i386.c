@@ -81,41 +81,123 @@ ArchPlugin arch_plugin =
 
 
 /* functions */
+static int _write_immediate(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand);
+static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
+static int _write_immediate16(ArchPlugin * plugin, uint16_t value);
+static int _write_immediate32(ArchPlugin * plugin, uint32_t value);
+static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction);
+static int _write_operand(ArchPlugin * plugin, ArchOperandDefinition definition,
+		ArchOperand * operand);
+static int _write_register(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand);
+
 static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
-	unsigned char * buf;
-	uint32_t size;
-	uint8_t u8;
-	uint16_t u16;
-	uint32_t u32;
+	size_t i;
+	ArchOperandDefinition definition;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	/* opcode */
-	size = (AO_GET_SIZE(instruction->flags) >> 3);
+	if(_write_opcode(plugin, instruction) != 0)
+		return -1;
+	for(i = 0; i < call->operands_cnt; i++)
+	{
+		definition = (i == 0) ? instruction->op1 : ((i == 1)
+				? instruction->op2 : instruction->op3);
+		if(_write_operand(plugin, definition, &call->operands[i]) != 0)
+			return -1;
+	}
+	return 0;
+}
+
+static int _write_immediate(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand)
+{
+	size_t size;
+
+	size = AO_GET_SIZE(definition) >> 3;
 	switch(size)
 	{
 		case 0:
-			break;
-		case sizeof(u8):
-			u8 = instruction->opcode;
-			buf = &u8;
-			break;
-		case sizeof(u16):
-			u16 = _htob16(instruction->opcode);
-			buf = &u16;
-			break;
-		case sizeof(u32):
-			u32 = _htob32(instruction->opcode);
-			buf = &u32;
-			break;
+			return 0;
+		case sizeof(uint8_t):
+			return _write_immediate8(plugin,
+					operand->value.immediate.value);
+		case sizeof(uint16_t):
+			return _write_immediate16(plugin,
+					operand->value.immediate.value);
+		case sizeof(uint32_t):
+			return _write_immediate32(plugin,
+					operand->value.immediate.value);
 		default:
 			return -1;
 	}
-	if(size > 0 && fwrite(buf, size, 1, plugin->helper->fp) != 1)
+}
+
+static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
+{
+	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
 		return -1;
-	/* FIXME implement the rest */
 	return 0;
+}
+
+static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
+{
+	value = _htol16(value);
+	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
+		return -1;
+	return 0;
+}
+
+static int _write_immediate32(ArchPlugin * plugin, uint32_t value)
+{
+	value = _htol32(value);
+	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
+		return -1;
+	return 0;
+}
+
+static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
+{
+	ArchOperand operand;
+
+	memset(&operand, 0, sizeof(operand));
+	operand.type = AOT_IMMEDIATE;
+	operand.value.immediate.value = instruction->opcode;
+	return _write_immediate(plugin, instruction->flags, &operand);
+}
+
+static int _write_operand(ArchPlugin * plugin, ArchOperandDefinition definition,
+		ArchOperand * operand)
+{
+	switch(operand->type)
+	{
+		case AOT_IMMEDIATE:
+			return _write_immediate(plugin, definition, operand);
+		case AOT_REGISTER:
+			return _write_register(plugin, definition, operand);
+	}
+	return 0;
+}
+
+static int _write_register(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition idefinition;
+	ArchOperand ioperand;
+	char const * name = operand->value._register.name;
+	size_t size = AO_GET_SIZE(definition);
+
+	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
+		return 0;
+	idefinition = AO_IMMEDIATE(0, 0, 8);
+	memset(&ioperand, 0, sizeof(ioperand));
+	ioperand.type = AOT_IMMEDIATE;
+	ioperand.value.immediate.value = helper->get_register_by_name_size(
+			helper->priv, name, size);
+	return _write_immediate(plugin, idefinition, &ioperand);
 }

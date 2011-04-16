@@ -386,8 +386,10 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
+	arch->helper.priv = arch;
 	arch->helper.filename = filename;
 	arch->helper.fp = fp;
+	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->plugin->helper = &arch->helper;
 	return 0;
 }

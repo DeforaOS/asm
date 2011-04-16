@@ -166,9 +166,15 @@ typedef struct _ArchRegister
 
 typedef struct _ArchPluginHelper
 {
+	void * priv;
+
+	/* variables */
 	char const * filename;
 	FILE * fp;
-	void * priv;
+
+	/* callbacks */
+	int32_t (*get_register_by_name_size)(void * priv, char const * name,
+			uint32_t size);
 } ArchPluginHelper;
 
 typedef struct _ArchPlugin ArchPlugin;

@@ -145,3 +145,28 @@
 	fclex
 	fnclex
 	nop					/* 0x90			*/
+	/* XOR */
+	xor	[%ecx], %dh			/* 30 31		*/
+	xor	[%ecx+$0x50], %dh		/* 30 71 50		*/
+	xor	%bl, %bh			/* 30 fb		*/
+	xor	%eax, %eax			/* 31 c0		*/
+	xor	[%eax], %eax			/* 31 00		*/
+#if 1 /* FIXME doesn't work at the moment */
+	xor	%dh, [%ecx]			/* 32			*/
+	xor	%bl, %bh			/* 32			*/
+	xor	%edx, [%ecx]			/* 33			*/
+	xor	%ebx, %ebx			/* 33			*/
+#endif
+	xor	%al, $0x40			/* 34 40		*/
+	xor	%eax, $0x41424344		/* 35 44 43 42 41	*/
+	xor	[%edx], $0x46			/* 80 32 46		*/
+	xor	[%ebx + $0x15], $0x47		/* 80 73 15 47		*/
+	xor	[%ebx + $0x16171819], $0x48	/* 80 b3 19 18 17 16 48	*/
+	xor	%cl, $0x45			/* 80 f1 45		*/
+	xor	[%edx], $0x46474849		/* 81 32 46 47 48 49	*/
+	xor	[%ebx + $0x14], $0x4748494a	/* 81 73 14 47 48 49 4a	*/
+	xor	[%ebx + $0x16171819], $0x48494a4b
+						/* 81 b3 19 18 17 16 4b	*/
+						/* 4a 49 48		*/
+	xor	%ecx, $0x45464748		/* 81 f1 45 46 47 48	*/
+	xor	[%eax], -$0x02			/* 83 30 fe		*/

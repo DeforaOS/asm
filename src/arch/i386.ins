@@ -403,16 +403,61 @@
 /* FBLD		0xdf /4		1     m80dec				*/
 /* FIXME implement */
 /* FBSTP	0xdf /6		1     m80bcd				*/
+/* FIXME implement */
 /* FCHS		0xd9e0		2					*/
 { "fchs",	0xd9e0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE   },
 /* FCLEX	0x9bdbe2	3					*/
 { "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FCMOVcc								*/
 /* FIXME implement */
 /* FIADD	0xda /0		1     m32int				*/
 /* FIXME implement */
 /* FIADD	0xde /0		1     m64int				*/
+/* FIXME implement */
 /* FNCLEX	0xdbe2		2					*/
 { "fnclex",	0xdbe2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
-/* FIXME implement */
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* XOR		0x30 /r		1     r/m8        r8			*/
+{ "xor",	0x30,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* XOR		0x31 /r		1     r/mW        rW			*/
+{ "xor",	0x31,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+/* XOR		0x32 /r		1     r8          r/m8			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "xor",	0x32,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
+{ "xor",	0x32,		OP1F, OP_RM8_R8_R,OP_RM8_D8_R,AOT_NONE	},
+{ "xor",	0x32,		OP1F, OP_RM8_R8_R,OP_RM8_DW_R,AOT_NONE	},
+{ "xor",	0x32,		OP1F, OP_RM8_R8_R,OP_RM8_R8_R,AOT_NONE	},
+#endif
+/* XOR		0x33 /r		1     rW          r/mW			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "xor",	0x33,		OP1F, OP_RMW_RW_R,OP_RMW_D0_R,AOT_NONE	},
+{ "xor",	0x33,		OP1F, OP_RMW_RW_R,OP_RMW_D8_R,AOT_NONE	},
+{ "xor",	0x33,		OP1F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
+{ "xor",	0x33,		OP1F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
+#endif
+/* XOR		0x34 ib		1     al          imm8			*/
+{ "xor",	0x34,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
+/* XOR		0x35 iW		1     AX          immW			*/
+{ "xor",	0x35,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
+/* XOR		0x80 /6 ib	1     r/m8        imm8			*/
+{ "xor",	0x80,		OP1F, OP_RM8_D0+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x80,		OP1F, OP_RM8_D8+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x80,		OP1F, OP_RM8_DW+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x80,		OP1F, OP_RM8_R8+6,OP_S8,     AOT_NONE	},
+/* XOR		0x81 /6 iW	1     r/mW        imm8			*/
+{ "xor",	0x81,		OP1F, OP_RMW_D0+6,OP_SW,     AOT_NONE	},
+{ "xor",	0x81,		OP1F, OP_RMW_D8+6,OP_SW,     AOT_NONE	},
+{ "xor",	0x81,		OP1F, OP_RMW_DW+6,OP_SW,     AOT_NONE	},
+{ "xor",	0x81,		OP1F, OP_RMW_RW+6,OP_SW,     AOT_NONE	},
+/* XOR		0x83 /6 i8	1     r/mW        imm8			*/
+{ "xor",	0x83,		OP1F, OP_RMW_D0+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x83,		OP1F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x83,		OP1F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
+{ "xor",	0x83,		OP1F, OP_RMW_RW+6,OP_S8,     AOT_NONE	},

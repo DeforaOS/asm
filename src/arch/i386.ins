@@ -34,6 +34,10 @@
 #define OP_RMW_D8	AO_DREGISTER(AOF_I386_MODRM, 8, W, 0)	/* 0x40 */
 #define OP_RMW_DW	AO_DREGISTER(AOF_I386_MODRM, W, W, 0)	/* 0x80 */
 #define OP_RMW_RW	AO_REGISTER(AOF_I386_MODRM, W, 0)	/* 0xc0 */
+#define OP_RMW_D0_R	AO_DREGISTER(AOF_I386_MODRM, 0, W, 8)	/* 0x00 */
+#define OP_RMW_D8_R	AO_DREGISTER(AOF_I386_MODRM, 8, W, 8)	/* 0x40 */
+#define OP_RMW_DW_R	AO_DREGISTER(AOF_I386_MODRM, W, W, 8)	/* 0x80 */
+#define OP_RMW_RW_R	AO_REGISTER(AOF_I386_MODRM, W, 8)	/* 0xc0 */
 
 /* immediate values */
 #define OP_S8		AO_IMMEDIATE(AOF_SIGNED, 0, 8)
@@ -54,12 +58,24 @@
 { "adc",	0x10,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
 { "adc",	0x10,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
 { "adc",	0x10,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* ADC		0x11 /r		1     r/mW        rW			*/
+{ "adc",	0x11,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "adc",	0x11,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "adc",	0x11,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "adc",	0x11,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
 /* ADC		0x12 /r		1     r8          r/m8			*/
 #if 1 /* FIXME doesn't work at the moment */
 { "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
 { "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_D8_R,AOT_NONE	},
 { "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_DW_R,AOT_NONE	},
 { "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_R8_R,AOT_NONE	},
+#endif
+/* ADC		0x13 /r		1     rW          r/mW			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "adc",	0x13,		OP1F, OP_RMW_RW_R,OP_RMW_D0_R,AOT_NONE	},
+{ "adc",	0x13,		OP1F, OP_RMW_RW_R,OP_RMW_D8_R,AOT_NONE	},
+{ "adc",	0x13,		OP1F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
+{ "adc",	0x13,		OP1F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
 #endif
 /* ADC		0x14 ib		1     al          imm8			*/
 { "adc",	0x14,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},

@@ -10,9 +10,13 @@
 	adc	[%ecx], %dh			/* 10 31		*/
 	adc	[%ecx+$0x50], %dh		/* 10 71 50		*/
 	adc	%bl, %bh			/* 10 fb		*/
+	adc	%eax, %eax			/* 11 c0		*/
+	adc	[%eax], %eax			/* 11 00		*/
 #if 1 /* FIXME doesn't work at the moment */
 	adc	%dh, [%ecx]			/* 12			*/
 	adc	%bl, %bh			/* 12			*/
+	adc	%edx, [%ecx]			/* 13			*/
+	adc	%ebx, %ebx			/* 13			*/
 #endif
 	adc	%al, $0x40			/* 14 40		*/
 	adc	%eax, $0x41424344		/* 15 44 43 42 41	*/

@@ -110,4 +110,8 @@
 	div	[%eax + $0x02]			/* f7 70 02		*/
 	div	[%ebx + $0x4012]		/* f7 b3 12 40 00 00	*/
 	div	%edx				/* f7 f2		*/
+	/* ENTER */
+	enter	$0xabcd, $0x0			/* c8 cd ab 00		*/
+	enter	$0xdcef, $0x1			/* c8 ef dc 01		*/
+	enter	$0xfacd, $0x42			/* c8 cd fa 42		*/
 	nop					/* 0x90			*/

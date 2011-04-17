@@ -89,6 +89,7 @@
 #define OP_S8		AO_IMMEDIATE(AOF_SIGNED, 0, 8)
 #define OP_SW		AO_IMMEDIATE(AOF_SIGNED, 0, W)
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
+#define OP_U16		AO_IMMEDIATE(0, 0, 16)
 #define OP_UW		AO_IMMEDIATE(0, 0, W)
 
 
@@ -351,5 +352,7 @@
 { "div",	0xf7,		OP1F, OP_RMW_D8+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf7,		OP1F, OP_RMW_DW+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf7,		OP1F, OP_RMW_RW+6,AOT_NONE,  AOT_NONE	},
+/* ENTER	0xc8 iw		1     imm16       imm8			*/
+{ "enter",	0xc8,		OP1F, OP_U16,     OP_U8,     AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

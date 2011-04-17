@@ -178,24 +178,6 @@ int code_function(Code * code, char const * function)
 
 
 /* code_instruction */
-static int _instruction_fixed(Code * code, ArchInstruction * ai,
-		ArchOperand ** operands, size_t operands_cnt);
-static int _instruction_fixed_immediate(ArchOperand operand, ArchOperand * ao,
-		uint32_t * pu);
-static int _instruction_fixed_register(Code * code, ArchOperand operand,
-		ArchOperand * ao, uint32_t * pu);
-static int _instruction_variable(Code * code, ArchInstruction * ai,
-		ArchOperand ** operands, size_t operands_cnt);
-static int _instruction_variable_dregister(Code * code, ArchInstruction * ai,
-		ArchOperand operand, ArchOperand * ao);
-static int _instruction_variable_immediate(Code * code, ArchInstruction * ai,
-		ArchOperand operand, void * value, int swap);
-static int _instruction_variable_opcode(Code * code, ArchInstruction * ai);
-static int _instruction_variable_operand(Code * code, ArchInstruction * ai,
-		ArchOperand operand, ArchOperand * ao);
-static int _instruction_variable_register(Code * code, ArchInstruction * ai,
-		ArchOperand operand, ArchOperand * ao);
-
 int code_instruction(Code * code, ArchInstructionCall * call)
 {
 	ArchInstruction * ai;

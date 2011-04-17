@@ -20,15 +20,11 @@
 
 # include <stdint.h>
 # include <stdio.h>
-# include "Asm.h"
+# include "Asm/arch.h"
 
 
 /* Arch */
 /* public */
-/* types */
-typedef struct _Arch Arch;
-
-
 /* functions */
 Arch * arch_new(char const * name);
 void arch_delete(Arch * arch);

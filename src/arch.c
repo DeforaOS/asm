@@ -171,7 +171,7 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 
 
 /* arch_get_instruction_by_call */
-static int _call_operands(Arch * arch, ArchInstruction * ai,
+static int _call_operands(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 static int _call_operands_dregister(Arch * arch,
 		ArchOperandDefinition definition, ArchOperand * operand);
@@ -188,7 +188,7 @@ ArchInstruction * arch_get_instruction_by_call(Arch * arch,
 	int found = 0;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, call->name);
 #endif
 	for(i = 0; i < arch->instructions_cnt; i++)
 	{
@@ -205,7 +205,7 @@ ArchInstruction * arch_get_instruction_by_call(Arch * arch,
 	return NULL;
 }
 
-static int _call_operands(Arch * arch, ArchInstruction * ai,
+static int _call_operands(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	size_t i;
@@ -214,13 +214,13 @@ static int _call_operands(Arch * arch, ArchInstruction * ai,
 
 	for(i = 0; i < call->operands_cnt; i++)
 	{
-		definition = (i == 0) ? ai->op1 : ((i == 1) ? ai->op2
-				: ai->op3);
+		definition = (i == 0) ? instruction->op1 : ((i == 1)
+				? instruction->op2 : instruction->op3);
 		operand = &call->operands[i];
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() operand %lu, type %u, type %u\n",
 				__func__, i, AO_GET_TYPE(definition),
-				AO_GET_TYPE(operand->definition));
+				AO_GET_TYPE(operand->type));
 #endif
 		if(AO_GET_TYPE(definition) != operand->type)
 			return -1;
@@ -252,7 +252,8 @@ static int _call_operands_dregister(Arch * arch,
 	uint64_t offset;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %ld\n", __func__, ao->dereference);
+	fprintf(stderr, "DEBUG: %s() %ld\n", __func__,
+			operand->value.dregister.offset);
 #endif
 	if(_call_operands_register(arch, definition, operand) != 0)
 		return -1;
@@ -386,7 +387,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
-	arch->helper.priv = arch;
+	arch->helper.arch = arch;
 	arch->helper.filename = filename;
 	arch->helper.fp = fp;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;

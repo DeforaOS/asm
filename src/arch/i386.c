@@ -187,17 +187,20 @@ static int _write_register(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	ArchOperandDefinition idefinition;
-	ArchOperand ioperand;
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
+	ArchRegister * ar;
+	ArchOperandDefinition idefinition;
+	ArchOperand ioperand;
 
 	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
 		return 0;
+	if((ar = helper->get_register_by_name_size(helper->arch, name, size))
+			== NULL)
+		return -1;
 	idefinition = AO_IMMEDIATE(0, 0, 8);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
-	ioperand.value.immediate.value = helper->get_register_by_name_size(
-			helper->priv, name, size);
+	ioperand.value.immediate.value = ar->id;
 	return _write_immediate(plugin, idefinition, &ioperand);
 }

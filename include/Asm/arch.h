@@ -24,6 +24,8 @@
 
 /* AsmArch */
 /* types */
+typedef struct _Arch Arch;
+
 typedef enum _ArchEndian
 {
 	ARCH_ENDIAN_BIG = 0,
@@ -142,7 +144,7 @@ typedef uint32_t ArchOperandDefinition;
 
 typedef struct _ArchInstruction
 {
-	char * name;
+	char const * name;
 	uint32_t opcode;
 	ArchOperandDefinition flags;
 	ArchOperandDefinition op1;
@@ -152,29 +154,29 @@ typedef struct _ArchInstruction
 
 typedef struct _ArchInstructionCall
 {
-	char * name;
+	char const * name;
 	ArchOperand operands[3];
 	size_t operands_cnt;
 } ArchInstructionCall;
 
 typedef struct _ArchRegister
 {
-	char * name;
+	char const * name;
 	uint32_t size;
 	uint32_t id;
 } ArchRegister;
 
 typedef struct _ArchPluginHelper
 {
-	void * priv;
+	Arch * arch;
 
 	/* variables */
 	char const * filename;
 	FILE * fp;
 
 	/* callbacks */
-	int32_t (*get_register_by_name_size)(void * priv, char const * name,
-			uint32_t size);
+	ArchRegister * (*get_register_by_name_size)(Arch * arch,
+			char const * name, uint32_t size);
 } ArchPluginHelper;
 
 typedef struct _ArchPlugin ArchPlugin;

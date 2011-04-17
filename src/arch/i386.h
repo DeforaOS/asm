@@ -15,6 +15,10 @@
 
 
 
+#include <string.h>
+#include <errno.h>
+
+
 /* i386 */
 /* private */
 /* prototypes */
@@ -104,7 +108,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 			ioperand.value.immediate.value |= 0x80;
 			break;
 		default:
-			return -1; /* FIXME report error */
+			return -error_set_code(1, "%s", "Invalid offset");
 	}
 	if(_write_immediate(plugin, idefinition, &ioperand) != 0)
 		return -1;
@@ -133,14 +137,15 @@ static int _write_immediate(ArchPlugin * plugin,
 		case sizeof(uint32_t):
 			return _write_immediate32(plugin, value);
 		default:
-			return -1;
+			return -error_set_code(1, "Invalid size");
 	}
 }
 
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
 {
 	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -1;
+		return -error_set_code(1, "%s: %s", plugin->helper->filename,
+				strerror(errno));
 	return 0;
 }
 
@@ -148,7 +153,8 @@ static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
 {
 	value = _htol16(value);
 	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -1;
+		return -error_set_code(1, "%s: %s", plugin->helper->filename,
+				strerror(errno));
 	return 0;
 }
 
@@ -156,7 +162,8 @@ static int _write_immediate32(ArchPlugin * plugin, uint32_t value)
 {
 	value = _htol32(value);
 	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -1;
+		return -error_set_code(1, "%s: %s", plugin->helper->filename,
+				strerror(errno));
 	return 0;
 }
 
@@ -184,7 +191,7 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 					instruction->opcode);
 			break;
 		default:
-			return -1; /* FIXME report error */
+			return -error_set_code(1, "%s", "Invalid size");
 	}
 	return _write_immediate(plugin, instruction->flags, &operand);
 }

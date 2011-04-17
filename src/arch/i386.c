@@ -81,44 +81,45 @@ ArchPlugin arch_plugin =
 
 
 /* functions */
-static int _write_dregister(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand);
+static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands);
 static int _write_immediate(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
 static int _write_immediate16(ArchPlugin * plugin, uint16_t value);
 static int _write_immediate32(ArchPlugin * plugin, uint32_t value);
 static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction);
-static int _write_operand(ArchPlugin * plugin, ArchOperandDefinition definition,
-		ArchOperand * operand);
-static int _write_register(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand);
+static int _write_operand(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands);
+static int _write_register(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands);
 
 static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
-	size_t i;
-	ArchOperandDefinition definition;
+	uint32_t i;
+	ArchOperandDefinition definitions[3];
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
 	if(_write_opcode(plugin, instruction) != 0)
 		return -1;
+	definitions[0] = instruction->op1;
+	definitions[1] = instruction->op2;
+	definitions[2] = instruction->op3;
 	for(i = 0; i < call->operands_cnt; i++)
-	{
-		definition = (i == 0) ? instruction->op1 : ((i == 1)
-				? instruction->op2 : instruction->op3);
-		if(_write_operand(plugin, definition, &call->operands[i]) != 0)
+		if(_write_operand(plugin, &i, definitions, call->operands) != 0)
 			return -1;
-	}
 	return 0;
 }
 
-static int _write_dregister(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand)
+static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
 	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition definition = definitions[*i];
+	ArchOperand * operand = &operands[*i];
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	ArchRegister * ar;
@@ -133,7 +134,18 @@ static int _write_dregister(ArchPlugin * plugin,
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
 	ioperand.value.immediate.value = ar->id;
-	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM)
+	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM
+			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */
+	{
+		(*i)++; /* skip next operand */
+		name = operands[*i].value._register.name;
+		size = AO_GET_SIZE(definitions[*i]);
+		if((ar = helper->get_register_by_name_size(helper->arch, name,
+						size)) == NULL)
+			return -1;
+		ioperand.value.immediate.value |= (ar->id << 3);
+	}
+	else if(AO_GET_FLAGS(definition) & AOF_I386_MODRM) /* mod r/m, /[0-7] */
 		ioperand.value.immediate.value |= (AO_GET_VALUE(definition)
 				<< 3);
 	if(operand->value.dregister.offset == 0)
@@ -232,25 +244,30 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 	return _write_immediate(plugin, instruction->flags, &operand);
 }
 
-static int _write_operand(ArchPlugin * plugin, ArchOperandDefinition definition,
-		ArchOperand * operand)
+static int _write_operand(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
-	switch(operand->type)
+	switch(operands[*i].type)
 	{
 		case AOT_DREGISTER:
-			return _write_dregister(plugin, definition, operand);
+			return _write_dregister(plugin, i, definitions,
+					operands);
 		case AOT_IMMEDIATE:
-			return _write_immediate(plugin, definition, operand);
+			return _write_immediate(plugin, definitions[*i],
+					&operands[*i]);
 		case AOT_REGISTER:
-			return _write_register(plugin, definition, operand);
+			return _write_register(plugin, i, definitions,
+					operands);
 	}
 	return 0;
 }
 
-static int _write_register(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand)
+static int _write_register(ArchPlugin * plugin, uint32_t * i,
+		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
 	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition definition = definitions[*i];
+	ArchOperand * operand = &operands[*i];
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	ArchRegister * ar;
@@ -262,10 +279,23 @@ static int _write_register(ArchPlugin * plugin,
 	if((ar = helper->get_register_by_name_size(helper->arch, name, size))
 			== NULL)
 		return -1;
+	/* write register */
 	idefinition = AO_IMMEDIATE(0, 0, 8);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
-	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM)
+	ioperand.value.immediate.value = ar->id;
+	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM
+			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */
+	{
+		(*i)++; /* skip next operand */
+		name = operands[*i].value._register.name;
+		size = AO_GET_SIZE(definitions[*i]);
+		if((ar = helper->get_register_by_name_size(helper->arch, name,
+						size)) == NULL)
+			return -1;
+		ioperand.value.immediate.value |= 0xc0 | (ar->id << 3);
+	}
+	else if(AO_GET_FLAGS(definition) & AOF_I386_MODRM) /* mod r/m, /[0-7] */
 		ioperand.value.immediate.value = 0xc0 | ar->id
 			| (AO_GET_VALUE(definition) << 3);
 	else

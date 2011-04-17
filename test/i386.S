@@ -7,6 +7,8 @@
 	aam	$0x42
 	aas
 	/* ADC */
+	adc	[%ecx], %dh			/* 10 31		*/
+	adc	%bl, %bh			/* 10 fb		*/
 	adc	%al, $0x40			/* 14 40		*/
 	adc	%eax, $0x41424344		/* 15 41 42 43 44	*/
 	adc	[%edx], $0x46			/* 80 12 46		*/

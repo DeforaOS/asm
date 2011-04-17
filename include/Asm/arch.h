@@ -155,7 +155,7 @@ typedef struct _ArchInstructionCall
 {
 	char const * name;
 	ArchOperand operands[3];
-	size_t operands_cnt;
+	uint32_t operands_cnt;
 } ArchInstructionCall;
 
 typedef struct _ArchRegister

@@ -26,6 +26,10 @@
 #define OP_RM8_D8	AO_DREGISTER(AOF_I386_MODRM, 8, W, 0)	/* 0x40 */
 #define OP_RM8_DW	AO_DREGISTER(AOF_I386_MODRM, W, W, 0)	/* 0x80 */
 #define OP_RM8_R8	AO_REGISTER(AOF_I386_MODRM, 8, 0)	/* 0xc0 */
+#define OP_RM8_D0_R	AO_DREGISTER(AOF_I386_MODRM, 0, W, 8)	/* 0x00 */
+#define OP_RM8_D8_R	AO_DREGISTER(AOF_I386_MODRM, 8, W, 8)	/* 0x40 */
+#define OP_RM8_DW_R	AO_DREGISTER(AOF_I386_MODRM, W, W, 8)	/* 0x80 */
+#define OP_RM8_R8_R	AO_REGISTER(AOF_I386_MODRM, 8, 8)	/* 0xc0 */
 #define OP_RMW_D0	AO_DREGISTER(AOF_I386_MODRM, 0, W, 0)	/* 0x00 */
 #define OP_RMW_D8	AO_DREGISTER(AOF_I386_MODRM, 8, W, 0)	/* 0x40 */
 #define OP_RMW_DW	AO_DREGISTER(AOF_I386_MODRM, W, W, 0)	/* 0x80 */
@@ -37,12 +41,17 @@
 
 
 /* instructions */
-{ "aaa",	0x37,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "aad",	0xd50a,		OP2F, AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "aad",	0xd5,		OP1F, OP_U8,    AOT_NONE, AOT_NONE	},
-{ "aam",	0xd40a,		OP2F, AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "aam",	0xd4,		OP1F, OP_U8,    AOT_NONE, AOT_NONE	},
-{ "aas",	0x3f,		OP1F, AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "aaa",	0x37,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+{ "aad",	0xd50a,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+{ "aad",	0xd5,		OP1F, OP_U8,      AOT_NONE,  AOT_NONE	},
+{ "aam",	0xd40a,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+{ "aam",	0xd4,		OP1F, OP_U8,      AOT_NONE,  AOT_NONE	},
+{ "aas",	0x3f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* ADC		0x10 /r		1     r/m8        r8			*/
+{ "adc",	0x10,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
+{ "adc",	0x10,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
+{ "adc",	0x10,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
+{ "adc",	0x10,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
 /* ADC		0x14 ib		1     al          imm8			*/
 { "adc",	0x14,		OP1F, OP_al,	  OP_U8,     AOT_NONE	},
 /* ADC		0x15 iW		1     AX          immW			*/

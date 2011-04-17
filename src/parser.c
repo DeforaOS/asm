@@ -35,15 +35,6 @@ typedef struct _State
 	unsigned int warning_cnt;
 	Code * code;
 	ArchInstructionCall call;
-#if 0
-	char const * name;
-	struct
-	{
-		ArchOperandDefinition definition;
-		ArchOperand operand;
-	} operands[3];
-	size_t operands_cnt;
-#endif
 } State;
 
 

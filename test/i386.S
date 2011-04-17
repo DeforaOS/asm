@@ -81,8 +81,9 @@
 	clts					/* 0f 06		*/
 	cmc					/* f5			*/
 	cpuid					/* 0f a2		*/
-	cdq					/* 0x99			*/
-	das
+	cdq					/* 99			*/
+	daa					/* 27			*/
+	das					/* 2f			*/
 	/* DEC */
 	dec	%eax				/* 48			*/
 	dec	%ecx				/* 49			*/

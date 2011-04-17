@@ -78,5 +78,13 @@
 	cwde					/* 98			*/
 	/* CLC */
 	clc					/* f8			*/
+	/* CLD */
+	cld					/* fc			*/
+	/* CLI */
+	cli					/* fa			*/
+	/* CLTS */
+	clts					/* 0f 06		*/
+	/* CMC */
+	cmc					/* f5			*/
 	/* NOP */
 	nop

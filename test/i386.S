@@ -82,6 +82,7 @@
 	cmc					/* f5			*/
 	cpuid					/* 0f a2		*/
 	cdq					/* 0x99			*/
+	das
 	/* DEC */
 	dec	%eax				/* 48			*/
 	dec	%ecx				/* 49			*/

@@ -297,5 +297,15 @@
 /* CDQ		0x99		1					*/
 { "cdq",	0x99,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
+/* DIV		0xf6 /6		1                 r/m8			*/
+{ "divb",	0xf6,		OP1F, OP_RM8_D0+6,AOT_NONE,  AOT_NONE	},
+{ "divb",	0xf6,		OP1F, OP_RM8_D8+6,AOT_NONE,  AOT_NONE	},
+{ "divb",	0xf6,		OP1F, OP_RM8_DW+6,AOT_NONE,  AOT_NONE	},
+{ "div",	0xf6,		OP1F, OP_RM8_R8+6,AOT_NONE,  AOT_NONE	},
+/* DIV		0xf7 /6		1                 r/mW			*/
+{ "div",	0xf7,		OP1F, OP_RMW_D0+6,AOT_NONE,  AOT_NONE	},
+{ "div",	0xf7,		OP1F, OP_RMW_D8+6,AOT_NONE,  AOT_NONE	},
+{ "div",	0xf7,		OP1F, OP_RMW_DW+6,AOT_NONE,  AOT_NONE	},
+{ "div",	0xf7,		OP1F, OP_RMW_RW+6,AOT_NONE,  AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

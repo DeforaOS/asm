@@ -82,4 +82,13 @@
 	cmc					/* f5			*/
 	cpuid					/* 0f a2		*/
 	cdq					/* 0x99			*/
+	/* DIV */
+	divb	[%ecx]				/* f6 31		*/
+	divb	[%eax + $0x02]			/* f6 70 02		*/
+	divb	[%ebx + $0x4012]		/* f6 b3 12 40 00 00	*/
+	div	%dl				/* f6 f2		*/
+	div	[%ecx]				/* f7 31		*/
+	div	[%eax + $0x02]			/* f7 70 02		*/
+	div	[%ebx + $0x4012]		/* f7 b3 12 40 00 00	*/
+	div	%edx				/* f7 f2		*/
 	nop					/* 0x90			*/

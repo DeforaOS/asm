@@ -46,5 +46,13 @@
 	add	%ecx, $0x45464748		/* 81 c1 45 46 47 48	*/
 	/* AND */
 	and	%ecx, $0x45464748		/* 81 e1 45 46 47 48	*/
+	/* BSF */
+#if 1 /* FIXME doesn't work at the moment */
+	bsf	%eax, [%eax]			/* 0f bc		*/
+#endif
+	/* BSR */
+#if 1 /* FIXME doesn't work at the moment */
+	bsr	%eax, [%eax]			/* 0f bd		*/
+#endif
 	/* NOP */
 	nop

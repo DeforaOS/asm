@@ -182,5 +182,23 @@
 { "and",	0x83,		OP1F, OP_RMW_D8+4,OP_S8,     AOT_NONE	},
 { "and",	0x83,		OP1F, OP_RMW_DW+4,OP_S8,     AOT_NONE	},
 { "and",	0x83,		OP1F, OP_RMW_RW+4,OP_S8,     AOT_NONE	},
+/* ARPL */
+/* FIXME implement */
+/* BOUND */
+/* FIXME implement */
+/* BSF		0x0fbc		2     rW          r/mW			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "bsf",	0x0fbc,		OP2F, OP_RMW_RW_R,OP_RMW_D0_R,AOT_NONE	},
+{ "bsf",	0x0fbc,		OP2F, OP_RMW_RW_R,OP_RMW_D8_R,AOT_NONE	},
+{ "bsf",	0x0fbc,		OP2F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
+{ "bsf",	0x0fbc,		OP2F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
+#endif
+/* BSR		0x0fbd		2     rW          r/mW			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_D0_R,AOT_NONE	},
+{ "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_D8_R,AOT_NONE	},
+{ "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
+{ "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
+#endif
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

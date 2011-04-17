@@ -121,7 +121,8 @@ int format_function(Format * format, char const * function)
 int format_init(Format * format, char const * filename, FILE * fp)
 {
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename, fp);
+	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
+			(void *)fp);
 #endif
 	format->helper.filename = filename;
 	format->helper.fp = fp;

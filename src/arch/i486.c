@@ -20,7 +20,7 @@
 #include "Asm.h"
 
 
-/* i386 */
+/* i486 */
 /* private */
 /* types */
 /* register sizes */
@@ -44,16 +44,17 @@ enum
 
 /* variables */
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _i386_registers[] =
+static ArchRegister _i486_registers[] =
 {
 #include "i386.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _i386_instructions[] =
+static ArchInstruction _i486_instructions[] =
 {
 #include "i386.ins"
+#include "i486.ins"
 #include "common.ins"
 #include "null.ins"
 };
@@ -69,10 +70,10 @@ static ArchInstruction _i386_instructions[] =
 ArchPlugin arch_plugin =
 {
 	NULL,
-	"i386",
+	"i486",
 	NULL,
-	_i386_registers,
-	_i386_instructions,
+	_i486_registers,
+	_i486_instructions,
 	_i386_write,
 	NULL
 };

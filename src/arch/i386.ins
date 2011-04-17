@@ -19,6 +19,14 @@
 #define OP_RW		AO_REGISTER(0, W, 0)
 #define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
 #define OP_AX		AO_REGISTER(AOF_IMPLICIT, W, REG_AX_id)
+#define OP_eax		AO_REGISTER(AOF_IMPLICIT, 32, REG_eax_id)
+#define OP_ecx		AO_REGISTER(AOF_IMPLICIT, 32, REG_ecx_id)
+#define OP_edx		AO_REGISTER(AOF_IMPLICIT, 32, REG_edx_id)
+#define OP_ebx		AO_REGISTER(AOF_IMPLICIT, 32, REG_ebx_id)
+#define OP_esp		AO_REGISTER(AOF_IMPLICIT, 32, REG_esp_id)
+#define OP_ebp		AO_REGISTER(AOF_IMPLICIT, 32, REG_ebp_id)
+#define OP_esi		AO_REGISTER(AOF_IMPLICIT, 32, REG_esi_id)
+#define OP_edi		AO_REGISTER(AOF_IMPLICIT, 32, REG_edi_id)
 
 /* mod r/m byte */
 #define AOF_I386_MODRM	0x2
@@ -200,5 +208,14 @@
 { "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
 { "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
 #endif
+/* BSWAP	0x0fc8 +rd	2					*/
+{ "bswap",	0x0fc8,		OP2F, OP_eax,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fc9,		OP2F, OP_ecx,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fca,		OP2F, OP_edx,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fcb,		OP2F, OP_ebx,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fcc,		OP2F, OP_esp,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fcd,		OP2F, OP_ebp,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fce,		OP2F, OP_esi,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fcf,		OP2F, OP_edi,     AOT_NONE,   AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

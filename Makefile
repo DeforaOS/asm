@@ -50,11 +50,14 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/token.h \
 		$(PACKAGE)-$(VERSION)/src/project.conf \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.c \
+		$(PACKAGE)-$(VERSION)/src/arch/i486.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/i386.h \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.reg \
+		$(PACKAGE)-$(VERSION)/src/arch/i486.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/null.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
@@ -67,6 +70,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
 		$(PACKAGE)-$(VERSION)/test/i386.S \
+		$(PACKAGE)-$(VERSION)/test/i486.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/Makefile \
 		$(PACKAGE)-$(VERSION)/test/project.conf \

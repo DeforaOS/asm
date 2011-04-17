@@ -52,6 +52,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i386.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386_real.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i486.c \
+		$(PACKAGE)-$(VERSION)/src/arch/i686.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
@@ -59,6 +60,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i386.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/i486.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/i686.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/i686.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/null.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
@@ -73,6 +76,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/i386.S \
 		$(PACKAGE)-$(VERSION)/test/i386_real.S \
 		$(PACKAGE)-$(VERSION)/test/i486.S \
+		$(PACKAGE)-$(VERSION)/test/i686.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/Makefile \
 		$(PACKAGE)-$(VERSION)/test/project.conf \

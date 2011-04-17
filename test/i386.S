@@ -8,7 +8,12 @@
 	aas
 	/* ADC */
 	adc	[%ecx], %dh			/* 10 31		*/
+	adc	[%ecx+$0x50], %dh		/* 10 71 50		*/
 	adc	%bl, %bh			/* 10 fb		*/
+#if 1 /* FIXME doesn't work at the moment */
+	adc	%dh, [%ecx]			/* 12			*/
+	adc	%bl, %bh			/* 12			*/
+#endif
 	adc	%al, $0x40			/* 14 40		*/
 	adc	%eax, $0x41424344		/* 15 41 42 43 44	*/
 	adc	[%edx], $0x46			/* 80 12 46		*/

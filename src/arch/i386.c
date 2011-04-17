@@ -138,6 +138,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */
 	{
 		(*i)++; /* skip next operand */
+		/* FIXME it could as well be an inverted /r */
 		name = operands[*i].value._register.name;
 		size = AO_GET_SIZE(definitions[*i]);
 		if((ar = helper->get_register_by_name_size(helper->arch, name,
@@ -288,6 +289,7 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */
 	{
 		(*i)++; /* skip next operand */
+		/* FIXME it could as well be an inverted /r */
 		name = operands[*i].value._register.name;
 		size = AO_GET_SIZE(definitions[*i]);
 		if((ar = helper->get_register_by_name_size(helper->arch, name,

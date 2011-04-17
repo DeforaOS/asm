@@ -52,6 +52,13 @@
 { "adc",	0x10,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
 { "adc",	0x10,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
 { "adc",	0x10,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* ADC		0x12 /r		1     r8          r/m8			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
+{ "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_D8_R,AOT_NONE	},
+{ "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_DW_R,AOT_NONE	},
+{ "adc",	0x12,		OP1F, OP_RM8_R8_R,OP_RM8_R8_R,AOT_NONE	},
+#endif
 /* ADC		0x14 ib		1     al          imm8			*/
 { "adc",	0x14,		OP1F, OP_al,	  OP_U8,     AOT_NONE	},
 /* ADC		0x15 iW		1     AX          immW			*/

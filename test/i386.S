@@ -116,4 +116,29 @@
 	enter	$0xfacd, $0x42			/* c8 cd fa 42		*/
 	f2xm1
 	fabs
+	/* FADD */
+	fadd	%st0, %st0
+	fadd	%st0, %st1
+	fadd	%st0, %st2
+	fadd	%st0, %st3
+	fadd	%st0, %st4
+	fadd	%st0, %st5
+	fadd	%st0, %st6
+	fadd	%st0, %st7
+	fadd	%st1, %st0
+	fadd	%st2, %st0
+	fadd	%st3, %st0
+	fadd	%st4, %st0
+	fadd	%st5, %st0
+	fadd	%st6, %st0
+	fadd	%st7, %st0
+	/* FADDP */
+	faddp	%st0, %st0
+	faddp
+	faddp	%st2, %st0
+	faddp	%st3, %st0
+	faddp	%st4, %st0
+	faddp	%st5, %st0
+	faddp	%st6, %st0
+	faddp	%st7, %st0
 	nop					/* 0x90			*/

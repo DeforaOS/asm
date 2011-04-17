@@ -65,6 +65,14 @@
 #define OP_ebp		AO_REGISTER(AOF_IMPLICIT, 32, REG_ebp_id)
 #define OP_esi		AO_REGISTER(AOF_IMPLICIT, 32, REG_esi_id)
 #define OP_edi		AO_REGISTER(AOF_IMPLICIT, 32, REG_edi_id)
+#define OP_st0		AO_REGISTER(AOF_IMPLICIT, 32, REG_st0_id)
+#define OP_st1		AO_REGISTER(AOF_IMPLICIT, 32, REG_st1_id)
+#define OP_st2		AO_REGISTER(AOF_IMPLICIT, 32, REG_st2_id)
+#define OP_st3		AO_REGISTER(AOF_IMPLICIT, 32, REG_st3_id)
+#define OP_st4		AO_REGISTER(AOF_IMPLICIT, 32, REG_st4_id)
+#define OP_st5		AO_REGISTER(AOF_IMPLICIT, 32, REG_st5_id)
+#define OP_st6		AO_REGISTER(AOF_IMPLICIT, 32, REG_st6_id)
+#define OP_st7		AO_REGISTER(AOF_IMPLICIT, 32, REG_st7_id)
 
 /* mod r/m byte */
 #define AOF_I386_MODRM	0x2
@@ -358,5 +366,42 @@
 { "f2xm1",	0xd9f0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FABS		0xd9e1		2					*/
 { "fabs",	0xd9e1,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FADD		0xd8 /0		1     m32real				*/
+/* FIXME implement */
+/* FADD		0xdc /0		1     m64real				*/
+/* FIXME implement */
+/* FADD		0xd8c0 +i	2     st(0)       st(i)			*/
+{ "fadd",	0xd8c0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xd8c1,		OP2F, OP_st0,     OP_st1,    AOT_NONE	},
+{ "fadd",	0xd8c2,		OP2F, OP_st0,     OP_st2,    AOT_NONE	},
+{ "fadd",	0xd8c3,		OP2F, OP_st0,     OP_st3,    AOT_NONE	},
+{ "fadd",	0xd8c4,		OP2F, OP_st0,     OP_st4,    AOT_NONE	},
+{ "fadd",	0xd8c5,		OP2F, OP_st0,     OP_st5,    AOT_NONE	},
+{ "fadd",	0xd8c6,		OP2F, OP_st0,     OP_st6,    AOT_NONE	},
+{ "fadd",	0xd8c7,		OP2F, OP_st0,     OP_st7,    AOT_NONE	},
+/* FADD		0xdcc0 +i	2     st(i)       st(0)			*/
+{ "fadd",	0xdcc0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc1,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc2,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc3,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc4,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc5,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc6,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fadd",	0xdcc7,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FADDP	0xdec1		2					*/
+{ "faddp",	0xdec1,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FADDP	0xdec0 +i	2     st(i)       st(0)			*/
+{ "faddp",	0xdec0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec1,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec2,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec3,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec4,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec5,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec6,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "faddp",	0xdec7,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FIADD	0xda /0		1     m32int				*/
+/* FIXME implement */
+/* FIADD	0xde /0		1     m64int				*/
+/* FIXME implement */
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

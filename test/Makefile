@@ -1,4 +1,4 @@
-TARGETS	= i386.o i486.o sparc.o
+TARGETS	= i386.o i386_real.o i486.o sparc.o
 PREFIX	= /usr/local
 DESTDIR	= 
 BINDIR	= $(PREFIX)/bin
@@ -15,6 +15,9 @@ all: $(TARGETS)
 i386.o_OBJS = i386.o
 i386.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i386 -f flat
 
+i386_real.o_OBJS = i386_real.o
+i386_real.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i386_real -f flat
+
 i486.o_OBJS = i486.o
 i486.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i486 -f flat
 
@@ -24,6 +27,9 @@ sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc -f flat
 i386.o: i386.S ../src/asm
 	$(AS) $(i386.o_ASFLAGS) -o i386.o i386.S
 
+i386_real.o: i386_real.S ../src/asm
+	$(AS) $(i386_real.o_ASFLAGS) -o i386_real.o i386_real.S
+
 i486.o: i486.S ../src/asm
 	$(AS) $(i486.o_ASFLAGS) -o i486.o i486.S
 
@@ -31,7 +37,7 @@ sparc.o: sparc.S ../src/asm
 	$(AS) $(sparc.o_ASFLAGS) -o sparc.o sparc.S
 
 clean:
-	$(RM) -- $(i386.o_OBJS) $(i486.o_OBJS) $(sparc.o_OBJS)
+	$(RM) -- $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(sparc.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

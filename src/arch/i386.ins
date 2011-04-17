@@ -248,5 +248,14 @@
 { "bts",	0x0fba,		OP2F, OP_RMW_D8+5,OP_S8,     AOT_NONE	},
 { "bts",	0x0fba,		OP2F, OP_RMW_DW+5,OP_S8,     AOT_NONE	},
 { "bts",	0x0fba,		OP2F, OP_RMW_RW+5,OP_S8,     AOT_NONE	},
+/* CALL */
+/* FIXME implement */
+#if defined(ARCH_i386_real) /* i386 in real mode */
+/* CBW */
+{ "cbw",	0x98,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#else
+/* CWDE */
+{ "cwde",	0x98,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

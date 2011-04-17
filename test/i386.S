@@ -74,5 +74,7 @@
 	bts	[%eax], %ecx			/* 0f ab 08		*/
 	bts	%eax, $0x42			/* 0f ba e8 42		*/
 	bts	[%eax], $0x42			/* 0f ba 28 42		*/
+	/* CWDE */
+	cwde
 	/* NOP */
 	nop

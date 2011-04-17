@@ -114,4 +114,6 @@
 	enter	$0xabcd, $0x0			/* c8 cd ab 00		*/
 	enter	$0xdcef, $0x1			/* c8 ef dc 01		*/
 	enter	$0xfacd, $0x42			/* c8 cd fa 42		*/
+	f2xm1
+	fabs
 	nop					/* 0x90			*/

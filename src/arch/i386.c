@@ -81,6 +81,8 @@ ArchPlugin arch_plugin =
 
 
 /* functions */
+static int _write_dregister(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_immediate(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
@@ -111,6 +113,13 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			return -1;
 	}
 	return 0;
+}
+
+static int _write_dregister(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand)
+{
+	/* FIXME really implement */
+	return _write_register(plugin, definition, operand);
 }
 
 static int _write_immediate(ArchPlugin * plugin,
@@ -164,9 +173,28 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 {
 	ArchOperand operand;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() size=%u opcode=0x%x\n", __func__,
+			AO_GET_SIZE(instruction->flags), instruction->opcode);
+#endif
 	memset(&operand, 0, sizeof(operand));
 	operand.type = AOT_IMMEDIATE;
-	operand.value.immediate.value = instruction->opcode;
+	switch(AO_GET_SIZE(instruction->flags) >> 3)
+	{
+		case sizeof(uint8_t):
+			operand.value.immediate.value = instruction->opcode;
+			break;
+		case sizeof(uint16_t):
+			operand.value.immediate.value = _htob16(
+					instruction->opcode);
+			break;
+		case sizeof(uint32_t):
+			operand.value.immediate.value = _htob32(
+					instruction->opcode);
+			break;
+		default:
+			return -1; /* FIXME report error */
+	}
 	return _write_immediate(plugin, instruction->flags, &operand);
 }
 
@@ -175,6 +203,8 @@ static int _write_operand(ArchPlugin * plugin, ArchOperandDefinition definition,
 {
 	switch(operand->type)
 	{
+		case AOT_DREGISTER:
+			return _write_dregister(plugin, definition, operand);
 		case AOT_IMMEDIATE:
 			return _write_immediate(plugin, definition, operand);
 		case AOT_REGISTER:

@@ -177,7 +177,8 @@ static int _write_immediate(ArchPlugin * plugin,
 {
 	uint64_t value = operand->value.immediate.value;
 
-	if(AO_GET_FLAGS(definition) & AOF_SIGNED)
+	if((AO_GET_FLAGS(definition) & AOF_SIGNED)
+			&& operand->value.immediate.negative != 0)
 		value = -value;
 	switch(AO_GET_SIZE(definition) >> 3)
 	{

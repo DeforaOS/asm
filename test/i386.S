@@ -74,17 +74,12 @@
 	bts	[%eax], %ecx			/* 0f ab 08		*/
 	bts	%eax, $0x42			/* 0f ba e8 42		*/
 	bts	[%eax], $0x42			/* 0f ba 28 42		*/
-	/* CWDE */
 	cwde					/* 98			*/
-	/* CLC */
 	clc					/* f8			*/
-	/* CLD */
 	cld					/* fc			*/
-	/* CLI */
 	cli					/* fa			*/
-	/* CLTS */
 	clts					/* 0f 06		*/
-	/* CMC */
 	cmc					/* f5			*/
-	/* NOP */
-	nop
+	cpuid					/* 0f a2		*/
+	cdq					/* 0x99			*/
+	nop					/* 0x90			*/

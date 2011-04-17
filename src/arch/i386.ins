@@ -251,11 +251,13 @@
 /* CALL */
 /* FIXME implement */
 #if defined(ARCH_i386_real) /* i386 in real mode */
-/* CBW */
+/* CBW		0x98		1					*/
 { "cbw",	0x98,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #else
-/* CWDE */
+/* CWDE		0x98		1					*/
 { "cwde",	0x98,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
+/* CLC		0xf8		1					*/
+{ "clc",	0xf8,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

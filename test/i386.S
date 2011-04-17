@@ -75,6 +75,8 @@
 	bts	%eax, $0x42			/* 0f ba e8 42		*/
 	bts	[%eax], $0x42			/* 0f ba 28 42		*/
 	/* CWDE */
-	cwde
+	cwde					/* 98			*/
+	/* CLC */
+	clc					/* f8			*/
 	/* NOP */
 	nop

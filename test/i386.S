@@ -64,5 +64,10 @@
 	btc	[%eax], %ecx			/* 0f bb 08		*/
 	btc	%eax, $0x42			/* 0f ba f8 42		*/
 	btc	[%eax], $0x42			/* 0f ba 38 42		*/
+	/* BTR */
+	btr	%eax, %ecx			/* 0f b3 c8		*/
+	btr	[%eax], %ecx			/* 0f b3 08		*/
+	btr	%eax, $0x42			/* 0f ba f0 42		*/
+	btr	[%eax], $0x42			/* 0f ba 30 42		*/
 	/* NOP */
 	nop

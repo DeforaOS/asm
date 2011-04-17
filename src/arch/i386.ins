@@ -218,8 +218,8 @@
 { "bt",		0x0fba,		OP2F, OP_RMW_D8+4,OP_S8,     AOT_NONE	},
 { "bt",		0x0fba,		OP2F, OP_RMW_DW+4,OP_S8,     AOT_NONE	},
 { "bt",		0x0fba,		OP2F, OP_RMW_RW+4,OP_S8,     AOT_NONE	},
-/* BTC		0x0fa3		2     r/mW        rW			*/
-{ "btC",	0x0fbb,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+/* BTC		0x0fbb		2     r/mW        rW			*/
+{ "btc",	0x0fbb,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
 { "btc",	0x0fbb,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
 { "btc",	0x0fbb,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
 { "btc",	0x0fbb,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
@@ -228,5 +228,15 @@
 { "btc",	0x0fba,		OP2F, OP_RMW_D8+7,OP_S8,     AOT_NONE	},
 { "btc",	0x0fba,		OP2F, OP_RMW_DW+7,OP_S8,     AOT_NONE	},
 { "btc",	0x0fba,		OP2F, OP_RMW_RW+7,OP_S8,     AOT_NONE	},
+/* BTR		0x0fb3		2     r/mW        rW			*/
+{ "btr",	0x0fb3,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+/* BTR		0x0fba /6 ib	2     r/mW        imm8			*/
+{ "btr",	0x0fba,		OP2F, OP_RMW_D0+6,OP_S8,     AOT_NONE	},
+{ "btr",	0x0fba,		OP2F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
+{ "btr",	0x0fba,		OP2F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
+{ "btr",	0x0fba,		OP2F, OP_RMW_RW+6,OP_S8,     AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

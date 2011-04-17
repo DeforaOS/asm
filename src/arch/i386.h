@@ -34,6 +34,7 @@ static int _write_immediate(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
 static int _write_immediate16(ArchPlugin * plugin, uint16_t value);
+static int _write_immediate24(ArchPlugin * plugin, uint32_t value);
 static int _write_immediate32(ArchPlugin * plugin, uint32_t value);
 static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction);
 static int _write_operand(ArchPlugin * plugin, uint32_t * i,
@@ -136,6 +137,8 @@ static int _write_immediate(ArchPlugin * plugin,
 			return _write_immediate8(plugin, value);
 		case sizeof(uint16_t):
 			return _write_immediate16(plugin, value);
+		case 3:
+			return _write_immediate24(plugin, value);
 		case sizeof(uint32_t):
 			return _write_immediate32(plugin, value);
 		default:
@@ -155,6 +158,15 @@ static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
 {
 	value = _htol16(value);
 	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
+		return -error_set_code(1, "%s: %s", plugin->helper->filename,
+				strerror(errno));
+	return 0;
+}
+
+static int _write_immediate24(ArchPlugin * plugin, uint32_t value)
+{
+	value = _htol32(value) >> 8;
+	if(fwrite(&value, 3, 1, plugin->helper->fp) != 1)
 		return -error_set_code(1, "%s: %s", plugin->helper->filename,
 				strerror(errno));
 	return 0;
@@ -188,6 +200,7 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 			operand.value.immediate.value = _htob16(
 					instruction->opcode);
 			break;
+		case 3:
 		case sizeof(uint32_t):
 			operand.value.immediate.value = _htob32(
 					instruction->opcode);

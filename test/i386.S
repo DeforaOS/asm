@@ -141,4 +141,7 @@
 	faddp	%st5, %st0
 	faddp	%st6, %st0
 	faddp	%st7, %st0
+	fchs
+	fclex
+	fnclex
 	nop					/* 0x90			*/

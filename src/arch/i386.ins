@@ -43,6 +43,7 @@
 /* opcodes */
 #define OP1F		(8 << AOD_SIZE)
 #define OP2F		(16 << AOD_SIZE)
+#define OP3F		(24 << AOD_SIZE)
 
 /* operands */
 /* registers */
@@ -399,9 +400,19 @@
 { "faddp",	0xdec5,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
 { "faddp",	0xdec6,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
 { "faddp",	0xdec7,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FBLD		0xdf /4		1     m80dec				*/
+/* FIXME implement */
+/* FBSTP	0xdf /6		1     m80bcd				*/
+/* FCHS		0xd9e0		2					*/
+{ "fchs",	0xd9e0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE   },
+/* FCLEX	0x9bdbe2	3					*/
+{ "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FIXME implement */
 /* FIADD	0xda /0		1     m32int				*/
 /* FIXME implement */
 /* FIADD	0xde /0		1     m64int				*/
+/* FNCLEX	0xdbe2		2					*/
+{ "fnclex",	0xdbe2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FIXME implement */
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

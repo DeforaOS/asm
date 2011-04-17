@@ -69,5 +69,10 @@
 	btr	[%eax], %ecx			/* 0f b3 08		*/
 	btr	%eax, $0x42			/* 0f ba f0 42		*/
 	btr	[%eax], $0x42			/* 0f ba 30 42		*/
+	/* BTS */
+	bts	%eax, %ecx			/* 0f ab c8		*/
+	bts	[%eax], %ecx			/* 0f ab 08		*/
+	bts	%eax, $0x42			/* 0f ba e8 42		*/
+	bts	[%eax], $0x42			/* 0f ba 28 42		*/
 	/* NOP */
 	nop

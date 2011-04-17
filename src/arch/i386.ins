@@ -238,5 +238,15 @@
 { "btr",	0x0fba,		OP2F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
 { "btr",	0x0fba,		OP2F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
 { "btr",	0x0fba,		OP2F, OP_RMW_RW+6,OP_S8,     AOT_NONE	},
+/* BTS		0x0fab		2     r/mW        rW			*/
+{ "bts",	0x0fab,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+/* BTS		0x0fba /5 ib	2     r/mW        imm8			*/
+{ "bts",	0x0fba,		OP2F, OP_RMW_D0+5,OP_S8,     AOT_NONE	},
+{ "bts",	0x0fba,		OP2F, OP_RMW_D8+5,OP_S8,     AOT_NONE	},
+{ "bts",	0x0fba,		OP2F, OP_RMW_DW+5,OP_S8,     AOT_NONE	},
+{ "bts",	0x0fba,		OP2F, OP_RMW_RW+5,OP_S8,     AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

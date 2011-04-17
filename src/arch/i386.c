@@ -118,17 +118,51 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 static int _write_dregister(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
-	/* FIXME really implement */
-	return _write_register(plugin, definition, operand);
+	ArchPluginHelper * helper = plugin->helper;
+	char const * name = operand->value._register.name;
+	size_t size = AO_GET_SIZE(definition);
+	ArchRegister * ar;
+	ArchOperandDefinition idefinition;
+	ArchOperand ioperand;
+
+	if((ar = helper->get_register_by_name_size(helper->arch, name, size))
+			== NULL)
+		return -1;
+	/* write register */
+	idefinition = AO_IMMEDIATE(0, 0, 8);
+	memset(&ioperand, 0, sizeof(ioperand));
+	ioperand.type = AOT_IMMEDIATE;
+	ioperand.value.immediate.value = ar->id;
+	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM)
+		ioperand.value.immediate.value |= (AO_GET_VALUE(definition)
+				<< 3);
+	if(operand->value.dregister.offset == 0)
+		/* there is no offset */
+		return _write_immediate(plugin, idefinition, &ioperand);
+	/* declare offset */
+	switch(AO_GET_OFFSET(definition) >> 3)
+	{
+		case sizeof(uint8_t):
+			ioperand.value.immediate.value |= 0x40;
+			break;
+		case W >> 3:
+			ioperand.value.immediate.value |= 0x80;
+			break;
+		default:
+			return -1; /* FIXME report error */
+	}
+	if(_write_immediate(plugin, idefinition, &ioperand) != 0)
+		return -1;
+	/* write offset */
+	idefinition = AO_IMMEDIATE(0, 0, AO_GET_OFFSET(definition));
+	ioperand.value.immediate.value = operand->value.dregister.offset;
+	return _write_immediate(plugin, idefinition, &ioperand);
 }
 
 static int _write_immediate(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
-	size_t size;
-
-	size = AO_GET_SIZE(definition) >> 3;
-	switch(size)
+	switch(AO_GET_SIZE(definition) >> 3)
 	{
 		case 0:
 			return 0;
@@ -231,6 +265,10 @@ static int _write_register(ArchPlugin * plugin,
 	idefinition = AO_IMMEDIATE(0, 0, 8);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
-	ioperand.value.immediate.value = ar->id;
+	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM)
+		ioperand.value.immediate.value = 0xc0 | ar->id
+			| (AO_GET_VALUE(definition) << 3);
+	else
+		ioperand.value.immediate.value = ar->id;
 	return _write_immediate(plugin, idefinition, &ioperand);
 }

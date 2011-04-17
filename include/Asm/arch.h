@@ -67,11 +67,10 @@ typedef enum _ArchOperandType
 # define AOM_VALUE	0x000000ff
 
 /* flags */
-# define AOF_FILTER	0x1
 /* for immediate */
-# define AOF_SIGNED	0x2
+# define AOF_SIGNED	0x1
 /* for registers */
-# define AOF_IMPLICIT	0x2
+# define AOF_IMPLICIT	0x1
 
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)

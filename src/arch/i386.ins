@@ -73,5 +73,19 @@
 { "adc",	0x81,		OP1F, OP_RMW_D8+2,OP_UW,     AOT_NONE	},
 { "adc",	0x81,		OP1F, OP_RMW_DW+2,OP_UW,     AOT_NONE	},
 { "adc",	0x81,		OP1F, OP_RMW_RW+2,OP_UW,     AOT_NONE	},
+/* ADD		0x04 ib		1     al          imm8			*/
+{ "add",	0x04,		OP1F, OP_al,	  OP_U8,     AOT_NONE	},
+/* ADD		0x05 iW		1     AX          immW			*/
+{ "add",	0x05,		OP1F, OP_AX,	  OP_UW,     AOT_NONE	},
+/* ADD		0x80 /0 ib	1     r/m8        imm8			*/
+{ "add",	0x80,		OP1F, OP_RM8_D0+0,OP_U8,     AOT_NONE	},
+{ "add",	0x80,		OP1F, OP_RM8_D8+0,OP_U8,     AOT_NONE	},
+{ "add",	0x80,		OP1F, OP_RM8_DW+0,OP_U8,     AOT_NONE	},
+{ "add",	0x80,		OP1F, OP_RM8_R8+0,OP_U8,     AOT_NONE	},
+/* ADC		0x81 /0 iW	1     r/m8        imm8			*/
+{ "add",	0x81,		OP1F, OP_RMW_D0+0,OP_UW,     AOT_NONE	},
+{ "add",	0x81,		OP1F, OP_RMW_D8+0,OP_UW,     AOT_NONE	},
+{ "add",	0x81,		OP1F, OP_RMW_DW+0,OP_UW,     AOT_NONE	},
+{ "add",	0x81,		OP1F, OP_RMW_RW+0,OP_UW,     AOT_NONE	},
 /* NOP									*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

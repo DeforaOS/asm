@@ -282,6 +282,10 @@ static int _call_operands_immediate(ArchOperandDefinition definition,
 	value >>= size;
 	if(value > 0)
 		return -1;
+	/* check if it is signed */
+	if(operand->value.immediate.negative
+			&& !(AO_GET_FLAGS(definition) & AOF_SIGNED))
+		return -1;
 	return 0;
 }
 

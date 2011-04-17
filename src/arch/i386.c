@@ -175,19 +175,20 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 static int _write_immediate(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
+	uint64_t value = operand->value.immediate.value;
+
+	if(AO_GET_FLAGS(definition) & AOF_SIGNED)
+		value = -value;
 	switch(AO_GET_SIZE(definition) >> 3)
 	{
 		case 0:
 			return 0;
 		case sizeof(uint8_t):
-			return _write_immediate8(plugin,
-					operand->value.immediate.value);
+			return _write_immediate8(plugin, value);
 		case sizeof(uint16_t):
-			return _write_immediate16(plugin,
-					operand->value.immediate.value);
+			return _write_immediate16(plugin, value);
 		case sizeof(uint32_t):
-			return _write_immediate32(plugin,
-					operand->value.immediate.value);
+			return _write_immediate32(plugin, value);
 		default:
 			return -1;
 	}

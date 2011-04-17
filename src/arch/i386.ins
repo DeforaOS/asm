@@ -19,9 +19,23 @@
 #if defined(ARCH_i386_real) /* i386 in real mode */
 # define W		16
 # define REG_AX_id	REG_ax_id
+# define REG_CX_id	REG_cx_id
+# define REG_DX_id	REG_dx_id
+# define REG_BX_id	REG_bx_id
+# define REG_SP_id	REG_sp_id
+# define REG_BP_id	REG_bp_id
+# define REG_SI_id	REG_si_id
+# define REG_DI_id	REG_di_id
 #else /* i386 and compatible in 32-bit protected mode */
 # define W		32
 # define REG_AX_id	REG_eax_id
+# define REG_CX_id	REG_ecx_id
+# define REG_DX_id	REG_edx_id
+# define REG_BX_id	REG_ebx_id
+# define REG_SP_id	REG_esp_id
+# define REG_BP_id	REG_ebp_id
+# define REG_SI_id	REG_esi_id
+# define REG_DI_id	REG_edi_id
 #endif
 
 
@@ -36,6 +50,13 @@
 #define OP_RW		AO_REGISTER(0, W, 0)
 #define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
 #define OP_AX		AO_REGISTER(AOF_IMPLICIT, W, REG_AX_id)
+#define OP_CX		AO_REGISTER(AOF_IMPLICIT, W, REG_CX_id)
+#define OP_DX		AO_REGISTER(AOF_IMPLICIT, W, REG_DX_id)
+#define OP_BX		AO_REGISTER(AOF_IMPLICIT, W, REG_BX_id)
+#define OP_SP		AO_REGISTER(AOF_IMPLICIT, W, REG_SP_id)
+#define OP_BP		AO_REGISTER(AOF_IMPLICIT, W, REG_BP_id)
+#define OP_SI		AO_REGISTER(AOF_IMPLICIT, W, REG_SI_id)
+#define OP_DI		AO_REGISTER(AOF_IMPLICIT, W, REG_DI_id)
 #define OP_eax		AO_REGISTER(AOF_IMPLICIT, 32, REG_eax_id)
 #define OP_ecx		AO_REGISTER(AOF_IMPLICIT, 32, REG_ecx_id)
 #define OP_edx		AO_REGISTER(AOF_IMPLICIT, 32, REG_edx_id)
@@ -297,15 +318,34 @@
 /* CDQ		0x99		1					*/
 { "cdq",	0x99,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
-/* DIV		0xf6 /6		1                 r/m8			*/
+/* DEC		0x48 +rd	1					*/
+{ "dec",	0x48,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x49,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4a,		OP1F, OP_DX,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4b,		OP1F, OP_BX,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4c,		OP1F, OP_SP,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4d,		OP1F, OP_BP,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4e,		OP1F, OP_SI,      AOT_NONE,  AOT_NONE	},
+{ "dec",	0x4f,		OP1F, OP_DI,      AOT_NONE,  AOT_NONE	},
+/* DEC		0xfe /1		1     r/m8				*/
+{ "decb",	0xfe,		OP1F, OP_RM8_D0+1,AOT_NONE,  AOT_NONE	},
+{ "decb",	0xfe,		OP1F, OP_RM8_D8+1,AOT_NONE,  AOT_NONE	},
+{ "decb",	0xfe,		OP1F, OP_RM8_DW+1,AOT_NONE,  AOT_NONE	},
+{ "dec",	0xfe,		OP1F, OP_RM8_R8+1,AOT_NONE,  AOT_NONE	},
+/* DEC		0xff /1		1     r/mW				*/
+{ "dec",	0xff,		OP1F, OP_RMW_D0+1,AOT_NONE,  AOT_NONE	},
+{ "dec",	0xff,		OP1F, OP_RMW_D8+1,AOT_NONE,  AOT_NONE	},
+{ "dec",	0xff,		OP1F, OP_RMW_DW+1,AOT_NONE,  AOT_NONE	},
+{ "dec",	0xff,		OP1F, OP_RMW_RW+1,AOT_NONE,  AOT_NONE	},
+/* DIV		0xf6 /6		1     r/m8				*/
 { "divb",	0xf6,		OP1F, OP_RM8_D0+6,AOT_NONE,  AOT_NONE	},
 { "divb",	0xf6,		OP1F, OP_RM8_D8+6,AOT_NONE,  AOT_NONE	},
 { "divb",	0xf6,		OP1F, OP_RM8_DW+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf6,		OP1F, OP_RM8_R8+6,AOT_NONE,  AOT_NONE	},
-/* DIV		0xf7 /6		1                 r/mW			*/
+/* DIV		0xf7 /6		1     r/mW				*/
 { "div",	0xf7,		OP1F, OP_RMW_D0+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf7,		OP1F, OP_RMW_D8+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf7,		OP1F, OP_RMW_DW+6,AOT_NONE,  AOT_NONE	},
 { "div",	0xf7,		OP1F, OP_RMW_RW+6,AOT_NONE,  AOT_NONE	},
-/* NOP									*/
+/* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

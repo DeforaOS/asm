@@ -79,6 +79,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 	idefinition = AO_IMMEDIATE(0, 0, 8);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
+	/* FIXME some combinations of register values are illegal */
 	ioperand.value.immediate.value = ar->id;
 	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM
 			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */

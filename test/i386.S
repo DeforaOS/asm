@@ -82,6 +82,23 @@
 	cmc					/* f5			*/
 	cpuid					/* 0f a2		*/
 	cdq					/* 0x99			*/
+	/* DEC */
+	dec	%eax				/* 48			*/
+	dec	%ecx				/* 49			*/
+	dec	%edx				/* 4a			*/
+	dec	%ebx				/* 4b			*/
+	dec	%esp				/* 4c			*/
+	dec	%ebp				/* 4d			*/
+	dec	%esi				/* 4e			*/
+	dec	%edi				/* 4f			*/
+	decb	[%eax]				/* fe 08		*/
+	decb	[%ecx]				/* fe 09		*/
+	decb	[%edx]				/* fe 0a		*/
+	decb	[%ebx]				/* fe 0b		*/
+	dec	[%eax]				/* ff 08		*/
+	dec	[%ecx]				/* ff 09		*/
+	dec	[%edx]				/* ff 0a		*/
+	dec	[%ebx]				/* ff 0b		*/
 	/* DIV */
 	divb	[%ecx]				/* f6 31		*/
 	divb	[%eax + $0x02]			/* f6 70 02		*/

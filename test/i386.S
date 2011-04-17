@@ -54,5 +54,10 @@
 #if 1 /* FIXME doesn't work at the moment */
 	bsr	%eax, [%eax]			/* 0f bd		*/
 #endif
+	/* BT */
+	bt	%eax, %ecx			/* 0f a3 c8		*/
+	bt	[%eax], %ecx			/* 0f a3 08		*/
+	bt	%eax, $0x42			/* 0f ba e0 42		*/
+	bt	[%eax], $0x42			/* 0f ba 20 42		*/
 	/* NOP */
 	nop

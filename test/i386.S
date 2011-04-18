@@ -145,6 +145,7 @@
 	fclex
 	fnclex
 	nop					/* 0x90			*/
+	xlatb
 	/* XOR */
 	xor	[%ecx], %dh			/* 30 31		*/
 	xor	[%ecx+$0x50], %dh		/* 30 71 50		*/

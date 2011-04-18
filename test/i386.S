@@ -145,6 +145,10 @@
 	fclex
 	fnclex
 	nop					/* 90			*/
+	/* XADD */
+	xadd	%eax, %ecx			/* 0f c1 c8		*/
+	xadd	%ecx, %eax			/* 0f c1 c1		*/
+	xadd	[%eax], %ebx			/* 0f c1 18		*/
 	/* XCHG */
 	xchg	%eax, %ecx			/* 91			*/
 	xchg	%ecx, %eax			/* 91			*/

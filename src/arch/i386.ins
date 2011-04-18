@@ -434,6 +434,16 @@
 { "xchg",	0x95,		OP1F, OP_BP,      OP_AX,     AOT_NONE	},
 { "xchg",	0x96,		OP1F, OP_SI,      OP_AX,     AOT_NONE	},
 { "xchg",	0x97,		OP1F, OP_DI,      OP_AX,     AOT_NONE	},
+/* XADD		0x0fc0 /r	2     r/m8        r8			*/
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* XADD		0x0fc1 /r	2     r/mW        rW			*/
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
 /* XCHG		0x86 /r		1     r/m8        r8			*/
 { "xchg",	0x86,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
 { "xchg",	0x86,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},

@@ -418,6 +418,46 @@
 { "fnclex",	0xdbe2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* XCHG		0x90 +rW	1     AX          rW			*/
+{ "xchg",	0x90,		OP1F, OP_AX,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x91,		OP1F, OP_AX,      OP_CX,     AOT_NONE	},
+{ "xchg",	0x92,		OP1F, OP_AX,      OP_DX,     AOT_NONE	},
+{ "xchg",	0x93,		OP1F, OP_AX,      OP_BX,     AOT_NONE	},
+{ "xchg",	0x94,		OP1F, OP_AX,      OP_SP,     AOT_NONE	},
+{ "xchg",	0x95,		OP1F, OP_AX,      OP_BP,     AOT_NONE	},
+{ "xchg",	0x96,		OP1F, OP_AX,      OP_SI,     AOT_NONE	},
+{ "xchg",	0x97,		OP1F, OP_AX,      OP_DI,     AOT_NONE	},
+{ "xchg",	0x91,		OP1F, OP_CX,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x92,		OP1F, OP_DX,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x93,		OP1F, OP_BX,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x94,		OP1F, OP_SP,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x95,		OP1F, OP_BP,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x96,		OP1F, OP_SI,      OP_AX,     AOT_NONE	},
+{ "xchg",	0x97,		OP1F, OP_DI,      OP_AX,     AOT_NONE	},
+/* XCHG		0x86 /r		1     r/m8        r8			*/
+{ "xchg",	0x86,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* XCHG		0x86 /r		1     r8          r/m8			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "xchg",	0x86,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_R8_R,OP_RM8_D8_R,AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_R8_R,OP_RM8_DW_R,AOT_NONE	},
+{ "xchg",	0x86,		OP1F, OP_RM8_R8_R,OP_RM8_R8_R,AOT_NONE	},
+#endif
+/* XCHG		0x87 /r		1     r/mW        rW			*/
+{ "xchg",	0x87,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+/* XCHG		0x87 /r		1     rW          r/mW			*/
+#if 1 /* FIXME doesn't work at the moment */
+{ "xchg",	0x87,		OP1F, OP_RMW_RW_R,OP_RMW_D0_R,AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_RW_R,OP_RMW_D8_R,AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_RW_R,OP_RMW_DW_R,AOT_NONE	},
+{ "xchg",	0x87,		OP1F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
+#endif
 /* XLAT		0xd7		1					*/
 { "xlat",	0xd7,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* XLATB	0xd7		1					*/

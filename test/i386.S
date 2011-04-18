@@ -144,7 +144,12 @@
 	fchs
 	fclex
 	fnclex
-	nop					/* 0x90			*/
+	nop					/* 90			*/
+	/* XCHG */
+	xchg	%eax, %ecx			/* 91			*/
+	xchg	%ecx, %eax			/* 91			*/
+	xchg	[%eax], %ebx			/* 87 18		*/
+	xchg	%eax, [%ebx]
 	xlatb
 	/* XOR */
 	xor	[%ecx], %dh			/* 30 31		*/

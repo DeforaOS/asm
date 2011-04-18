@@ -416,8 +416,14 @@
 /* FIXME implement */
 /* FNCLEX	0xdbe2		2					*/
 { "fnclex",	0xdbe2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FWAIT	0x9b		1					*/
+{ "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* WAIT		0x9b		1					*/
+{ "wait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* WBINVD	0x0f09		2					*/
+{ "wbinvd",	0x0f09,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* WRMSR	0x0f30		2					*/
 { "wrmsr",	0x0f30,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* XADD		0x0fc0 /r	2     r/m8        r8			*/

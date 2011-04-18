@@ -144,7 +144,10 @@
 	fchs
 	fclex
 	fnclex
+	fwait
 	nop					/* 90			*/
+	wait
+	wbinvd
 	wrmsr
 	/* XADD */
 	xadd	%eax, %ecx			/* 0f c1 c8		*/

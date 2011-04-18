@@ -9,3 +9,4 @@
 	bswap	%ebp
 	bswap	%esi
 	bswap	%edi
+	cpuid					/* 0f a2		*/

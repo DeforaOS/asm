@@ -145,6 +145,10 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	ret
+	ret	$0x3412
+	rsm					/* 0f aa		*/
+	sahf					/* 9e			*/
 	scasb
 	scasd
 	sgdt	[%ecx]

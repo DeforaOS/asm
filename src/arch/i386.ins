@@ -419,6 +419,26 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* RET		0xc2		1     imm16				*/
+{ "ret",	0xc2,		OP1F, OP_U16,     AOT_NONE,  AOT_NONE	},
+/* RET		0xca		1     imm16				*/
+{ "ret",	0xca,		OP1F, OP_U16,     AOT_NONE,  AOT_NONE	},
+/* RET		0xc3		1					*/
+{ "ret",	0xc3,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* RET		0xcb		1					*/
+{ "ret",	0xcb,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* RSM		0x0faa		2					*/
+{ "rsm",	0x0faa,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* SAHF		0x9e		1					*/
+{ "sahf",	0x9e,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* SAL									*/
+/* FIXME implement */
+/* SAR									*/
+/* FIXME implement */
+/* SHL									*/
+/* FIXME implement */
+/* SHR									*/
+/* FIXME implement */
 /* SBB		0x1c ib		1     al          imm8			*/
 { "sbb",	0x1c,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
 /* SBB		0x1d iW		1     AX          immW			*/

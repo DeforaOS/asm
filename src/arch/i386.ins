@@ -419,6 +419,14 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* SGDT		0x0f01 /0	2     m					*/
+{ "sgdt",	0x0f01,		OP2F, OP_RMW_D0+0,AOT_NONE,  AOT_NONE	},
+{ "sgdt",	0x0f01,		OP2F, OP_RMW_D8+0,AOT_NONE,  AOT_NONE	},
+{ "sgdt",	0x0f01,		OP2F, OP_RMW_DW+0,AOT_NONE,  AOT_NONE	},
+/* SIDT		0x0f01 /1	2     m					*/
+{ "sidt",	0x0f01,		OP2F, OP_RMW_D0+1,AOT_NONE,  AOT_NONE	},
+{ "sidt",	0x0f01,		OP2F, OP_RMW_D8+1,AOT_NONE,  AOT_NONE	},
+{ "sidt",	0x0f01,		OP2F, OP_RMW_DW+1,AOT_NONE,  AOT_NONE	},
 /* SHLD		0x0fa4		2     r/mW        rW         imm8	*/
 { "shld",	0x0fa4,		OP2F, OP_RMW_D0_R,OP_RW,     OP_U8	},
 { "shld",	0x0fa4,		OP2F, OP_RMW_D8_R,OP_RW,     OP_U8	},

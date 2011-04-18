@@ -2,6 +2,24 @@
 .text
 	emms					/* 0f 77		*/
 #if 1 /* FIXME doesn't work properly */
+	paddb	%mm1, [%edx]
+	paddb	%mm2, [%edx + $0x56]
+	paddb	%mm3, [%edx + $0x789abc]
+	paddb	%mm4, %mm5
+#endif
+#if 1 /* FIXME doesn't work properly */
+	paddd	%mm1, [%edx]
+	paddd	%mm2, [%edx + $0x56]
+	paddd	%mm3, [%edx + $0x789abc]
+	paddd	%mm4, %mm5
+#endif
+#if 1 /* FIXME doesn't work properly */
+	paddw	%mm1, [%edx]
+	paddw	%mm2, [%edx + $0x56]
+	paddw	%mm3, [%edx + $0x789abc]
+	paddw	%mm4, %mm5
+#endif
+#if 1 /* FIXME doesn't work properly */
 	paddsb	%mm1, [%edx]
 	paddsb	%mm2, [%edx + $0x56]
 	paddsb	%mm3, [%edx + $0x789abc]

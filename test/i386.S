@@ -145,6 +145,8 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	scasb
+	scasd
 	sgdt	[%ecx]
 	sidt	[%edx - $0x79]
 	shld	%ecx, %edx, $0x31

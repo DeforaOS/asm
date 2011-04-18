@@ -212,6 +212,8 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 	ArchOperandDefinition definition;
 	ArchOperand * operand;
 
+	if(call->operands_cnt == 0 && AO_GET_TYPE(instruction->op1) != AOT_NONE)
+		return -1;
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		definition = (i == 0) ? instruction->op1 : ((i == 1)

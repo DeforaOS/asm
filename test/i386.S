@@ -146,6 +146,10 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+#if 0 /* FIXME doesn't work */
+	shrd	%eax, %eax, $0x31
+	shrd	%eax, %eax, %cl
+#endif
 	stc
 	std
 	sti

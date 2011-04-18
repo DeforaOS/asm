@@ -146,6 +146,11 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	stc
+	std
+	sti
+	stosb
+	stosd
 	/* TEST */
 	test	%al, $0xaa
 	test	%eax, $0xccddeeff

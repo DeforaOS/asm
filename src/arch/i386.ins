@@ -420,6 +420,23 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* STC		0xf9							*/
+{ "stc",	0xf9,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* STD		0xfd							*/
+{ "std",	0xfd,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* STI		0xfb							*/
+{ "sti",	0xfb,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* STOSB	0xaa		1					*/
+{ "stosb",	0xaa,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#ifdef ARCH_i386_real
+/* STOSW	0xab		1					*/
+{ "stosw",	0xab,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#else
+/* STOSD	0xab		1					*/
+{ "stosd",	0xab,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
+/* STR		0x0f00 /1	1     r/m16				*/
+/* FIXME implement */
 /* SUB		0x2c ib		1     al          imm8			*/
 { "sub",	0x2c,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
 /* SUB		0x2d iW		1     AX          immW			*/

@@ -276,9 +276,13 @@ static int _call_operands_immediate(ArchOperandDefinition definition,
 
 	/* check if the size fits */
 	value = operand->value.immediate.value;
+#if 0 /* XXX ignore for now */
 	if((size = AO_GET_SIZE(definition)) > 0
 			&& AO_GET_FLAGS(definition) & AOF_SIGNED)
 		size--;
+#else
+	size = AO_GET_SIZE(definition);
+#endif
 	value >>= size;
 	if(value > 0)
 		return -1;

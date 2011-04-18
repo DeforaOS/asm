@@ -72,7 +72,7 @@ i486.o: i486.c common.ins null.ins i386.h i386.ins i386.reg i486.ins
 i586.o: i586.c common.ins null.ins i386.h i386.ins i386.reg i486.ins i586.ins
 	$(CC) $(i586_CFLAGS) -c i586.c
 
-i686.o: i686.c common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.reg
+i686.o: i686.c common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(i686_CFLAGS) -c i686.c
 
 sparc.o: sparc.c common.ins null.ins sparc.ins sparc.reg

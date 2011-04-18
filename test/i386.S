@@ -145,6 +145,29 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	push	%cs				/* 0e			*/
+	push	%ss				/* 16			*/
+	push	%ds				/* 1e			*/
+	push	%es				/* 06			*/
+	push	%fs				/* 0f a0		*/
+	push	%gs				/* 0f a8		*/
+	push	%eax
+	push	%ecx
+	push	%edx
+	push	%ebx
+	push	%esp
+	push	%ebp
+	push	%esi
+	push	%edi
+	push	$0x42
+	push	$0x42424242
+	push	[%eax]
+	push	[%eax + $0x42]
+	push	[%eax + $0x43424140]
+	pusha					/* 60			*/
+	pushad					/* 60			*/
+	pushf					/* 9c			*/
+	pushfd					/* 9c			*/
 	ret
 	ret	$0x3412
 	rsm					/* 0f aa		*/

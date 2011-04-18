@@ -51,6 +51,12 @@
 #define OP_RW		AO_REGISTER(0, W, 0)
 #define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
 #define OP_cl		AO_REGISTER(AOF_IMPLICIT, REG_cl_size, REG_cl_id)
+#define OP_cs		AO_REGISTER(AOF_IMPLICIT, REG_cs_size, REG_cs_id)
+#define OP_ds		AO_REGISTER(AOF_IMPLICIT, REG_ds_size, REG_ds_id)
+#define OP_es		AO_REGISTER(AOF_IMPLICIT, REG_es_size, REG_es_id)
+#define OP_fs		AO_REGISTER(AOF_IMPLICIT, REG_fs_size, REG_fs_id)
+#define OP_gs		AO_REGISTER(AOF_IMPLICIT, REG_gs_size, REG_gs_id)
+#define OP_ss		AO_REGISTER(AOF_IMPLICIT, REG_ss_size, REG_ss_id)
 #define OP_AX		AO_REGISTER(AOF_IMPLICIT, W, REG_AX_id)
 #define OP_CX		AO_REGISTER(AOF_IMPLICIT, W, REG_CX_id)
 #define OP_DX		AO_REGISTER(AOF_IMPLICIT, W, REG_DX_id)
@@ -419,6 +425,44 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* PUSH		0x06		1     es				*/
+{ "push",	0x06,		OP1F, OP_es,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x0e		1     cs				*/
+{ "push",	0x0e,		OP1F, OP_cs,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x16		1     ss				*/
+{ "push",	0x16,		OP1F, OP_ss,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x1e		1     ds				*/
+{ "push",	0x1e,		OP1F, OP_ds,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x0fa0		2     fs				*/
+{ "push",	0x0fa0,		OP2F, OP_fs,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x0fa8		2     gs				*/
+{ "push",	0x0fa8,		OP2F, OP_gs,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x50 +rW	1     					*/
+{ "push",	0x50,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x51,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x52,		OP1F, OP_DX,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x53,		OP1F, OP_BX,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x54,		OP1F, OP_SP,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x55,		OP1F, OP_BP,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x56,		OP1F, OP_SI,      AOT_NONE,  AOT_NONE   },
+{ "push",	0x57,		OP1F, OP_DI,      AOT_NONE,  AOT_NONE   },
+/* PUSH		0x6a		1     imm8				*/
+{ "push",	0x6a,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0x68		1     immW				*/
+{ "push",	0x68,		OP1F, OP_SW,      AOT_NONE,  AOT_NONE	},
+/* PUSH		0xff /6		1     rmW				*/
+{ "push",	0xff,		OP1F, OP_RMW_D0+6,AOT_NONE,  AOT_NONE	},
+{ "push",	0xff,		OP1F, OP_RMW_D8+6,AOT_NONE,  AOT_NONE	},
+{ "push",	0xff,		OP1F, OP_RMW_DW+6,AOT_NONE,  AOT_NONE	},
+{ "push",	0xff,		OP1F, OP_RMW_RW+6,AOT_NONE,  AOT_NONE	},
+/* PUSHA	0x60		1					*/
+{ "pusha",	0x60,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* PUSHAD	0x60		1					*/
+{ "pushad",	0x60,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* PUSHF	0x9c		1					*/
+{ "pushf",	0x9c,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* PUSHFD	0x9c		1					*/
+{ "pushfd",	0x9c,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* RCL									*/
 /* FIXME implement */
 /* RCR									*/

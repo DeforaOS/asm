@@ -425,6 +425,38 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* POP		0x07		1     es				*/
+{ "pop",	0x07,		OP1F, OP_es,      AOT_NONE,  AOT_NONE	},
+/* POP		0x17		1     ss				*/
+{ "pop",	0x17,		OP1F, OP_ss,      AOT_NONE,  AOT_NONE	},
+/* POP		0x1f		1     ds				*/
+{ "pop",	0x1f,		OP1F, OP_ds,      AOT_NONE,  AOT_NONE	},
+/* POP		0x0fa1		2     fs				*/
+{ "pop",	0x0fa1,		OP2F, OP_fs,      AOT_NONE,  AOT_NONE	},
+/* POP		0x0fa9		2     gs				*/
+{ "pop",	0x0fa9,		OP2F, OP_gs,      AOT_NONE,  AOT_NONE	},
+/* POP		0x58 +rW	1     					*/
+{ "pop",	0x58,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x59,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5a,		OP1F, OP_DX,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5b,		OP1F, OP_BX,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5c,		OP1F, OP_SP,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5d,		OP1F, OP_BP,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5e,		OP1F, OP_SI,      AOT_NONE,  AOT_NONE   },
+{ "pop",	0x5f,		OP1F, OP_DI,      AOT_NONE,  AOT_NONE   },
+/* POP		0x8f /0		1     rmW				*/
+{ "pop",	0x8f,		OP1F, OP_RMW_D0+0,AOT_NONE,  AOT_NONE	},
+{ "pop",	0x8f,		OP1F, OP_RMW_D8+0,AOT_NONE,  AOT_NONE	},
+{ "pop",	0x8f,		OP1F, OP_RMW_DW+0,AOT_NONE,  AOT_NONE	},
+{ "pop",	0x8f,		OP1F, OP_RMW_RW+0,AOT_NONE,  AOT_NONE	},
+/* POPA		0x61		1					*/
+{ "popa",	0x61,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* POPAD	0x61		1					*/
+{ "popad",	0x61,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* POPF		0x9d		1					*/
+{ "popf",	0x9d,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* POPFD	0x9d		1					*/
+{ "popfd",	0x9d,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* PUSH		0x06		1     es				*/
 { "push",	0x06,		OP1F, OP_es,      AOT_NONE,  AOT_NONE	},
 /* PUSH		0x0e		1     cs				*/

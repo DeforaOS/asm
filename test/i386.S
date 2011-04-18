@@ -145,6 +145,26 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	pop	%ds				/* 1f			*/
+	pop	%es				/* 07			*/
+	pop	%ss				/* 17			*/
+	pop	%fs				/* 0f a1		*/
+	pop	%gs				/* 0f a9		*/
+	pop	%eax
+	pop	%ecx
+	pop	%edx
+	pop	%ebx
+	pop	%esp
+	pop	%ebp
+	pop	%esi
+	pop	%edi
+	pop	[%ecx]
+	pop	[%edx + $0x42]
+	pop	[%ebx + $0x43424140]
+	popa					/* 61			*/
+	popad					/* 61			*/
+	popf					/* 9d			*/
+	popfd					/* 9d			*/
 	push	%cs				/* 0e			*/
 	push	%ss				/* 16			*/
 	push	%ds				/* 1e			*/

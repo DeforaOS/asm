@@ -420,6 +420,40 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* TEST		0xa8 ib		1     al          imm8			*/
+{ "test",	0xa8,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
+/* TEST		0xa9 iW		1     AX          immW			*/
+{ "test",	0xa9,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
+/* TEST		0xf6 /0 ib	1     r/m8        imm8			*/
+{ "testb",	0xf6,		OP1F, OP_RM8_D0+0,OP_S8,     AOT_NONE	},
+{ "testb",	0xf6,		OP1F, OP_RM8_D8+0,OP_S8,     AOT_NONE	},
+{ "testb",	0xf6,		OP1F, OP_RM8_DW+0,OP_S8,     AOT_NONE	},
+{ "test",	0xf6,		OP1F, OP_RM8_R8+0,OP_S8,     AOT_NONE	},
+/* TEST		0xf7 /0 iW	1     r/mW        immW			*/
+{ "test",	0xf7,		OP1F, OP_RMW_D0+0,OP_SW,     AOT_NONE	},
+{ "test",	0xf7,		OP1F, OP_RMW_D8+0,OP_SW,     AOT_NONE	},
+{ "test",	0xf7,		OP1F, OP_RMW_DW+0,OP_SW,     AOT_NONE	},
+{ "test",	0xf7,		OP1F, OP_RMW_RW+0,OP_SW,     AOT_NONE	},
+/* TEST		0x84		1     r/m8        r8			*/
+#if 1 /* FIXME doesn't work */
+{ "testb",	0x84,		OP1F, OP_RM8_D0,  OP_R8,     AOT_NONE	},
+{ "testb",	0x84,		OP1F, OP_RM8_D8,  OP_R8,     AOT_NONE	},
+{ "testb",	0x84,		OP1F, OP_RM8_DW,  OP_R8,     AOT_NONE	},
+{ "test",	0x84,		OP1F, OP_RM8_R8,  OP_R8,     AOT_NONE	},
+#endif
+/* TEST		0x85		1     r/mW        rW			*/
+#if 1 /* FIXME doesn't work */
+{ "test",	0x85,		OP1F, OP_RMW_D0,  OP_RW,     AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_D8,  OP_RW,     AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_DW,  OP_RW,     AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_RW,  OP_RW,     AOT_NONE	},
+#endif
+/* UD2		0x0f0b		2					*/
+{ "ud2",	0x0f0b,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* VERR		0x0f00 /4	2     r/m16				*/
+/* FIXME implement */
+/* VERW		0x0f00 /5	2     r/m16				*/
+/* FIXME implement */
 /* WAIT		0x9b		1					*/
 { "wait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* WBINVD	0x0f09		2					*/

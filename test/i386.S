@@ -146,6 +146,28 @@
 	fnclex
 	fwait
 	nop					/* 90			*/
+	/* TEST */
+	test	%al, $0xaa
+	test	%eax, $0xccddeeff
+	testb	[%ecx], $0x04
+	testb	[%ecx + $0x12], $0x04
+	testb	[%ecx + $0x2212], $0x04
+	test	%bl, $0x04
+	test	[%ecx], $0x04002000
+	test	[%ecx + $0x22], $0x04002000
+	test	[%ecx + $0x2221], $0x04002000
+	test	%ebx, $0x04002000
+#if 0 /* FIXME doesn't work */
+	testb	[%ecx], %dh
+	testb	[%ecx + $0x12], %ch
+	testb	[%ecx + $0x2212], %dh
+	test	%bl, %bh
+	test	[%ecx], %eax
+	test	[%ecx + $0x22], %ecx
+	test	[%ecx + $0x2221], %edx
+#endif
+	test	%ebx, %ebx			/* 85 c3		*/
+	ud2
 	wait
 	wbinvd
 	wrmsr

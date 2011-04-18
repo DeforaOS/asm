@@ -138,19 +138,19 @@
 /* ADC		0x15 iW		1     AX          immW			*/
 { "adc",	0x15,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* ADC		0x80 /2 ib	1     r/m8        imm8			*/
-{ "adc",	0x80,		OP1F, OP_RM8_D0+2,OP_S8,     AOT_NONE	},
-{ "adc",	0x80,		OP1F, OP_RM8_D8+2,OP_S8,     AOT_NONE	},
-{ "adc",	0x80,		OP1F, OP_RM8_DW+2,OP_S8,     AOT_NONE	},
+{ "adcb",	0x80,		OP1F, OP_RM8_D0+2,OP_S8,     AOT_NONE	},
+{ "adcb",	0x80,		OP1F, OP_RM8_D8+2,OP_S8,     AOT_NONE	},
+{ "adcb",	0x80,		OP1F, OP_RM8_DW+2,OP_S8,     AOT_NONE	},
 { "adc",	0x80,		OP1F, OP_RM8_R8+2,OP_S8,     AOT_NONE	},
 /* ADC		0x81 /2 iW	1     r/mW        imm8			*/
 { "adc",	0x81,		OP1F, OP_RMW_D0+2,OP_SW,     AOT_NONE	},
 { "adc",	0x81,		OP1F, OP_RMW_D8+2,OP_SW,     AOT_NONE	},
 { "adc",	0x81,		OP1F, OP_RMW_DW+2,OP_SW,     AOT_NONE	},
 { "adc",	0x81,		OP1F, OP_RMW_RW+2,OP_SW,     AOT_NONE	},
-/* ADC		0x83 /2 i8	1     r/mW        imm8			*/
-{ "adc",	0x83,		OP1F, OP_RMW_D0+2,OP_S8,     AOT_NONE	},
-{ "adc",	0x83,		OP1F, OP_RMW_D8+2,OP_S8,     AOT_NONE	},
-{ "adc",	0x83,		OP1F, OP_RMW_DW+2,OP_S8,     AOT_NONE	},
+/* ADC		0x83 /2 ib	1     r/mW        imm8			*/
+{ "adcb",	0x83,		OP1F, OP_RMW_D0+2,OP_S8,     AOT_NONE	},
+{ "adcb",	0x83,		OP1F, OP_RMW_D8+2,OP_S8,     AOT_NONE	},
+{ "adcb",	0x83,		OP1F, OP_RMW_DW+2,OP_S8,     AOT_NONE	},
 { "adc",	0x83,		OP1F, OP_RMW_RW+2,OP_S8,     AOT_NONE	},
 /* ADD		0x00 /r		1     r/m8        r8			*/
 { "add",	0x00,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
@@ -181,19 +181,19 @@
 /* ADD		0x05 iW		1     AX          immW			*/
 { "add",	0x05,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* ADD		0x80 /0 ib	1     r/m8        imm8			*/
-{ "add",	0x80,		OP1F, OP_RM8_D0+0,OP_S8,     AOT_NONE	},
-{ "add",	0x80,		OP1F, OP_RM8_D8+0,OP_S8,     AOT_NONE	},
-{ "add",	0x80,		OP1F, OP_RM8_DW+0,OP_S8,     AOT_NONE	},
+{ "addb",	0x80,		OP1F, OP_RM8_D0+0,OP_S8,     AOT_NONE	},
+{ "addb",	0x80,		OP1F, OP_RM8_D8+0,OP_S8,     AOT_NONE	},
+{ "addb",	0x80,		OP1F, OP_RM8_DW+0,OP_S8,     AOT_NONE	},
 { "add",	0x80,		OP1F, OP_RM8_R8+0,OP_S8,     AOT_NONE	},
 /* ADD		0x81 /0 iW	1     r/mW        imm8			*/
 { "add",	0x81,		OP1F, OP_RMW_D0+0,OP_SW,     AOT_NONE	},
 { "add",	0x81,		OP1F, OP_RMW_D8+0,OP_SW,     AOT_NONE	},
 { "add",	0x81,		OP1F, OP_RMW_DW+0,OP_SW,     AOT_NONE	},
 { "add",	0x81,		OP1F, OP_RMW_RW+0,OP_SW,     AOT_NONE	},
-/* ADD		0x83 /0 i8	1     r/mW        imm8			*/
-{ "add",	0x83,		OP1F, OP_RMW_D0+0,OP_S8,     AOT_NONE	},
-{ "add",	0x83,		OP1F, OP_RMW_D8+0,OP_S8,     AOT_NONE	},
-{ "add",	0x83,		OP1F, OP_RMW_DW+0,OP_S8,     AOT_NONE	},
+/* ADD		0x83 /0 ib	1     r/mW        imm8			*/
+{ "addb",	0x83,		OP1F, OP_RMW_D0+0,OP_S8,     AOT_NONE	},
+{ "addb",	0x83,		OP1F, OP_RMW_D8+0,OP_S8,     AOT_NONE	},
+{ "addb",	0x83,		OP1F, OP_RMW_DW+0,OP_S8,     AOT_NONE	},
 { "add",	0x83,		OP1F, OP_RMW_RW+0,OP_S8,     AOT_NONE	},
 /* AND		0x20 /r		1     r/m8        r8			*/
 { "and",	0x20,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
@@ -224,19 +224,19 @@
 /* AND		0x25 iW		1     AX          immW			*/
 { "and",	0x25,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* AND		0x80 /0 ib	1     r/m8        imm8			*/
-{ "and",	0x80,		OP1F, OP_RM8_D0+4,OP_S8,     AOT_NONE	},
-{ "and",	0x80,		OP1F, OP_RM8_D8+4,OP_S8,     AOT_NONE	},
-{ "and",	0x80,		OP1F, OP_RM8_DW+4,OP_S8,     AOT_NONE	},
+{ "andb",	0x80,		OP1F, OP_RM8_D0+4,OP_S8,     AOT_NONE	},
+{ "andb",	0x80,		OP1F, OP_RM8_D8+4,OP_S8,     AOT_NONE	},
+{ "andb",	0x80,		OP1F, OP_RM8_DW+4,OP_S8,     AOT_NONE	},
 { "and",	0x80,		OP1F, OP_RM8_R8+4,OP_S8,     AOT_NONE	},
 /* AND		0x81 /0 iW	1     r/mW        imm8			*/
 { "and",	0x81,		OP1F, OP_RMW_D0+4,OP_SW,     AOT_NONE	},
 { "and",	0x81,		OP1F, OP_RMW_D8+4,OP_SW,     AOT_NONE	},
 { "and",	0x81,		OP1F, OP_RMW_DW+4,OP_SW,     AOT_NONE	},
 { "and",	0x81,		OP1F, OP_RMW_RW+4,OP_SW,     AOT_NONE	},
-/* AND		0x83 /0 i8	1     r/mW        imm8			*/
-{ "and",	0x83,		OP1F, OP_RMW_D0+4,OP_S8,     AOT_NONE	},
-{ "and",	0x83,		OP1F, OP_RMW_D8+4,OP_S8,     AOT_NONE	},
-{ "and",	0x83,		OP1F, OP_RMW_DW+4,OP_S8,     AOT_NONE	},
+/* AND		0x83 /0 ib	1     r/mW        imm8			*/
+{ "andb",	0x83,		OP1F, OP_RMW_D0+4,OP_S8,     AOT_NONE	},
+{ "andb",	0x83,		OP1F, OP_RMW_D8+4,OP_S8,     AOT_NONE	},
+{ "andb",	0x83,		OP1F, OP_RMW_DW+4,OP_S8,     AOT_NONE	},
 { "and",	0x83,		OP1F, OP_RMW_RW+4,OP_S8,     AOT_NONE	},
 /* ARPL */
 /* FIXME implement */
@@ -447,17 +447,17 @@
 /* XOR		0x35 iW		1     AX          immW			*/
 { "xor",	0x35,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* XOR		0x80 /6 ib	1     r/m8        imm8			*/
-{ "xor",	0x80,		OP1F, OP_RM8_D0+6,OP_S8,     AOT_NONE	},
-{ "xor",	0x80,		OP1F, OP_RM8_D8+6,OP_S8,     AOT_NONE	},
-{ "xor",	0x80,		OP1F, OP_RM8_DW+6,OP_S8,     AOT_NONE	},
+{ "xorb",	0x80,		OP1F, OP_RM8_D0+6,OP_S8,     AOT_NONE	},
+{ "xorb",	0x80,		OP1F, OP_RM8_D8+6,OP_S8,     AOT_NONE	},
+{ "xorb",	0x80,		OP1F, OP_RM8_DW+6,OP_S8,     AOT_NONE	},
 { "xor",	0x80,		OP1F, OP_RM8_R8+6,OP_S8,     AOT_NONE	},
 /* XOR		0x81 /6 iW	1     r/mW        imm8			*/
 { "xor",	0x81,		OP1F, OP_RMW_D0+6,OP_SW,     AOT_NONE	},
 { "xor",	0x81,		OP1F, OP_RMW_D8+6,OP_SW,     AOT_NONE	},
 { "xor",	0x81,		OP1F, OP_RMW_DW+6,OP_SW,     AOT_NONE	},
 { "xor",	0x81,		OP1F, OP_RMW_RW+6,OP_SW,     AOT_NONE	},
-/* XOR		0x83 /6 i8	1     r/mW        imm8			*/
-{ "xor",	0x83,		OP1F, OP_RMW_D0+6,OP_S8,     AOT_NONE	},
-{ "xor",	0x83,		OP1F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
-{ "xor",	0x83,		OP1F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
+/* XOR		0x83 /6 ib	1     r/mW        imm8			*/
+{ "xorb",	0x83,		OP1F, OP_RMW_D0+6,OP_S8,     AOT_NONE	},
+{ "xorb",	0x83,		OP1F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
+{ "xorb",	0x83,		OP1F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
 { "xor",	0x83,		OP1F, OP_RMW_RW+6,OP_S8,     AOT_NONE	},

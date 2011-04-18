@@ -458,8 +458,8 @@ static int _operand_list(State * state)
 /* operand */
 static int _operand(State * state)
 	/* WORD | ["-"] NUMBER | ["-"] IMMEDIATE | REGISTER
-	 * | ( "[" [space] WORD [space] "]" )
-	 * | ( "[" [space] WORD [space] "+" [space] WORD [space] "]" ) */
+	 * | ("[" [space] WORD [space] "]")
+	 * | ("[" [space] WORD [space] ("+" | "-") [space] WORD [space] "]") */
 {
 	int ret = 0;
 	TokenCode code;

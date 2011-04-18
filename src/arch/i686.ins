@@ -28,6 +28,12 @@
 /* instructions */
 /* EMMS		0x0f77		2					*/
 { "emms",	0x0f77,		OP2F, AOT_NONE,    AOT_NONE,   AOT_NONE	},
+/* PUNPCKLBW	0x0f60 /r	2     mm           mm/m32		*/
+/* FIXME implement */
+/* PUNPCKLBD	0x0f61 /r	2     mm           mm/m32		*/
+/* FIXME implement */
+/* PUNPCKLBQ	0x0f62 /r	2     mm           mm/m32		*/
+/* FIXME implement */
 /* PXOR		0x0fef /r	2     mm           mm/m64		*/
 #if 1 /* FIXME doesn't work properly */
 { "pxor",	0x0fef,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},

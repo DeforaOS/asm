@@ -524,8 +524,10 @@ static int _operand(State * state)
 
 		if(_parser_in_set(state, TS_SPACE))
 			ret |= _space(state);
-		/* FIXME implement AS_CODE_OPERATOR_MINUS too */
-		if(_parser_is_code(state, AS_CODE_OPERATOR_PLUS))
+		/* FIXME really implement AS_CODE_OPERATOR_MINUS */
+		if(_parser_is_code(state, AS_CODE_OPERATOR_PLUS)
+				|| _parser_is_code(state,
+					AS_CODE_OPERATOR_MINUS))
 		{
 			ret |= _parser_scan(state);
 			if(_parser_in_set(state, TS_SPACE))

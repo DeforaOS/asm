@@ -142,7 +142,15 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
-	fld1
+	fld	%st0				/* d9 c0		*/
+	fld	%st1
+	fld	%st2
+	fld	%st3
+	fld	%st4
+	fld	%st5
+	fld	%st6
+	fld	%st7
+	fld1					/* d9 e8		*/
 	fld2e
 	fld2t
 	fldg2

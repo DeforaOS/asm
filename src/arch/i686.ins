@@ -27,73 +27,88 @@
 
 /* instructions */
 /* EMMS		0x0f77		2					*/
-{ "emms",	0x0f77,		OP2F, AOT_NONE,    AOT_NONE,   AOT_NONE	},
-/* PADDB	0x0ffc /r	2     mm           mm/m64		*/
+{ "emms",	0x0f77,		OP2F, AOT_NONE,   AOT_NONE,   AOT_NONE	},
+/* MOVQ		0x0f6f /r	OP2F  mm          mm/m64		*/
 #if 1 /* FIXME doesn't work properly */
-{ "paddb",	0x0ffc,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "paddb",	0x0ffc,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "paddb",	0x0ffc,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "paddb",	0x0ffc,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
+{ "movq",	0x0f6f,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "movq",	0x0f6f,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "movq",	0x0f6f,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "movq",	0x0f6f,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
 #endif
-/* PADDD	0x0ffd /r	2     mm           mm/m64		*/
+/* MOVQ		0x0f7f /r	OP2F  mm/m64      mm			*/
+{ "movq",	0x0f7f,		OP2F, OP_RM64_D0_R,OP_R64_R,   AOT_NONE	},
+{ "movq",	0x0f7f,		OP2F, OP_RM64_D8_R,OP_R64_R,   AOT_NONE	},
+{ "movq",	0x0f7f,		OP2F, OP_RM64_DW_R,OP_R64_R,   AOT_NONE	},
 #if 1 /* FIXME doesn't work properly */
-{ "paddd",	0x0ffe,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "paddd",	0x0ffe,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "paddd",	0x0ffe,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "paddd",	0x0ffe,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
+{ "movq",	0x0f7f,		OP2F, OP_RM64_R64_R,OP_R64_R,  AOT_NONE	},
 #endif
-/* PADDW	0x0ffd /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "paddw",	0x0ffd,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "paddw",	0x0ffd,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "paddw",	0x0ffd,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "paddw",	0x0ffd,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* PADDSB	0x0fec /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "paddsb",	0x0fec,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "paddsb",	0x0fec,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "paddsb",	0x0fec,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "paddsb",	0x0fec,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* PADDSW	0x0fed /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "paddsw",	0x0fed,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "paddsw",	0x0fed,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "paddsw",	0x0fed,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "paddsw",	0x0fed,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* PAND		0x0fdb /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "pand",	0x0fdb,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "pand",	0x0fdb,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "pand",	0x0fdb,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "pand",	0x0fdb,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* PANDN	0x0fdf /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "pandn",	0x0fdf,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "pandn",	0x0fdf,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "pandn",	0x0fdf,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "pandn",	0x0fdf,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* POR		0x0feb /r	2     mm           mm/m64		*/
-#if 1 /* FIXME doesn't work properly */
-{ "por",	0x0feb,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "por",	0x0feb,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "por",	0x0feb,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "por",	0x0feb,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
-#endif
-/* PUNPCKLBW	0x0f60 /r	2     mm           mm/m32		*/
 /* FIXME implement */
-/* PUNPCKLBD	0x0f61 /r	2     mm           mm/m32		*/
-/* FIXME implement */
-/* PUNPCKLBQ	0x0f62 /r	2     mm           mm/m32		*/
-/* FIXME implement */
-/* PXOR		0x0fef /r	2     mm           mm/m64		*/
+/* PADDB	0x0ffc /r	2     mm          mm/m64		*/
 #if 1 /* FIXME doesn't work properly */
-{ "pxor",	0x0fef,		OP2F, OP_R64_R,    OP_RM64_D0_R,AOT_NONE},
-{ "pxor",	0x0fef,		OP2F, OP_R64_R,    OP_RM64_D8_R,AOT_NONE},
-{ "pxor",	0x0fef,		OP2F, OP_R64_R,    OP_RM64_DW_R,AOT_NONE},
-{ "pxor",	0x0fef,		OP2F, OP_R64_R,    OP_RM64_R64_R,AOT_NONE},
+{ "paddb",	0x0ffc,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "paddb",	0x0ffc,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "paddb",	0x0ffc,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "paddb",	0x0ffc,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PADDD	0x0ffd /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "paddd",	0x0ffe,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "paddd",	0x0ffe,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "paddd",	0x0ffe,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "paddd",	0x0ffe,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PADDW	0x0ffd /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "paddw",	0x0ffd,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "paddw",	0x0ffd,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "paddw",	0x0ffd,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "paddw",	0x0ffd,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PADDSB	0x0fec /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "paddsb",	0x0fec,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "paddsb",	0x0fec,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "paddsb",	0x0fec,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "paddsb",	0x0fec,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PADDSW	0x0fed /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "paddsw",	0x0fed,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "paddsw",	0x0fed,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "paddsw",	0x0fed,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "paddsw",	0x0fed,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PAND		0x0fdb /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "pand",	0x0fdb,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "pand",	0x0fdb,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "pand",	0x0fdb,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "pand",	0x0fdb,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PANDN	0x0fdf /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "pandn",	0x0fdf,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "pandn",	0x0fdf,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "pandn",	0x0fdf,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "pandn",	0x0fdf,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* POR		0x0feb /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "por",	0x0feb,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "por",	0x0feb,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "por",	0x0feb,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "por",	0x0feb,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* PUNPCKLBW	0x0f60 /r	2     mm          mm/m32		*/
+/* FIXME implement */
+/* PUNPCKLBD	0x0f61 /r	2     mm          mm/m32		*/
+/* FIXME implement */
+/* PUNPCKLBQ	0x0f62 /r	2     mm          mm/m32		*/
+/* FIXME implement */
+/* PXOR		0x0fef /r	2     mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "pxor",	0x0fef,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "pxor",	0x0fef,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "pxor",	0x0fef,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "pxor",	0x0fef,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
 #endif

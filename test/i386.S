@@ -142,6 +142,7 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
+	finit
 	fld	%st0				/* d9 c0		*/
 	fld	%st1
 	fld	%st2
@@ -158,6 +159,7 @@
 	fldpi
 	fldz
 	fnclex
+	fninit
 	fwait
 	nop					/* 90			*/
 	pop	%ds				/* 1f			*/

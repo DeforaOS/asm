@@ -586,6 +586,16 @@
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* MUL		0xf6 /4		1     r/m8				*/
+{ "mulb",	0xf6,		OP1F, OP_RM8_D0+4,AOT_NONE,  AOT_NONE	},
+{ "mulb",	0xf6,		OP1F, OP_RM8_D8+4,AOT_NONE,  AOT_NONE	},
+{ "mulb",	0xf6,		OP1F, OP_RM8_DW+4,AOT_NONE,  AOT_NONE	},
+{ "mul",	0xf6,		OP1F, OP_RM8_R8+4,AOT_NONE,  AOT_NONE	},
+/* MUL		0xf7 /4		1     r/mW				*/
+{ "mul",	0xf7,		OP1F, OP_RMW_D0+4,AOT_NONE,  AOT_NONE	},
+{ "mul",	0xf7,		OP1F, OP_RMW_D8+4,AOT_NONE,  AOT_NONE	},
+{ "mul",	0xf7,		OP1F, OP_RMW_DW+4,AOT_NONE,  AOT_NONE	},
+{ "mul",	0xf7,		OP1F, OP_RMW_RW+4,AOT_NONE,  AOT_NONE	},
 /* NEG		0xf6 /3		1     r/m8				*/
 { "negb",	0xf6,		OP1F, OP_RM8_D0+3,AOT_NONE,  AOT_NONE	},
 { "negb",	0xf6,		OP1F, OP_RM8_D8+3,AOT_NONE,  AOT_NONE	},

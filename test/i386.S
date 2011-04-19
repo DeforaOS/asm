@@ -241,6 +241,14 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	mulb	[%eax]
+	mulb	[%eax + $0x42]
+	mulb	[%eax + $0x11223344]
+	mul	%ch
+	mul	[%eax]
+	mul	[%eax + $0x42]
+	mul	[%eax + $0x11223344]
+	mul	%eax
 	negb	[%eax]
 	negb	[%eax + $0x42]
 	negb	[%eax + $0x11223344]

@@ -142,6 +142,13 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
+	fld1
+	fld2e
+	fld2t
+	fldg2
+	fldn2
+	fldpi
+	fldz
 	fnclex
 	fwait
 	nop					/* 90			*/

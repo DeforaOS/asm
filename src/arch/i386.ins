@@ -57,6 +57,7 @@
 #define OP_fs		AO_REGISTER(AOF_IMPLICIT, REG_fs_size, REG_fs_id)
 #define OP_gs		AO_REGISTER(AOF_IMPLICIT, REG_gs_size, REG_gs_id)
 #define OP_ss		AO_REGISTER(AOF_IMPLICIT, REG_ss_size, REG_ss_id)
+#define OP_dx		AO_REGISTER(AOF_IMPLICIT, 16, REG_dx_id)
 #define OP_AX		AO_REGISTER(AOF_IMPLICIT, W, REG_AX_id)
 #define OP_CX		AO_REGISTER(AOF_IMPLICIT, W, REG_CX_id)
 #define OP_DX		AO_REGISTER(AOF_IMPLICIT, W, REG_DX_id)
@@ -587,6 +588,23 @@
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* NOP		0x90		1					*/
 { "nop",	0x90,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* OUT		0xe6		1     imm8        al			*/
+{ "out",	0xe6,		OP1F, OP_U8,      OP_al,     AOT_NONE	},
+/* OUT		0xe7		1     imm8        AX			*/
+{ "out",	0xe7,		OP1F, OP_U8,      OP_AX,     AOT_NONE	},
+/* OUT		0xee		1     dx          al			*/
+{ "out",	0xee,		OP1F, OP_dx,      OP_al,     AOT_NONE	},
+/* OUT		0xef		1     dx          AX			*/
+{ "out",	0xef,		OP1F, OP_dx,      OP_AX,     AOT_NONE	},
+/* OUTSB	0x6e		1					*/
+{ "outsb",	0x6e,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#ifdef ARCH_i386_real
+/* OUTSW	0x6f		1					*/
+{ "outsw",	0x6f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#else
+/* OUTSD	0x6f		1					*/
+{ "outsd",	0x6f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
 /* POP		0x07		1     es				*/
 { "pop",	0x07,		OP1F, OP_es,      AOT_NONE,  AOT_NONE	},
 /* POP		0x17		1     ss				*/

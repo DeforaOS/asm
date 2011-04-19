@@ -241,6 +241,12 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	out	$0xa8, %al
+	out	$0xa8, %eax
+	out	%dx, %al
+	out	%dx, %eax
+	outsb					/* 6e			*/
+	outsd					/* 6f			*/
 	pop	%ds				/* 1f			*/
 	pop	%es				/* 07			*/
 	pop	%ss				/* 17			*/

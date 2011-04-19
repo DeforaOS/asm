@@ -28,6 +28,20 @@
 /* instructions */
 /* EMMS		0x0f77		2					*/
 { "emms",	0x0f77,		OP2F, AOT_NONE,   AOT_NONE,   AOT_NONE	},
+/* MOVD		0x0f6e /r	OP2F  mm          mm/m64		*/
+#if 1 /* FIXME doesn't work properly */
+{ "movd",	0x0f6e,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},
+{ "movd",	0x0f6e,		OP2F, OP_R64_R,   OP_RM64_D8_R,AOT_NONE	},
+{ "movd",	0x0f6e,		OP2F, OP_R64_R,   OP_RM64_DW_R,AOT_NONE	},
+{ "movd",	0x0f6e,		OP2F, OP_R64_R,   OP_RM64_R64_R,AOT_NONE},
+#endif
+/* MOVD		0x0f7e /r	OP2F  mm/m64      mm			*/
+{ "movd",	0x0f7e,		OP2F, OP_RM64_D0_R,OP_R64_R,   AOT_NONE	},
+{ "movd",	0x0f7e,		OP2F, OP_RM64_D8_R,OP_R64_R,   AOT_NONE	},
+{ "movd",	0x0f7e,		OP2F, OP_RM64_DW_R,OP_R64_R,   AOT_NONE	},
+#if 1 /* FIXME doesn't work properly */
+{ "movq",	0x0f7f,		OP2F, OP_RM64_R64_R,OP_R64_R,  AOT_NONE	},
+#endif
 /* MOVQ		0x0f6f /r	OP2F  mm          mm/m64		*/
 #if 1 /* FIXME doesn't work properly */
 { "movq",	0x0f6f,		OP2F, OP_R64_R,   OP_RM64_D0_R,AOT_NONE	},

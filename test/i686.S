@@ -2,6 +2,18 @@
 .text
 	emms					/* 0f 77		*/
 #if 1 /* FIXME doesn't work properly */
+	movd	%mm1, [%edx]
+	movd	%mm2, [%edx + $0x56]
+	movd	%mm3, [%edx + $0x789abc]
+	movd	%mm4, %mm5
+#endif
+	movd	[%edx], %mm2
+	movd	[%edx + $0x56], %mm3
+	movd	[%edx + $0x789abc], %mm4
+#if 1 /* FIXME doesn't work properly */
+	movd	%mm5, %mm6
+#endif
+#if 1 /* FIXME doesn't work properly */
 	movq	%mm1, [%edx]
 	movq	%mm2, [%edx + $0x56]
 	movq	%mm3, [%edx + $0x789abc]

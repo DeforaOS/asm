@@ -241,6 +241,29 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	/* OR */
+	or	[%ecx], %dh
+	or	[%ecx+$0x50], %dh
+	or	%bl, %bh
+	or	%eax, %eax
+	or	[%eax], %eax
+#if 1 /* FIXME doesn't work at the moment */
+	or	%dh, [%ecx]
+	or	%bl, %bh
+	or	%edx, [%ecx]
+	or	%ebx, %ebx
+#endif
+	or	%al, $0x40
+	or	%eax, $0x41424344
+	or	[%edx], $0x46
+	or	[%ebx + $0x15], $0x47
+	or	[%ebx + $0x16171819], $0x48
+	or	%cl, $0x45
+	or	[%edx], $0x46474849
+	or	[%ebx + $0x14], $0x4748494a
+	or	[%ebx + $0x16171819], $0x48494a4b
+	or	%ecx, $0x45464748
+	or	[%eax], -$0x02
 	out	$0xa8, %al
 	out	$0xa8, %eax
 	out	%dx, %al

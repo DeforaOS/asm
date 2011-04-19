@@ -415,6 +415,39 @@
 { "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FCMOVcc								*/
 /* FIXME implement */
+/* FDIV	0xd8 /6			1     m32real				*/
+/* FIXME implement */
+/* FDIV	0xdc /6			1     m64real				*/
+/* FIXME implement */
+/* FDIV	0xd8f0 +i		2     st(0)       st(i)			*/
+{ "fdiv",	0xd8f0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xd8f1,		OP2F, OP_st0,     OP_st1,    AOT_NONE	},
+{ "fdiv",	0xd8f2,		OP2F, OP_st0,     OP_st2,    AOT_NONE	},
+{ "fdiv",	0xd8f3,		OP2F, OP_st0,     OP_st3,    AOT_NONE	},
+{ "fdiv",	0xd8f4,		OP2F, OP_st0,     OP_st4,    AOT_NONE	},
+{ "fdiv",	0xd8f5,		OP2F, OP_st0,     OP_st5,    AOT_NONE	},
+{ "fdiv",	0xd8f6,		OP2F, OP_st0,     OP_st6,    AOT_NONE	},
+{ "fdiv",	0xd8f7,		OP2F, OP_st0,     OP_st7,    AOT_NONE	},
+/* FDIV	0xdcf8 +i		2     st(0)       st(i)			*/
+{ "fdiv",	0xdcf8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcf9,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcfa,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcfb,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcfc,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcfd,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcfe,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fdiv",	0xdcff,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FDIVP	0xdef9		2					*/
+{ "fdivp",	0xdef9,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FDIVP	0xdef8 +i	2     st(0)       st(i)			*/
+{ "fdivp",	0xdef8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdef9,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdefa,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdefb,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdefc,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdefd,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdefe,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fdivp",	0xdeff,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
 /* FDIVR	0xd8 /7		1     m32real				*/
 /* FIXME implement */
 /* FDIVR	0xdc /7		1     m64real				*/

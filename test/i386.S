@@ -241,6 +241,14 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	notb	[%eax]
+	notb	[%eax + $0x42]
+	notb	[%eax + $0x11223344]
+	not	%ch
+	not	[%eax]
+	not	[%eax + $0x42]
+	not	[%eax + $0x11223344]
+	not	%eax
 	/* OR */
 	or	[%ecx], %dh
 	or	[%ecx+$0x50], %dh

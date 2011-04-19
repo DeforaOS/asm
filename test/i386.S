@@ -240,6 +240,14 @@
 	fnclex
 	fninit
 	fwait
+	lock
+	lodsb					/* ac			*/
+	lodsd					/* ad			*/
+	loop	$0x41
+	loope	$0x41
+	loopne	$0x41
+	loopnz	$0x41
+	loopz	$0x41
 	nop					/* 90			*/
 	movsb
 	movsd

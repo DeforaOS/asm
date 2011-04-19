@@ -142,6 +142,14 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
+	ffree	%st0				/* dd c0		*/
+	ffree	%st1				/* dd c1		*/
+	ffree	%st2				/* dd c2		*/
+	ffree	%st3				/* dd c3		*/
+	ffree	%st4				/* dd c4		*/
+	ffree	%st5				/* dd c5		*/
+	ffree	%st6				/* dd c6		*/
+	ffree	%st7				/* dd c7		*/
 	finit
 	fld	%st0				/* d9 c0		*/
 	fld	%st1

@@ -415,10 +415,27 @@
 { "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FCMOVcc								*/
 /* FIXME implement */
+/* FFREE	0xddc0 + i	2					*/
+{ "ffree",	0xddc0,		OP2F, OP_st0,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc1,		OP2F, OP_st1,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc2,		OP2F, OP_st2,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc3,		OP2F, OP_st3,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc4,		OP2F, OP_st4,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc5,		OP2F, OP_st5,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc6,		OP2F, OP_st6,     AOT_NONE,  AOT_NONE	},
+{ "ffree",	0xddc7,		OP2F, OP_st7,     AOT_NONE,  AOT_NONE	},
 /* FIADD	0xda /0		1     m32int				*/
 /* FIXME implement */
 /* FIADD	0xde /0		1     m64int				*/
 /* FIXME implement */
+/* FILD		0xdf /0		1     m16int				*/
+/* FIXME implement */
+/* FILD		0xdb /0		1     m32int				*/
+/* FIXME implement */
+/* FILD		0xdf /5		1     m64int				*/
+/* FIXME implement */
+/* FINCSTP	0xd9f7		2					*/
+{ "fincstp",	0xd9f7,		OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FINIT	0x9bdbe3	3					*/
 { "finit",	0x9bdbe3,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FIST		0xdf /2		1     m16int				*/

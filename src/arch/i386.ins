@@ -415,7 +415,40 @@
 { "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FCMOVcc								*/
 /* FIXME implement */
-/* FFREE	0xddc0 + i	2					*/
+/* FDIVR	0xd8 /7		1     m32real				*/
+/* FIXME implement */
+/* FDIVR	0xdc /7		1     m64real				*/
+/* FIXME implement */
+/* FDIVR	0xd8f8 +i	2     st(0)       st(i)			*/
+{ "fdivr",	0xd8f8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xd8f9,		OP2F, OP_st0,     OP_st1,    AOT_NONE	},
+{ "fdivr",	0xd8fa,		OP2F, OP_st0,     OP_st2,    AOT_NONE	},
+{ "fdivr",	0xd8fb,		OP2F, OP_st0,     OP_st3,    AOT_NONE	},
+{ "fdivr",	0xd8fc,		OP2F, OP_st0,     OP_st4,    AOT_NONE	},
+{ "fdivr",	0xd8fd,		OP2F, OP_st0,     OP_st5,    AOT_NONE	},
+{ "fdivr",	0xd8fe,		OP2F, OP_st0,     OP_st6,    AOT_NONE	},
+{ "fdivr",	0xd8ff,		OP2F, OP_st0,     OP_st7,    AOT_NONE	},
+/* FDIVR	0xdcf0 +i	2     st(0)       st(i)			*/
+{ "fdivr",	0xdcf0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf1,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf2,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf3,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf4,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf5,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf6,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fdivr",	0xdcf7,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FDIVRP	0xdef1		2					*/
+{ "fdivrp",	0xdef1,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FDIVRP	0xdef0 +i	2     st(0)       st(i)			*/
+{ "fdivrp",	0xdef0,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef1,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef2,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef3,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef4,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef5,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef6,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fdivrp",	0xdef7,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FFREE	0xddc0 +i	2     st(i)				*/
 { "ffree",	0xddc0,		OP2F, OP_st0,     AOT_NONE,  AOT_NONE	},
 { "ffree",	0xddc1,		OP2F, OP_st1,     AOT_NONE,  AOT_NONE	},
 { "ffree",	0xddc2,		OP2F, OP_st2,     AOT_NONE,  AOT_NONE	},
@@ -427,6 +460,10 @@
 /* FIADD	0xda /0		1     m32int				*/
 /* FIXME implement */
 /* FIADD	0xde /0		1     m64int				*/
+/* FIXME implement */
+/* FIDIVR	0xda /7		1     m32int				*/
+/* FIXME implement */
+/* FIDIVR	0xde /7		1     m64int				*/
 /* FIXME implement */
 /* FILD		0xdf /0		1     m16int				*/
 /* FIXME implement */

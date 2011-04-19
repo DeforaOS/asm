@@ -142,6 +142,31 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
+	fdivr	%st0, %st0
+	fdivr	%st0, %st1
+	fdivr	%st0, %st2
+	fdivr	%st0, %st3
+	fdivr	%st0, %st4
+	fdivr	%st0, %st5
+	fdivr	%st0, %st6
+	fdivr	%st0, %st7
+	fdivr	%st0, %st0
+	fdivr	%st1, %st0
+	fdivr	%st2, %st0
+	fdivr	%st3, %st0
+	fdivr	%st4, %st0
+	fdivr	%st5, %st0
+	fdivr	%st6, %st0
+	fdivr	%st7, %st0
+	fdivrp
+	fdivrp	%st0, %st0
+	fdivrp	%st1, %st0
+	fdivrp	%st2, %st0
+	fdivrp	%st3, %st0
+	fdivrp	%st4, %st0
+	fdivrp	%st5, %st0
+	fdivrp	%st6, %st0
+	fdivrp	%st7, %st0
 	ffree	%st0				/* dd c0		*/
 	ffree	%st1				/* dd c1		*/
 	ffree	%st2				/* dd c2		*/

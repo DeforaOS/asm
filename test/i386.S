@@ -241,6 +241,14 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	negb	[%eax]
+	negb	[%eax + $0x42]
+	negb	[%eax + $0x11223344]
+	neg	%ch
+	neg	[%eax]
+	neg	[%eax + $0x42]
+	neg	[%eax + $0x11223344]
+	neg	%eax
 	notb	[%eax]
 	notb	[%eax + $0x42]
 	notb	[%eax + $0x11223344]

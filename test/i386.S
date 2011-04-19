@@ -142,6 +142,27 @@
 	faddp	%st7, %st0
 	fchs
 	fclex
+	fcom					/* de d9		*/
+	fcom	%st0
+	fcom	%st1
+	fcom	%st2
+	fcom	%st3
+	fcom	%st4
+	fcom	%st5
+	fcom	%st6
+	fcom	%st7
+	fcomp					/* de d9		*/
+	fcomp	%st0
+	fcomp	%st1
+	fcomp	%st2
+	fcomp	%st3
+	fcomp	%st4
+	fcomp	%st5
+	fcomp	%st6
+	fcomp	%st7
+	fcompp					/* de d9		*/
+	fcos
+	fdecstp
 	fdiv	%st0, %st0
 	fdiv	%st0, %st1
 	fdiv	%st0, %st2

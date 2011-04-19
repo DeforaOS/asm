@@ -415,6 +415,36 @@
 { "fclex",	0x9bdbe2,	OP3F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FCMOVcc								*/
 /* FIXME implement */
+/* FCOM									*/
+/* FIXME implement */
+/* FCOM		0xd8d1		2					*/
+{ "fcom",	0xd8d1,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FCOM		0xd8d0 +i	2     st(i)				*/
+{ "fcom",	0xd8d0,		OP2F, OP_st0,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d1,		OP2F, OP_st1,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d2,		OP2F, OP_st2,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d3,		OP2F, OP_st3,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d4,		OP2F, OP_st4,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d5,		OP2F, OP_st5,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d6,		OP2F, OP_st6,     AOT_NONE,  AOT_NONE	},
+{ "fcom",	0xd8d7,		OP2F, OP_st7,     AOT_NONE,  AOT_NONE	},
+/* FCOMP	0xd8d9		2					*/
+{ "fcomp",	0xd8d9,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FCOMP	0xd8d8 +i	2     st(i)				*/
+{ "fcomp",	0xd8d8,		OP2F, OP_st0,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8d9,		OP2F, OP_st1,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8da,		OP2F, OP_st2,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8db,		OP2F, OP_st3,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8dc,		OP2F, OP_st4,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8dd,		OP2F, OP_st5,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8de,		OP2F, OP_st6,     AOT_NONE,  AOT_NONE	},
+{ "fcomp",	0xd8df,		OP2F, OP_st7,     AOT_NONE,  AOT_NONE	},
+/* FCOMPP	0xded9		2					*/
+{ "fcompp",	0xded9,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FCOS		0xd9ff		2					*/
+{ "fcos",	0xd9ff,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FDECSTP	0xd9f6		2					*/
+{ "fdecstp",	0xd9f6,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FDIV	0xd8 /6			1     m32real				*/
 /* FIXME implement */
 /* FDIV	0xdc /6			1     m64real				*/

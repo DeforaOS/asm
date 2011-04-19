@@ -241,6 +241,8 @@
 	fninit
 	fwait
 	nop					/* 90			*/
+	movsb
+	movsd
 	mulb	[%eax]
 	mulb	[%eax + $0x42]
 	mulb	[%eax + $0x11223344]

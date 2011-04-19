@@ -586,6 +586,23 @@
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* MOVSB	0xa4		1					*/
+{ "movsb",	0xa4,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#ifdef ARCH_i386_real
+/* MOVSW	0xa5		1					*/
+{ "movsw",	0xa5,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#else
+/* MOVSD	0xa5		1					*/
+{ "movsd",	0xa5,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
+/* MOVSX	0x0fbe /r	2     rW          r/m8			*/
+/* FIXME implement */
+/* MOVSX	0x0fbf /r	2     r32         r/m16			*/
+/* FIXME implement */
+/* MOVZX	0x0fb6 /r	2     rW          r/m8			*/
+/* FIXME implement */
+/* MOVZX	0x0fb7 /r	2     r32         r/m16			*/
+/* FIXME implement */
 /* MUL		0xf6 /4		1     r/m8				*/
 { "mulb",	0xf6,		OP1F, OP_RM8_D0+4,AOT_NONE,  AOT_NONE	},
 { "mulb",	0xf6,		OP1F, OP_RM8_D8+4,AOT_NONE,  AOT_NONE	},

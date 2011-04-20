@@ -81,6 +81,11 @@ typedef enum _ArchOperandType
 # define AO_GET_TYPE(operand)	((operand & AOM_TYPE) >> AOD_TYPE)
 # define AO_GET_VALUE(operand)	((operand & AOM_VALUE) >> AOD_VALUE)
 
+# define AO_CONSTANT(flags, size, value) \
+		((AOT_CONSTANT << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((size) << AOD_SIZE) \
+		 | ((value) << AOD_VALUE))
 # define AO_IMMEDIATE(flags, offset, size) \
 		((AOT_IMMEDIATE << AOD_TYPE) \
 		 | ((flags) << AOD_FLAGS) \

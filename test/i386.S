@@ -240,6 +240,15 @@
 	fnclex
 	fninit
 	fwait
+	int	$0x3
+	int	$0x4
+	int	$0x42
+	into
+	invd
+	iret
+	iretd
+	lahf
+	leave
 	lock
 	lodsb					/* ac			*/
 	lodsd					/* ad			*/

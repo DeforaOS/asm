@@ -173,6 +173,8 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 /* arch_get_instruction_by_call */
 static int _call_operands(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call);
+static int _call_operands_constant(ArchOperandDefinition definition,
+		ArchOperand * operand);
 static int _call_operands_dregister(Arch * arch,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _call_operands_immediate(ArchOperandDefinition definition,
@@ -224,10 +226,20 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 				__func__, i, AO_GET_TYPE(definition),
 				AO_GET_TYPE(operand->type));
 #endif
-		if(AO_GET_TYPE(definition) != operand->type)
+		if(AO_GET_TYPE(definition) == AOT_CONSTANT)
+		{
+			if(operand->type != AOT_IMMEDIATE)
+				return -1;
+		}
+		else if(AO_GET_TYPE(definition) != operand->type)
 			return -1;
 		switch(AO_GET_TYPE(definition))
 		{
+			case AOT_CONSTANT:
+				if(_call_operands_constant(definition, operand)
+						!= 0)
+					return -1;
+				break;
 			case AOT_IMMEDIATE:
 				if(_call_operands_immediate(definition, operand)
 						!= 0)
@@ -246,6 +258,18 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 		}
 	}
 	return 0;
+}
+
+static int _call_operands_constant(ArchOperandDefinition definition,
+		ArchOperand * operand)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %u %lu\n", __func__,
+			AO_GET_VALUE(definition),
+			operand->value.immediate.value);
+#endif
+	return (AO_GET_VALUE(definition) == operand->value.immediate.value)
+		? 0 : -1;
 }
 
 static int _call_operands_dregister(Arch * arch,

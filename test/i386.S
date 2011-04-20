@@ -240,6 +240,8 @@
 	fnclex
 	fninit
 	fwait
+	fyl2xp1					/* d9 f9		*/
+	hlt					/* f4			*/
 	/* IN */
 	in	%al, $0x43			/* e4 43		*/
 	in	%eax, $0x44			/* e5 44		*/

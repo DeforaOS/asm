@@ -589,6 +589,15 @@
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* INSB		0x6c		1					*/
+{ "insb",	0x6c,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#ifdef ARCH_i386_real
+/* INSW		0x6d		1					*/
+{ "insw",	0x6d,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#else
+/* INSD		0x6d		1					*/
+{ "insd",	0x6d,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
 /* INT		0xcc		1     3					*/
 { "int",	0xcc,		OP1F, OP_C3,      AOT_NONE,  AOT_NONE	},
 /* INT		0xcd		1     imm8				*/

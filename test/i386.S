@@ -240,6 +240,8 @@
 	fnclex
 	fninit
 	fwait
+	insb
+	insd
 	int	$0x3
 	int	$0x4
 	int	$0x42

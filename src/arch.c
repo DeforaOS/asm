@@ -268,8 +268,12 @@ static int _call_operands_constant(ArchOperandDefinition definition,
 			AO_GET_VALUE(definition),
 			operand->value.immediate.value);
 #endif
-	return (AO_GET_VALUE(definition) == operand->value.immediate.value)
-		? 0 : -1;
+	if(AO_GET_VALUE(definition) != operand->value.immediate.value)
+		return -1;
+	/* set this operand as a constant */
+	operand->type &= AOM_TYPE;
+	operand->type |= AOT_CONSTANT;
+	return 0;
 }
 
 static int _call_operands_dregister(Arch * arch,

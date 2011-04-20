@@ -589,6 +589,14 @@
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* IN		0xe4		1     al          imm8			*/
+{ "in",		0xe4,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
+/* IN		0xe5		1     AX          imm8			*/
+{ "in",		0xe5,		OP1F, OP_AX,      OP_S8,     AOT_NONE	},
+/* IN		0xec		1     al          dx			*/
+{ "in",		0xec,		OP1F, OP_al,      OP_dx,     AOT_NONE	},
+/* IN		0xed		1     AX          dx			*/
+{ "in",		0xed,		OP1F, OP_AX,      OP_dx,     AOT_NONE	},
 /* INC		0x40 +rd	1					*/
 { "inc",	0x40,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE	},
 { "inc",	0x41,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE	},

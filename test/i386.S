@@ -243,6 +243,7 @@
 	insb
 	insd
 	int	$0x3
+	int3
 	int	$0x4
 	int	$0x42
 	into

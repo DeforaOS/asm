@@ -598,10 +598,12 @@
 /* INSD		0x6d		1					*/
 { "insd",	0x6d,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
-/* INT		0xcc		1     3					*/
-{ "int",	0xcc,		OP1F, OP_C3,      AOT_NONE,  AOT_NONE	},
 /* INT		0xcd		1     imm8				*/
 { "int",	0xcd,		OP1F, OP_U8,      AOT_NONE,  AOT_NONE	},
+/* INT		0xcc		1     3					*/
+{ "int",	0xcc,		OP1F, OP_C3,      AOT_NONE,  AOT_NONE	},
+/* INT3		0xcc		1					*/
+{ "int3",	0xcc,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* INTO		0xce		1					*/
 { "into",	0xce,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* INVD		0x0f08		2					*/

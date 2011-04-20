@@ -126,6 +126,8 @@ static int _write_immediate(ArchPlugin * plugin,
 {
 	uint64_t value = operand->value.immediate.value;
 
+	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
+		return 0;
 	if((AO_GET_FLAGS(definition) & AOF_SIGNED)
 			&& operand->value.immediate.negative != 0)
 		value = -value;
@@ -141,9 +143,8 @@ static int _write_immediate(ArchPlugin * plugin,
 			return _write_immediate24(plugin, value);
 		case sizeof(uint32_t):
 			return _write_immediate32(plugin, value);
-		default:
-			return -error_set_code(1, "Invalid size");
 	}
+	return -error_set_code(1, "Invalid size");
 }
 
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
@@ -216,6 +217,10 @@ static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 {
 	switch(operands[*i].type)
 	{
+			break;
+		case AOT_CONSTANT: /* consider it an immediate value */
+			return _write_immediate(plugin, definitions[*i],
+					&operands[*i]);
 		case AOT_DREGISTER:
 			return _write_dregister(plugin, i, definitions,
 					operands);
@@ -225,6 +230,10 @@ static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 		case AOT_REGISTER:
 			return _write_register(plugin, i, definitions,
 					operands);
+		case AOT_NONE:
+		case AOT_DREGISTER2:
+			/* should not happen */
+			break;
 	}
 	return 0;
 }

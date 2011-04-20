@@ -240,6 +240,23 @@
 	fnclex
 	fninit
 	fwait
+	/* INC */
+	inc	%eax				/* 40			*/
+	inc	%ecx				/* 41			*/
+	inc	%edx				/* 42			*/
+	inc	%ebx				/* 43			*/
+	inc	%esp				/* 44			*/
+	inc	%ebp				/* 45			*/
+	inc	%esi				/* 46			*/
+	inc	%edi				/* 47			*/
+	incb	[%eax]				/* fe 00		*/
+	incb	[%ecx]				/* fe 01		*/
+	incb	[%edx]				/* fe 02		*/
+	incb	[%ebx]				/* fe 03		*/
+	inc	[%eax]				/* ff 00		*/
+	inc	[%ecx]				/* ff 01		*/
+	inc	[%edx]				/* ff 02		*/
+	inc	[%ebx]				/* ff 03		*/
 	insb
 	insd
 	int	$0x3				/* cd 03		*/

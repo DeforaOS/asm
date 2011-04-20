@@ -589,6 +589,25 @@
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* INC		0x40 +rd	1					*/
+{ "inc",	0x40,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x41,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x42,		OP1F, OP_DX,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x43,		OP1F, OP_BX,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x44,		OP1F, OP_SP,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x45,		OP1F, OP_BP,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x46,		OP1F, OP_SI,      AOT_NONE,  AOT_NONE	},
+{ "inc",	0x47,		OP1F, OP_DI,      AOT_NONE,  AOT_NONE	},
+/* INC		0xfe /0		1     r/m8				*/
+{ "incb",	0xfe,		OP1F, OP_RM8_D0+0,AOT_NONE,  AOT_NONE	},
+{ "incb",	0xfe,		OP1F, OP_RM8_D8+0,AOT_NONE,  AOT_NONE	},
+{ "incb",	0xfe,		OP1F, OP_RM8_DW+0,AOT_NONE,  AOT_NONE	},
+{ "inc",	0xfe,		OP1F, OP_RM8_R8+0,AOT_NONE,  AOT_NONE	},
+/* INC		0xff /0		1     r/mW				*/
+{ "inc",	0xff,		OP1F, OP_RMW_D0+0,AOT_NONE,  AOT_NONE	},
+{ "inc",	0xff,		OP1F, OP_RMW_D8+0,AOT_NONE,  AOT_NONE	},
+{ "inc",	0xff,		OP1F, OP_RMW_DW+0,AOT_NONE,  AOT_NONE	},
+{ "inc",	0xff,		OP1F, OP_RMW_RW+0,AOT_NONE,  AOT_NONE	},
 /* INSB		0x6c		1					*/
 { "insb",	0x6c,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #ifdef ARCH_i386_real

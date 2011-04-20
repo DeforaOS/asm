@@ -242,11 +242,11 @@
 	fwait
 	insb
 	insd
-	int	$0x3
-	int3
-	int	$0x4
-	int	$0x42
-	into
+	int	$0x3				/* cd 03		*/
+	int3					/* cc			*/
+	int	$0x4				/* cd 04		*/
+	int	$0x42				/* cd 42		*/
+	into					/* ce			*/
 	invd
 	iret
 	iretd

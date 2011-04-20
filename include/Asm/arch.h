@@ -67,6 +67,8 @@ typedef enum _ArchOperandType
 # define AOM_VALUE	0x000000ff
 
 /* flags */
+/* constants */
+# define AOF_IMPLICIT	0x1
 /* for immediate */
 # define AOF_SIGNED	0x1
 /* for registers */

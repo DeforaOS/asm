@@ -28,6 +28,8 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 
 /* functions */
+static int _write_constant(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands);
 static int _write_immediate(ArchPlugin * plugin,
@@ -60,6 +62,15 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		if(_write_operand(plugin, &i, definitions, call->operands) != 0)
 			return -1;
 	return 0;
+}
+
+static int _write_constant(ArchPlugin * plugin,
+		ArchOperandDefinition definition, ArchOperand * operand)
+{
+	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
+		return 0;
+	definition &= ~(AOM_FLAGS);
+	return _write_immediate(plugin, definition, operand);
 }
 
 static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
@@ -126,8 +137,6 @@ static int _write_immediate(ArchPlugin * plugin,
 {
 	uint64_t value = operand->value.immediate.value;
 
-	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
-		return 0;
 	if((AO_GET_FLAGS(definition) & AOF_SIGNED)
 			&& operand->value.immediate.negative != 0)
 		value = -value;
@@ -217,9 +226,8 @@ static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 {
 	switch(operands[*i].type)
 	{
-			break;
-		case AOT_CONSTANT: /* consider it an immediate value */
-			return _write_immediate(plugin, definitions[*i],
+		case AOT_CONSTANT:
+			return _write_constant(plugin, definitions[*i],
 					&operands[*i]);
 		case AOT_DREGISTER:
 			return _write_dregister(plugin, i, definitions,

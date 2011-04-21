@@ -65,6 +65,8 @@ ArchPlugin arch_plugin =
 /* sparc_write */
 static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
+static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call, uint32_t * opcode);
 
 static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
@@ -72,6 +74,9 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	uint32_t opcode = instruction->opcode;
 
 	if((opcode & 0xc0000000) == 0xc0000000 && _write_loadstore(plugin,
+				instruction, call, &opcode) != 0)
+		return -1;
+	else if((opcode & 0x01000000) == 0x01000000 && _write_sethi(plugin,
 				instruction, call, &opcode) != 0)
 		return -1;
 	/* FIXME implement the rest */
@@ -164,5 +169,30 @@ static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 		rd = (ar->id << 25);
 	}
 	*opcode |= (rd | rs1 | rs2);
+	return 0;
+}
+
+static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call, uint32_t * opcode)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	uint32_t rd;
+	uint32_t value;
+	char const * name;
+	ArchRegister * ar;
+
+	/* value */
+	if(AO_GET_TYPE(instruction->op1) != AOT_IMMEDIATE)
+		return -1;
+	value = (call->operands[0].value.immediate.value >> 10);
+	/* rd */
+	if(AO_GET_TYPE(instruction->op2) != AOT_REGISTER)
+		return -1;
+	name = call->operands[1].value._register.name;
+	if((ar = helper->get_register_by_name_size(helper->arch,
+					name, 32)) == NULL)
+		return -1;
+	rd = (ar->id << 25);
+	*opcode |= (rd | value);
 	return 0;
 }

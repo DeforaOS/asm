@@ -48,7 +48,7 @@
 	sdiv	%r29, -$23, %r19
 	sdivcc	%r16, %r26, %r27
 	sdivcc	%r29, -$23, %r19
-	sethi	$0x87654321, %r2
+	sethi	$0x87654321, %r2		/* 0x0521d950 */
 	smul	%r16, %r26, %r27
 	smul	%r29, -$23, %r19
 	smulcc	%r16, %r26, %r27

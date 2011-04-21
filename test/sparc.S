@@ -22,7 +22,7 @@
 	bge	$0x3
 	bl	$0x3
 	ble	$0x3
-	bne	$0x3
+	bne	$0x3				/* 0x12800003 */
 	bz	$0x3
 	ld	[%r4 + %r7], %r11
 	ld	[%r23], %r19

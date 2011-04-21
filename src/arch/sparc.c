@@ -63,6 +63,8 @@ ArchPlugin arch_plugin =
 /* functions */
 /* plug-in */
 /* sparc_write */
+static int _write_branch(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call, uint32_t * opcode);
 static int _write_integer(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
 static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
@@ -75,19 +77,46 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 {
 	uint32_t opcode = instruction->opcode;
 
-	if((opcode & 0xc0000000) == 0xc0000000 && _write_loadstore(plugin,
-				instruction, call, &opcode) != 0)
+	if((opcode & 0xc0000000) == 0xc0000000)
+	{
+		if(_write_loadstore(plugin, instruction, call, &opcode) != 0)
+			return -1;
+	}
+	else if((opcode & 0xc1c00000) == 0x01000000)
+	{
+		if(_write_sethi(plugin, instruction, call, &opcode) != 0)
+			return -1;
+	}
+	else if((opcode & 0xc0000000) == 0x80000000)
+	{
+		if(_write_integer(plugin, instruction, call, &opcode) != 0)
+			return -1;
+	}
+	else if((opcode & 0xc1c00000) == 0x00800000)
+	{
+		if(_write_branch(plugin, instruction, call, &opcode) != 0)
+			return -1;
+	}
+	else
 		return -1;
-	else if((opcode & 0x01000000) == 0x01000000 && _write_sethi(plugin,
-				instruction, call, &opcode) != 0)
-		return -1;
-	else if((opcode & 0xc0000000) == 0x80000000 && _write_integer(plugin,
-				instruction, call, &opcode) != 0)
-		return -1;
-	/* FIXME implement the rest */
 	opcode = _htob32(opcode);
 	if(fwrite(&opcode, sizeof(opcode), 1, plugin->helper->fp) != 1)
 		return -1;
+	return 0;
+}
+
+static int _write_branch(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call, uint32_t * opcode)
+{
+	uint32_t disp;
+
+	if(AO_GET_TYPE(instruction->op1) != AOT_IMMEDIATE)
+		return -1;
+	disp = call->operands[0].value.immediate.value;
+	if(call->operands[0].value.immediate.negative)
+		disp = -disp;
+	disp &= (0x003fffff);
+	*opcode |= disp;
 	return 0;
 }
 

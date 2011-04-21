@@ -296,7 +296,7 @@ static int _elf_disas32(FormatPlugin * format, int (*callback)(
 			off_t offset, size_t size, off_t base))
 {
 	Elf32_Ehdr ehdr;
-	Elf32_Shdr * shdr;
+	Elf32_Shdr * shdr = NULL;
 	Elf32_Addr base = 0x0;
 	char * shstrtab = NULL;
 	size_t shstrtab_cnt = 0;
@@ -417,7 +417,7 @@ static int _elf_disas64(FormatPlugin * format, int (*callback)(
 			off_t offset, size_t size, off_t base))
 {
 	Elf64_Ehdr ehdr;
-	Elf64_Shdr * shdr;
+	Elf64_Shdr * shdr = NULL;
 	Elf64_Addr base = 0x0;
 	char * shstrtab = NULL;
 	size_t shstrtab_cnt = 0;

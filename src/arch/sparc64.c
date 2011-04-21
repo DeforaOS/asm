@@ -19,19 +19,20 @@
 #include "Asm.h"
 
 
-/* sparc */
+/* sparc64 */
 /* private */
 /* variables */
-static ArchDescription _sparc_description = { "elf", ARCH_ENDIAN_BIG, 32, 32 };
+static ArchDescription _sparc64_description =
+{ "elf", ARCH_ENDIAN_BIG, 32, 32 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _sparc_registers[] =
+static ArchRegister _sparc64_registers[] =
 {
 #include "sparc.reg"
 	{ NULL,		0, 0 }
 };
 
-static ArchInstruction _sparc_instructions[] =
+static ArchInstruction _sparc64_instructions[] =
 {
 #include "sparc.ins"
 #include "common.ins"
@@ -40,7 +41,6 @@ static ArchInstruction _sparc_instructions[] =
 
 
 /* functions */
-/* plug-in */
 #include "sparc.h"
 
 
@@ -49,10 +49,10 @@ static ArchInstruction _sparc_instructions[] =
 ArchPlugin arch_plugin =
 {
 	NULL,
-	"sparc",
-	&_sparc_description,
-	_sparc_registers,
-	_sparc_instructions,
+	"sparc64",
+	&_sparc64_description,
+	_sparc64_registers,
+	_sparc64_instructions,
 	_sparc_write,
 	NULL
 };

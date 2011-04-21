@@ -55,6 +55,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i586.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i686.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
+		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.h \
@@ -65,6 +66,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i686.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i686.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/null.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/sparc.h \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/project.conf \
@@ -81,6 +83,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/i586.S \
 		$(PACKAGE)-$(VERSION)/test/i686.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
+		$(PACKAGE)-$(VERSION)/test/sparc64.S \
 		$(PACKAGE)-$(VERSION)/test/Makefile \
 		$(PACKAGE)-$(VERSION)/test/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \

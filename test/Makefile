@@ -1,4 +1,4 @@
-TARGETS	= i386.o i386_real.o i486.o i586.o i686.o sparc.o
+TARGETS	= i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o
 PREFIX	= /usr/local
 DESTDIR	= 
 BINDIR	= $(PREFIX)/bin
@@ -30,6 +30,9 @@ i686.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i686 -f flat
 sparc.o_OBJS = sparc.o
 sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc -f flat
 
+sparc64.o_OBJS = sparc64.o
+sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64 -f flat
+
 i386.o: i386.S ../src/asm
 	$(AS) $(i386.o_ASFLAGS) -o i386.o i386.S
 
@@ -48,8 +51,11 @@ i686.o: i686.S ../src/asm
 sparc.o: sparc.S ../src/asm
 	$(AS) $(sparc.o_ASFLAGS) -o sparc.o sparc.S
 
+sparc64.o: sparc64.S ../src/asm
+	$(AS) $(sparc64.o_ASFLAGS) -o sparc64.o sparc64.S
+
 clean:
-	$(RM) -- $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(sparc.o_OBJS)
+	$(RM) -- $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

@@ -105,12 +105,9 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 static int _java_init(FormatPlugin * format, char const * arch);
 static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
-static int _java_disas(FormatPlugin * format, int (*callback)(
-			FormatPlugin * format, char const * section,
-			off_t offset, size_t size, off_t base));
+static int _java_disas(FormatPlugin * format);
 
 static int _java_error(FormatPlugin * format);
-static int _java_error_fread(FormatPlugin * format);
 
 
 /* public */
@@ -137,6 +134,7 @@ FormatPlugin format_plugin =
 /* java_init */
 static int _java_init(FormatPlugin * format, char const * arch)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaHeader jh;
 	JavaPlugin * java;
 
@@ -147,8 +145,8 @@ static int _java_init(FormatPlugin * format, char const * arch)
 	jh.minor = _htob16(0);
 	jh.major = _htob16(0x32); /* XXX choose a more appropriate version */
 	jh.cp_cnt = _htob16(0);
-	if(fwrite(&jh, sizeof(jh), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &jh, sizeof(jh)) != sizeof(jh))
+		return -1;
 	if((java = malloc(sizeof(*java))) == NULL)
 		return -_java_error(format);
 	memset(java, 0, sizeof(*java));
@@ -186,85 +184,96 @@ static int _java_exit(FormatPlugin * format)
 
 static int _exit_constant_pool(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->constants_cnt + 1);
 
-	if(fwrite(&cnt, sizeof(cnt), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &cnt, sizeof(cnt)) != sizeof(cnt))
+		return -1;
 	/* XXX output the constants */
 	return 0;
 }
 
 static int _exit_access_flags(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t flags = _htob16(java->access_flags);
 
-	if(fwrite(&flags, sizeof(flags), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &flags, sizeof(flags))
+			!= sizeof(flags))
+		return -1;
 	return 0;
 }
 
 static int _exit_class_name(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	uint16_t index = _htob16(0);
 
 	/* FIXME really implement */
-	if(fwrite(&index, sizeof(index), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &index, sizeof(index))
+			!= sizeof(index))
+		return -1;
 	return 0;
 }
 
 static int _exit_super_name(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	uint16_t index = _htob16(0);
 
 	/* FIXME really implement */
-	if(fwrite(&index, sizeof(index), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &index, sizeof(index))
+			!= sizeof(index))
+		return -1;
 	return 0;
 }
 
 static int _exit_interface_table(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->interfaces_cnt);
 
-	if(fwrite(&cnt, sizeof(cnt), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &cnt, sizeof(cnt)) != sizeof(cnt))
+		return -1;
 	/* XXX output the interfaces */
 	return 0;
 }
 
 static int _exit_field_table(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->fields_cnt);
 
-	if(fwrite(&cnt, sizeof(cnt), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &cnt, sizeof(cnt)) != sizeof(cnt))
+		return -1;
 	/* XXX output the fields */
 	return 0;
 }
 
 static int _exit_method_table(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->methods_cnt);
 
-	if(fwrite(&cnt, sizeof(cnt), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &cnt, sizeof(cnt)) != sizeof(cnt))
+		return -1;
 	/* XXX output the methods */
 	return 0;
 }
 
 static int _exit_attribute_table(FormatPlugin * format)
 {
+	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->attributes_cnt);
 
-	if(fwrite(&cnt, sizeof(cnt), 1, format->helper->fp) != 1)
-		return -_java_error(format);
+	if(helper->write(helper->format, &cnt, sizeof(cnt)) != sizeof(cnt))
+		return -1;
 	/* XXX output the attributes */
 	return 0;
 }
@@ -283,48 +292,47 @@ static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt);
 static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt);
 static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt);
 
-static int _java_disas(FormatPlugin * format, int (*callback)(
-			FormatPlugin * format, char const * section,
-			off_t offset, size_t size, off_t base))
+static int _java_disas(FormatPlugin * format)
 {
-	FILE * fp = format->helper->fp;
+	FormatPluginHelper * helper = format->helper;
 	JavaHeader jh;
 	JavaHeader2 jh2;
 	uint16_t u16;
 	off_t offset;
 	off_t end;
 
-	if(fseek(fp, sizeof(JavaHeader), SEEK_SET) != 0)
-		return -_java_error(format);
-	if(fread(&jh, sizeof(jh), 1, fp) != 1)
-		return -_java_error_fread(format);
+	/* FIXME can this be correct? */
+	if(helper->seek(helper->format, sizeof(jh), SEEK_SET) != sizeof(jh))
+		return -1;
+	if(helper->read(helper->format, &jh, sizeof(jh)) != sizeof(jh))
+		return -1;
 	/* skip constants */
 	jh.cp_cnt = _htob16(jh.cp_cnt);
 	if(jh.cp_cnt > 1 && _disas_skip_constants(format, jh.cp_cnt) != 0)
 		return -1;
 	/* skip interfaces */
-	if(fread(&jh2, sizeof(jh2), 1, fp) != 1)
-		return -_java_error_fread(format);
+	if(helper->read(helper->format, &jh2, sizeof(jh2)) != sizeof(jh2))
+		return -1;
 	jh2.interfaces_cnt = _htob16(jh2.interfaces_cnt);
 	if(_disas_skip_interfaces(format, jh2.interfaces_cnt) != 0)
 		return -1;
 	/* skip fields */
-	if(fread(&u16, sizeof(u16), 1, fp) != 1)
-		return -_java_error_fread(format);
+	if(helper->read(helper->format, &u16, sizeof(u16)) != sizeof(u16))
+		return -1;
 	u16 = _htob16(u16);
 	if(_disas_skip_fields(format, u16) != 0)
 		return -1;
 	/* disassemble the rest */
-	if((offset = ftello(fp)) == -1
-			|| fseek(fp, 0, SEEK_END) != 0
-			|| (end = ftello(fp)) == -1)
-		return -_java_error(format);
-	return callback(format, NULL, offset, end - offset, 0);
+	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0
+			|| (end = helper->seek(helper->format, 0, SEEK_END))
+			< 0)
+		return -1;
+	return helper->disas(helper->format, NULL, offset, end - offset, 0);
 }
 
 static int _disas_skip_attributes(FormatPlugin * format, uint16_t cnt)
 {
-	FILE * fp = format->helper->fp;
+	FormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaAttributeInfo jai;
 
@@ -333,22 +341,23 @@ static int _disas_skip_attributes(FormatPlugin * format, uint16_t cnt)
 #endif
 	for(i = 0; i < cnt; i++)
 	{
-		if(fread(&jai, sizeof(jai), 1, fp) != 1)
-			return -_java_error_fread(format);
+		if(helper->read(helper->format, &jai, sizeof(jai))
+				!= sizeof(jai))
+			return -1;
 		jai.length = _htob32(jai.length);
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() length=%u\n", __func__,
 				jai.length);
 #endif
-		if(fseek(fp, jai.length, SEEK_CUR) != 0)
-			return -_java_error(format);
+		if(helper->seek(helper->format, jai.length, SEEK_CUR) < 0)
+			return -1;
 	}
 	return 0;
 }
 
 static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt)
 {
-	FILE * fp = format->helper->fp;
+	FormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaCpInfo jci;
 	size_t size;
@@ -360,8 +369,9 @@ static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt)
 #endif
 	for(i = 0; i < cnt; i++)
 	{
-		if(fread(&jci, sizeof(jci), 1, fp) != 1)
-			return -_java_error_fread(format);
+		if(helper->read(helper->format, &jci, sizeof(jci))
+				!= sizeof(jci))
+			return -1;
 		switch(jci.tag)
 		{
 			case CONSTANT_Double:
@@ -381,28 +391,33 @@ static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt)
 				size = 2;
 				break;
 			case CONSTANT_Utf8:
-				if(fread(&u16, sizeof(u16), 1, fp) != 1)
-					return -_java_error_fread(format);
+				size = sizeof(u16);
+				if(helper->read(helper->format, &u16, size)
+						!= (ssize_t)size)
+					return -1;
 				u16 = _htob16(u16);
-				if(fseek(fp, u16, SEEK_CUR) != 0)
-					return -_java_error(format);
+				if(helper->seek(helper->format, u16, SEEK_CUR)
+						< 0)
+					return -1;
 				size = 0;
 				break;
 			default:
 				return -error_set_code(1, "%s: %s 0x%x",
-						format->helper->filename,
+						helper->get_filename(
+							helper->format),
 						"Unknown constant tag",
 						jci.tag);
 		}
-		if(size != 0 && fread(buf, sizeof(*buf), size, fp) != size)
-			return -_java_error_fread(format);
+		if(size != 0 && helper->read(helper->format, buf, size)
+				!= (ssize_t)size)
+			return -1;
 	}
 	return 0;
 }
 
 static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt)
 {
-	FILE * fp = format->helper->fp;
+	FormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaFieldInfo jfi;
 
@@ -411,8 +426,9 @@ static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt)
 #endif
 	for(i = 0; i < cnt; i++)
 	{
-		if(fread(&jfi, sizeof(jfi), 1, fp) != 1)
-			return -_java_error_fread(format);
+		if(helper->read(helper->format, &jfi, sizeof(jfi))
+				!= sizeof(jfi))
+			return -1;
 		jfi.attributes_cnt = _htob16(jfi.attributes_cnt);
 		_disas_skip_attributes(format, jfi.attributes_cnt);
 	}
@@ -421,7 +437,7 @@ static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt)
 
 static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 {
-	FILE * fp = format->helper->fp;
+	FormatPluginHelper * helper = format->helper;
 	size_t i;
 	uint16_t u16;
 
@@ -429,8 +445,9 @@ static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 	fprintf(stderr, "DEBUG: %s(%u)\n", __func__, cnt);
 #endif
 	for(i = 0; i < cnt; i++)
-		if(fread(&u16, sizeof(u16), 1, fp) != 1)
-			return -_java_error_fread(format);
+		if(helper->read(helper->format, &u16, sizeof(u16))
+				!= sizeof(u16))
+			return -1;
 	return 0;
 }
 
@@ -438,16 +455,6 @@ static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 /* java_error */
 static int _java_error(FormatPlugin * format)
 {
-	return -error_set_code(1, "%s: %s", format->helper->filename,
-			strerror(errno));
-}
-
-
-/* java_error_fread */
-static int _java_error_fread(FormatPlugin * format)
-{
-	if(ferror(format->helper->fp))
-		return _java_error(format);
-	return -error_set_code(1, "%s: %s", format->helper->filename,
-			"End of file reached");
+	return -error_set_code(1, "%s: %s", format->helper->get_filename(
+				format->helper->format), strerror(errno));
 }

@@ -34,7 +34,22 @@ struct _Format
 	FormatPluginHelper helper;
 	Plugin * handle;
 	FormatPlugin * plugin;
+
+	/* internal */
+	/* file */
+	char const * filename;
+	FILE * fp;
 };
+
+
+/* prototypes */
+/* callbacks */
+static char const * _format_get_filename(Format * format);
+
+static ssize_t _format_read(Format * format, void * buf, size_t size);
+static off_t _format_seek(Format * format, off_t offset, int whence);
+
+static ssize_t _format_write(Format * format, void const * buf, size_t size);
 
 
 /* public */
@@ -100,10 +115,12 @@ int format_exit(Format * format)
 #endif
 	if(format->plugin->exit != NULL)
 		ret = format->plugin->exit(format->plugin);
+	format->helper.format = NULL;
+	format->helper.read = NULL;
+	format->helper.seek = NULL;
 	format->plugin->helper = NULL;
-	format->helper.fp = NULL;
-	format->helper.filename = NULL;
-	format->helper.priv = NULL;
+	format->fp = NULL;
+	format->filename = NULL;
 	return ret;
 }
 
@@ -124,9 +141,13 @@ int format_init(Format * format, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
-	format->helper.filename = filename;
-	format->helper.fp = fp;
-	format->helper.priv = NULL;
+	format->filename = filename;
+	format->fp = fp;
+	format->helper.format = format;
+	format->helper.get_filename = _format_get_filename;
+	format->helper.read = _format_read;
+	format->helper.seek = _format_seek;
+	format->helper.write = _format_write;
 	format->plugin->helper = &format->helper;
 	if(format->plugin->init != NULL)
 		return format->plugin->init(format->plugin, format->arch);
@@ -140,4 +161,63 @@ int format_section(Format * format, char const * section)
 	if(format->plugin->section == NULL)
 		return 0;
 	return format->plugin->section(format->plugin, section);
+}
+
+
+/* private */
+/* functions */
+/* format_get_filename */
+static char const * _format_get_filename(Format * format)
+{
+	return format->filename;
+}
+
+
+/* format_read */
+static ssize_t _format_read(Format * format, void * buf, size_t size)
+{
+	if(fread(buf, size, 1, format->fp) == 1)
+		return size;
+	if(ferror(format->fp))
+		return -error_set_code(1, "%s: %s", format->filename,
+				strerror(errno));
+	if(feof(format->fp))
+		return -error_set_code(1, "%s: %s", format->filename,
+				"End of file reached");
+	return -error_set_code(1, "%s: %s", format->filename, "Read error");
+}
+
+
+/* format_seek */
+static off_t _format_seek(Format * format, off_t offset, int whence)
+{
+	if(whence == SEEK_SET)
+	{
+		if(fseek(format->fp, offset, whence) == 0)
+			return offset;
+	}
+	else if(whence == SEEK_CUR || whence == SEEK_END)
+	{
+		if(fseek(format->fp, offset, whence) == 0)
+			return ftello(format->fp);
+	}
+	else
+		return -error_set_code(1, "%s: %s", format->filename,
+				"Invalid argument for seeking");
+	return -error_set_code(1, "%s: %s", format->filename, strerror(errno));
+}
+
+
+/* format_write */
+static ssize_t _format_write(Format * format, void const * buf, size_t size)
+{
+	if(fwrite(buf, size, 1, format->fp) == 1)
+		return size;
+	if(ferror(format->fp))
+		return -error_set_code(1, "%s: %s", format->filename,
+				strerror(errno));
+	if(feof(format->fp))
+		return -error_set_code(1, "%s: %s", format->filename,
+				"End of file reached");
+	return -error_set_code(1, "%s: %s", format->filename, "Write error");
 }

@@ -23,14 +23,30 @@
 
 /* AsmFormat */
 /* types */
-typedef struct _FormatPluginHelper
-{
-	char const * filename;
-	FILE * fp;
-	void * priv;
-} FormatPluginHelper;
+typedef struct _Format Format;
 
 typedef struct _FormatPlugin FormatPlugin;
+
+typedef struct _FormatPluginHelper
+{
+	Format * format;
+
+	/* callbacks */
+	/* accessors */
+	char const * (*get_filename)(Format * format);
+
+	/* useful */
+	ssize_t (*read)(Format * format, void * buf, size_t size);
+	off_t (*seek)(Format * format, off_t offset, int whence);
+
+	/* assembly */
+	ssize_t (*write)(Format * format, void const * buf, size_t size);
+
+	/* disassembly */
+	/* FIXME let a different architecture be specified in the callback */
+	int (*disas)(Format * format, char const * section,
+			off_t offset, size_t size, off_t base);
+} FormatPluginHelper;
 
 struct _FormatPlugin
 {
@@ -47,12 +63,7 @@ struct _FormatPlugin
 	int (*section)(FormatPlugin * format, char const * section);
 
 	char const * (*detect)(FormatPlugin * format);
-	/* FIXME:
-	 * - put the callback in the helper structure
-	 * - let a different architecture be specified in the callback */
-	int (*disas)(FormatPlugin * format, int (*callback)(
-				FormatPlugin * format, char const * section,
-				off_t offset, size_t size, off_t base));
+	int (*disas)(FormatPlugin * format);
 
 	void * priv;
 };

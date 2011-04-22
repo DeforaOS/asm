@@ -18,15 +18,11 @@
 #ifndef ASM_FORMAT_H
 # define ASM_FORMAT_H
 
-# include <stdio.h>
+# include "Asm/format.h"
 
 
 /* Format */
 /* public */
-/* types */
-typedef struct _Format Format;
-
-
 /* functions */
 Format * format_new(char const * format, char const * arch);
 void format_delete(Format * format);

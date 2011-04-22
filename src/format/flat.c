@@ -16,9 +16,7 @@
 
 
 #include <System.h>
-#include <sys/stat.h>
 #include <string.h>
-#include <errno.h>
 #include "Asm.h"
 
 
@@ -26,9 +24,7 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _flat_disas(FormatPlugin * format, int (*callback)(
-			FormatPlugin * format, char const * section,
-			off_t offset, size_t size, off_t base));
+static int _flat_disas(FormatPlugin * format);
 
 
 /* public */
@@ -53,14 +49,12 @@ FormatPlugin format_plugin =
 /* functions */
 /* plug-in */
 /* flat_disas */
-static int _flat_disas(FormatPlugin * format, int (*callback)(
-			FormatPlugin * format, char const * section,
-			off_t offset, size_t size, off_t base))
+static int _flat_disas(FormatPlugin * format)
 {
-	struct stat st;
+	FormatPluginHelper * helper = format->helper;
+	off_t offset;
 
-	if(fstat(fileno(format->helper->fp), &st) != 0)
-		return -error_set_code(1, "%s: %s", format->helper->filename,
-				strerror(errno));
-	return callback(format, ".data", 0, st.st_size, 0);
+	if((offset = helper->seek(helper->format, 0, SEEK_END)) < 0)
+		return -1;
+	return helper->disas(helper->format, ".data", 0, offset, 0);
 }

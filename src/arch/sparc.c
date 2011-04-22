@@ -30,6 +30,7 @@ static ArchRegister _sparc_registers[] =
 #include "sparc.reg"
 	{ NULL,		0, 0 }
 };
+#undef REG
 
 static ArchInstruction _sparc_instructions[] =
 {

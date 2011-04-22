@@ -1,4 +1,4 @@
-TARGETS	= i386.so i386_real.so i486.so i586.so i686.so sparc.so sparc64.so
+TARGETS	= i386.so i386_real.so i486.so i586.so i686.so java.so sparc.so sparc64.so
 PREFIX	= /usr/local
 DESTDIR	= 
 LIBDIR	= $(PREFIX)/lib
@@ -53,6 +53,13 @@ i686_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 i686.so: $(i686_OBJS)
 	$(LD) -o i686.so $(i686_OBJS) $(i686_LDFLAGS)
 
+java_OBJS = java.o
+java_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+java_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+java.so: $(java_OBJS)
+	$(LD) -o java.so $(java_OBJS) $(java_LDFLAGS)
+
 sparc_OBJS = sparc.o
 sparc_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 sparc_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
@@ -82,6 +89,9 @@ i586.o: i586.c common.ins null.ins i386.h i386.ins i386.reg i486.ins i586.ins
 i686.o: i686.c common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(i686_CFLAGS) -c i686.c
 
+java.o: java.c common.ins null.ins
+	$(CC) $(java_CFLAGS) -c java.c
+
 sparc.o: sparc.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc_CFLAGS) -c sparc.c
 
@@ -89,7 +99,7 @@ sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
 clean:
-	$(RM) -- $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
+	$(RM) -- $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -106,6 +116,8 @@ install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- i686.so $(DESTDIR)$(LIBDIR)/asm/arch/i686.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- java.so $(DESTDIR)$(LIBDIR)/asm/arch/java.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- sparc.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
@@ -116,6 +128,7 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i486.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i586.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i686.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/java.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
 

@@ -1,4 +1,4 @@
-TARGETS	= i386.so i386_real.so i486.so i586.so i686.so java.so sparc.so sparc64.so
+TARGETS	= dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so sparc.so sparc64.so
 PREFIX	= /usr/local
 DESTDIR	= 
 LIBDIR	= $(PREFIX)/lib
@@ -17,6 +17,13 @@ INSTALL	= install
 
 
 all: $(TARGETS)
+
+dalvik_OBJS = dalvik.o
+dalvik_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+dalvik_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+dalvik.so: $(dalvik_OBJS)
+	$(LD) -o dalvik.so $(dalvik_OBJS) $(dalvik_LDFLAGS)
 
 i386_OBJS = i386.o
 i386_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
@@ -74,6 +81,9 @@ sparc64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 sparc64.so: $(sparc64_OBJS)
 	$(LD) -o sparc64.so $(sparc64_OBJS) $(sparc64_LDFLAGS)
 
+dalvik.o: dalvik.c common.ins null.ins dalvik.ins dalvik.reg
+	$(CC) $(dalvik_CFLAGS) -c dalvik.c
+
 i386.o: i386.c common.ins null.ins i386.h i386.ins i386.reg
 	$(CC) $(i386_CFLAGS) -c i386.c
 
@@ -99,12 +109,14 @@ sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
 clean:
-	$(RM) -- $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
+	$(RM) -- $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- dalvik.so $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- i386.so $(DESTDIR)$(LIBDIR)/asm/arch/i386.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
@@ -123,6 +135,7 @@ install: $(TARGETS)
 	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
 
 uninstall:
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386_real.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i486.so

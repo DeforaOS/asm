@@ -49,6 +49,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/parser.h \
 		$(PACKAGE)-$(VERSION)/src/token.h \
 		$(PACKAGE)-$(VERSION)/src/project.conf \
+		$(PACKAGE)-$(VERSION)/src/arch/dalvik.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386_real.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i486.c \
@@ -59,6 +60,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/dalvik.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/dalvik.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.h \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.reg \

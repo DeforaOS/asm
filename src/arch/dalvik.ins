@@ -1,0 +1,177 @@
+/* $Id$ */
+/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel asm */
+/* This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+
+
+/* helpers */
+/* opcodes */
+#define OP1F		(8 << AOD_SIZE)
+#define OP2F		(16 << AOD_SIZE)
+
+/* operands */
+
+/* registers */
+#define OP_v0		AO_REGISTER(AOF_IMPLICIT, 32, REG_v0_id)
+#define OP_REGISTER	AO_REGISTER(0, 32, 0)
+
+/* immediate values */
+#define OP_U8		AO_IMMEDIATE(0, 0, 8)
+#define OP_U16		AO_IMMEDIATE(0, 0, 16)
+#define OP_U32		AO_IMMEDIATE(0, 0, 32)
+#define OP_U64		AO_IMMEDIATE(0, 0, 64)
+
+
+{ "add-double",		0xab,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "add-double/2addr",	0xcb,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "add-float",		0xa6,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "add-float/2addr",	0xc6,	OP1F, OP_v0, OP_REGISTER,       AOT_NONE    },
+{ "add-int",		0x90,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "add-int/2addr",	0xb0,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "add-int/lit8",	0xd8,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "add-int/lit16",	0xd0,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "add-long",		0x9b,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "add-long/2addr",	0xbb,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "aget",		0x44,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-boolean",	0x47,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-byte",		0x48,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-char",		0x49,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-object",	0x46,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-short",		0x4a,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aget-wide",		0x45,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "and-int",		0x95,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "and-int/2addr",	0xb5,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "and-int/lit8",	0xdd,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "and-int/lit16",	0xd5,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "and-long",		0xa0,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "and-long/2addr",	0xc0,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "aput",		0x4b,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-boolean",	0x4e,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-byte",		0x4f,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-char",		0x50,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-object",	0x4d,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-short",		0x51,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "aput-wide",		0x4c,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "array-length",	0x21,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "check-cast",		0x1f,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+#endif
+{ "cmp-long",		0x31,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "cmpg-double",	0x30,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "cmpg-float",		0x2e,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "cmpl-double",	0x2f,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "cmpl-float",		0x2d,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "const",		0x14,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+#if 1	/* XXX really implement */
+{ "const/4",		0x12,	OP1F, OP_v0,       OP_U8,       AOT_NONE    },
+#endif
+{ "const/16",		0x13,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const/high16",	0x15,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-class",	0x1c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-string",	0x1a,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-wide",		0x18,	OP1F, OP_REGISTER, OP_U64,      AOT_NONE    },
+{ "const-wide/16",	0x16,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-wide/32",	0x17,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+{ "div-double",		0xae,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "div-double/2addr",	0xce,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "div-float",		0xa9,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+{ "div-float/2addr",	0xc9,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "div-int",		0x93,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "div-int/2addr",	0xb3,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "div-int/lit8",	0xdb,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "div-int/lit16",	0xd3,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "div-long",		0x9e,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
+#if 1	/* XXX implement correctly */
+{ "div-long/2addr",	0xbe,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "double-to-float",	0x8c,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "double-to-int",	0x8a,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "double-to-long",	0x8b,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#if 1	/* XXX really implement */
+{ "fill-array-data",	0x26,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+{ "filled-new-array",	0x24,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+{ "filled-new-array-range",
+			0x25,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+#endif
+{ "float-to-double",	0x89,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "float-to-int",	0x8a,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "float-to-long",	0x88,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+#endif
+{ "goto",		0x28,	OP1F, OP_U8,       AOT_NONE,    AOT_NONE    },
+{ "goto/16",		0x2900,	OP2F, OP_U16,      AOT_NONE,    AOT_NONE    },
+{ "if-eq",		0x32,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-eqz",		0x38,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "if-ge",		0x35,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-gez",		0x3b,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "if-gt",		0x36,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-gtz",		0x3c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "if-le",		0x37,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-lez",		0x3d,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "if-lt",		0x34,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-ltz",		0x3a,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "if-ne",		0x33,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "if-nez",		0x39,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+#if 1	/* XXX really implement */
+{ "iget",		0x52,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-boolean",	0x55,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-byte",		0x56,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-char",		0x57,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-object",	0x54,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-short",		0x58,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "iget-wide",		0x53,	OP1F, OP_v0,       OP_REGISTER, OP_U16      },
+{ "int-to-byte",	0x8d,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "int-to-char",	0x8e,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "int-to-float",	0x82,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "int-to-long",	0x81,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "int-to-short",	0x8f,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "invoke-direct",	0x70,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-direct/range",0x76,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-interface",	0x72,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-interface-range",
+			0x78,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-static",	0x71,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-static/range",0x77,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-super",	0x6f,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-super/range",	0x75,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-virtual",	0x6e,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "invoke-virtual/range",
+			0x74,	OP1F, OP_U8, OP_U16, OP_U16 },
+{ "iput",		0x59,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-boolean",	0x5c,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-byte",		0x5d,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-char",		0x5e,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-object",	0x5b,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-short",		0x5f,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "iput-wide",		0x5a,	OP1F, OP_v0, OP_REGISTER, OP_U16 },
+{ "long-to-double",	0x86,	OP1F, OP_v0, OP_REGISTER, AOT_NONE },
+{ "long-to-float",	0x85,	OP1F, OP_v0, OP_REGISTER, AOT_NONE },
+{ "long-to-int",	0x84,	OP1F, OP_v0, OP_REGISTER, AOT_NONE },
+#endif
+{ "monitor-enter",	0x1d,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },
+{ "monitor-exit",	0x1e,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },
+#if 1 /* XXX really implement */
+{ "move",		0x01,	OP1F, OP_v0, OP_REGISTER, AOT_NONE },
+#endif
+{ "move/16",		0x03,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
+{ "move/from16",	0x02,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
+{ "move-exception",	0x0d,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },

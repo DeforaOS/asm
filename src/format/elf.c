@@ -159,23 +159,23 @@ static ElfArch * _init_arch(char const * arch);
 static int _elf_init(FormatPlugin * format, char const * arch)
 {
 	if((ea = _init_arch(arch)) == NULL)
-		return 1;
+		return -1;
 	if(ea->capacity == ELFCLASS32)
 	{
 		if(_init_32(format) != 0)
-			return 1;
+			return -1;
 		format->exit = _exit_32;
 		format->section = _section_32;
 	}
 	else if(ea->capacity == ELFCLASS64)
 	{
 		if(_init_64(format) != 0)
-			return 1;
+			return -1;
 		format->exit = _exit_64;
 		format->section = _section_64;
 	}
 	else
-		return 1;
+		return -1;
 	return 0;
 }
 
@@ -291,7 +291,7 @@ static int _elf_decode32(FormatPlugin * format)
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() \"%s\"\n", __func__,
-			format->helper->filename);
+			helper->get_filename(helper->format));
 #endif
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0
 			|| helper->read(helper->format, &ehdr, sizeof(ehdr))

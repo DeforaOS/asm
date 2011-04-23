@@ -40,10 +40,18 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	if(helper->read(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;
+	call->operands[0].type = AOT_NONE;
+	call->operands[1].type = AOT_NONE;
+	call->operands[2].type = AOT_NONE;
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
 			== NULL)
-		/* FIXME return "db" instead */
-		return -1;
+	{
+		/* FIXME check if it's a longer instruction */
+		call->name = "db";
+		call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
+		call->operands[0].value.immediate.value = opcode;
+		return 0;
+	}
 	call->name = ai->name;
 	return 0;
 }

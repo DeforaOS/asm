@@ -123,6 +123,7 @@ int code_close(Code * code)
 	if(fclose(code->fp) != 0 && ret == 0)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
+	code->fp = NULL;
 	return ret;
 }
 

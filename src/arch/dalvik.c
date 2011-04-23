@@ -63,6 +63,12 @@ static ArchInstruction _dalvik_instructions[] =
 };
 
 
+/* prototypes */
+/* plug-in */
+static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call);
+
+
 /* public */
 /* variables */
 ArchPlugin arch_plugin =
@@ -72,6 +78,42 @@ ArchPlugin arch_plugin =
 	&_dalvik_description,
 	_dalvik_registers,
 	_dalvik_instructions,
-	NULL,
+	_dalvik_write,
 	NULL
 };
+
+
+/* private */
+/* functions */
+/* dalvik_write */
+static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
+		ArchInstructionCall * call)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	uint8_t u8;
+	uint16_t u16;
+	unsigned char const * buf;
+	size_t size;
+
+	/* FIXME really implement */
+	switch(AO_GET_SIZE(instruction->flags))
+	{
+		case 8:
+			u8 = instruction->opcode;
+			buf = &u8;
+			size = sizeof(u8);
+			break;
+		case 16:
+			u16 = _htol16(instruction->opcode);
+			buf = &u16;
+			size = sizeof(u16);
+			break;
+		default:
+			/* FIXME should not happen */
+			return -error_set_code(1, "%s: %s", helper->filename,
+					"Invalid size for opcode");
+	}
+	if(fwrite(buf, size, 1, helper->fp) != 1)
+		return -1; /* XXX report error */
+	return 0;
+}

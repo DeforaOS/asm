@@ -81,6 +81,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/pe.c \
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
+		$(PACKAGE)-$(VERSION)/test/dalvik.S \
 		$(PACKAGE)-$(VERSION)/test/i386.S \
 		$(PACKAGE)-$(VERSION)/test/i386_real.S \
 		$(PACKAGE)-$(VERSION)/test/i486.S \

@@ -30,13 +30,21 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 /* functions */
 /* i386_decode */
+static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
+static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
+static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
+
 static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	ArchInstruction * ai = NULL;
 	uint8_t opcode;
+	size_t i;
 
-	/* FIXME really implement */
+	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;
@@ -53,6 +61,73 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		return 0;
 	}
 	call->name = ai->name;
+	call->operands[0].type = ai->op1;
+	call->operands[1].type = ai->op2;
+	call->operands[2].type = ai->op3;
+	for(i = 0; AO_GET_TYPE(call->operands[i].type) != 0; i++)
+		if(_decode_operand(plugin, call, i) != 0)
+			return -1;
+	call->operands_cnt = i;
+	return 0;
+}
+
+static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition aod = call->operands[i].type;
+	ArchRegister * ar;
+	uint8_t id;
+
+	/* FIXME check the size */
+	if(helper->read(helper->arch, &id, sizeof(id)) != sizeof(id))
+		return -1;
+	if((ar = helper->get_register_by_id_size(helper->arch, id,
+					AO_GET_SIZE(aod))) == NULL)
+		return -1;
+	call->operands[i].value.dregister.name = ar->name;
+	call->operands[i].value.dregister.offset = 0;
+	return 0;
+}
+
+static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	switch(AO_GET_TYPE(call->operands[i].type))
+	{
+		/* FIXME implement the rest */
+		case AOT_DREGISTER:
+			return _decode_dregister(plugin, call, i);
+		case AOT_REGISTER:
+			return _decode_register(plugin, call, i);
+	}
+	return -error_set_code(1, "%s", strerror(ENOSYS));
+}
+
+static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition aod = call->operands[i].type;
+	ArchRegister * ar;
+	uint8_t id;
+
+	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
+	{
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						AO_GET_VALUE(aod),
+						AO_GET_SIZE(aod))) == NULL)
+			return -1;
+		call->operands[i].value._register.name = ar->name;
+		return 0;
+	}
+	/* FIXME check the size */
+	if(helper->read(helper->arch, &id, sizeof(id)) != sizeof(id))
+		return -1;
+	if((ar = helper->get_register_by_id_size(helper->arch, id,
+					AO_GET_SIZE(aod))) == NULL)
+		return -1;
+	call->operands[i].value._register.name = ar->name;
 	return 0;
 }
 

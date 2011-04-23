@@ -386,13 +386,15 @@ ArchRegister * arch_get_register(Arch * arch, size_t index)
 }
 
 
-/* arch_get_register_by_id */
-ArchRegister * arch_get_register_by_id(Arch * arch, unsigned int id)
+/* arch_get_register_by_id_size */
+ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
+		uint32_t size)
 {
 	size_t i;
 
 	for(i = 0; i < arch->registers_cnt; i++)
-		if(arch->plugin->registers[i].id == id)
+		if(arch->plugin->registers[i].id == id
+				&& arch->plugin->registers[i].size == size)
 			return &arch->plugin->registers[i];
 	return NULL;
 }
@@ -449,8 +451,44 @@ int arch_decode(Arch * arch)
 
 static void _decode_print(ArchInstructionCall * call)
 {
-	/* FIXME really implement */
-	printf("\t%s\n", call->name);
+	char const * sep = "\t";
+	size_t i;
+	ArchOperand * ao;
+	char const * name;
+
+	printf("\t%s", call->name);
+	for(i = 0; i < call->operands_cnt; i++)
+	{
+		ao = &call->operands[i];
+		switch(AO_GET_TYPE(call->operands[i].type))
+		{
+			case AOT_DREGISTER:
+				name = ao->value.dregister.name;
+				printf("%s[%%%s + $0x%lx]", sep, name,
+						ao->value.dregister.offset);
+				sep = ", ";
+				break;
+			case AOT_DREGISTER2:
+				name = ao->value.dregister2.name;
+				printf("%s[%%%s + %%%s]", sep, name,
+						ao->value.dregister2.name2);
+				sep = ", ";
+				break;
+			case AOT_IMMEDIATE:
+				printf("%s%s$0x%lx", sep,
+						ao->value.immediate.negative
+						? "-" : "",
+						ao->value.immediate.value);
+				sep = ", ";
+				break;
+			case AOT_REGISTER:
+				name = call->operands[i].value._register.name;
+				printf("%s%%%s", sep, name);
+				sep = ", ";
+				break;
+		}
+	}
+	putchar('\n');
 }
 
 
@@ -482,6 +520,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
+	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.read = NULL;
 	arch->helper.write = _arch_write;
@@ -503,6 +542,7 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
+	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.write = NULL;
 	arch->helper.read = _arch_read_buffer;

@@ -119,15 +119,15 @@ typedef struct _ArchOperand
 		/* AOT_DREGISTER */
 		struct
 		{
-			char * name;
+			char const * name;
 			int64_t offset;
 		} dregister;
 
 		/* AOT_DREGISTER2 */
 		struct
 		{
-			char * name;
-			char * name2;
+			char const * name;
+			char const * name2;
 		} dregister2;
 
 		/* AOT_IMMEDIATE */
@@ -140,7 +140,7 @@ typedef struct _ArchOperand
 		/* AOT_REGISTER */
 		struct
 		{
-			char * name;
+			char const * name;
 		} _register;
 		/* FIXME complete */
 	} value;
@@ -181,6 +181,8 @@ typedef struct _ArchPluginHelper
 	char const * (*get_filename)(Arch * arch);
 	ArchInstruction * (*get_instruction_by_opcode)(Arch * arch,
 			uint8_t size, uint32_t opcode);
+	ArchRegister * (*get_register_by_id_size)(Arch * arch, uint32_t id,
+			uint32_t size);
 	ArchRegister * (*get_register_by_name_size)(Arch * arch,
 			char const * name, uint32_t size);
 

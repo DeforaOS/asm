@@ -43,7 +43,8 @@ ArchInstruction * arch_get_instruction_by_call(Arch * arch,
 		ArchInstructionCall * call);
 
 ArchRegister * arch_get_register(Arch * arch, size_t index);
-ArchRegister * arch_get_register_by_id(Arch * arch, unsigned int id);
+ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
+		uint32_t size);
 ArchRegister * arch_get_register_by_name(Arch * arch, char const * name);
 ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 		uint32_t size);

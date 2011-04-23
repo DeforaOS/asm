@@ -32,6 +32,8 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 /* i386_decode */
 static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
+static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
@@ -92,6 +94,28 @@ static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 	return 0;
 }
 
+static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperandDefinition aod = call->operands[i].type;
+	uint8_t u8;
+
+	/* FIXME implement more sizes */
+	switch(AO_GET_SIZE(aod) >> 3)
+	{
+		case sizeof(u8):
+			break;
+		default:
+			return -error_set_code(1, "%s", strerror(ENOSYS));
+	}
+	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+		return -1;
+	call->operands[i].value.immediate.value = u8;
+	call->operands[i].value.immediate.negative = 0;
+	return 0;
+}
+
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
@@ -100,6 +124,8 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		/* FIXME implement the rest */
 		case AOT_DREGISTER:
 			return _decode_dregister(plugin, call, i);
+		case AOT_IMMEDIATE:
+			return _decode_immediate(plugin, call, i);
 		case AOT_REGISTER:
 			return _decode_register(plugin, call, i);
 	}

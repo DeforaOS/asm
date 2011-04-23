@@ -161,7 +161,7 @@ static int _decode_file_callback(void * priv, char const * section,
 	Code * code = priv;
 
 	if(section != NULL)
-		printf("%s%s:\n", "\nDisassembly of section ", section);
+		printf("%s%s:\n\n", "\nDisassembly of section ", section);
 	return arch_decode_at(code->arch, offset, size, base);
 }
 

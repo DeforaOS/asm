@@ -436,28 +436,30 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-static void _decode_print(ArchInstructionCall * call);
+static void _decode_print(off_t offset, ArchInstructionCall * call);
 
 int arch_decode(Arch * arch)
 {
 	ArchInstructionCall call;
+	off_t offset;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	while(arch->plugin->decode(arch->plugin, &call) == 0)
-		_decode_print(&call);
+	for(offset = 0; arch->plugin->decode(arch->plugin, &call) == 0;
+			offset = arch->buffer_pos)
+		_decode_print(offset, &call);
 	return 0;
 }
 
-static void _decode_print(ArchInstructionCall * call)
+static void _decode_print(off_t offset, ArchInstructionCall * call)
 {
 	char const * sep = "\t";
 	size_t i;
 	ArchOperand * ao;
 	char const * name;
 
-	printf("\t%s", call->name);
+	printf("%08x: %s", offset, call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];
@@ -532,6 +534,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 #endif
 	arch->filename = filename;
 	arch->fp = fp;
+	arch->buffer_pos = 0; /* XXX used as offset */
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
@@ -590,7 +593,10 @@ static char const * _arch_get_filename(Arch * arch)
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
 {
 	if(fread(buf, size, 1, arch->fp) == 1)
+	{
+		arch->buffer_pos += size;
 		return size;
+	}
 	if(ferror(arch->fp))
 		return -error_set_code(1, "%s: %s", arch->filename,
 				strerror(errno));

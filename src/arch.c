@@ -466,27 +466,24 @@ static void _decode_print(ArchInstructionCall * call)
 				name = ao->value.dregister.name;
 				printf("%s[%%%s + $0x%lx]", sep, name,
 						ao->value.dregister.offset);
-				sep = ", ";
 				break;
 			case AOT_DREGISTER2:
 				name = ao->value.dregister2.name;
 				printf("%s[%%%s + %%%s]", sep, name,
 						ao->value.dregister2.name2);
-				sep = ", ";
 				break;
 			case AOT_IMMEDIATE:
 				printf("%s%s$0x%lx", sep,
 						ao->value.immediate.negative
 						? "-" : "",
 						ao->value.immediate.value);
-				sep = ", ";
 				break;
 			case AOT_REGISTER:
 				name = call->operands[i].value._register.name;
 				printf("%s%%%s", sep, name);
-				sep = ", ";
 				break;
 		}
+		sep = ", ";
 	}
 	putchar('\n');
 }

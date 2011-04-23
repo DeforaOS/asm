@@ -94,7 +94,7 @@ static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	uint8_t u8;
 	uint16_t u16;
 	void const * buf;
-	size_t size;
+	ssize_t size;
 
 	/* FIXME really implement */
 	switch(AO_GET_SIZE(instruction->flags))

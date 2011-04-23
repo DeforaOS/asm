@@ -444,13 +444,13 @@ static void _decode_print(off_t offset, ArchInstructionCall * call);
 int arch_decode(Arch * arch)
 {
 	ArchInstructionCall call;
-	off_t offset;
+	off_t offset = arch->buffer_pos;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	for(offset = arch->buffer_pos;
-			arch->plugin->decode(arch->plugin, &call) == 0;
+	printf("%08lx:\n", offset);
+	for(; arch->plugin->decode(arch->plugin, &call) == 0;
 			offset = arch->buffer_pos)
 		_decode_print(offset, &call);
 	return 0;
@@ -458,12 +458,12 @@ int arch_decode(Arch * arch)
 
 static void _decode_print(off_t offset, ArchInstructionCall * call)
 {
-	char const * sep = "\t";
+	char const * sep = " ";
 	size_t i;
 	ArchOperand * ao;
 	char const * name;
 
-	printf("%08lx: %s", offset, call->name);
+	printf("%8lx: %-12s", offset, call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];

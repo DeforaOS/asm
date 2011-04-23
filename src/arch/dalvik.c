@@ -143,6 +143,7 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	DalvikDecode dd;
 	ArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
+	uint16_t u16;
 	ArchInstruction * ai;
 	size_t i;
 
@@ -157,8 +158,16 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	call->operands[2].type = AOT_NONE;
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
 			== NULL)
-		/* FIXME check if it's a nop or return "dw" */
-		return -1;
+	{
+		u16 = u8 << 8;
+		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+			return -1;
+		u16 = _htol16(u16 | u8);
+		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
+						u16)) == NULL)
+			/* FIXME return "dw" */
+			return -1;
+	}
 	call->name = ai->name;
 	call->operands[0].type = ai->op1;
 	call->operands[1].type = ai->op2;
@@ -277,6 +286,7 @@ static int _decode_register(DalvikDecode * dd, size_t i)
 	}
 	else
 		return -1;
+	/* FIXME it could be a register above 256... */
 	if((ar = helper->get_register_by_id_size(helper->arch, id, 32)) == NULL)
 		return -1;
 	dd->call->operands[i].value._register.name = ar->name;

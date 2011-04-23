@@ -18,8 +18,8 @@
 #ifndef DEVEL_ASM_ARCH_H
 # define DEVEL_ASM_ARCH_H
 
+# include <sys/types.h>
 # include <stdint.h>
-# include <stdio.h>
 
 
 /* AsmArch */

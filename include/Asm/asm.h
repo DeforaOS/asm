@@ -18,7 +18,7 @@
 #ifndef DEVEL_ASM_AS_H
 # define DEVEL_ASM_AS_H
 
-# include <sys/types.h>
+# include <stdio.h>
 # include "arch.h"
 
 

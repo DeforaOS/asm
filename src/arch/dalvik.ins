@@ -91,7 +91,7 @@
 { "const-class",	0x1c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const-string",	0x1a,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-wide",		0x18,	OP1F, OP_REGISTER, OP_U64,      AOT_NONE    },
-{ "const-wide/16",	0x16,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-wide/16",	0x16,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-wide/32",	0x17,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
 { "div-double",		0xae,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
 { "div-double/2addr",	0xce,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
@@ -171,9 +171,7 @@
 #endif
 { "monitor-enter",	0x1d,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },
 { "monitor-exit",	0x1e,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },
-#if 1 /* XXX really implement */
-{ "move",		0x01,	OP1F, OP_v0, OP_REGISTER, AOT_NONE },
-#endif
+{ "move",		0x01,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE },
 { "move/16",		0x03,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
 { "move/from16",	0x02,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
 { "move-exception",	0x0d,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },

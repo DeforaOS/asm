@@ -29,7 +29,7 @@ typedef struct _DalvikDecode
 	ArchPlugin * plugin;
 	ArchInstructionCall * call;
 
-	uint8_t u8;
+	int u8;
 } DalvikDecode;
 
 
@@ -146,9 +146,9 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	ArchInstruction * ai;
 	size_t i;
 
-	memset(&dd, 0, sizeof(dd));
 	dd.plugin = plugin;
 	dd.call = call;
+	dd.u8 = -1;
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
@@ -181,7 +181,17 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 	switch(AO_GET_SIZE(dd->call->operands[i].type))
 	{
 		case 4:
-			ao->value.immediate.value = dd->u8 & 0xf;
+			if(dd->u8 >= 0)
+			{
+				ao->value.immediate.value = dd->u8 & 0xf;
+				dd->u8 = -1;
+				break;
+			}
+			if(helper->read(helper->arch, &u8, sizeof(u8))
+					!= sizeof(u8))
+				return -1;
+			ao->value.immediate.value = u8 >> 4;
+			dd->u8 = u8;
 			break;
 		case 8:
 			if(helper->read(helper->arch, &u8, sizeof(u8))
@@ -237,6 +247,12 @@ static int _decode_register(DalvikDecode * dd, size_t i)
 		switch(AO_GET_VALUE(dd->call->operands[i].type))
 		{
 			case 4:
+				if(dd->u8 >= 0)
+				{
+					id = dd->u8 & 0xf;
+					dd->u8 = -1;
+					break;
+				}
 				if(helper->read(helper->arch, &u8, sizeof(u8))
 						!= sizeof(u8))
 					return -1;

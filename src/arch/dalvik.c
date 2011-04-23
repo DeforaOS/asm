@@ -15,7 +15,8 @@
 
 
 
-#include <stddef.h>
+#include <System.h>
+#include <stdio.h>
 #include "Asm.h"
 
 
@@ -92,7 +93,7 @@ static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	ArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	uint16_t u16;
-	unsigned char const * buf;
+	void const * buf;
 	size_t size;
 
 	/* FIXME really implement */

@@ -26,9 +26,11 @@
 #define AOF_DALVIK_REGSIZE	0x2
 #define OP_v0		AO_REGISTER(AOF_IMPLICIT, 32, REG_v0_id)
 #define OP_REGISTER	AO_REGISTER(0, 32, 0)
+#define OP_REG4		AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 4)
 #define OP_REG8		AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 8)
 
 /* immediate values */
+#define OP_U4		AO_IMMEDIATE(0, 0, 4)
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
 #define OP_U16		AO_IMMEDIATE(0, 0, 16)
 #define OP_U32		AO_IMMEDIATE(0, 0, 32)
@@ -83,9 +85,7 @@
 { "cmpl-double",	0x2f,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
 { "cmpl-float",		0x2d,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
 { "const",		0x14,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
-#if 1	/* XXX really implement */
-{ "const/4",		0x12,	OP1F, OP_v0,       OP_U8,       AOT_NONE    },
-#endif
+{ "const/4",		0x12,	OP1F, OP_REG4,     OP_U4,       AOT_NONE    },
 { "const/16",		0x13,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const/high16",	0x15,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const-class",	0x1c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
@@ -271,13 +271,13 @@
 { "shr-long/2addr",	0xc4,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
 { "sparse-switch",	0x2c,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
 #endif
-{ "sput",		0x67,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-boolean",	0x6a,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-byte",		0x6b,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-char",		0x6c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-object",	0x69,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-short",		0x6d,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "sput-wide",		0x68,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "sput",		0x67,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-boolean",	0x6a,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-byte",		0x6b,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-char",		0x6c,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-object",	0x69,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-short",		0x6d,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "sput-wide",		0x68,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "sub-double",		0xac,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },
 { "sub-double/2addr",	0xcc,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
 { "sub-float",		0xa7,	OP1F, OP_REGISTER, OP_REGISTER, OP_REGISTER },

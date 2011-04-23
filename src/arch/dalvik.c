@@ -17,11 +17,22 @@
 
 #include <System.h>
 #include <stdio.h>
+#include <string.h>
 #include "Asm.h"
 
 
 /* Dalvik */
 /* private */
+/* types */
+typedef struct _DalvikDecode
+{
+	ArchPlugin * plugin;
+	ArchInstructionCall * call;
+
+	uint8_t u8;
+} DalvikDecode;
+
+
 /* constants */
 /* register sizes */
 #define REG(name, size, id) REG_ ## name ## _size = size,
@@ -123,20 +134,21 @@ static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 
 /* dalvik_decode */
-static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i);
-static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i);
-static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i);
+static int _decode_immediate(DalvikDecode * dd, size_t i);
+static int _decode_operand(DalvikDecode * dd, size_t i);
+static int _decode_register(DalvikDecode * dd, size_t i);
 
 static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
+	DalvikDecode dd;
 	ArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	ArchInstruction * ai;
 	size_t i;
 
+	memset(&dd, 0, sizeof(dd));
+	dd.plugin = plugin;
+	dd.call = call;
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
@@ -152,23 +164,25 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	call->operands[1].type = ai->op2;
 	call->operands[2].type = ai->op3;
 	for(i = 0; AO_GET_TYPE(call->operands[i].type) != 0; i++)
-		if(_decode_operand(plugin, call, i) != 0)
+		if(_decode_operand(&dd, i) != 0)
 			return -1;
 	call->operands_cnt = i;
 	return 0;
 }
 
-static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i)
+static int _decode_immediate(DalvikDecode * dd, size_t i)
 {
-	ArchPluginHelper * helper = plugin->helper;
-	ArchOperand * ao = &call->operands[i];
+	ArchPluginHelper * helper = dd->plugin->helper;
+	ArchOperand * ao = &dd->call->operands[i];
 	uint8_t u8;
 	uint16_t u16;
 	uint32_t u32;
 
-	switch(AO_GET_SIZE(call->operands[i].type))
+	switch(AO_GET_SIZE(dd->call->operands[i].type))
 	{
+		case 4:
+			ao->value.immediate.value = dd->u8 & 0xf;
+			break;
 		case 8:
 			if(helper->read(helper->arch, &u8, sizeof(u8))
 					!= sizeof(u8))
@@ -194,36 +208,41 @@ static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 	return 0;
 }
 
-static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i)
+static int _decode_operand(DalvikDecode * dd, size_t i)
 {
-	switch(AO_GET_TYPE(call->operands[i].type))
+	switch(AO_GET_TYPE(dd->call->operands[i].type))
 	{
 		case AOT_IMMEDIATE:
-			return _decode_immediate(plugin, call, i);
+			return _decode_immediate(dd, i);
 		case AOT_REGISTER:
-			return _decode_register(plugin, call, i);
+			return _decode_register(dd, i);
 		default:
 			return -1;
 	}
 	return 0;
 }
 
-static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i)
+static int _decode_register(DalvikDecode * dd, size_t i)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	ArchPluginHelper * helper = dd->plugin->helper;
 	uint32_t id;
 	uint8_t u8;
 	uint16_t u16;
 	ArchRegister * ar;
 
-	if(AO_GET_FLAGS(call->operands[i].type) & AOF_IMPLICIT)
-		id = AO_GET_VALUE(call->operands[i].type);
-	else if(AO_GET_FLAGS(call->operands[i].type) & AOF_DALVIK_REGSIZE)
+	if(AO_GET_FLAGS(dd->call->operands[i].type) & AOF_IMPLICIT)
+		id = AO_GET_VALUE(dd->call->operands[i].type);
+	else if(AO_GET_FLAGS(dd->call->operands[i].type) & AOF_DALVIK_REGSIZE)
 	{
-		switch(AO_GET_VALUE(call->operands[i].type))
+		switch(AO_GET_VALUE(dd->call->operands[i].type))
 		{
+			case 4:
+				if(helper->read(helper->arch, &u8, sizeof(u8))
+						!= sizeof(u8))
+					return -1;
+				id = u8 >> 4;
+				dd->u8 = u8;
+				break;
 			case 8:
 				if(helper->read(helper->arch, &u8, sizeof(u8))
 						!= sizeof(u8))
@@ -236,8 +255,6 @@ static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 					return -1;
 				id = _htol16(u16);
 				break;
-			case 4:
-				/* FIXME implement */
 			default:
 				return -1;
 		}
@@ -246,6 +263,6 @@ static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 		return -1;
 	if((ar = helper->get_register_by_id_size(helper->arch, id, 32)) == NULL)
 		return -1;
-	call->operands[i].value._register.name = ar->name;
+	dd->call->operands[i].value._register.name = ar->name;
 	return 0;
 }

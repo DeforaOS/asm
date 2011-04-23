@@ -449,7 +449,8 @@ int arch_decode(Arch * arch)
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	for(offset = 0; arch->plugin->decode(arch->plugin, &call) == 0;
+	for(offset = arch->buffer_pos;
+			arch->plugin->decode(arch->plugin, &call) == 0;
 			offset = arch->buffer_pos)
 		_decode_print(offset, &call);
 	return 0;

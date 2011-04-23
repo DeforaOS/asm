@@ -50,9 +50,14 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 int arch_init(Arch * arch, char const * filename, FILE * fp);
+int arch_init_buffer(Arch * arch, char const * buffer, size_t size);
 int arch_exit(Arch * arch);
 
+/* assembly */
 int arch_write(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call);
+
+/* disassembly */
+int arch_decode(Arch * arch);
 
 #endif /* !ASM_ARCH_H */

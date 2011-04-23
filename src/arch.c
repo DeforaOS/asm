@@ -27,7 +27,10 @@
 
 /* macros */
 #ifndef abs
-# define abs(a) ((a) >= 0 ? (a) : -(a))
+# define abs(a)		((a) >= 0 ? (a) : -(a))
+#endif
+#ifndef min
+# define min(a, b)	((a) < (b) ? (a) : (b))
 #endif
 
 
@@ -45,6 +48,9 @@ struct _Arch
 	/* internal */
 	char const * filename;
 	FILE * fp;
+	char const * buffer;
+	size_t buffer_cnt;
+	size_t buffer_pos;
 };
 
 
@@ -57,6 +63,7 @@ struct _Arch
 /* prototypes */
 /* callbacks */
 static char const * _arch_get_filename(Arch * arch);
+static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_write(Arch * arch, void const * buf, size_t size);
 
 
@@ -93,6 +100,11 @@ Arch * arch_new(char const * name)
 	if(a->plugin->registers != NULL)
 		for(; a->plugin->registers[a->registers_cnt].name != NULL;
 				a->registers_cnt++);
+	a->filename = NULL;
+	a->fp = NULL;
+	a->buffer = NULL;
+	a->buffer_cnt = 0;
+	a->buffer_pos = 0;
 	return a;
 }
 
@@ -420,11 +432,36 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 
 /* useful */
+/* arch_decode */
+static void _decode_print(ArchInstructionCall * call);
+
+int arch_decode(Arch * arch)
+{
+	ArchInstructionCall call;
+
+	if(arch->plugin->decode == NULL)
+		return -error_set_code(1, "%s: %s", arch->plugin->name,
+				"Disassembly not supported");
+	while(arch->plugin->decode(arch->plugin, &call) == 0)
+		_decode_print(&call);
+	return 0;
+}
+
+static void _decode_print(ArchInstructionCall * call)
+{
+	/* FIXME really implement */
+	printf("\t%s\n", call->name);
+}
+
+
 /* arch_exit */
 int arch_exit(Arch * arch)
 {
 	arch->filename = NULL;
 	arch->fp = NULL;
+	arch->buffer = NULL;
+	arch->buffer_cnt = 0;
+	arch->buffer_pos = 0;
 	memset(&arch->helper, 0, sizeof(arch->helper));
 	return 0;
 }
@@ -442,7 +479,28 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
+	arch->helper.read = NULL;
 	arch->helper.write = _arch_write;
+	arch->plugin->helper = &arch->helper;
+	return 0;
+}
+
+
+/* arch_init */
+int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	arch->filename = "buffer";
+	arch->buffer = buffer;
+	arch->buffer_cnt = size;
+	arch->buffer_pos = 0;
+	arch->helper.arch = arch;
+	arch->helper.get_filename = _arch_get_filename;
+	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
+	arch->helper.write = NULL;
+	arch->helper.read = _arch_read_buffer;
 	arch->plugin->helper = &arch->helper;
 	return 0;
 }
@@ -465,6 +523,17 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 static char const * _arch_get_filename(Arch * arch)
 {
 	return arch->filename;
+}
+
+
+/* arch_read_buffer */
+static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
+{
+	ssize_t s = min(arch->buffer_cnt - arch->buffer_pos, size);
+
+	memcpy(buf, &arch->buffer[arch->buffer_pos], s);
+	arch->buffer_pos += s;
+	return s;
 }
 
 

@@ -61,9 +61,9 @@ static int _elf_error(FormatPlugin * format);
 /* plug-in */
 static int _elf_init(FormatPlugin * format, char const * arch);
 static char const * _elf_detect(FormatPlugin * format);
-static int _elf_disas(FormatPlugin * format);
-static int _elf_disas32(FormatPlugin * format);
-static int _elf_disas64(FormatPlugin * format);
+static int _elf_decode(FormatPlugin * format);
+static int _elf_decode32(FormatPlugin * format);
+static int _elf_decode64(FormatPlugin * format);
 
 /* ELF32 */
 static int _init_32(FormatPlugin * format);
@@ -138,7 +138,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	_elf_detect,
-	_elf_disas,
+	_elf_decode,
 	NULL
 };
 
@@ -222,7 +222,7 @@ static char const * _elf_detect(FormatPlugin * format)
 
 static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 {
-	format->disas = _elf_disas32;
+	format->decode = _elf_decode32;
 	switch(ehdr->e_machine)
 	{
 		case EM_386:
@@ -237,7 +237,7 @@ static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 		case EM_SPARC:
 			return "sparc";
 	}
-	format->disas = _elf_disas;
+	format->decode = _elf_decode;
 	error_set_code(1, "%s: %s 0x%x", "elf", "Unsupported ELF architecture",
 			ehdr->e_machine);
 	return NULL;
@@ -245,7 +245,7 @@ static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 
 static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 {
-	format->disas = _elf_disas64;
+	format->decode = _elf_decode64;
 	switch(ehdr->e_machine)
 	{
 		case EM_SPARC:
@@ -254,32 +254,32 @@ static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 		case EM_X86_64:
 			return "amd64";
 	}
-	format->disas = _elf_disas;
+	format->decode = _elf_decode;
 	error_set_code(1, "%s: %s 0x%x", "elf", "Unsupported ELF architecture",
 			ehdr->e_machine);
 	return NULL;
 }
 
 
-/* elf_disas */
-static int _elf_disas(FormatPlugin * format)
+/* elf_decode */
+static int _elf_decode(FormatPlugin * format)
 {
 	if(_elf_detect(format) == NULL)
 		return -1;
-	return format->disas(format);
+	return format->decode(format);
 }
 
 
-/* elf_disas32 */
-static int _disas32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+/* elf_decode32 */
+static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr ** shdr);
-static int _disas32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Addr * addr);
-static int _disas32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
+static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
 
-static int _elf_disas32(FormatPlugin * format)
+static int _elf_decode32(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	Elf32_Ehdr ehdr;
@@ -297,10 +297,10 @@ static int _elf_disas32(FormatPlugin * format)
 			|| helper->read(helper->format, &ehdr, sizeof(ehdr))
 			!= sizeof(ehdr))
 		return -1;
-	if(_disas32_shdr(format, &ehdr, &shdr) != 0)
+	if(_decode32_shdr(format, &ehdr, &shdr) != 0)
 		return -1;
-	if(_disas32_addr(format, &ehdr, &base) != 0
-			|| _disas32_strtab(format, shdr, ehdr.e_shnum,
+	if(_decode32_addr(format, &ehdr, &base) != 0
+			|| _decode32_strtab(format, shdr, ehdr.e_shnum,
 				ehdr.e_shstrndx, &shstrtab, &shstrtab_cnt)
 			!= 0)
 	{
@@ -313,7 +313,7 @@ static int _elf_disas32(FormatPlugin * format)
 			continue;
 		if(shdr[i].sh_type == SHT_PROGBITS
 				&& shdr[i].sh_flags & SHF_EXECINSTR)
-			helper->disas(helper->format,
+			helper->decode(helper->format,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
 					base);
@@ -323,7 +323,7 @@ static int _elf_disas32(FormatPlugin * format)
 	return 0;
 }
 
-static int _disas32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr ** shdr)
 {
 	FormatPluginHelper * helper = format->helper;
@@ -351,7 +351,7 @@ static int _disas32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 	return 0;
 }
 
-static int _disas32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Addr * addr)
 {
 	FormatPluginHelper * helper = format->helper;
@@ -373,7 +373,7 @@ static int _disas32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 	return 0;
 }
 
-static int _disas32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
+static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt)
 {
@@ -399,16 +399,16 @@ static int _disas32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 }
 
 
-/* elf_disas64 */
-static int _disas64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+/* elf_decode64 */
+static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr ** shdr);
-static int _disas64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Addr * addr);
-static int _disas64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
+static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
 
-static int _elf_disas64(FormatPlugin * format)
+static int _elf_decode64(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	Elf64_Ehdr ehdr;
@@ -426,10 +426,10 @@ static int _elf_disas64(FormatPlugin * format)
 			|| helper->read(helper->format, &ehdr, sizeof(ehdr))
 			!= sizeof(ehdr))
 		return -1;
-	if(_disas64_shdr(format, &ehdr, &shdr) != 0)
+	if(_decode64_shdr(format, &ehdr, &shdr) != 0)
 		return -1;
-	if(_disas64_addr(format, &ehdr, &base) != 0
-			|| _disas64_strtab(format, shdr, ehdr.e_shnum,
+	if(_decode64_addr(format, &ehdr, &base) != 0
+			|| _decode64_strtab(format, shdr, ehdr.e_shnum,
 				ehdr.e_shstrndx, &shstrtab, &shstrtab_cnt)
 			!= 0)
 	{
@@ -442,7 +442,7 @@ static int _elf_disas64(FormatPlugin * format)
 			continue;
 		if(shdr[i].sh_type == SHT_PROGBITS
 				&& shdr[i].sh_flags & SHF_EXECINSTR)
-			helper->disas(helper->format,
+			helper->decode(helper->format,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
 					base);
@@ -452,7 +452,7 @@ static int _elf_disas64(FormatPlugin * format)
 	return 0;
 }
 
-static int _disas64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr ** shdr)
 {
 	FormatPluginHelper * helper = format->helper;
@@ -480,7 +480,7 @@ static int _disas64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 	return 0;
 }
 
-static int _disas64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Addr * addr)
 {
 	FormatPluginHelper * helper = format->helper;
@@ -502,7 +502,7 @@ static int _disas64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 	return 0;
 }
 
-static int _disas64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
+static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt)
 {

@@ -128,6 +128,16 @@ int code_close(Code * code)
 
 
 /* code_decode */
+int code_decode(Code * code, char const * buffer, size_t size)
+{
+	int ret;
+
+	arch_init_buffer(code->arch, buffer, size);
+	ret = arch_decode(code->arch);
+	arch_exit(code->arch);
+	return ret;
+}
+#if 0
 static ArchInstruction * _decode_size(Code * code, size_t * size,
 		ArchInstruction * ai);
 
@@ -168,6 +178,7 @@ static ArchInstruction * _decode_size(Code * code, size_t * size,
 	*size = s;
 	return ai;
 }
+#endif
 
 
 /* code_function */

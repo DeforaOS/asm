@@ -40,7 +40,7 @@ char const * as_get_format_name(As * as);
 
 
 /* useful */
-ArchInstruction * as_decode(As * as, char const * buffer, size_t * size);
+int as_decode(As * as, char const * buffer, size_t size);
 int as_parse(As * as, char const * infile, char const * outfile);
 
 int as_open(As * as, char const * outfile);

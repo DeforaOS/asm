@@ -31,6 +31,7 @@ void format_delete(Format * format);
 char const * format_get_name(Format * format);
 
 /* useful */
+/* assembly */
 int format_init(Format * format, char const * filename, FILE * fp);
 int format_exit(Format * format);
 

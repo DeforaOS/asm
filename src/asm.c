@@ -149,7 +149,7 @@ int as_close(As * as)
 
 
 /* as_decode */
-ArchInstruction * as_decode(As * as, char const * buffer, size_t * size)
+int as_decode(As * as, char const * buffer, size_t size)
 {
 	return code_decode(as->code, buffer, size);
 }

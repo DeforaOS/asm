@@ -105,7 +105,7 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 static int _java_init(FormatPlugin * format, char const * arch);
 static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
-static int _java_disas(FormatPlugin * format);
+static int _java_decode(FormatPlugin * format);
 
 static int _java_error(FormatPlugin * format);
 
@@ -124,7 +124,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	_java_detect,
-	_java_disas,
+	_java_decode,
 	NULL
 };
 
@@ -286,13 +286,13 @@ static char const * _java_detect(FormatPlugin * format)
 }
 
 
-/* java_disas */
-static int _disas_skip_attributes(FormatPlugin * format, uint16_t cnt);
-static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt);
-static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt);
-static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt);
+/* java_decode */
+static int _decode_skip_attributes(FormatPlugin * format, uint16_t cnt);
+static int _decode_skip_constants(FormatPlugin * format, uint16_t cnt);
+static int _decode_skip_fields(FormatPlugin * format, uint16_t cnt);
+static int _decode_skip_interfaces(FormatPlugin * format, uint16_t cnt);
 
-static int _java_disas(FormatPlugin * format)
+static int _java_decode(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	JavaHeader jh;
@@ -308,29 +308,29 @@ static int _java_disas(FormatPlugin * format)
 		return -1;
 	/* skip constants */
 	jh.cp_cnt = _htob16(jh.cp_cnt);
-	if(jh.cp_cnt > 1 && _disas_skip_constants(format, jh.cp_cnt) != 0)
+	if(jh.cp_cnt > 1 && _decode_skip_constants(format, jh.cp_cnt) != 0)
 		return -1;
 	/* skip interfaces */
 	if(helper->read(helper->format, &jh2, sizeof(jh2)) != sizeof(jh2))
 		return -1;
 	jh2.interfaces_cnt = _htob16(jh2.interfaces_cnt);
-	if(_disas_skip_interfaces(format, jh2.interfaces_cnt) != 0)
+	if(_decode_skip_interfaces(format, jh2.interfaces_cnt) != 0)
 		return -1;
 	/* skip fields */
 	if(helper->read(helper->format, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
 	u16 = _htob16(u16);
-	if(_disas_skip_fields(format, u16) != 0)
+	if(_decode_skip_fields(format, u16) != 0)
 		return -1;
-	/* disassemble the rest */
+	/* decodesemble the rest */
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0
 			|| (end = helper->seek(helper->format, 0, SEEK_END))
 			< 0)
 		return -1;
-	return helper->disas(helper->format, NULL, offset, end - offset, 0);
+	return helper->decode(helper->format, NULL, offset, end - offset, 0);
 }
 
-static int _disas_skip_attributes(FormatPlugin * format, uint16_t cnt)
+static int _decode_skip_attributes(FormatPlugin * format, uint16_t cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;
@@ -355,7 +355,7 @@ static int _disas_skip_attributes(FormatPlugin * format, uint16_t cnt)
 	return 0;
 }
 
-static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt)
+static int _decode_skip_constants(FormatPlugin * format, uint16_t cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;
@@ -415,7 +415,7 @@ static int _disas_skip_constants(FormatPlugin * format, uint16_t cnt)
 	return 0;
 }
 
-static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt)
+static int _decode_skip_fields(FormatPlugin * format, uint16_t cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;
@@ -430,12 +430,12 @@ static int _disas_skip_fields(FormatPlugin * format, uint16_t cnt)
 				!= sizeof(jfi))
 			return -1;
 		jfi.attributes_cnt = _htob16(jfi.attributes_cnt);
-		_disas_skip_attributes(format, jfi.attributes_cnt);
+		_decode_skip_attributes(format, jfi.attributes_cnt);
 	}
 	return 0;
 }
 
-static int _disas_skip_interfaces(FormatPlugin * format, uint16_t cnt)
+static int _decode_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;

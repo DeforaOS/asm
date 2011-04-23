@@ -184,6 +184,9 @@ typedef struct _ArchPluginHelper
 
 	/* assembly */
 	ssize_t (*write)(Arch * arch, void const * buf, size_t size);
+
+	/* disassembly */
+	ssize_t (*read)(Arch * arch, void * buf, size_t size);
 } ArchPluginHelper;
 
 typedef struct _ArchPlugin ArchPlugin;
@@ -200,8 +203,7 @@ struct _ArchPlugin
 
 	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
 			ArchInstructionCall * call);
-	/* FIXME complete and implement */
-	int (*read)(ArchPlugin * arch);
+	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

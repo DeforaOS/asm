@@ -40,13 +40,15 @@ Format * code_get_format(Code * code);
 char const * code_get_format_name(Code * code);
 
 /* useful */
+/* assembly */
 int code_open(Code * code, char const * filename);
 int code_close(Code * code);
-
-ArchInstruction * code_decode(Code * code, char const * buffer, size_t * size);
 
 int code_function(Code * code, char const * function);
 int code_instruction(Code * code, ArchInstructionCall * call);
 int code_section(Code * code, char const * section);
+
+/* disassembly */
+int code_decode(Code * code, char const * buffer, size_t size);
 
 #endif /* !ASM_CODE_H */

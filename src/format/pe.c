@@ -89,7 +89,7 @@ static char const _pe_header_signature[4] = "PE\0\0";
 /* plug-in */
 static int _pe_init(FormatPlugin * format, char const * arch);
 static char const * _pe_detect(FormatPlugin * format);
-static int _pe_disas(FormatPlugin * format);
+static int _pe_decode(FormatPlugin * format);
 
 /* useful */
 static char const * _pe_get_arch(uint16_t machine);
@@ -109,7 +109,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	_pe_detect,
-	_pe_disas,
+	_pe_decode,
 	NULL
 };
 
@@ -173,10 +173,10 @@ static char const * _detect_error(FormatPlugin * format)
 }
 
 
-/* pe_disas */
-static int _disas_error(FormatPlugin * format);
+/* pe_decode */
+static int _decode_error(FormatPlugin * format);
 
-static int _pe_disas(FormatPlugin * format)
+static int _pe_decode(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	struct pe_msdos pm;
@@ -193,13 +193,13 @@ static int _pe_disas(FormatPlugin * format)
 			!= pm.offset)
 		return -1;
 	if(helper->read(helper->format, &ph, sizeof(ph)) != sizeof(ph))
-		return _disas_error(format);
+		return _decode_error(format);
 	ph.section_cnt = _htol16(ph.section_cnt);
 	ph.opthdr_size = _htol16(ph.opthdr_size);
 	if(ph.section_cnt > 0 && ph.opthdr_size != 0
 			&& helper->seek(helper->format, ph.opthdr_size,
 				SEEK_CUR) < 0)
-		return _disas_error(format);
+		return _decode_error(format);
 	for(i = 0; i < ph.section_cnt; i++)
 	{
 		if(helper->read(helper->format, &psh, sizeof(psh))
@@ -209,13 +209,13 @@ static int _pe_disas(FormatPlugin * format)
 		psh.vaddr = _htol32(psh.vaddr);
 		psh.raw_size = _htol32(psh.raw_size);
 		psh.raw_offset = _htol32(psh.raw_offset);
-		helper->disas(helper->format, psh.name, psh.raw_offset,
+		helper->decode(helper->format, psh.name, psh.raw_offset,
 				psh.raw_size, psh.vaddr);
 	}
 	return 0;
 }
 
-static int _disas_error(FormatPlugin * format)
+static int _decode_error(FormatPlugin * format)
 {
 	return -error_set_code(1, "%s: %s", format->helper->get_filename(
 				format->helper->format), strerror(errno));

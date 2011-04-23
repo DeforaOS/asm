@@ -44,7 +44,7 @@ typedef struct _FormatPluginHelper
 
 	/* disassembly */
 	/* FIXME let a different architecture be specified in the callback */
-	int (*disas)(Format * format, char const * section,
+	int (*decode)(Format * format, char const * section,
 			off_t offset, size_t size, off_t base);
 } FormatPluginHelper;
 
@@ -63,7 +63,7 @@ struct _FormatPlugin
 	int (*section)(FormatPlugin * format, char const * section);
 
 	char const * (*detect)(FormatPlugin * format);
-	int (*disas)(FormatPlugin * format);
+	int (*decode)(FormatPlugin * format);
 
 	void * priv;
 };

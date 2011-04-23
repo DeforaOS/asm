@@ -24,7 +24,7 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _flat_disas(FormatPlugin * format);
+static int _flat_decode(FormatPlugin * format);
 
 
 /* public */
@@ -40,7 +40,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	NULL,
-	_flat_disas,
+	_flat_decode,
 	NULL
 };
 
@@ -48,13 +48,13 @@ FormatPlugin format_plugin =
 /* private */
 /* functions */
 /* plug-in */
-/* flat_disas */
-static int _flat_disas(FormatPlugin * format)
+/* flat_decode */
+static int _flat_decode(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	off_t offset;
 
 	if((offset = helper->seek(helper->format, 0, SEEK_END)) < 0)
 		return -1;
-	return helper->disas(helper->format, ".data", 0, offset, 0);
+	return helper->decode(helper->format, ".data", 0, offset, 0);
 }

@@ -117,7 +117,7 @@ static char _dex_signature[4] = "dex\n";
 static int _dex_init(FormatPlugin * format, char const * arch);
 static int _dex_destroy(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
-static int _dex_disas(FormatPlugin * format);
+static int _dex_decode(FormatPlugin * format);
 
 static int _dex_error(FormatPlugin * format);
 
@@ -135,7 +135,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	_dex_detect,
-	_dex_disas,
+	_dex_decode,
 	NULL
 };
 
@@ -185,13 +185,13 @@ static char const * _dex_detect(FormatPlugin * format)
 }
 
 
-/* dex_disas */
-static int _disas_map(FormatPlugin * format, DexHeader * dh);
-static int _disas_map_code(FormatPlugin * format, off_t offset, size_t size);
-static int _disas_map_string_id(FormatPlugin * format, off_t offset,
+/* dex_decode */
+static int _decode_map(FormatPlugin * format, DexHeader * dh);
+static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size);
+static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size);
 
-static int _dex_disas(FormatPlugin * format)
+static int _dex_decode(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
 	DexHeader dh;
@@ -201,12 +201,12 @@ static int _dex_disas(FormatPlugin * format)
 	if(helper->read(helper->format, &dh, sizeof(dh)) != sizeof(dh))
 		return -1;
 	dh.map_off = _htol32(dh.map_off);
-	if(_disas_map(format, &dh) != 0)
+	if(_decode_map(format, &dh) != 0)
 		return -1;
 	return 0;
 }
 
-static int _disas_map(FormatPlugin * format, DexHeader * dh)
+static int _decode_map(FormatPlugin * format, DexHeader * dh)
 {
 	int ret = 0;
 	FormatPluginHelper * helper = format->helper;
@@ -242,11 +242,11 @@ static int _disas_map(FormatPlugin * format, DexHeader * dh)
 		switch(dmi.type)
 		{
 			case TYPE_CODE_ITEM:
-				ret |= _disas_map_code(format, dmi.offset,
+				ret |= _decode_map_code(format, dmi.offset,
 						dmi.size);
 				break;
 			case TYPE_STRING_ID_ITEM:
-				ret |= _disas_map_string_id(format, dmi.offset,
+				ret |= _decode_map_string_id(format, dmi.offset,
 						dmi.size);
 		}
 		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
@@ -257,7 +257,7 @@ static int _disas_map(FormatPlugin * format, DexHeader * dh)
 	return ret;
 }
 
-static int _disas_map_code(FormatPlugin * format, off_t offset, size_t size)
+static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 {
 	FormatPluginHelper * helper = format->helper;
 	DexMapCodeItem dmci;
@@ -267,7 +267,7 @@ static int _disas_map_code(FormatPlugin * format, off_t offset, size_t size)
 	DexMapTryItem dmti;
 	ssize_t s;
 
-	if(helper->disas(helper->format, ".text", offset, 0, 0) != 0)
+	if(helper->decode(helper->format, ".text", offset, 0, 0) != 0)
 		return -1;
 	for(i = 0; i < size; i++)
 	{
@@ -281,7 +281,7 @@ static int _disas_map_code(FormatPlugin * format, off_t offset, size_t size)
 		dmci.debug_info_off = _htol32(dmci.debug_info_off);
 		dmci.insns_size = _htol32(dmci.insns_size);
 		seek = helper->seek(helper->format, 0, SEEK_CUR);
-		helper->disas(helper->format, NULL, seek, dmci.insns_size * 2,
+		helper->decode(helper->format, NULL, seek, dmci.insns_size * 2,
 				0);
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
@@ -307,13 +307,13 @@ static int _disas_map_code(FormatPlugin * format, off_t offset, size_t size)
 				dmti.handler_off = _htol16(dmti.handler_off);
 			}
 			seek = helper->seek(helper->format, 0, SEEK_CUR);
-			helper->disas(helper->format, NULL, seek, 8, 0);
+			helper->decode(helper->format, NULL, seek, 8, 0);
 		}
 	}
 	return 0;
 }
 
-static int _disas_map_string_id(FormatPlugin * format, off_t offset,
+static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size)
 {
 	FormatPluginHelper * helper = format->helper;

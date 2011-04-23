@@ -158,36 +158,40 @@ static int _write_immediate(ArchPlugin * plugin,
 
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
 {
-	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -error_set_code(1, "%s: %s", plugin->helper->filename,
-				strerror(errno));
+	ArchPluginHelper * helper = plugin->helper;
+
+	if(helper->write(helper->arch, &value, sizeof(value)) != sizeof(value))
+		return -1;
 	return 0;
 }
 
 static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
 {
+	ArchPluginHelper * helper = plugin->helper;
+
 	value = _htol16(value);
-	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -error_set_code(1, "%s: %s", plugin->helper->filename,
-				strerror(errno));
+	if(helper->write(helper->arch, &value, sizeof(value)) != sizeof(value))
+		return -1;
 	return 0;
 }
 
 static int _write_immediate24(ArchPlugin * plugin, uint32_t value)
 {
+	ArchPluginHelper * helper = plugin->helper;
+
 	value = _htol32(value) >> 8;
-	if(fwrite(&value, 3, 1, plugin->helper->fp) != 1)
-		return -error_set_code(1, "%s: %s", plugin->helper->filename,
-				strerror(errno));
+	if(helper->write(helper->arch, &value, 3) != 3)
+		return -1;
 	return 0;
 }
 
 static int _write_immediate32(ArchPlugin * plugin, uint32_t value)
 {
+	ArchPluginHelper * helper = plugin->helper;
+
 	value = _htol32(value);
-	if(fwrite(&value, sizeof(value), 1, plugin->helper->fp) != 1)
-		return -error_set_code(1, "%s: %s", plugin->helper->filename,
-				strerror(errno));
+	if(helper->write(helper->arch, &value, sizeof(value)) != sizeof(value))
+		return -1;
 	return 0;
 }
 

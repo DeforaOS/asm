@@ -176,13 +176,14 @@ typedef struct _ArchPluginHelper
 {
 	Arch * arch;
 
-	/* variables */
-	char const * filename;
-	FILE * fp;
-
 	/* callbacks */
+	/* accessors */
+	char const * (*get_filename)(Arch * arch);
 	ArchRegister * (*get_register_by_name_size)(Arch * arch,
 			char const * name, uint32_t size);
+
+	/* assembly */
+	ssize_t (*write)(Arch * arch, void const * buf, size_t size);
 } ArchPluginHelper;
 
 typedef struct _ArchPlugin ArchPlugin;

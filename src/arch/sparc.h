@@ -41,6 +41,7 @@ static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
 static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
+	ArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
 	if((opcode & 0xc0000000) == 0xc0000000)
@@ -66,7 +67,8 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	else
 		return -1;
 	opcode = _htob32(opcode);
-	if(fwrite(&opcode, sizeof(opcode), 1, plugin->helper->fp) != 1)
+	if(helper->write(helper->arch, &opcode, sizeof(opcode))
+			!= sizeof(opcode))
 		return -1;
 	return 0;
 }

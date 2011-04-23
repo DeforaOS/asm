@@ -111,10 +111,11 @@ static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			break;
 		default:
 			/* FIXME should not happen */
-			return -error_set_code(1, "%s: %s", helper->filename,
+			return -error_set_code(1, "%s: %s",
+					helper->get_filename(helper->arch),
 					"Invalid size for opcode");
 	}
-	if(fwrite(buf, size, 1, helper->fp) != 1)
-		return -1; /* XXX report error */
+	if(helper->write(helper->arch, buf, size) != size)
+		return -1;
 	return 0;
 }

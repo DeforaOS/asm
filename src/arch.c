@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
+#include <errno.h>
 #include "Asm/arch.h"
 #include "Asm/asm.h"
 #include "arch.h"
@@ -41,6 +41,10 @@ struct _Arch
 	ArchPlugin * plugin;
 	size_t instructions_cnt;
 	size_t registers_cnt;
+
+	/* internal */
+	char const * filename;
+	FILE * fp;
 };
 
 
@@ -48,6 +52,12 @@ struct _Arch
 #define AI_GET_OPERAND_COUNT(ai) (((ai->op1 & AOM_TYPE) ? 1 : 0) + \
 		((ai->op2 & AOM_TYPE) ? 1 : 0) + \
 		((ai->op3 & AOM_TYPE) ? 1 : 0))
+
+
+/* prototypes */
+/* callbacks */
+static char const * _arch_get_filename(Arch * arch);
+static ssize_t _arch_write(Arch * arch, void const * buf, size_t size);
 
 
 /* public */
@@ -413,6 +423,8 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 /* arch_exit */
 int arch_exit(Arch * arch)
 {
+	arch->filename = NULL;
+	arch->fp = NULL;
 	memset(&arch->helper, 0, sizeof(arch->helper));
 	return 0;
 }
@@ -425,10 +437,12 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
+	arch->filename = filename;
+	arch->fp = fp;
 	arch->helper.arch = arch;
-	arch->helper.filename = filename;
-	arch->helper.fp = fp;
+	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
+	arch->helper.write = _arch_write;
 	arch->plugin->helper = &arch->helper;
 	return 0;
 }
@@ -442,4 +456,28 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
 	return arch->plugin->write(arch->plugin, instruction, call);
+}
+
+
+/* private */
+/* callbacks */
+/* arch_get_filename */
+static char const * _arch_get_filename(Arch * arch)
+{
+	return arch->filename;
+}
+
+
+/* arch_write */
+static ssize_t _arch_write(Arch * arch, void const * buf, size_t size)
+{
+	if(fwrite(buf, size, 1, arch->fp) == 1)
+		return size;
+	if(ferror(arch->fp))
+		return -error_set_code(1, "%s: %s", arch->filename,
+				strerror(errno));
+	if(feof(arch->fp))
+		return -error_set_code(1, "%s: %s", arch->filename,
+				"End of file reached");
+	return -error_set_code(1, "%s: %s", arch->filename, "Write error");
 }

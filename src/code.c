@@ -137,6 +137,35 @@ int code_decode(Code * code, char const * buffer, size_t size)
 	arch_exit(code->arch);
 	return ret;
 }
+
+
+/* code_decode_file */
+static int _decode_file_callback(void * priv, char const * section,
+		off_t offset, size_t size, off_t base);
+
+int code_decode_file(Code * code, char const * filename, FILE * fp)
+{
+	int ret;
+
+	arch_init(code->arch, filename, fp);
+	format_init(code->format, filename, fp);
+	ret = format_decode(code->format, _decode_file_callback, code);
+	format_exit(code->format);
+	arch_exit(code->arch);
+	return ret;
+}
+
+static int _decode_file_callback(void * priv, char const * section,
+		off_t offset, size_t size, off_t base)
+{
+	Code * code = priv;
+
+	if(section != NULL)
+		printf("%s%s:\n", "\nDisassembly of section ", section);
+	return arch_decode_at(code->arch, offset, size, base);
+}
+
+
 #if 0
 static ArchInstruction * _decode_size(Code * code, size_t * size,
 		ArchInstruction * ai);

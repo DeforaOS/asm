@@ -39,6 +39,11 @@ struct _Format
 	/* file */
 	char const * filename;
 	FILE * fp;
+
+	/* diassembly */
+	int (*decode_callback)(void * priv, char const * section, off_t offset,
+			size_t size, off_t base);
+	void * decode_priv;
 };
 
 
@@ -105,6 +110,37 @@ char const * format_get_name(Format * format)
 
 
 /* useful */
+/* format_decode */
+static int _decode_callback(Format * format, char const * section,
+		off_t offset, size_t size, off_t base);
+
+int format_decode(Format * format, int (*callback)(void * priv,
+			char const * section, off_t offset, size_t size,
+			off_t base), void * priv)
+{
+	int ret;
+
+	if(format->plugin->decode == NULL)
+		return error_set_code(1, "%s: %s", format_get_name(format),
+				"Disassembly is not supported");
+	format->helper.decode = _decode_callback;
+	format->decode_callback = callback;
+	format->decode_priv = priv;
+	ret = format->plugin->decode(format->plugin);
+	format->decode_callback = NULL;
+	format->decode_priv = NULL;
+	format->helper.decode = NULL;
+	return ret;
+}
+
+static int _decode_callback(Format * format, char const * section,
+		off_t offset, size_t size, off_t base)
+{
+	return format->decode_callback(format->decode_priv, section, offset,
+			size, base);
+}
+
+
 /* format_exit */
 int format_exit(Format * format)
 {
@@ -116,6 +152,7 @@ int format_exit(Format * format)
 	if(format->plugin->exit != NULL)
 		ret = format->plugin->exit(format->plugin);
 	format->helper.format = NULL;
+	format->helper.decode = NULL;
 	format->helper.read = NULL;
 	format->helper.seek = NULL;
 	format->plugin->helper = NULL;
@@ -144,6 +181,7 @@ int format_init(Format * format, char const * filename, FILE * fp)
 	format->filename = filename;
 	format->fp = fp;
 	format->helper.format = format;
+	format->helper.decode = NULL;
 	format->helper.get_filename = _format_get_filename;
 	format->helper.read = _format_read;
 	format->helper.seek = _format_seek;

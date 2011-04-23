@@ -50,5 +50,6 @@ int code_section(Code * code, char const * section);
 
 /* disassembly */
 int code_decode(Code * code, char const * buffer, size_t size);
+int code_decode_file(Code * code, char const * filename, FILE * fp);
 
 #endif /* !ASM_CODE_H */

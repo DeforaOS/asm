@@ -53,7 +53,6 @@ typedef struct _DeasmFormat
 typedef struct _Deasm
 {
 	char const * arch;
-	As * as;
 
 	FormatPluginHelper helper;
 	DeasmFormat * format;
@@ -108,7 +107,6 @@ static int _deasm(char const * arch, char const * format,
 	Deasm deasm;
 
 	deasm.arch = arch;
-	deasm.as = NULL;
 	deasm.helper.format = &deasm;
 	deasm.helper.read = _deasm_helper_read;
 	deasm.helper.seek = _deasm_helper_seek;
@@ -123,8 +121,6 @@ static int _deasm(char const * arch, char const * format,
 		ret = _deasm_do_format(&deasm, format);
 	else
 		ret = _deasm_do(&deasm);
-	if(deasm.as != NULL)
-		as_delete(deasm.as);
 	fclose(deasm.fp);
 	_deasm_format_close_all(&deasm);
 	if(ret != 0)
@@ -205,6 +201,7 @@ static int _deasm_do(Deasm * deasm)
 static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 {
 	int ret;
+	As * as;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format->name);
@@ -217,11 +214,12 @@ static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 		if((deasm->arch = format->detect(format)) == NULL)
 			return -1;
 	}
-	if((deasm->as = as_new(deasm->arch, format->name)) == NULL)
+	if((as = as_new(deasm->arch, format->name)) == NULL)
 		return -error_print("deasm");
-	printf("\n%s: %s-%s\n", deasm->filename, format->name,
-			as_get_arch_name(deasm->as));
-	ret = format->decode(format);
+	printf("\n%s: %s-%s\n", deasm->filename, format->name, as_get_arch_name(
+				as));
+	ret = as_decode_file(as, deasm->filename, deasm->fp);
+	as_delete(as);
 	return ret;
 }
 

@@ -60,5 +60,6 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 
 /* disassembly */
 int arch_decode(Arch * arch);
+int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base);
 
 #endif /* !ASM_ARCH_H */

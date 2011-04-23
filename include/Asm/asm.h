@@ -41,6 +41,7 @@ char const * as_get_format_name(As * as);
 
 /* useful */
 int as_decode(As * as, char const * buffer, size_t size);
+int as_decode_file(As * as, char const * filename, FILE * fp);
 int as_parse(As * as, char const * infile, char const * outfile);
 
 int as_open(As * as, char const * outfile);

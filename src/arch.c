@@ -63,6 +63,7 @@ struct _Arch
 /* prototypes */
 /* callbacks */
 static char const * _arch_get_filename(Arch * arch);
+static ssize_t _arch_read(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_write(Arch * arch, void const * buf, size_t size);
 
@@ -489,6 +490,23 @@ static void _decode_print(ArchInstructionCall * call)
 }
 
 
+/* arch_decode_at */
+int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
+{
+	int ret;
+
+	if(arch->fp == NULL)
+		return -error_set_code(1, "%s", strerror(ENOSYS));
+	if(fseek(arch->fp, offset, SEEK_SET) != 0)
+		return -error_set_code(1, "%s", strerror(errno));
+	/* FIXME implement size, consider offset and base */
+	if((ret = arch_decode(arch)) == 0
+			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
+		ret = -error_set_code(1, "%s", strerror(errno));
+	return ret;
+}
+
+
 /* arch_exit */
 int arch_exit(Arch * arch)
 {
@@ -519,7 +537,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
-	arch->helper.read = NULL;
+	arch->helper.read = _arch_read;
 	arch->helper.write = _arch_write;
 	arch->plugin->helper = &arch->helper;
 	return 0;
@@ -565,6 +583,21 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 static char const * _arch_get_filename(Arch * arch)
 {
 	return arch->filename;
+}
+
+
+/* arch_read */
+static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
+{
+	if(fread(buf, size, 1, arch->fp) == 1)
+		return size;
+	if(ferror(arch->fp))
+		return -error_set_code(1, "%s: %s", arch->filename,
+				strerror(errno));
+	if(feof(arch->fp))
+		return -error_set_code(1, "%s: %s", arch->filename,
+				"End of file reached");
+	return -error_set_code(1, "%s: %s", arch->filename, "Read error");
 }
 
 

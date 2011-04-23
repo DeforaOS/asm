@@ -38,4 +38,9 @@ int format_exit(Format * format);
 int format_function(Format * format, char const * function);
 int format_section(Format * format, char const * section);
 
+/* disassembly */
+int format_decode(Format * format, int (*callback)(void * priv,
+			char const * section, off_t offset, size_t size,
+			off_t base), void * priv);
+
 #endif /* !ASM_FORMAT_H */

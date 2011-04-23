@@ -154,6 +154,21 @@ int as_decode(As * as, char const * buffer, size_t size)
 }
 
 
+/* as_decode_file */
+int as_decode_file(As * as, char const * filename, FILE * fp)
+{
+	int ret;
+
+	if(fp != NULL)
+		return code_decode_file(as->code, filename, fp);
+	if((fp = fopen(filename, "r")) == NULL)
+		return -error_set_code(1, "%s: %s", filename, strerror(errno));
+	ret = code_decode_file(as->code, filename, fp);
+	fclose(fp);
+	return ret;
+}
+
+
 /* as_parse */
 int as_parse(As * as, char const * infile, char const * outfile)
 {

@@ -23,8 +23,10 @@
 /* operands */
 
 /* registers */
+#define AOF_DALVIK_REGSIZE	0x2
 #define OP_v0		AO_REGISTER(AOF_IMPLICIT, 32, REG_v0_id)
 #define OP_REGISTER	AO_REGISTER(0, 32, 0)
+#define OP_REG8		AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 8)
 
 /* immediate values */
 #define OP_U8		AO_IMMEDIATE(0, 0, 8)
@@ -87,7 +89,7 @@
 { "const/16",		0x13,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const/high16",	0x15,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const-class",	0x1c,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-{ "const-string",	0x1a,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "const-string",	0x1a,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-wide",		0x18,	OP1F, OP_REGISTER, OP_U64,      AOT_NONE    },
 { "const-wide/16",	0x16,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
 { "const-wide/32",	0x17,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },

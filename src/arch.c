@@ -393,6 +393,9 @@ ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
 {
 	size_t i;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%u, %u)\n", __func__, id, size);
+#endif
 	for(i = 0; i < arch->registers_cnt; i++)
 		if(arch->plugin->registers[i].id == id
 				&& arch->plugin->registers[i].size == size)
@@ -459,7 +462,7 @@ static void _decode_print(off_t offset, ArchInstructionCall * call)
 	ArchOperand * ao;
 	char const * name;
 
-	printf("%08x: %s", offset, call->name);
+	printf("%08lx: %s", offset, call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];
@@ -497,11 +500,13 @@ int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
 {
 	int ret;
 
+	/* FIXME this only works for files */
 	if(arch->fp == NULL)
 		return -error_set_code(1, "%s", strerror(ENOSYS));
 	if(fseek(arch->fp, offset, SEEK_SET) != 0)
 		return -error_set_code(1, "%s", strerror(errno));
-	/* FIXME implement size, consider offset and base */
+	arch->buffer_pos = offset + base;
+	arch->buffer_cnt = offset + base + size;
 	if((ret = arch_decode(arch)) == 0
 			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
 		ret = -error_set_code(1, "%s", strerror(errno));
@@ -592,10 +597,12 @@ static char const * _arch_get_filename(Arch * arch)
 /* arch_read */
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
 {
-	if(fread(buf, size, 1, arch->fp) == 1)
+	size_t s = min(arch->buffer_cnt - arch->buffer_pos, size);
+
+	if(fread(buf, s, 1, arch->fp) == 1)
 	{
-		arch->buffer_pos += size;
-		return size;
+		arch->buffer_pos += s;
+		return s;
 	}
 	if(ferror(arch->fp))
 		return -error_set_code(1, "%s: %s", arch->filename,

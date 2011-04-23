@@ -40,6 +40,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/parser.c \
 		$(PACKAGE)-$(VERSION)/src/token.c \
 		$(PACKAGE)-$(VERSION)/src/main.c \
+		$(PACKAGE)-$(VERSION)/src/deasm.c \
 		$(PACKAGE)-$(VERSION)/src/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch.h \
 		$(PACKAGE)-$(VERSION)/src/asm.h \

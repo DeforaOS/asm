@@ -172,7 +172,7 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 	for(i = 0; i < arch->instructions_cnt; i++)
 	{
 		ai = &arch->plugin->instructions[i];
-		if(AO_GET_SIZE(ai->opcode) != size)
+		if(AO_GET_SIZE(ai->flags) != size)
 			continue;
 		if(ai->opcode == opcode)
 			return ai;
@@ -457,6 +457,9 @@ static void _decode_print(ArchInstructionCall * call)
 /* arch_exit */
 int arch_exit(Arch * arch)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	arch->filename = NULL;
 	arch->fp = NULL;
 	arch->buffer = NULL;
@@ -478,6 +481,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->fp = fp;
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
+	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.read = NULL;
 	arch->helper.write = _arch_write;
@@ -498,6 +502,7 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->buffer_pos = 0;
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
+	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.write = NULL;
 	arch->helper.read = _arch_read_buffer;
@@ -531,6 +536,11 @@ static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
 {
 	ssize_t s = min(arch->buffer_cnt - arch->buffer_pos, size);
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(s == 0)
+		return -error_set_code(1, "%s", "End of buffer reached");
 	memcpy(buf, &arch->buffer[arch->buffer_pos], s);
 	arch->buffer_pos += s;
 	return s;

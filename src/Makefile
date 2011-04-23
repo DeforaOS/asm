@@ -1,5 +1,5 @@
 SUBDIRS	= arch format
-TARGETS	= libasm.a libasm.so asm
+TARGETS	= libasm.a libasm.so asm deasm
 PREFIX	= /usr/local
 DESTDIR	= 
 LIBDIR	= $(PREFIX)/lib
@@ -42,6 +42,13 @@ asm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L. -Wl,-rpath,$(LIBDIR) -lasm
 asm: $(asm_OBJS) libasm.so
 	$(CC) -o asm $(asm_OBJS) $(asm_LDFLAGS)
 
+deasm_OBJS = deasm.o
+deasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+deasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L. -Wl,-rpath,$(LIBDIR) -lasm
+
+deasm: $(deasm_OBJS) libasm.so
+	$(CC) -o deasm $(deasm_OBJS) $(deasm_LDFLAGS)
+
 arch.o: arch.c arch.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c arch.c
 
@@ -63,13 +70,16 @@ token.o: token.c token.h
 main.o: main.c ../include/Asm.h
 	$(CC) $(asm_CFLAGS) -c main.c
 
+deasm.o: deasm.c ../include/Asm.h
+	$(CC) $(deasm_CFLAGS) -c deasm.c
+
 clean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
-	$(RM) -- $(libasm_OBJS) $(asm_OBJS)
+	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(deasm_OBJS)
 
 distclean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
-	$(RM) -- $(libasm_OBJS) $(asm_OBJS)
+	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(deasm_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)
@@ -81,6 +91,8 @@ install: $(TARGETS)
 	$(LN) -s -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 0755 -- asm $(DESTDIR)$(BINDIR)/asm
+	$(MKDIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL) -m 0755 -- deasm $(DESTDIR)$(BINDIR)/deasm
 
 uninstall:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
@@ -89,5 +101,6 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so.0
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so
 	$(RM) -- $(DESTDIR)$(BINDIR)/asm
+	$(RM) -- $(DESTDIR)$(BINDIR)/deasm
 
 .PHONY: all subdirs clean distclean install uninstall

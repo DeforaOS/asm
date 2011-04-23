@@ -80,5 +80,5 @@ ArchPlugin arch_plugin =
 	_amd64_registers,
 	_amd64_instructions,
 	_i386_write,
-	NULL
+	_i386_decode
 };

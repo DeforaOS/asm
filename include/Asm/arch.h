@@ -179,6 +179,8 @@ typedef struct _ArchPluginHelper
 	/* callbacks */
 	/* accessors */
 	char const * (*get_filename)(Arch * arch);
+	ArchInstruction * (*get_instruction_by_opcode)(Arch * arch,
+			uint8_t size, uint32_t opcode);
 	ArchRegister * (*get_register_by_name_size)(Arch * arch,
 			char const * name, uint32_t size);
 

@@ -78,5 +78,5 @@ ArchPlugin arch_plugin =
 	_i686_registers,
 	_i686_instructions,
 	_i386_write,
-	NULL
+	_i386_decode
 };

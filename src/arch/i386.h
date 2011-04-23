@@ -23,11 +23,33 @@
 /* i386 */
 /* private */
 /* prototypes */
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
 /* functions */
+/* i386_decode */
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchInstruction * ai = NULL;
+	uint8_t opcode;
+
+	/* FIXME really implement */
+	if(helper->read(helper->arch, &opcode, sizeof(opcode))
+			!= sizeof(opcode))
+		return -1;
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
+			== NULL)
+		/* FIXME return "db" instead */
+		return -1;
+	call->name = ai->name;
+	return 0;
+}
+
+
+/* i386_write */
 static int _write_constant(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_dregister(ArchPlugin * plugin, uint32_t * i,

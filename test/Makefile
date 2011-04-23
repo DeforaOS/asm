@@ -1,4 +1,4 @@
-TARGETS	= dalvik.o i386.o i386_real.o i486.o i586.o i686.o java.o sparc.o sparc64.o
+TARGETS	= amd64.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o java.o sparc.o sparc64.o
 PREFIX	= /usr/local
 DESTDIR	= 
 BINDIR	= $(PREFIX)/bin
@@ -11,6 +11,9 @@ INSTALL	= install
 
 
 all: $(TARGETS)
+
+amd64.o_OBJS = amd64.o
+amd64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a amd64
 
 dalvik.o_OBJS = dalvik.o
 dalvik.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a dalvik -f flat
@@ -38,6 +41,9 @@ sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
 
 sparc64.o_OBJS = sparc64.o
 sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
+
+amd64.o: amd64.S ../src/asm
+	$(AS) $(amd64.o_ASFLAGS) -o amd64.o amd64.S
 
 dalvik.o: dalvik.S ../src/asm
 	$(AS) $(dalvik.o_ASFLAGS) -o dalvik.o dalvik.S
@@ -67,7 +73,7 @@ sparc64.o: sparc64.S ../src/asm
 	$(AS) $(sparc64.o_ASFLAGS) -o sparc64.o sparc64.S
 
 clean:
-	$(RM) -- $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS)
+	$(RM) -- $(amd64.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

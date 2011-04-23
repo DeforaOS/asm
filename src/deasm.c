@@ -95,10 +95,6 @@ static int _usage(void);
 static int _deasm_do_format(Deasm * deasm, char const * format);
 static int _deasm_do(Deasm * deasm);
 static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format);
-#if 0
-static int _deasm_format_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base);
-#endif
 
 static int _deasm(char const * arch, char const * format,
 		char const * filename)
@@ -438,34 +434,6 @@ static int _deasm_format_open_all(Deasm * deasm)
 	closedir(dir);
 	return 0;
 }
-
-
-#if 0
-/* deasm_format_callback */
-static int _callback_flat(Deasm * deasm, off_t offset, size_t size, off_t base);
-
-static int _deasm_format_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base)
-{
-	Deasm * deasm = format;
-
-	if(section != NULL)
-		printf("\n%s%s\n", "Disassembly of section: ", section);
-	return _callback_flat(deasm, offset, size, base);
-}
-
-static int _callback_flat(Deasm * deasm, off_t offset, size_t size, off_t base)
-{
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(0x%lx, 0x%lx, 0x%lx)\n", __func__, offset,
-			size, base);
-#endif
-	if(fseek(deasm->fp, offset, SEEK_SET) != 0)
-		return -_deasm_error(deasm->filename, 1);
-	printf("\n%08lx:\n", offset + base);
-	return 0;
-}
-#endif
 
 
 /* deasm_format_detect */

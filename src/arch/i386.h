@@ -58,6 +58,8 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		call->name = "db";
 		call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
 		call->operands[0].value.immediate.value = opcode;
+		call->operands[0].value.immediate.negative = 0;
+		call->operands_cnt = 1;
 		return 0;
 	}
 	call->name = ai->name;

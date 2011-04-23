@@ -24,8 +24,6 @@
 
 /* registers */
 #define AOF_DALVIK_REGSIZE	0x2
-#define OP_v0		AO_REGISTER(AOF_IMPLICIT, 32, REG_v0_id)
-#define OP_REGISTER	AO_REGISTER(0, 32, 0)
 #define OP_REG4		AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 4)
 #define OP_REG8		AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 8)
 #define OP_REG16	AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 16)
@@ -39,13 +37,13 @@
 
 
 { "add-double",		0xab,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "add-double/2addr",	0xcb,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "add-double/2addr",	0xcb,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "add-float",		0xa6,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "add-float/2addr",	0xc6,	OP1F, OP_v0, OP_REGISTER,       AOT_NONE    },
+{ "add-float/2addr",	0xc6,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "add-int",		0x90,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "add-int/2addr",	0xb0,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "add-int/2addr",	0xb0,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "add-int/lit8",	0xd8,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
-{ "add-int/lit16",	0xd0,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "add-int/lit16",	0xd0,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "add-long",		0x9b,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "add-long/2addr",	0xbb,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "aget",		0x44,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
@@ -56,15 +54,11 @@
 { "aget-short",		0x4a,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "aget-wide",		0x45,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "and-int",		0x95,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
 { "and-int/2addr",	0xb5,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-#endif
-{ "and-int/lit8",	0xdd,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "and-int/lit16",	0xd5,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "and-int/lit8",	0xdd,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "and-int/lit16",	0xd5,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "and-long",		0xa0,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
 { "and-long/2addr",	0xc0,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-#endif
 { "aput",		0x4b,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "aput-boolean",	0x4e,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "aput-byte",		0x4f,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
@@ -72,12 +66,10 @@
 { "aput-object",	0x4d,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "aput-short",		0x51,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "aput-wide",		0x4c,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
 { "array-length",	0x21,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-{ "check-cast",		0x1f,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
-#endif
+{ "check-cast",		0x1f,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "cmp-long",		0x31,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "cmpg-double",	0x30,	OP1F, OP_REG8, OP_REGISTER, OP_REGISTER },
+{ "cmpg-double",	0x30,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "cmpg-float",		0x2e,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "cmpl-double",	0x2f,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "cmpl-float",		0x2d,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
@@ -91,20 +83,18 @@
 { "const-wide/16",	0x16,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-wide/32",	0x17,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 { "div-double",		0xae,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "div-double/2addr",	0xce,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "div-double/2addr",	0xce,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "div-float",		0xa9,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "div-float/2addr",	0xc9,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "div-float/2addr",	0xc9,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "div-int",		0x93,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "div-int/2addr",	0xb3,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "div-int/lit8",	0xdb,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "div-int/lit16",	0xd3,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "div-int/2addr",	0xb3,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "div-int/lit8",	0xdb,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "div-int/lit16",	0xd3,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "div-long",		0x9e,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "div-long/2addr",	0xbe,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "double-to-float",	0x8c,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "double-to-int",	0x8a,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "double-to-long",	0x8b,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "div-long/2addr",	0xbe,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "double-to-float",	0x8c,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "double-to-int",	0x8a,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "double-to-long",	0x8b,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "fill-array-data",	0x26,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 { "filled-new-array",	0x24,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 { "filled-new-array-range",
@@ -172,61 +162,47 @@
 { "move-result",	0x0a,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
 { "move-result-object",	0x0c,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
 { "move-result-wide",	0x0b,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
-#if 1 /* XXX really implement */
 { "move-wide",		0x04,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-#endif
-{ "move-wide/16",	0x06,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
-{ "move-wide/from16",	0x05,	OP1F, OP_REGISTER, OP_REGISTER, AOT_NONE    },
+{ "move-wide/16",	0x06,	OP1F, OP_REG8,     OP_REG16,    AOT_NONE    },
+{ "move-wide/from16",	0x05,	OP1F, OP_REG8,     OP_REG16,    AOT_NONE    },
 { "mul-double",		0xad,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "mul-double/2addr",	0xcd,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "mul-double/2addr",	0xcd,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "mul-float",		0xa8,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "mul-float/2addr",	0xc8,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "mul-float/2addr",	0xc8,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "mul-int",		0x92,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "mul-int/2addr",	0xb2,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "mul-int/lit8",	0xda,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "mul-int/lit16",	0xd2,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "mul-int/2addr",	0xb2,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "mul-int/lit8",	0xda,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "mul-int/lit16",	0xd2,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "mul-long",		0x9d,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "mul-long/2addr",	0xbd,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "neg-double",		0x80,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "neg-float",		0x7f,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "neg-int",		0x7b,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "neg-long",		0x7d,	OP1F, OP_v0,       OP_REGISTER,	AOT_NONE    },
+{ "mul-long/2addr",	0xbd,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "neg-double",		0x80,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "neg-float",		0x7f,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "neg-int",		0x7b,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "neg-long",		0x7d,	OP1F, OP_REG4,     OP_REG4,    	AOT_NONE    },
 { "new-array",		0x23,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "new-instance",	0x22,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
-#endif
 { "nop",		0x0000,	OP2F, AOT_NONE,    AOT_NONE,    AOT_NONE    },
 #if 1	/* XXX really implement */
 { "nop",		0x00,	OP1F, OP_U8,       AOT_NONE,    AOT_NONE    },
-{ "not-int",		0x7c,	OP1F, OP_v0,       OP_REGISTER,	AOT_NONE    },
-{ "not-long",		0x7e,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "not-int",		0x7c,	OP1F, OP_REG4,     OP_REG4,    	AOT_NONE    },
+{ "not-long",		0x7e,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 #endif
 { "or-int",		0x96,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "or-int/2addr",	0xb6,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "or-int/lit8",	0xdb,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "or-int/lit16",	0xd6,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "or-int/2addr",	0xb6,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "or-int/lit8",	0xdb,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "or-int/lit16",	0xd6,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "or-long",		0xa1,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "or-long/2addr",	0xc1,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
+{ "or-long/2addr",	0xc1,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "rem-double",		0xaf,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "rem-double/2addr",	0xcf,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "rem-double/2addr",	0xcf,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "rem-float",		0xaa,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "rem-float/2addr",	0xca,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "rem-float/2addr",	0xca,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "rem-int",		0x94,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "rem-int/2addr",	0xb4,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "rem-int/lit8",	0xdc,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "rem-int/lit16",	0xd4,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "rem-int/2addr",	0xb4,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "rem-int/lit8",	0xdc,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "rem-int/lit16",	0xd4,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "rem-long",		0x9f,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "rem-long/2addr",	0xbf,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
+{ "rem-long/2addr",	0xbf,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "return",		0x0f,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
 { "return-object",	0x11,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
 { "return-void",	0x0e00,	OP2F, AOT_NONE,    AOT_NONE,    AOT_NONE    },
@@ -240,23 +216,17 @@
 { "sget-short",		0x66,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "sget-wide",		0x61,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "shl-int",		0x98,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "shl-int/2addr",	0xb8,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "shl-int/lit8",	0xe0,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "shl-int/2addr",	0xb8,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "shl-int/lit8",	0xe0,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
 { "shl-long",		0xa3,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "shl-long/2addr",	0xc3,	OP1F, OP_v0,       OP_REGISTER,	AOT_NONE    },
-#endif
+{ "shl-long/2addr",	0xc3,	OP1F, OP_REG4,     OP_REG4,    	AOT_NONE    },
 { "shr-int",		0x99,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "shr-int/2addr",	0xb9,	OP1F, OP_v0,       OP_REGISTER,	AOT_NONE    },
-#endif
-{ "shr-int/lit8",	0xe1,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "shr-int/2addr",	0xb9,	OP1F, OP_REG4,     OP_REG4,    	AOT_NONE    },
+{ "shr-int/lit8",	0xe1,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
 { "shr-long",		0xa4,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
+{ "shr-long/2addr",	0xc4,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 #if 1	/* XXX implement correctly */
-{ "shr-long/2addr",	0xc4,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-{ "sparse-switch",	0x2c,	OP1F, OP_REGISTER, OP_U32,      AOT_NONE    },
+{ "sparse-switch",	0x2c,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 #endif
 { "sput",		0x67,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "sput-boolean",	0x6a,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
@@ -266,28 +236,24 @@
 { "sput-short",		0x6d,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "sput-wide",		0x68,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "sub-double",		0xac,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "sub-double/2addr",	0xcc,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "sub-double/2addr",	0xcc,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "sub-float",		0xa7,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-{ "sub-float/2addr",	0xc7,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
+{ "sub-float/2addr",	0xc7,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "sub-int",		0x91,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "sub-int/2addr",	0xb1,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "sub-int/lit8",	0xd9,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "sub-int/lit16",	0xd1,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "sub-int/2addr",	0xb1,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "sub-int/lit8",	0xd9,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "sub-int/lit16",	0xd1,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "sub-long",		0x9c,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "sub-long/2addr",	0xbc,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-{ "throw",		0x27,	OP1F, OP_REGISTER, AOT_NONE,    AOT_NONE    },
+{ "throw",		0x27,	OP1F, OP_REG8,     AOT_NONE,    AOT_NONE    },
 { "ushr-int",		0x9a,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "ushr-int/2addr",	0xba,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-{ "ushr-int/lit8",	0xe2,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
+{ "ushr-int/lit8",	0xe2,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
 { "ushr-long",		0xa5,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "ushr-long/2addr",	0xc5,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "xor-int",		0x97,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
-#if 1	/* XXX implement correctly */
-{ "xor-int/2addr",	0xb7,	OP1F, OP_v0,       OP_REGISTER, AOT_NONE    },
-#endif
-{ "xor-int/lit8",	0xdf,	OP1F, OP_REGISTER, OP_REGISTER, OP_U8       },
-{ "xor-int/lit16",	0xd7,	OP1F, OP_REGISTER, OP_U16,      AOT_NONE    },
+{ "xor-int/2addr",	0xb7,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "xor-int/lit8",	0xdf,	OP1F, OP_REG8,     OP_REG8,     OP_U8       },
+{ "xor-int/lit16",	0xd7,	OP1F, OP_REG4,     OP_REG4,     OP_U16      },
 { "xor-long",		0xa2,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
 { "xor-long/2addr",	0xc2,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },

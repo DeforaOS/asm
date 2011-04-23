@@ -161,6 +161,7 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	{
 		u16 = u8 << 8;
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+			/* FIXME return "db" */
 			return -1;
 		u16 = _htol16(u16 | u8);
 		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,

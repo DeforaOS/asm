@@ -275,8 +275,7 @@ static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	ArchPluginHelper * helper = plugin->helper;
 
 	/* FIXME really implement */
-	return (fwrite(&instruction->opcode, sizeof(instruction->opcode), 1,
-				helper->fp) == 1) ? 0
-		: -error_set_code(1, "%s: %s", helper->filename,
+	return (fwrite(&instruction->opcode, sizeof(char), 1, helper->fp) == 1)
+		? 0 : -error_set_code(1, "%s: %s", helper->filename,
 				strerror(errno));
 }

@@ -183,7 +183,8 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	call->operands[0].type = ai->op1;
 	call->operands[1].type = ai->op2;
 	call->operands[2].type = ai->op3;
-	for(i = 0; AO_GET_TYPE(call->operands[i].type) != AOT_NONE; i++)
+	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].type) != AOT_NONE;
+			i++)
 		if(_decode_operand(&dd, i) != 0)
 			return -1;
 	call->operands_cnt = i;

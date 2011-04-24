@@ -281,8 +281,9 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 		dmci.debug_info_off = _htol32(dmci.debug_info_off);
 		dmci.insns_size = _htol32(dmci.insns_size);
 		seek = helper->seek(helper->format, 0, SEEK_CUR);
-		helper->decode(helper->format, NULL, seek, dmci.insns_size * 2,
-				0);
+		if(helper->decode(helper->format, NULL, seek,
+					dmci.insns_size * 2, 0) != 0)
+			return -1;
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
 #ifdef DEBUG
@@ -307,7 +308,9 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 				dmti.handler_off = _htol16(dmti.handler_off);
 			}
 			seek = helper->seek(helper->format, 0, SEEK_CUR);
-			helper->decode(helper->format, NULL, seek, 8, 0);
+			if(helper->decode(helper->format, NULL, seek, 8, 0)
+					!= 0)
+				return -1;
 		}
 	}
 	return 0;

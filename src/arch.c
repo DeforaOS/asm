@@ -449,7 +449,7 @@ int arch_decode(Arch * arch)
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	printf("%08lx:\n", offset);
+	printf("\n%08lx:\n", offset);
 	for(; arch->plugin->decode(arch->plugin, &call) == 0;
 			offset = arch->buffer_pos)
 		_decode_print(offset, &call);
@@ -506,6 +506,8 @@ int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
 		return -error_set_code(1, "%s", strerror(ENOSYS));
 	if(fseek(arch->fp, offset, SEEK_SET) != 0)
 		return -error_set_code(1, "%s", strerror(errno));
+	if(size == 0)
+		return 0;
 	arch->buffer_pos = offset + base;
 	arch->buffer_cnt = offset + base + size;
 	if((ret = arch_decode(arch)) == 0

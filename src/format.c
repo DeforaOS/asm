@@ -136,6 +136,10 @@ int format_decode(Format * format, int (*callback)(void * priv,
 static int _decode_callback(Format * format, char const * section,
 		off_t offset, size_t size, off_t base)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
+			section, offset, size, base);
+#endif
 	return format->decode_callback(format->decode_priv, section, offset,
 			size, base);
 }

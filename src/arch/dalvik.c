@@ -233,7 +233,8 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 			ao->value.immediate.value = _htol32(u32);
 			break;
 		default:
-			return -1;
+			return -error_set_code(1, "%s", "Unsupported immediate"
+					" operand");
 	}
 	ao->value.immediate.negative = 0;
 	return 0;
@@ -248,7 +249,8 @@ static int _decode_operand(DalvikDecode * dd, size_t i)
 		case AOT_REGISTER:
 			return _decode_register(dd, i);
 		default:
-			return -1;
+			return -error_set_code(1, "%s", "Unsupported operand"
+					" type");
 	}
 	return 0;
 }

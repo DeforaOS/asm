@@ -159,21 +159,31 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
 			== NULL)
 	{
-		u16 = u8 << 8;
+		u16 = u8;
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
-			/* FIXME return "db" */
-			return -1;
-		u16 = _htol16(u16 | u8);
+		{
+			call->name = "db";
+			call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
+			call->operands[0].value.immediate.value = u16;
+			call->operands[0].value.immediate.negative = 0;
+			return 0;
+		}
+		u16 = _htol16((u16 << 8) | u8);
 		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
 						u16)) == NULL)
-			/* FIXME return "dw" */
-			return -1;
+		{
+			call->name = "dw";
+			call->operands[0].type = AO_IMMEDIATE(0, 0, 16);
+			call->operands[0].value.immediate.value = u16;
+			call->operands[0].value.immediate.negative = 0;
+			return 0;
+		}
 	}
 	call->name = ai->name;
 	call->operands[0].type = ai->op1;
 	call->operands[1].type = ai->op2;
 	call->operands[2].type = ai->op3;
-	for(i = 0; AO_GET_TYPE(call->operands[i].type) != 0; i++)
+	for(i = 0; AO_GET_TYPE(call->operands[i].type) != AOT_NONE; i++)
 		if(_decode_operand(&dd, i) != 0)
 			return -1;
 	call->operands_cnt = i;
@@ -286,10 +296,14 @@ static int _decode_register(DalvikDecode * dd, size_t i)
 		}
 	}
 	else
+		return -error_set_code(1, "%s", "Unsupported register operand");
+	if(id >= 256)
+		/* FIXME give the real name instead */
+		dd->call->operands[i].value._register.name = ">256";
+	else if((ar = helper->get_register_by_id_size(helper->arch, id, 32))
+			!= NULL)
+		dd->call->operands[i].value._register.name = ar->name;
+	else
 		return -1;
-	/* FIXME it could be a register above 256... */
-	if((ar = helper->get_register_by_id_size(helper->arch, id, 32)) == NULL)
-		return -1;
-	dd->call->operands[i].value._register.name = ar->name;
 	return 0;
 }

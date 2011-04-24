@@ -66,7 +66,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			call->operands_cnt = 1;
 			return 0;
 		}
-		u16 = _htol16((u16 << 8) | u8);
+		u16 = (u16 << 8) | u8;
 		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
 						u16)) == NULL)
 		{

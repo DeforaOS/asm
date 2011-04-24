@@ -74,8 +74,6 @@ static int _deasm_string(char const * arch, char const * format,
 static int _deasm_list(void);
 
 /* helper */
-static int _deasm_helper_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base);
 static ssize_t _deasm_helper_read(Format * format, void * buf, size_t size);
 static off_t _deasm_helper_seek(Format * format, off_t offset, int whence);
 
@@ -103,11 +101,10 @@ static int _deasm(char const * arch, char const * format,
 	Deasm deasm;
 
 	deasm.arch = arch;
+	memset(&deasm.helper, 0, sizeof(deasm.helper));
 	deasm.helper.format = &deasm;
 	deasm.helper.read = _deasm_helper_read;
 	deasm.helper.seek = _deasm_helper_seek;
-	deasm.helper.write = NULL;
-	deasm.helper.decode = _deasm_helper_decode;
 	deasm.format = NULL;
 	deasm.format_cnt = 0;
 	if((deasm.fp = fopen(filename, "r")) == NULL)
@@ -334,24 +331,6 @@ static int _deasm_list(void)
 
 
 /* helper */
-/* deasm_helper_decode */
-static int _deasm_helper_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base)
-{
-	if(section != NULL)
-		printf("\n%s%s:\n", "Disassembly of section ", section);
-	if(fseek(format->fp, offset, SEEK_SET) != 0)
-		return -error_set_code(1, "%s: %s", format->filename,
-				strerror(errno));
-	printf("\n%08lx:\n", (unsigned long)offset + base);
-	/* FIXME implement */
-	if(fseek(format->fp, offset + size, SEEK_SET) != 0)
-		return -error_set_code(1, "%s: %s", format->filename,
-				strerror(errno));
-	return 0;
-}
-
-
 /* deasm_helper_read */
 static ssize_t _deasm_helper_read(Format * format, void * buf, size_t size)
 {

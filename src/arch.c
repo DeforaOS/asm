@@ -178,17 +178,6 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 		if(ai->opcode == opcode)
 			return ai;
 	}
-#if 0
-		if(arch->instructions[i].size == size
-				&& arch->instructions[i].opcode == opcode)
-			return &arch->instructions[i];
-# if 0 /* XXX this is experimental and may not be adequate */
-	for(i = 0; i < arch->instructions_cnt; i++)
-		if(arch->instructions[i].size == 0
-				&& arch->instructions[i].op1size == size)
-			return &arch->instructions[i];
-# endif
-#endif
 	return NULL;
 }
 

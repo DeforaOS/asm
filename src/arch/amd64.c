@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "Asm.h"
+#define ARCH_amd64
 
 
 /* amd64 */
@@ -60,6 +61,7 @@ static ArchInstruction _amd64_instructions[] =
 #include "i386.ins"
 #include "i486.ins"
 #include "i686.ins"
+#include "amd64.ins"
 #include "common.ins"
 #include "null.ins"
 };

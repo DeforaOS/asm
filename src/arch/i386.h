@@ -43,32 +43,46 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	ArchInstruction * ai = NULL;
-	uint8_t opcode;
+	uint8_t u8;
+	uint16_t u16;
 	size_t i;
 
 	/* FIXME detect end of input */
-	if(helper->read(helper->arch, &opcode, sizeof(opcode))
-			!= sizeof(opcode))
+	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
 	call->operands[0].type = AOT_NONE;
 	call->operands[1].type = AOT_NONE;
 	call->operands[2].type = AOT_NONE;
-	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
 			== NULL)
 	{
-		/* FIXME check if it's a longer instruction */
-		call->name = "db";
-		call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
-		call->operands[0].value.immediate.value = opcode;
-		call->operands[0].value.immediate.negative = 0;
-		call->operands_cnt = 1;
-		return 0;
+		u16 = u8;
+		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+		{
+			call->name = "db";
+			call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
+			call->operands[0].value.immediate.value = u8;
+			call->operands[0].value.immediate.negative = 0;
+			call->operands_cnt = 1;
+			return 0;
+		}
+		u16 = _htol16((u16 << 8) | u8);
+		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
+						u16)) == NULL)
+		{
+			call->name = "dw";
+			call->operands[0].type = AO_IMMEDIATE(0, 0, 16);
+			call->operands[0].value.immediate.value = u16;
+			call->operands[0].value.immediate.negative = 0;
+			call->operands_cnt = 1;
+			return 0;
+		}
 	}
 	call->name = ai->name;
 	call->operands[0].type = ai->op1;
 	call->operands[1].type = ai->op2;
 	call->operands[2].type = ai->op3;
-	for(i = 0; AO_GET_TYPE(call->operands[i].type) != 0; i++)
+	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].type) != 0; i++)
 		if(_decode_operand(plugin, call, i) != 0)
 			return -1;
 	call->operands_cnt = i;

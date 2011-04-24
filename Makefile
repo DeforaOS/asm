@@ -61,6 +61,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
+		$(PACKAGE)-$(VERSION)/src/arch/amd64.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/dalvik.ins \

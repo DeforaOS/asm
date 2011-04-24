@@ -114,12 +114,16 @@
 
 
 /* instructions */
+#ifndef ARCH_amd64
 { "aaa",	0x37,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
 { "aad",	0xd50a,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 { "aad",	0xd5,		OP1F, OP_U8,      AOT_NONE,  AOT_NONE	},
 { "aam",	0xd40a,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 { "aam",	0xd4,		OP1F, OP_U8,      AOT_NONE,  AOT_NONE	},
+#ifndef ARCH_amd64
 { "aas",	0x3f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
 /* ADC		0x14 ib		1     al          imm8			*/
 { "adc",	0x14,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
 /* ADC		0x15 iW		1     AX          immW			*/
@@ -337,10 +341,15 @@
 /* CDQ		0x99		1					*/
 { "cdq",	0x99,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
+#ifndef ARCH_amd64
 /* DAA		0x27		1					*/
 { "daa",	0x27,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
+#ifndef ARCH_amd64
 /* DAS		0x2f		1					*/
 { "das",	0x2f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#endif
+#ifndef ARCH_amd64
 /* DEC		0x48 +rd	1					*/
 { "dec",	0x48,		OP1F, OP_AX,      AOT_NONE,  AOT_NONE	},
 { "dec",	0x49,		OP1F, OP_CX,      AOT_NONE,  AOT_NONE	},
@@ -350,6 +359,7 @@
 { "dec",	0x4d,		OP1F, OP_BP,      AOT_NONE,  AOT_NONE	},
 { "dec",	0x4e,		OP1F, OP_SI,      AOT_NONE,  AOT_NONE	},
 { "dec",	0x4f,		OP1F, OP_DI,      AOT_NONE,  AOT_NONE	},
+#endif
 /* DEC		0xfe /1		1     r/m8				*/
 { "decb",	0xfe,		OP1F, OP_RM8_D0+1,AOT_NONE,  AOT_NONE	},
 { "decb",	0xfe,		OP1F, OP_RM8_D8+1,AOT_NONE,  AOT_NONE	},

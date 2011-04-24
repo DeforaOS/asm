@@ -88,7 +88,7 @@ sparc64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 sparc64.so: $(sparc64_OBJS)
 	$(LD) -o sparc64.so $(sparc64_OBJS) $(sparc64_LDFLAGS)
 
-amd64.o: amd64.c amd64.reg common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
+amd64.o: amd64.c amd64.ins amd64.reg common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(amd64_CFLAGS) -c amd64.c
 
 dalvik.o: dalvik.c common.ins null.ins dalvik.ins dalvik.reg

@@ -46,6 +46,7 @@ struct _Arch
 	size_t registers_cnt;
 
 	/* internal */
+	off_t base;
 	char const * filename;
 	FILE * fp;
 	char const * buffer;
@@ -65,6 +66,8 @@ struct _Arch
 static char const * _arch_get_filename(Arch * arch);
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
+static off_t _arch_seek(Arch * arch, off_t offset, int whence);
+static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence);
 static ssize_t _arch_write(Arch * arch, void const * buf, size_t size);
 
 
@@ -428,31 +431,50 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-static void _decode_print(off_t offset, ArchInstructionCall * call);
+static int _decode_print(Arch * arch, ArchInstructionCall * call, off_t offset,
+		size_t size);
 
 int arch_decode(Arch * arch)
 {
 	ArchInstructionCall call;
 	off_t offset = arch->buffer_pos;
+	size_t size;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	printf("\n%08lx:\n", offset);
+	printf("\n%08lx:\n", offset + arch->base);
 	for(; arch->plugin->decode(arch->plugin, &call) == 0;
 			offset = arch->buffer_pos)
-		_decode_print(offset, &call);
+	{
+		size = arch->buffer_pos - offset;
+		if(_decode_print(arch, &call, offset, size) != 0)
+			return -1;
+	}
 	return 0;
 }
 
-static void _decode_print(off_t offset, ArchInstructionCall * call)
+static int _decode_print(Arch * arch, ArchInstructionCall * call, off_t offset,
+		size_t size)
 {
 	char const * sep = " ";
 	size_t i;
+	uint8_t u8;
 	ArchOperand * ao;
 	char const * name;
 
-	printf("%8lx: %-12s", offset, call->name);
+	if(arch->helper.seek(arch, offset, SEEK_SET) != offset)
+		return -1;
+	printf("%8lx:", offset + arch->base);
+	for(i = 0; i < size; i++)
+	{
+		if(arch->helper.read(arch, &u8, sizeof(u8)) != sizeof(u8))
+			return -1;
+		printf(" %02x", u8);
+	}
+	for(; i < 8; i++)
+		printf("   ");
+	printf(" %-12s", call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];
@@ -482,6 +504,7 @@ static void _decode_print(off_t offset, ArchInstructionCall * call)
 		sep = ", ";
 	}
 	putchar('\n');
+	return 0;
 }
 
 
@@ -497,8 +520,9 @@ int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
 		return -error_set_code(1, "%s", strerror(errno));
 	if(size == 0)
 		return 0;
-	arch->buffer_pos = offset + base;
-	arch->buffer_cnt = offset + base + size;
+	arch->base = base;
+	arch->buffer_pos = offset;
+	arch->buffer_cnt = offset + size;
 	if((ret = arch_decode(arch)) == 0
 			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
 		ret = -error_set_code(1, "%s", strerror(errno));
@@ -529,8 +553,11 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
+	arch->base = 0;
 	arch->filename = filename;
 	arch->fp = fp;
+	arch->buffer = NULL;
+	arch->buffer_cnt = 0;
 	arch->buffer_pos = 0; /* XXX used as offset */
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
@@ -538,6 +565,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.read = _arch_read;
+	arch->helper.seek = _arch_seek;
 	arch->helper.write = _arch_write;
 	arch->plugin->helper = &arch->helper;
 	return 0;
@@ -550,7 +578,9 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	arch->base = 0;
 	arch->filename = "buffer";
+	arch->fp = NULL;
 	arch->buffer = buffer;
 	arch->buffer_cnt = size;
 	arch->buffer_pos = 0;
@@ -561,6 +591,7 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.write = NULL;
 	arch->helper.read = _arch_read_buffer;
+	arch->helper.seek = _arch_seek_buffer;
 	arch->plugin->helper = &arch->helper;
 	return 0;
 }
@@ -619,6 +650,32 @@ static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
 	memcpy(buf, &arch->buffer[arch->buffer_pos], s);
 	arch->buffer_pos += s;
 	return s;
+}
+
+
+/* arch_seek */
+static off_t _arch_seek(Arch * arch, off_t offset, int whence)
+{
+	if(fseek(arch->fp, offset, whence) != 0)
+		return -error_set_code(1, "%s: %s", arch->filename,
+				strerror(errno));
+	arch->buffer_pos = ftello(arch->fp);
+	return arch->buffer_pos;
+}
+
+
+/* arch_seek_buffer */
+static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
+{
+	if(whence == SEEK_SET)
+	{
+		if(offset < 0 || offset > arch->buffer_cnt)
+			return -error_set_code(1, "%s", "Invalid seek");
+		arch->buffer_pos = offset;
+		return offset;
+	}
+	/* FIXME implement */
+	return -error_set_code(1, "%s", "Not implemented");
 }
 
 

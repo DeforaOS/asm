@@ -669,7 +669,7 @@ static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
 {
 	if(whence == SEEK_SET)
 	{
-		if(offset < 0 || offset > arch->buffer_cnt)
+		if(offset < 0 || (size_t)offset > arch->buffer_cnt)
 			return -error_set_code(1, "%s", "Invalid seek");
 		arch->buffer_pos = offset;
 		return offset;

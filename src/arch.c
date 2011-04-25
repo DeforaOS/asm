@@ -477,7 +477,7 @@ static int _decode_print(Arch * arch, ArchInstructionCall * call)
 	ArchOperand * ao;
 	char const * name;
 
-	if(arch->helper.seek(arch, call->offset, SEEK_SET) != call->offset)
+	if(arch->helper.seek(arch, call->offset, SEEK_SET) < 0)
 		return -1;
 	printf("%8lx:", call->base + call->offset);
 	for(i = 0; i < call->size; i++)

@@ -431,31 +431,45 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-static int _decode_print(Arch * arch, ArchInstructionCall * call, off_t offset,
-		size_t size);
+static int _decode_print(Arch * arch, ArchInstructionCall * call);
 
 int arch_decode(Arch * arch)
 {
-	ArchInstructionCall call;
-	off_t offset = arch->buffer_pos;
-	size_t size;
+	ArchInstructionCall * calls = NULL;
+	size_t calls_cnt = 0;
+	ArchInstructionCall * p;
+	size_t i;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	printf("\n%08lx:\n", offset + arch->base);
-	for(; arch->plugin->decode(arch->plugin, &call) == 0;
-			offset = arch->buffer_pos)
+	printf("\n%08lx:\n", arch->buffer_pos + arch->base);
+	for(;;)
 	{
-		size = arch->buffer_pos - offset;
-		if(_decode_print(arch, &call, offset, size) != 0)
-			return -1;
+		if((p = realloc(calls, sizeof(*calls) * (calls_cnt + 1)))
+				== NULL)
+		{
+			free(calls);
+			return -error_set_code(1, "%s", strerror(errno));
+		}
+		calls = p;
+		p = &calls[calls_cnt];
+		memset(p, 0, sizeof(*p));
+		p->base = arch->base;
+		p->offset = arch->buffer_pos;
+		if(arch->plugin->decode(arch->plugin, p) != 0)
+			break;
+		p->size = arch->buffer_pos - p->offset;
+		calls_cnt++;
 	}
+	for(i = 0; i < calls_cnt; i++)
+		if(_decode_print(arch, &calls[i]) != 0)
+			return -1;
+	free(calls);
 	return 0;
 }
 
-static int _decode_print(Arch * arch, ArchInstructionCall * call, off_t offset,
-		size_t size)
+static int _decode_print(Arch * arch, ArchInstructionCall * call)
 {
 	char const * sep = " ";
 	size_t i;
@@ -463,10 +477,10 @@ static int _decode_print(Arch * arch, ArchInstructionCall * call, off_t offset,
 	ArchOperand * ao;
 	char const * name;
 
-	if(arch->helper.seek(arch, offset, SEEK_SET) != offset)
+	if(arch->helper.seek(arch, call->offset, SEEK_SET) != call->offset)
 		return -1;
-	printf("%8lx:", offset + arch->base);
-	for(i = 0; i < size; i++)
+	printf("%8lx:", call->base + call->offset);
+	for(i = 0; i < call->size; i++)
 	{
 		if(arch->helper.read(arch, &u8, sizeof(u8)) != sizeof(u8))
 			return -1;

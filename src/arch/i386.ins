@@ -691,6 +691,16 @@
 { "loopnz",	0xe0,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* LOOPZ	0xe1		1     rel8				*/
 { "loopz",	0xe1,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* MOV		0x88		1     r/m8        r8			*/
+{ "mov",	0x88,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+/* MOV		0x89		1     r/mW        rW			*/
+{ "mov",	0x89,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
 /* MOV		0x0f20 /r	2     r32         cr0-cr4		*/
 /* FIXME implement */
 /* MOV		0x0f22 /r	2     cr0-cr4     r32			*/

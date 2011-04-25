@@ -91,6 +91,8 @@
 
 /* mod r/m byte */
 #define AOF_I386_MODRM	0x2
+#define OP_R8_R		AO_REGISTER(AOF_I386_MODRM, 8, 0)
+#define OP_RW_R		AO_REGISTER(AOF_I386_MODRM, W, 0)
 #define OP_RM8_D0	AO_DREGISTER(AOF_I386_MODRM, 0, W, 0)	/* 0x00 */
 #define OP_RM8_D8	AO_DREGISTER(AOF_I386_MODRM, 8, W, 0)	/* 0x40 */
 #define OP_RM8_DW	AO_DREGISTER(AOF_I386_MODRM, W, W, 0)	/* 0x80 */
@@ -178,10 +180,10 @@
 /* ADD		0x05 iW		1     AX          immW			*/
 { "add",	0x05,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* ADD		0x00 /r		1     r/m8        r8			*/
-{ "add",	0x00,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
-{ "add",	0x00,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
-{ "add",	0x00,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
-{ "add",	0x00,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+{ "add",	0x00,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "add",	0x00,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "add",	0x00,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "add",	0x00,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
 /* ADD		0x01 /r		1     r/mW        rW			*/
 { "add",	0x01,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
 { "add",	0x01,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
@@ -189,10 +191,10 @@
 { "add",	0x01,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
 /* ADD		0x02 /r		1     r8          r/m8			*/
 #if 1 /* FIXME probably doesn't work at the moment */
-{ "add",	0x02,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
-{ "add",	0x02,		OP1F, OP_RM8_R8_R,OP_RM8_D8_R,AOT_NONE	},
-{ "add",	0x02,		OP1F, OP_RM8_R8_R,OP_RM8_DW_R,AOT_NONE	},
-{ "add",	0x02,		OP1F, OP_RM8_R8_R,OP_RM8_R8_R,AOT_NONE	},
+{ "add",	0x02,		OP1F, OP_R8_R,    OP_RM8_D0_R,AOT_NONE	},
+{ "add",	0x02,		OP1F, OP_R8_R,    OP_RM8_D8_R,AOT_NONE	},
+{ "add",	0x02,		OP1F, OP_R8_R,    OP_RM8_DW_R,AOT_NONE	},
+{ "add",	0x02,		OP1F, OP_R8_R,    OP_RM8_R8_R,AOT_NONE	},
 #endif
 /* ADD		0x03 /r		1     rW          r/mW			*/
 #if 1 /* FIXME probably doesn't work at the moment */
@@ -698,16 +700,16 @@
 { "loopnz",	0xe0,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* LOOPZ	0xe1		1     rel8				*/
 { "loopz",	0xe1,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
-/* MOV		0x88		1     r/m8        r8			*/
-{ "mov",	0x88,		OP1F, OP_RM8_D0,  OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_D8,  OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_DW,  OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_R8,  OP_R8,     AOT_NONE	},
-/* MOV		0x89		1     r/mW        rW			*/
-{ "mov",	0x89,		OP1F, OP_RMW_D0,  OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_D8,  OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_DW,  OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_RW,  OP_RW,     AOT_NONE	},
+/* MOV		0x88 /r		1     r/m8        r8			*/
+{ "mov",	0x88,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
+/* MOV		0x89 /r		1     r/mW        rW			*/
+{ "mov",	0x89,		OP1F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* MOV		0xb0 +rb	1     r8          imm8			*/
 { "mov",	0xb0,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
 { "mov",	0xb1,		OP1F, OP_cl,      OP_S8,     AOT_NONE	},
@@ -945,13 +947,29 @@
 { "rsm",	0x0faa,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* SAHF		0x9e		1					*/
 { "sahf",	0x9e,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
-/* SAL									*/
+/* SAL		0xc1 /4		1     r/mW        imm8			*/
+{ "sal",	0xc1,		OP1F, OP_RMW_D0+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc1,		OP1F, OP_RMW_D8+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc1,		OP1F, OP_RMW_DW+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc1,		OP1F, OP_RMW_RW+4,OP_U8,     AOT_NONE	},
 /* FIXME implement */
-/* SAR									*/
+/* SAR		0xc1 /7		1     r/mW        imm8			*/
+{ "sar",	0xc1,		OP1F, OP_RMW_D0+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc1,		OP1F, OP_RMW_D8+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc1,		OP1F, OP_RMW_DW+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc1,		OP1F, OP_RMW_RW+7,OP_U8,     AOT_NONE	},
 /* FIXME implement */
-/* SHL									*/
+/* SHL		0xc1 /4		1     r/mW        imm8			*/
+{ "shl",	0xc1,		OP1F, OP_RMW_D0+4,OP_U8,     AOT_NONE	},
+{ "shl",	0xc1,		OP1F, OP_RMW_D8+4,OP_U8,     AOT_NONE	},
+{ "shl",	0xc1,		OP1F, OP_RMW_DW+4,OP_U8,     AOT_NONE	},
+{ "shl",	0xc1,		OP1F, OP_RMW_RW+4,OP_U8,     AOT_NONE	},
 /* FIXME implement */
-/* SHR									*/
+/* SHR		0xc1 /5		1     r/mW        imm8			*/
+{ "shr",	0xc1,		OP1F, OP_RMW_D0+5,OP_U8,     AOT_NONE	},
+{ "shr",	0xc1,		OP1F, OP_RMW_D8+5,OP_U8,     AOT_NONE	},
+{ "shr",	0xc1,		OP1F, OP_RMW_DW+5,OP_U8,     AOT_NONE	},
+{ "shr",	0xc1,		OP1F, OP_RMW_RW+5,OP_U8,     AOT_NONE	},
 /* FIXME implement */
 /* SBB		0x1c ib		1     al          imm8			*/
 { "sbb",	0x1c,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
@@ -1061,15 +1079,15 @@
 /* SUB		0x2d iW		1     AX          immW			*/
 { "sub",	0x2d,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* SUB		0x28 /r		1     r/m8        r8			*/
-{ "sub",	0x28,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
-{ "sub",	0x28,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
-{ "sub",	0x28,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
-{ "sub",	0x28,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+{ "sub",	0x28,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "sub",	0x28,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "sub",	0x28,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "sub",	0x28,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
 /* SUB		0x29 /r		1     r/mW        rW			*/
-{ "sub",	0x29,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "sub",	0x29,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "sub",	0x29,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "sub",	0x29,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "sub",	0x29,		OP1F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "sub",	0x29,		OP1F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "sub",	0x29,		OP1F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "sub",	0x29,		OP1F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* SUB		0x2a /r		1     r8          r/m8			*/
 #if 1 /* FIXME probably doesn't work at the moment */
 { "sub",	0x2a,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},
@@ -1113,19 +1131,19 @@
 { "test",	0xf7,		OP1F, OP_RMW_D8+0,OP_SW,     AOT_NONE	},
 { "test",	0xf7,		OP1F, OP_RMW_DW+0,OP_SW,     AOT_NONE	},
 { "test",	0xf7,		OP1F, OP_RMW_RW+0,OP_SW,     AOT_NONE	},
-/* TEST		0x84		1     r/m8        r8			*/
+/* TEST		0x84 /r		1     r/m8        r8			*/
 #if 1 /* FIXME doesn't work */
-{ "testb",	0x84,		OP1F, OP_RM8_D0,  OP_R8,     AOT_NONE	},
-{ "testb",	0x84,		OP1F, OP_RM8_D8,  OP_R8,     AOT_NONE	},
-{ "testb",	0x84,		OP1F, OP_RM8_DW,  OP_R8,     AOT_NONE	},
-{ "test",	0x84,		OP1F, OP_RM8_R8,  OP_R8,     AOT_NONE	},
+{ "testb",	0x84,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "testb",	0x84,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "testb",	0x84,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "test",	0x84,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
 #endif
-/* TEST		0x85		1     r/mW        rW			*/
+/* TEST		0x85 /r		1     r/mW        rW			*/
 #if 1 /* FIXME doesn't work */
-{ "test",	0x85,		OP1F, OP_RMW_D0,  OP_RW,     AOT_NONE	},
-{ "test",	0x85,		OP1F, OP_RMW_D8,  OP_RW,     AOT_NONE	},
-{ "test",	0x85,		OP1F, OP_RMW_DW,  OP_RW,     AOT_NONE	},
-{ "test",	0x85,		OP1F, OP_RMW_RW,  OP_RW,     AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "test",	0x85,		OP1F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 #endif
 /* UD2		0x0f0b		2					*/
 { "ud2",	0x0f0b,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
@@ -1198,15 +1216,15 @@
 /* XOR		0x35 iW		1     AX          immW			*/
 { "xor",	0x35,		OP1F, OP_AX,	  OP_SW,     AOT_NONE	},
 /* XOR		0x30 /r		1     r/m8        r8			*/
-{ "xor",	0x30,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
-{ "xor",	0x30,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
-{ "xor",	0x30,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
-{ "xor",	0x30,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "xor",	0x30,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
 /* XOR		0x31 /r		1     r/mW        rW			*/
-{ "xor",	0x31,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "xor",	0x31,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "xor",	0x31,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "xor",	0x31,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "xor",	0x31,		OP1F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* XOR		0x32 /r		1     r8          r/m8			*/
 #if 1 /* FIXME doesn't work at the moment */
 { "xor",	0x32,		OP1F, OP_RM8_R8_R,OP_RM8_D0_R,AOT_NONE	},

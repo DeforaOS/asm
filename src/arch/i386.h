@@ -163,7 +163,7 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 	ArchRegister * ar;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s()\n", __func__);
+	fprintf(stderr, "DEBUG: %s(\"%s\", &%lu)\n", __func__, call->name, *i);
 #endif
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
@@ -202,8 +202,13 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 		ao->type = AO_DREGISTER(0, 0, W, 0);
 		ao->value.dregister.name = ar->name;
 	}
-	/* FIXME really implement the next operand */
-	(*i)++;
+	if(AO_GET_TYPE(call->operands[*i + 1].type) != AOT_NONE
+			&& AO_GET_FLAGS(call->operands[*i + 1].type)
+			& AOF_I386_MODRM)
+	{
+		/* FIXME really implement */
+		(*i)++;
+	}
 	return 0;
 }
 

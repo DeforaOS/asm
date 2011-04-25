@@ -443,7 +443,7 @@ int arch_decode(Arch * arch)
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	printf("\n%08lx:\n", arch->buffer_pos + arch->base);
+	printf("\n%08lx:\n", arch->buffer_pos + (long)arch->base);
 	for(;;)
 	{
 		if((p = realloc(calls, sizeof(*calls) * (calls_cnt + 1)))
@@ -479,7 +479,7 @@ static int _decode_print(Arch * arch, ArchInstructionCall * call)
 
 	if(arch->helper.seek(arch, call->offset, SEEK_SET) < 0)
 		return -1;
-	printf("%8lx:", call->base + call->offset);
+	printf("%8lx:", (long)call->base + (long)call->offset);
 	for(i = 0; i < call->size; i++)
 	{
 		if(arch->helper.read(arch, &u8, sizeof(u8)) != sizeof(u8))

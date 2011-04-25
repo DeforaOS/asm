@@ -684,6 +684,12 @@
 { "jb",		0x72,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JBE		0x76		1     rel8				*/
 { "jbe",	0x76,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JE		0x74		1     rel8				*/
+{ "je",		0x74,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JG		0x7f		1     rel8				*/
+{ "jg",		0x7f,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JGE		0x7d		1     rel8				*/
+{ "jge",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JL		0x7c		1     rel8				*/
 { "jl",		0x7c,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JLE		0x7e		1     rel8				*/
@@ -697,10 +703,22 @@
 { "jmp",	0xff,		OP1F, OP_RMW_D8+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_DW+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_RW+4,AOT_NONE,  AOT_NONE	},
+/* JNA		0x76		1     rel8				*/
+{ "jna",	0x76,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNAE		0x72		1     rel8				*/
+{ "jnae",	0x72,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNB		0x73		1     rel8				*/
+{ "jnb",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNBE		0x77		1     rel8				*/
+{ "jnbe",	0x77,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNC		0x73		1     rel8				*/
 { "jnc",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNE		0x75		1     rel8				*/
 { "jne",	0x75,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNL		0x7d		1     rel8				*/
+{ "jnl",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNLE		0x7f		1     rel8				*/
+{ "jnle",	0x7f,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNO		0x71		1     rel8				*/
 { "jno",	0x71,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNP		0x7b		1     rel8				*/

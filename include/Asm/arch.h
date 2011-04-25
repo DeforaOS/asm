@@ -196,7 +196,7 @@ typedef struct _ArchPluginHelper
 
 	/* disassembly */
 	ssize_t (*read)(Arch * arch, void * buf, size_t size);
-	ssize_t (*seek)(Arch * arch, off_t offset, int whence);
+	off_t (*seek)(Arch * arch, off_t offset, int whence);
 } ArchPluginHelper;
 
 typedef struct _ArchPlugin ArchPlugin;

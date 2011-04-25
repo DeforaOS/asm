@@ -34,6 +34,8 @@ static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
+static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
@@ -97,6 +99,9 @@ static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 	ArchRegister * ar;
 	uint8_t id;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	/* FIXME check the size */
 	if(helper->read(helper->arch, &id, sizeof(id)) != sizeof(id))
 		return -1;
@@ -112,27 +117,99 @@ static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	ArchOperandDefinition aod = call->operands[i].type;
+	ArchOperand * ao = &call->operands[i];
 	uint8_t u8;
+	uint16_t u16;
+	uint32_t u32;
 
-	/* FIXME implement more sizes */
-	switch(AO_GET_SIZE(aod) >> 3)
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() size=%u\n", __func__,
+			AO_GET_SIZE(ao->type) >> 3);
+#endif
+	switch(AO_GET_SIZE(ao->type) >> 3)
 	{
 		case sizeof(u8):
+			if(helper->read(helper->arch, &u8, sizeof(u8))
+					!= sizeof(u8))
+				return -1;
+			ao->value.immediate.value = u8;
+			break;
+		case sizeof(u16):
+			if(helper->read(helper->arch, &u16, sizeof(u16))
+					!= sizeof(u16))
+				return -1;
+			ao->value.immediate.value = _htol16(u16);
+			break;
+		case sizeof(u32):
+			if(helper->read(helper->arch, &u32, sizeof(u32))
+					!= sizeof(u32))
+				return -1;
+			ao->value.immediate.value = _htol32(u32);
 			break;
 		default:
 			return -error_set_code(1, "%s", strerror(ENOSYS));
 	}
+	call->operands[i].value.immediate.negative = 0;
+	return 0;
+}
+
+static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperand * ao = &call->operands[i];
+	uint8_t u8;
+	uint32_t uW; /* XXX should be uintW_t */
+	ArchRegister * ar;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
-	call->operands[i].value.immediate.value = u8;
-	call->operands[i].value.immediate.negative = 0;
+	if((u8 & 0xc0) == 0xc0)
+	{
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						(u8 & 0x38) >> 3, W)) == NULL)
+			return -1;
+		ao->type = AO_REGISTER(0, 32, 0);
+		ao->value._register.name = ar->name;
+	}
+	else if((u8 & 0xc0) == 0x80)
+	{
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						(u8 & 0x38) >> 3, W)) == NULL)
+			return -1;
+		if(helper->read(helper->arch, &uW, sizeof(uW)) != sizeof(uW))
+			return -1;
+		ao->type = AO_DREGISTER(0, W, W, 0);
+		ao->value.dregister.name = ar->name;
+		ao->value.dregister.offset = _htol32(uW); /* XXX _htolW() */
+	}
+	else if((u8 & 0xc0) == 0x40)
+	{
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						(u8 & 0x38) >> 3, W)) == NULL)
+			return -1;
+		ao->type = AO_DREGISTER(0, 8, W, 0);
+		ao->value.dregister.name = ar->name;
+	}
+	else if((u8 & 0xc0) == 0x00)
+	{
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						(u8 & 0x38) >> 3, W)) == NULL)
+			return -1;
+		ao->type = AO_DREGISTER(0, 0, W, 0);
+		ao->value.dregister.name = ar->name;
+	}
 	return 0;
 }
 
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
+	if(AO_GET_FLAGS(call->operands[i].type) & AOF_I386_MODRM)
+		return _decode_modrm(plugin, call, i);
 	switch(AO_GET_TYPE(call->operands[i].type))
 	{
 		/* FIXME implement the rest */
@@ -154,6 +231,9 @@ static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 	ArchRegister * ar;
 	uint8_t id;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
 	{
 		if((ar = helper->get_register_by_id_size(helper->arch,

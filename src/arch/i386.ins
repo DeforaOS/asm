@@ -657,6 +657,15 @@
 { "iret",	0xcf,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* IRETD	0xcf		1					*/
 { "iretd",	0xcf,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* JMP		0xeb		1     imm8				*/
+{ "jmp",	0xeb,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JMP		0xe9		1     immW				*/
+{ "jmp",	0xe9,		OP1F, OP_SW,      AOT_NONE,  AOT_NONE	},
+/* JMP		0xff /4		1     r/mW				*/
+{ "jmp",	0xff,		OP1F, OP_RMW_D0+4,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_D8+4,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_DW+4,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_RW+4,AOT_NONE,  AOT_NONE	},
 /* LAHF		0x9f		1					*/
 { "lahf",	0x9f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* LEAVE	0xc9		1					*/

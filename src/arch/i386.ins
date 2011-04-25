@@ -610,6 +610,35 @@
 { "fldpi",	0xd9eb,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FLDZ		0xd9ee		2					*/
 { "fldz",	0xd9ee,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FMUL		0xd8c8 +i	2     st(0)       st(i)			*/
+{ "fmul",	0xd8c8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xd8c9,		OP2F, OP_st0,     OP_st1,    AOT_NONE	},
+{ "fmul",	0xd8ca,		OP2F, OP_st0,     OP_st2,    AOT_NONE	},
+{ "fmul",	0xd8cb,		OP2F, OP_st0,     OP_st3,    AOT_NONE	},
+{ "fmul",	0xd8cc,		OP2F, OP_st0,     OP_st4,    AOT_NONE	},
+{ "fmul",	0xd8cd,		OP2F, OP_st0,     OP_st5,    AOT_NONE	},
+{ "fmul",	0xd8ce,		OP2F, OP_st0,     OP_st6,    AOT_NONE	},
+{ "fmul",	0xd8cf,		OP2F, OP_st0,     OP_st7,    AOT_NONE	},
+/* FMUL		0xdcc8 +i	2     st(i)       st(0)			*/
+{ "fmul",	0xdcc8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdcc9,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdcca,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdccb,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdccc,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdccd,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdcce,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fmul",	0xdccf,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
+/* FMULP	0xdec9		2					*/
+{ "fmulp",	0xdec9,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FMULP	0xdec8 +i	2     st(i)       st(0)			*/
+{ "fmulp",	0xdec8,		OP2F, OP_st0,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdec9,		OP2F, OP_st1,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdeca,		OP2F, OP_st2,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdecb,		OP2F, OP_st3,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdecc,		OP2F, OP_st4,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdecd,		OP2F, OP_st5,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdece,		OP2F, OP_st6,     OP_st0,    AOT_NONE	},
+{ "fmulp",	0xdecf,		OP2F, OP_st7,     OP_st0,    AOT_NONE	},
 /* FNCLEX	0xdbe2		2					*/
 { "fnclex",	0xdbe2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FNINIT	0xdbe3		2					*/
@@ -678,16 +707,32 @@
 { "iretd",	0xcf,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* JA		0x77		1     rel8				*/
 { "ja",		0x77,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JA		0x0f87		2     relW				*/
+{ "ja",		0x0f87,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JAE		0x73		1     rel8				*/
 { "jae",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JAE		0x0f83		2     relW				*/
+{ "jae",	0x0f83,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JB		0x72		1     rel8				*/
 { "jb",		0x72,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JB		0x0f82		2     relW				*/
+{ "jb",		0x0f82,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JBE		0x76		1     rel8				*/
 { "jbe",	0x76,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JBE		0x0f86		2     relW				*/
+{ "jbe",	0x0f86,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
+/* JC		0x72		1     rel8				*/
+{ "jc",		0x72,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JC		0x0f82		2     relW				*/
+{ "jc",		0x0f82,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JE		0x74		1     rel8				*/
 { "je",		0x74,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JE		0x0f84		2     relW				*/
+{ "je",		0x0f84,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JG		0x7f		1     rel8				*/
 { "jg",		0x7f,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JG		0x0f8f		2     relW				*/
+{ "jg",		0x0f8f,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JGE		0x7d		1     rel8				*/
 { "jge",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JL		0x7c		1     rel8				*/
@@ -715,6 +760,10 @@
 { "jnc",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNE		0x75		1     rel8				*/
 { "jne",	0x75,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNG		0x7e		1     rel8				*/
+{ "jng",	0x7e,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNGE		0x7c		1     rel8				*/
+{ "jnge",	0x7c,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNL		0x7d		1     rel8				*/
 { "jnl",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JNLE		0x7f		1     rel8				*/
@@ -735,6 +784,8 @@
 { "js",		0x78,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JZ		0x74		1     rel8				*/
 { "jz",		0x74,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JZ		0x0f84		2     relW				*/
+{ "jz",		0x0f84,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* LAHF		0x9f		1					*/
 { "lahf",	0x9f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* LEAVE	0xc9		1					*/

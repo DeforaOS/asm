@@ -18,6 +18,7 @@
 /* platform-specific */
 #if defined(ARCH_i386_real) /* i386 in real mode */
 # define W		16
+# define uintW_t	uint16_t
 # define REG_AX_id	REG_ax_id
 # define REG_CX_id	REG_cx_id
 # define REG_DX_id	REG_dx_id
@@ -28,6 +29,7 @@
 # define REG_DI_id	REG_di_id
 #else /* i386 and compatible in 32-bit protected mode */
 # define W		32
+# define uintW_t	uint32_t
 # define REG_AX_id	REG_eax_id
 # define REG_CX_id	REG_ecx_id
 # define REG_DX_id	REG_edx_id
@@ -674,6 +676,8 @@
 { "iret",	0xcf,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* IRETD	0xcf		1					*/
 { "iretd",	0xcf,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* JAE		0x73		1     rel8				*/
+{ "jae",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JMP		0xeb		1     imm8				*/
 { "jmp",	0xeb,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JMP		0xe9		1     immW				*/
@@ -683,6 +687,10 @@
 { "jmp",	0xff,		OP1F, OP_RMW_D8+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_DW+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_RW+4,AOT_NONE,  AOT_NONE	},
+/* JNE		0x75		1     rel8				*/
+{ "jne",	0x75,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JO		0x70		1     rel8				*/
+{ "jo",		0x70,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* LAHF		0x9f		1					*/
 { "lahf",	0x9f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* LEAVE	0xc9		1					*/
@@ -728,6 +736,8 @@
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_D8, AOT_NONE	},
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_DW, AOT_NONE	},
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_RW, AOT_NONE	},
+/* MOV		0xa3		1     AX          moffsW		*/
+{ "mov",	0xa3,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
 /* MOV		0xb0 +rb	1     r8          imm8			*/
 { "mov",	0xb0,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
 { "mov",	0xb1,		OP1F, OP_cl,      OP_S8,     AOT_NONE	},

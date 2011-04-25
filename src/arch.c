@@ -496,6 +496,11 @@ static int _decode_print(Arch * arch, ArchInstructionCall * call)
 		{
 			case AOT_DREGISTER:
 				name = ao->value.dregister.name;
+				if(ao->value.dregister.offset == 0)
+				{
+					printf("%s[%%%s]", sep, name);
+					break;
+				}
 				printf("%s[%%%s + $0x%lx]", sep, name,
 						ao->value.dregister.offset);
 				break;

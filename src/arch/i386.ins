@@ -51,6 +51,12 @@
 #define OP_RW		AO_REGISTER(0, W, 0)
 #define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
 #define OP_cl		AO_REGISTER(AOF_IMPLICIT, REG_cl_size, REG_cl_id)
+#define OP_dl		AO_REGISTER(AOF_IMPLICIT, REG_dl_size, REG_dl_id)
+#define OP_bl		AO_REGISTER(AOF_IMPLICIT, REG_bl_size, REG_bl_id)
+#define OP_ah		AO_REGISTER(AOF_IMPLICIT, REG_ah_size, REG_ah_id)
+#define OP_ch		AO_REGISTER(AOF_IMPLICIT, REG_ch_size, REG_ch_id)
+#define OP_dh		AO_REGISTER(AOF_IMPLICIT, REG_dh_size, REG_dh_id)
+#define OP_bh		AO_REGISTER(AOF_IMPLICIT, REG_bh_size, REG_bh_id)
 #define OP_cs		AO_REGISTER(AOF_IMPLICIT, REG_cs_size, REG_cs_id)
 #define OP_ds		AO_REGISTER(AOF_IMPLICIT, REG_ds_size, REG_ds_id)
 #define OP_es		AO_REGISTER(AOF_IMPLICIT, REG_es_size, REG_es_id)
@@ -692,15 +698,43 @@
 /* LOOPZ	0xe1		1     rel8				*/
 { "loopz",	0xe1,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* MOV		0x88		1     r/m8        r8			*/
-{ "mov",	0x88,		OP1F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
-{ "mov",	0x88,		OP1F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_D0,  OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_D8,  OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_DW,  OP_R8,     AOT_NONE	},
+{ "mov",	0x88,		OP1F, OP_RM8_R8,  OP_R8,     AOT_NONE	},
 /* MOV		0x89		1     r/mW        rW			*/
-{ "mov",	0x89,		OP1F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "mov",	0x89,		OP1F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_D0,  OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_D8,  OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_DW,  OP_RW,     AOT_NONE	},
+{ "mov",	0x89,		OP1F, OP_RMW_RW,  OP_RW,     AOT_NONE	},
+/* MOV		0xb0 +rb	1     r8          imm8			*/
+{ "mov",	0xb0,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb1,		OP1F, OP_cl,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb2,		OP1F, OP_dl,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb3,		OP1F, OP_bl,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb4,		OP1F, OP_ah,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb5,		OP1F, OP_ch,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb6,		OP1F, OP_dh,      OP_S8,     AOT_NONE	},
+{ "mov",	0xb7,		OP1F, OP_bh,      OP_S8,     AOT_NONE	},
+/* MOV		0xb8 +rw	1     rW          immW			*/
+{ "mov",	0xb8,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
+{ "mov",	0xb9,		OP1F, OP_CX,      OP_SW,     AOT_NONE	},
+{ "mov",	0xba,		OP1F, OP_DX,      OP_SW,     AOT_NONE	},
+{ "mov",	0xbb,		OP1F, OP_BX,      OP_SW,     AOT_NONE	},
+{ "mov",	0xbc,		OP1F, OP_SP,      OP_SW,     AOT_NONE	},
+{ "mov",	0xbd,		OP1F, OP_BP,      OP_SW,     AOT_NONE	},
+{ "mov",	0xbe,		OP1F, OP_SI,      OP_SW,     AOT_NONE	},
+{ "mov",	0xbf,		OP1F, OP_DI,      OP_SW,     AOT_NONE	},
+/* MOV		0xc6 /0		1     r/m8        imm8			*/
+{ "mov",	0xc6,		OP1F, OP_RM8_D0+0,OP_S8,     AOT_NONE	},
+{ "mov",	0xc6,		OP1F, OP_RM8_D8+0,OP_S8,     AOT_NONE	},
+{ "mov",	0xc6,		OP1F, OP_RM8_DW+0,OP_S8,     AOT_NONE	},
+{ "mov",	0xc6,		OP1F, OP_RM8_R8+0,OP_S8,     AOT_NONE	},
+/* MOV		0xc7 /0		1     r/mW        immW			*/
+{ "mov",	0xc7,		OP1F, OP_RMW_D0+0,OP_SW,     AOT_NONE	},
+{ "mov",	0xc7,		OP1F, OP_RMW_D8+0,OP_SW,     AOT_NONE	},
+{ "mov",	0xc7,		OP1F, OP_RMW_DW+0,OP_SW,     AOT_NONE	},
+{ "mov",	0xc7,		OP1F, OP_RMW_RW+0,OP_SW,     AOT_NONE	},
 /* MOV		0x0f20 /r	2     r32         cr0-cr4		*/
 /* FIXME implement */
 /* MOV		0x0f22 /r	2     cr0-cr4     r32			*/

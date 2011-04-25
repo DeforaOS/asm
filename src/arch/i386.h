@@ -35,9 +35,9 @@ static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i);
+		size_t * i);
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i);
+		size_t * i);
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 
@@ -85,7 +85,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	call->operands[1].type = ai->op2;
 	call->operands[2].type = ai->op3;
 	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].type) != 0; i++)
-		if(_decode_operand(plugin, call, i) != 0)
+		if(_decode_operand(plugin, call, &i) != 0)
 			return -1;
 	call->operands_cnt = i;
 	return 0;
@@ -154,10 +154,10 @@ static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 }
 
 static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i)
+		size_t * i)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	ArchOperand * ao = &call->operands[i];
+	ArchOperand * ao = &call->operands[*i];
 	uint8_t u8;
 	uint32_t uW; /* XXX should be uintW_t */
 	ArchRegister * ar;
@@ -202,23 +202,25 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 		ao->type = AO_DREGISTER(0, 0, W, 0);
 		ao->value.dregister.name = ar->name;
 	}
+	/* FIXME really implement the next operand */
+	(*i)++;
 	return 0;
 }
 
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
-		size_t i)
+		size_t * i)
 {
-	if(AO_GET_FLAGS(call->operands[i].type) & AOF_I386_MODRM)
+	if(AO_GET_FLAGS(call->operands[*i].type) & AOF_I386_MODRM)
 		return _decode_modrm(plugin, call, i);
-	switch(AO_GET_TYPE(call->operands[i].type))
+	switch(AO_GET_TYPE(call->operands[*i].type))
 	{
 		/* FIXME implement the rest */
 		case AOT_DREGISTER:
-			return _decode_dregister(plugin, call, i);
+			return _decode_dregister(plugin, call, *i);
 		case AOT_IMMEDIATE:
-			return _decode_immediate(plugin, call, i);
+			return _decode_immediate(plugin, call, *i);
 		case AOT_REGISTER:
-			return _decode_register(plugin, call, i);
+			return _decode_register(plugin, call, *i);
 	}
 	return -error_set_code(1, "%s", strerror(ENOSYS));
 }

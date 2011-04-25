@@ -80,6 +80,14 @@
 #define OP_ebp		AO_REGISTER(AOF_IMPLICIT, 32, REG_ebp_id)
 #define OP_esi		AO_REGISTER(AOF_IMPLICIT, 32, REG_esi_id)
 #define OP_edi		AO_REGISTER(AOF_IMPLICIT, 32, REG_edi_id)
+#define OP_cr0		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr0_id)
+#define OP_cr1		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr1_id)
+#define OP_cr2		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr2_id)
+#define OP_cr3		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr3_id)
+#define OP_cr4		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr4_id)
+#define OP_cr5		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr5_id)
+#define OP_cr6		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr6_id)
+#define OP_cr7		AO_REGISTER(AOF_IMPLICIT, 32, REG_cr7_id)
 #define OP_st0		AO_REGISTER(AOF_IMPLICIT, 32, REG_st0_id)
 #define OP_st1		AO_REGISTER(AOF_IMPLICIT, 32, REG_st1_id)
 #define OP_st2		AO_REGISTER(AOF_IMPLICIT, 32, REG_st2_id)
@@ -280,40 +288,40 @@
 { "bsr",	0x0fbd,		OP2F, OP_RMW_RW_R,OP_RMW_RW_R,AOT_NONE	},
 #endif
 /* BT		0x0fa3		2     r/mW        rW			*/
-{ "bt",		0x0fa3,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "bt",		0x0fa3,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "bt",		0x0fa3,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "bt",		0x0fa3,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "bt",		0x0fa3,		OP2F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "bt",		0x0fa3,		OP2F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "bt",		0x0fa3,		OP2F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "bt",		0x0fa3,		OP2F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* BT		0x0fba /4 ib	2     r/mW        imm8			*/
 { "bt",		0x0fba,		OP2F, OP_RMW_D0+4,OP_S8,     AOT_NONE	},
 { "bt",		0x0fba,		OP2F, OP_RMW_D8+4,OP_S8,     AOT_NONE	},
 { "bt",		0x0fba,		OP2F, OP_RMW_DW+4,OP_S8,     AOT_NONE	},
 { "bt",		0x0fba,		OP2F, OP_RMW_RW+4,OP_S8,     AOT_NONE	},
 /* BTC		0x0fbb		2     r/mW        rW			*/
-{ "btc",	0x0fbb,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "btc",	0x0fbb,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "btc",	0x0fbb,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "btc",	0x0fbb,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "btc",	0x0fbb,		OP2F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "btc",	0x0fbb,		OP2F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "btc",	0x0fbb,		OP2F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "btc",	0x0fbb,		OP2F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* BTC		0x0fba /7 ib	2     r/mW        imm8			*/
 { "btc",	0x0fba,		OP2F, OP_RMW_D0+7,OP_S8,     AOT_NONE	},
 { "btc",	0x0fba,		OP2F, OP_RMW_D8+7,OP_S8,     AOT_NONE	},
 { "btc",	0x0fba,		OP2F, OP_RMW_DW+7,OP_S8,     AOT_NONE	},
 { "btc",	0x0fba,		OP2F, OP_RMW_RW+7,OP_S8,     AOT_NONE	},
 /* BTR		0x0fb3		2     r/mW        rW			*/
-{ "btr",	0x0fb3,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "btr",	0x0fb3,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "btr",	0x0fb3,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "btr",	0x0fb3,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "btr",	0x0fb3,		OP2F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* BTR		0x0fba /6 ib	2     r/mW        imm8			*/
 { "btr",	0x0fba,		OP2F, OP_RMW_D0+6,OP_S8,     AOT_NONE	},
 { "btr",	0x0fba,		OP2F, OP_RMW_D8+6,OP_S8,     AOT_NONE	},
 { "btr",	0x0fba,		OP2F, OP_RMW_DW+6,OP_S8,     AOT_NONE	},
 { "btr",	0x0fba,		OP2F, OP_RMW_RW+6,OP_S8,     AOT_NONE	},
 /* BTS		0x0fab		2     r/mW        rW			*/
-{ "bts",	0x0fab,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "bts",	0x0fab,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "bts",	0x0fab,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "bts",	0x0fab,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "bts",	0x0fab,		OP2F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* BTS		0x0fba /5 ib	2     r/mW        imm8			*/
 { "bts",	0x0fba,		OP2F, OP_RMW_D0+5,OP_S8,     AOT_NONE	},
 { "bts",	0x0fba,		OP2F, OP_RMW_D8+5,OP_S8,     AOT_NONE	},
@@ -748,9 +756,20 @@
 { "mov",	0xc7,		OP1F, OP_RMW_D8+0,OP_SW,     AOT_NONE	},
 { "mov",	0xc7,		OP1F, OP_RMW_DW+0,OP_SW,     AOT_NONE	},
 { "mov",	0xc7,		OP1F, OP_RMW_RW+0,OP_SW,     AOT_NONE	},
+#if 1 /* FIXME doesn't work properly */
 /* MOV		0x0f20 /r	2     r32         cr0-cr4		*/
-/* FIXME implement */
+{ "mov",	0x0f20,		OP2F, OP_RW_R,    OP_cr0,    AOT_NONE	},
+{ "mov",	0x0f20,		OP2F, OP_RW_R,    OP_cr2,    AOT_NONE	},
+{ "mov",	0x0f20,		OP2F, OP_RW_R,    OP_cr3,    AOT_NONE	},
+{ "mov",	0x0f20,		OP2F, OP_RW_R,    OP_cr4,    AOT_NONE	},
+#endif
+#if 1 /* FIXME doesn't work properly */
 /* MOV		0x0f22 /r	2     cr0-cr4     r32			*/
+{ "mov",	0x0f22,		OP2F, OP_cr0,     OP_RW_R,   AOT_NONE	},
+{ "mov",	0x0f22,		OP2F, OP_cr2,     OP_RW_R,   AOT_NONE	},
+{ "mov",	0x0f22,		OP2F, OP_cr3,     OP_RW_R,   AOT_NONE	},
+{ "mov",	0x0f22,		OP2F, OP_cr4,     OP_RW_R,   AOT_NONE	},
+#endif
 /* FIXME implement */
 /* MOV		0x0f21 /r	2     r32         dr0-dr7		*/
 /* FIXME implement */
@@ -1044,25 +1063,25 @@
 { "sidt",	0x0f01,		OP2F, OP_RMW_D8+1,AOT_NONE,  AOT_NONE	},
 { "sidt",	0x0f01,		OP2F, OP_RMW_DW+1,AOT_NONE,  AOT_NONE	},
 /* SHLD		0x0fa4		2     r/mW        rW         imm8	*/
-{ "shld",	0x0fa4,		OP2F, OP_RMW_D0_R,OP_RW,     OP_U8	},
-{ "shld",	0x0fa4,		OP2F, OP_RMW_D8_R,OP_RW,     OP_U8	},
-{ "shld",	0x0fa4,		OP2F, OP_RMW_DW_R,OP_RW,     OP_U8	},
-{ "shld",	0x0fa4,		OP2F, OP_RMW_RW_R,OP_RW,     OP_U8	},
+{ "shld",	0x0fa4,		OP2F, OP_RMW_D0,  OP_RW_R,   OP_U8	},
+{ "shld",	0x0fa4,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_U8	},
+{ "shld",	0x0fa4,		OP2F, OP_RMW_DW,  OP_RW_R,   OP_U8	},
+{ "shld",	0x0fa4,		OP2F, OP_RMW_RW,  OP_RW_R,   OP_U8	},
 /* SHLD		0x0fa5		2     r/mW        rW         cl		*/
-{ "shld",	0x0fa5,		OP2F, OP_RMW_D0_R,OP_RW,     OP_cl	},
-{ "shld",	0x0fa5,		OP2F, OP_RMW_D8_R,OP_RW,     OP_cl	},
-{ "shld",	0x0fa5,		OP2F, OP_RMW_DW_R,OP_RW,     OP_cl	},
-{ "shld",	0x0fa5,		OP2F, OP_RMW_RW_R,OP_RW,     OP_cl	},
+{ "shld",	0x0fa5,		OP2F, OP_RMW_D0,  OP_RW_R,   OP_cl	},
+{ "shld",	0x0fa5,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_cl	},
+{ "shld",	0x0fa5,		OP2F, OP_RMW_DW,  OP_RW_R,   OP_cl	},
+{ "shld",	0x0fa5,		OP2F, OP_RMW_RW,  OP_RW_R,   OP_cl	},
 /* SHRD		0x0fac		2     r/mW        rW         imm8	*/
-{ "shrd",	0x0fac,		OP2F, OP_RMW_D0_R,OP_RW,     OP_U8	},
-{ "shrd",	0x0fac,		OP2F, OP_RMW_D8_R,OP_RW,     OP_U8	},
-{ "shrd",	0x0fac,		OP2F, OP_RMW_DW_R,OP_RW,     OP_U8	},
-{ "shrd",	0x0fac,		OP2F, OP_RMW_RW_R,OP_RW,     OP_U8	},
+{ "shrd",	0x0fac,		OP2F, OP_RMW_D0,  OP_RW_R,   OP_U8	},
+{ "shrd",	0x0fac,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_U8	},
+{ "shrd",	0x0fac,		OP2F, OP_RMW_DW,  OP_RW_R,   OP_U8	},
+{ "shrd",	0x0fac,		OP2F, OP_RMW_RW,  OP_RW_R,   OP_U8	},
 /* SHRD		0x0fad		2     r/mW        rW         cl		*/
-{ "shrd",	0x0fad,		OP2F, OP_RMW_D0_R,OP_RW,     OP_cl	},
-{ "shrd",	0x0fad,		OP2F, OP_RMW_D8_R,OP_RW,     OP_cl	},
-{ "shrd",	0x0fad,		OP2F, OP_RMW_DW_R,OP_RW,     OP_cl	},
-{ "shrd",	0x0fad,		OP2F, OP_RMW_RW_R,OP_RW,     OP_cl	},
+{ "shrd",	0x0fad,		OP2F, OP_RMW_D0,  OP_RW_R,   OP_cl	},
+{ "shrd",	0x0fad,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_cl	},
+{ "shrd",	0x0fad,		OP2F, OP_RMW_DW,  OP_RW_R,   OP_cl	},
+{ "shrd",	0x0fad,		OP2F, OP_RMW_RW,  OP_RW_R,   OP_cl	},
 /* SLDT		0x0f00 /0	2     r/mW				*/
 /* FIXME implement */
 /* SMSW		0x0f01 /4	2     r/mW				*/
@@ -1168,15 +1187,15 @@
 /* WRMSR	0x0f30		2					*/
 { "wrmsr",	0x0f30,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* XADD		0x0fc0 /r	2     r/m8        r8			*/
-{ "xadd",	0x0fc0,		OP2F, OP_RM8_D0_R,OP_R8,     AOT_NONE	},
-{ "xadd",	0x0fc0,		OP2F, OP_RM8_D8_R,OP_R8,     AOT_NONE	},
-{ "xadd",	0x0fc0,		OP2F, OP_RM8_DW_R,OP_R8,     AOT_NONE	},
-{ "xadd",	0x0fc0,		OP2F, OP_RM8_R8_R,OP_R8,     AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "xadd",	0x0fc0,		OP2F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
 /* XADD		0x0fc1 /r	2     r/mW        rW			*/
-{ "xadd",	0x0fc1,		OP2F, OP_RMW_D0_R,OP_RW,     AOT_NONE	},
-{ "xadd",	0x0fc1,		OP2F, OP_RMW_D8_R,OP_RW,     AOT_NONE	},
-{ "xadd",	0x0fc1,		OP2F, OP_RMW_DW_R,OP_RW,     AOT_NONE	},
-{ "xadd",	0x0fc1,		OP2F, OP_RMW_RW_R,OP_RW,     AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "xadd",	0x0fc1,		OP2F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
 /* XCHG		0x90 +rW	1     AX          rW			*/
 { "xchg",	0x90,		OP1F, OP_AX,      OP_AX,     AOT_NONE	},
 { "xchg",	0x91,		OP1F, OP_AX,      OP_CX,     AOT_NONE	},

@@ -30,6 +30,8 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 /* functions */
 /* i386_decode */
+static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i);
 static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
@@ -89,6 +91,24 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			return -1;
 	call->operands_cnt = i;
 	return 0;
+}
+
+static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
+		size_t i)
+{
+	ArchOperandDefinition aod = call->operands[i].type;
+	ArchOperand * ao = &call->operands[i];
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
+	{
+		ao->type = AO_IMMEDIATE(0, 0, AO_GET_SIZE(aod));
+		ao->value.immediate.value = AO_GET_VALUE(aod);
+		return 0;
+	}
+	return -error_set_code(1, "%s", "Not implemented");
 }
 
 static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
@@ -219,7 +239,8 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		return _decode_modrm(plugin, call, i);
 	switch(AO_GET_TYPE(call->operands[*i].type))
 	{
-		/* FIXME implement the rest */
+		case AOT_CONSTANT:
+			return _decode_constant(plugin, call, *i);
 		case AOT_DREGISTER:
 			return _decode_dregister(plugin, call, *i);
 		case AOT_IMMEDIATE:

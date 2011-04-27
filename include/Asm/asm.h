@@ -44,8 +44,6 @@ int asm_decode(Asm * a, char const * buffer, size_t size);
 int asm_decode_file(Asm * a, char const * filename, FILE * fp);
 int asm_parse(Asm * a, char const * infile, char const * outfile);
 
-int asm_open(Asm * a, char const * outfile);
-int asm_close(Asm * a);
 int asm_section(Asm * a, char const * name);
 int asm_function(Asm * a, char const * name);
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);

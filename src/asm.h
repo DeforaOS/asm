@@ -23,9 +23,15 @@
 # include "format.h"
 
 
+/* protected */
 /* functions */
 /* accessors */
 Arch * asm_get_arch(Asm * a);
 Format * asm_get_format(Asm * a);
+
+
+/* useful */
+int asm_open(Asm * a, char const * outfile);
+int asm_close(Asm * a);
 
 #endif /* !ASM_ASM_H */

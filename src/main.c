@@ -26,22 +26,22 @@
 /* as */
 /* private */
 /* constants */
-# define AS_FILENAME_DEFAULT "a.out"
+# define ASM_FILENAME_DEFAULT "a.out"
 
 
 /* functions */
-/* as */
-static int _as(char const * arch, char const * format, char const * infile,
+/* asm */
+static int _asm(char const * arch, char const * format, char const * infile,
 		char const * outfile)
 {
 	int ret = 0;
-	As * as;
+	Asm * a;
 
-	if((as = as_new(arch, format)) == NULL)
+	if((a = asm_new(arch, format)) == NULL)
 		return error_print(PACKAGE);
-	if(as_parse(as, infile, outfile) != 0)
+	if(asm_parse(a, infile, outfile) != 0)
 		ret = error_print(PACKAGE);
-	as_delete(as);
+	asm_delete(a);
 	return ret;
 }
 
@@ -53,7 +53,7 @@ static unsigned int _usage(void)
 "       as -l\n"
 "  -a	target architecture\n"
 "  -f	target file format\n"
-"  -o	filename to use for output (default: " AS_FILENAME_DEFAULT ")\n"
+"  -o	filename to use for output (default: " ASM_FILENAME_DEFAULT ")\n"
 "  -l	list available architectures and formats\n", stderr);
 	return 1;
 }
@@ -64,7 +64,7 @@ static unsigned int _usage(void)
 int main(int argc, char * argv[])
 {
 	int o;
-	char * outfile = AS_FILENAME_DEFAULT;
+	char * outfile = ASM_FILENAME_DEFAULT;
 	char const * arch = NULL;
 	char const * format = NULL;
 
@@ -83,11 +83,11 @@ int main(int argc, char * argv[])
 				break;
 			case 'l':
 				o = 0;
-				if(as_plugin_list(ASPT_ARCH) != 0)
+				if(asm_plugin_list(APT_ARCH) != 0)
 					o = error_print(PACKAGE);
 				else
 					putchar('\n');
-				if(as_plugin_list(ASPT_FORMAT) != 0)
+				if(asm_plugin_list(APT_FORMAT) != 0)
 					o = error_print(PACKAGE);
 				return (o == 0) ? 0 : 2;
 			default:
@@ -96,5 +96,5 @@ int main(int argc, char * argv[])
 	}
 	if(optind + 1 != argc)
 		return _usage();
-	return (_as(arch, format, argv[optind], outfile) == 0) ? 0 : 2;
+	return (_asm(arch, format, argv[optind], outfile) == 0) ? 0 : 2;
 }

@@ -25,7 +25,7 @@
 
 /* functions */
 /* accessors */
-Arch * as_get_arch(As * as);
-Format * as_get_format(As * as);
+Arch * asm_get_arch(Asm * a);
+Format * asm_get_format(Asm * a);
 
 #endif /* !ASM_ASM_H */

@@ -2,7 +2,7 @@
 /* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel asm */
 /* This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License a published by
  * the Free Software Foundation, version 3 of the License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,28 +30,28 @@
 #include "../config.h"
 
 
-/* as */
+/* Asm */
 /* private */
 /* types */
-struct _As
+struct _Asm
 {
 	Code * code;
 };
 
-typedef struct _AsPluginDescription
+typedef struct _AsmPluginDescription
 {
 	char const * name;
 	char const * description;
-} AsPluginDescription;
+} AsmPluginDescription;
 
 
 /* constants */
-#define ASPT_LAST	ASPT_FORMAT
-#define ASPT_COUNT	(ASPT_LAST + 1)
+#define APT_LAST	APT_FORMAT
+#define APT_COUNT	(APT_LAST + 1)
 
 
 /* variables */
-static const AsPluginDescription _as_plugin_description[ASPT_COUNT] =
+static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 {
 	{ "arch",	"architecture"	},
 	{ "format",	"file format"	}
@@ -59,12 +59,12 @@ static const AsPluginDescription _as_plugin_description[ASPT_COUNT] =
 
 
 /* prototypes */
-static char const * _as_guess_arch(void);
+static char const * _asm_guess_arch(void);
 
 
 /* functions */
-/* as_guess_arch */
-static char const * _as_guess_arch(void)
+/* asm_guess_arch */
+static char const * _asm_guess_arch(void)
 {
 	static struct utsname uts;
 	static int cached = 0;
@@ -84,129 +84,129 @@ static char const * _as_guess_arch(void)
 
 /* public */
 /* functions */
-/* as_new */
-As * as_new(char const * arch, char const * format)
+/* asm_new */
+Asm * asm_new(char const * arch, char const * format)
 {
-	As * as;
+	Asm * a;
 
-	if((as = object_new(sizeof(*as))) == NULL)
+	if((a = object_new(sizeof(*a))) == NULL)
 		return NULL;
 	if(arch == NULL)
-		arch = _as_guess_arch();
-	if((as->code = code_new(arch, format)) == NULL)
+		arch = _asm_guess_arch();
+	if((a->code = code_new(arch, format)) == NULL)
 	{
-		object_delete(as);
+		object_delete(a);
 		return NULL;
 	}
-	return as;
+	return a;
 }
 
 
-/* as_delete */
-void as_delete(As * as)
+/* asm_delete */
+void asm_delete(Asm * a)
 {
-	code_delete(as->code);
-	object_delete(as);
+	code_delete(a->code);
+	object_delete(a);
 }
 
 
 /* accessors */
-/* as_get_arch */
-Arch * as_get_arch(As * as)
+/* asm_get_arch */
+Arch * asm_get_arch(Asm * a)
 {
-	return code_get_arch(as->code);
+	return code_get_arch(a->code);
 }
 
 
-/* as_get_arch_name */
-char const * as_get_arch_name(As * as)
+/* asm_get_arch_name */
+char const * asm_get_arch_name(Asm * a)
 {
-	return code_get_arch_name(as->code);
+	return code_get_arch_name(a->code);
 }
 
 
-/* as_get_format */
-Format * as_get_format(As * as)
+/* asm_get_format */
+Format * asm_get_format(Asm * a)
 {
-	return code_get_format(as->code);
+	return code_get_format(a->code);
 }
 
 
-/* as_get_format_name */
-char const * as_get_format_name(As * as)
+/* asm_get_format_name */
+char const * asm_get_format_name(Asm * a)
 {
-	return code_get_format_name(as->code);
+	return code_get_format_name(a->code);
 }
 
 
 /* useful */
-/* as_close */
-int as_close(As * as)
+/* asm_close */
+int asm_close(Asm * a)
 {
-	return code_close(as->code);
+	return code_close(a->code);
 }
 
 
-/* as_decode */
-int as_decode(As * as, char const * buffer, size_t size)
+/* asm_decode */
+int asm_decode(Asm * a, char const * buffer, size_t size)
 {
-	return code_decode(as->code, buffer, size);
+	return code_decode(a->code, buffer, size);
 }
 
 
-/* as_decode_file */
-int as_decode_file(As * as, char const * filename, FILE * fp)
+/* asm_decode_file */
+int asm_decode_file(Asm * a, char const * filename, FILE * fp)
 {
 	int ret;
 
 	if(fp != NULL)
-		return code_decode_file(as->code, filename, fp);
+		return code_decode_file(a->code, filename, fp);
 	if((fp = fopen(filename, "r")) == NULL)
 		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	ret = code_decode_file(as->code, filename, fp);
+	ret = code_decode_file(a->code, filename, fp);
 	fclose(fp);
 	return ret;
 }
 
 
-/* as_parse */
-int as_parse(As * as, char const * infile, char const * outfile)
+/* asm_parse */
+int asm_parse(Asm * a, char const * infile, char const * outfile)
 {
 	int ret;
 
-	if(as_open(as, outfile) != 0)
+	if(asm_open(a, outfile) != 0)
 		return -1;
-	ret = parser(as->code, infile);
+	ret = parser(a->code, infile);
 	if(ret != 0 && unlink(outfile) != 0)
 		ret |= error_set_code(3, "%s: %s", outfile, strerror(errno));
-	ret |= as_close(as);
+	ret |= asm_close(a);
 	return ret;
 }
 
 
-/* as_open */
-int as_open(As * as, char const * outfile)
+/* asm_open */
+int asm_open(Asm * a, char const * outfile)
 {
-	return code_open(as->code, outfile);
+	return code_open(a->code, outfile);
 }
 
 
-/* as_section */
-int as_section(As * as, char const * name)
+/* asm_section */
+int asm_section(Asm * a, char const * name)
 {
-	return code_section(as->code, name);
+	return code_section(a->code, name);
 }
 
 
-/* as_function */
-int as_function(As * as, char const * name)
+/* asm_function */
+int asm_function(Asm * a, char const * name)
 {
-	return code_function(as->code, name);
+	return code_function(a->code, name);
 }
 
 
-/* as_instruction */
-int as_instruction(As * as, char const * name, unsigned int operands_cnt, ...)
+/* asm_instruction */
+int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 {
 	ArchInstructionCall call;
 	va_list ap;
@@ -225,21 +225,21 @@ int as_instruction(As * as, char const * name, unsigned int operands_cnt, ...)
 		}
 		va_end(ap);
 	}
-	return code_instruction(as->code, &call);
+	return code_instruction(a->code, &call);
 }
 
 
-/* as_plugin_list */
-int as_plugin_list(AsPluginType type)
+/* asm_plugin_list */
+int asm_plugin_list(AsmPluginType type)
 {
-	AsPluginDescription const * aspd;
+	AsmPluginDescription const * aspd;
 	char * path;
 	DIR * dir;
 	struct dirent * de;
 	size_t len;
 	char const * sep = "";
 
-	aspd = &_as_plugin_description[type];
+	aspd = &_asm_plugin_description[type];
 	fprintf(stderr, "%s%s%s", "Available ", aspd->description,
 			" plug-ins:\n");
 	len = strlen(LIBDIR) + 1 + strlen(PACKAGE) + 1 + strlen(aspd->name) + 1;

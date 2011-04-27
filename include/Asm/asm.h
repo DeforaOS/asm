@@ -15,43 +15,43 @@
 
 
 
-#ifndef DEVEL_ASM_AS_H
-# define DEVEL_ASM_AS_H
+#ifndef DEVEL_ASM_ASM_H
+# define DEVEL_ASM_ASM_H
 
 # include <stdio.h>
 # include "arch.h"
 
 
-/* As */
+/* Asm */
 /* types */
-typedef struct _As As;
+typedef struct _Asm Asm;
 
-typedef enum _AsPluginType { ASPT_ARCH = 0, ASPT_FORMAT } AsPluginType;
+typedef enum _AsmPluginType { APT_ARCH = 0, APT_FORMAT } AsmPluginType;
 
 
 /* functions */
-As * as_new(char const * arch, char const * format);
-void as_delete(As * as);
+Asm * asm_new(char const * arch, char const * format);
+void asm_delete(Asm * a);
 
 
 /* accessors */
-char const * as_get_arch_name(As * as);
-char const * as_get_format_name(As * as);
+char const * asm_get_arch_name(Asm * a);
+char const * asm_get_format_name(Asm * a);
 
 
 /* useful */
-int as_decode(As * as, char const * buffer, size_t size);
-int as_decode_file(As * as, char const * filename, FILE * fp);
-int as_parse(As * as, char const * infile, char const * outfile);
+int asm_decode(Asm * a, char const * buffer, size_t size);
+int asm_decode_file(Asm * a, char const * filename, FILE * fp);
+int asm_parse(Asm * a, char const * infile, char const * outfile);
 
-int as_open(As * as, char const * outfile);
-int as_close(As * as);
-int as_section(As * as, char const * name);
-int as_function(As * as, char const * name);
-int as_instruction(As * as, char const * name, unsigned int operands_cnt, ...);
+int asm_open(Asm * a, char const * outfile);
+int asm_close(Asm * a);
+int asm_section(Asm * a, char const * name);
+int asm_function(Asm * a, char const * name);
+int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 
 
 /* plugins helpers */
-int as_plugin_list(AsPluginType type);
+int asm_plugin_list(AsmPluginType type);
 
 #endif /* !DEVEL_ASM_AS_H */

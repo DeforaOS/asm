@@ -194,7 +194,7 @@ static int _deasm_do(Deasm * deasm)
 static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 {
 	int ret;
-	As * as;
+	Asm * a;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format->name);
@@ -207,12 +207,12 @@ static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 		if((deasm->arch = format->detect(format)) == NULL)
 			return -1;
 	}
-	if((as = as_new(deasm->arch, format->name)) == NULL)
+	if((a = asm_new(deasm->arch, format->name)) == NULL)
 		return -error_print("deasm");
-	printf("\n%s: %s-%s\n", deasm->filename, format->name, as_get_arch_name(
-				as));
-	ret = as_decode_file(as, deasm->filename, deasm->fp);
-	as_delete(as);
+	printf("\n%s: %s-%s\n", deasm->filename, format->name,
+			asm_get_arch_name(a));
+	ret = asm_decode_file(a, deasm->filename, deasm->fp);
+	asm_delete(a);
 	return ret;
 }
 
@@ -221,16 +221,16 @@ static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 static int _deasm_buffer(char const * arch, char const * format,
 		char const * buffer, size_t size)
 {
-	As * as;
+	Asm * a;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if((as = as_new(arch, format)) == NULL)
+	if((a = asm_new(arch, format)) == NULL)
 		return -1;
-	if(as_decode(as, buffer, size) != 0)
+	if(asm_decode(a, buffer, size) != 0)
 		error_print("deasm");
-	as_delete(as);
+	asm_delete(a);
 	return 0;
 }
 
@@ -313,7 +313,7 @@ static int _deasm_list(void)
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	memset(&deasm, 0, sizeof(deasm));
-	as_plugin_list(ASPT_ARCH);
+	asm_plugin_list(APT_ARCH);
 	_deasm_format_open_all(&deasm);
 	fputs("\nAvailable format plug-ins:\n", stderr);
 	for(i = 0; i < deasm.format_cnt; i++)

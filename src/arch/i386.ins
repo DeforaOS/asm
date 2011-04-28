@@ -50,6 +50,7 @@
 /* operands */
 /* registers */
 #define OP_R8		AO_REGISTER(0, 8, 0)
+#define OP_R16		AO_REGISTER(0, 16, 0)
 #define OP_RW		AO_REGISTER(0, W, 0)
 #define OP_al		AO_REGISTER(AOF_IMPLICIT, REG_al_size, REG_al_id)
 #define OP_cl		AO_REGISTER(AOF_IMPLICIT, REG_cl_size, REG_cl_id)
@@ -102,6 +103,7 @@
 /* mod r/m byte */
 #define AOF_I386_MODRM	0x2
 #define OP_R8_R		AO_REGISTER(AOF_I386_MODRM, 8, 0)
+#define OP_R16_R	AO_REGISTER(AOF_I386_MODRM, 16, 0)
 #define OP_RW_R		AO_REGISTER(AOF_I386_MODRM, W, 0)
 #define OP_RM8_D0	AO_DREGISTER(AOF_I386_MODRM, 0, W, 0)	/* 0x00 */
 #define OP_RM8_D8	AO_DREGISTER(AOF_I386_MODRM, 8, W, 0)	/* 0x40 */
@@ -121,6 +123,7 @@
 #define OP_RMW_RW_R	AO_REGISTER(AOF_I386_MODRM, W, 8)	/* 0xc0 */
 
 /* constant values */
+#define OP_C1		AO_CONSTANT(AOF_IMPLICIT, 8, 0x01)
 #define OP_C3		AO_CONSTANT(AOF_IMPLICIT, 8, 0x03)
 
 /* immediate values */
@@ -228,6 +231,8 @@
 { "addb",	0x83,		OP1F, OP_RMW_D8+0,OP_S8,     AOT_NONE	},
 { "addb",	0x83,		OP1F, OP_RMW_DW+0,OP_S8,     AOT_NONE	},
 { "add",	0x83,		OP1F, OP_RMW_RW+0,OP_S8,     AOT_NONE	},
+/* ADDRSIZE	0x67		1					*/
+{ "addrsize",	0x67,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* AND		0x24 ib		1     al          imm8			*/
 { "and",	0x24,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
 /* AND		0x25 iW		1     AX          immW			*/
@@ -788,6 +793,13 @@
 { "jz",		0x0f84,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* LAHF		0x9f		1					*/
 { "lahf",	0x9f,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+#if 1 /* FIXME probably doesn't work at the moment */
+/* LEA		0x8d		1     rW          m			*/
+{ "lea",	0x8d,		OP1F, OP_RW_R,    OP_RMW_D0, AOT_NONE	},
+{ "lea",	0x8d,		OP1F, OP_RW_R,    OP_RMW_D8, AOT_NONE	},
+{ "lea",	0x8d,		OP1F, OP_RW_R,    OP_RMW_DW, AOT_NONE	},
+{ "lea",	0x8d,		OP1F, OP_RW_R,    OP_RMW_RW, AOT_NONE	},
+#endif
 /* LEAVE	0xc9		1					*/
 { "leave",	0xc9,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* LOCK		0xf0		1					*/
@@ -831,6 +843,10 @@
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_D8, AOT_NONE	},
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_DW, AOT_NONE	},
 { "mov",	0x8b,		OP1F, OP_RW_R,    OP_RMW_RW, AOT_NONE	},
+#if 1 /* FIXME doesn't work properly */
+/* MOV		0x8e /r		1     Sreg        r/m16			*/
+#endif
+{ "mov",	0x8e,		OP1F, OP_R16_R,   OP_R16_R,  AOT_NONE	},
 /* MOV		0xa3		1     AX          moffsW		*/
 { "mov",	0xa3,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
 /* MOV		0xb0 +rb	1     r8          imm8			*/
@@ -929,6 +945,8 @@
 { "not",	0xf7,		OP1F, OP_RMW_D8+2,AOT_NONE,  AOT_NONE	},
 { "not",	0xf7,		OP1F, OP_RMW_DW+2,AOT_NONE,  AOT_NONE	},
 { "not",	0xf7,		OP1F, OP_RMW_RW+2,AOT_NONE,  AOT_NONE	},
+/* OPSIZE	0x66		1					*/
+{ "opsize",	0x66,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* OR		0x0c ib		1     al          imm8			*/
 { "or",		0x0c,		OP1F, OP_al,	  OP_S8,     AOT_NONE	},
 /* OR		0x0d iW		1     AX          immW			*/
@@ -1067,8 +1085,11 @@
 /* FIXME implement */
 /* ROR									*/
 /* FIXME implement */
-/* REP									*/
-/* FIXME implement */
+/* REP		0xf3a4		2     MOVS m8				*/
+{ "rep movs",	0xf3a4,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* REP		0xf3ab		2     STOS mW				*/
+{ "rep stos",	0xf3ab,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FIXME implement the rest */
 /* RET		0xc2		1     imm16				*/
 { "ret",	0xc2,		OP1F, OP_U16,     AOT_NONE,  AOT_NONE	},
 /* RET		0xca		1     imm16				*/
@@ -1081,12 +1102,22 @@
 { "rsm",	0x0faa,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* SAHF		0x9e		1					*/
 { "sahf",	0x9e,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* SAL		0xc0 /4		1     r/m8        imm8			*/
+{ "sal",	0xc0,		OP1F, OP_RM8_D0+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc0,		OP1F, OP_RM8_D8+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc0,		OP1F, OP_RM8_DW+4,OP_U8,     AOT_NONE	},
+{ "sal",	0xc0,		OP1F, OP_RM8_R8+4,OP_U8,     AOT_NONE	},
 /* SAL		0xc1 /4		1     r/mW        imm8			*/
 { "sal",	0xc1,		OP1F, OP_RMW_D0+4,OP_U8,     AOT_NONE	},
 { "sal",	0xc1,		OP1F, OP_RMW_D8+4,OP_U8,     AOT_NONE	},
 { "sal",	0xc1,		OP1F, OP_RMW_DW+4,OP_U8,     AOT_NONE	},
 { "sal",	0xc1,		OP1F, OP_RMW_RW+4,OP_U8,     AOT_NONE	},
 /* FIXME implement */
+/* SAR		0xc0 /7		1     r/m8        imm8			*/
+{ "sar",	0xc0,		OP1F, OP_RM8_D0+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc0,		OP1F, OP_RM8_D8+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc0,		OP1F, OP_RM8_DW+7,OP_U8,     AOT_NONE	},
+{ "sar",	0xc0,		OP1F, OP_RM8_R8+7,OP_U8,     AOT_NONE	},
 /* SAR		0xc1 /7		1     r/mW        imm8			*/
 { "sar",	0xc1,		OP1F, OP_RMW_D0+7,OP_U8,     AOT_NONE	},
 { "sar",	0xc1,		OP1F, OP_RMW_D8+7,OP_U8,     AOT_NONE	},
@@ -1177,6 +1208,11 @@
 { "shld",	0x0fa5,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_cl	},
 { "shld",	0x0fa5,		OP2F, OP_RMW_DW,  OP_RW_R,   OP_cl	},
 { "shld",	0x0fa5,		OP2F, OP_RMW_RW,  OP_RW_R,   OP_cl	},
+/* SHR		0xd0 /5		1     r/m8        1			*/
+{ "shr",	0xd0,		OP1F, OP_RM8_D0,  OP_C1,     AOT_NONE	},
+{ "shr",	0xd0,		OP1F, OP_RM8_D8,  OP_C1,     AOT_NONE	},
+{ "shr",	0xd0,		OP1F, OP_RM8_DW,  OP_C1,     AOT_NONE	},
+{ "shr",	0xd0,		OP1F, OP_RM8_R8,  OP_C1,     AOT_NONE	},
 /* SHRD		0x0fac		2     r/mW        rW         imm8	*/
 { "shrd",	0x0fac,		OP2F, OP_RMW_D0,  OP_RW_R,   OP_U8	},
 { "shrd",	0x0fac,		OP2F, OP_RMW_D8,  OP_RW_R,   OP_U8	},

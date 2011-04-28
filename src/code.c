@@ -280,6 +280,8 @@ static int _decode_file_callback(void * priv, char const * section,
 	if(arch_decode_at(code->arch, &calls, &calls_cnt, offset, size, base)
 			!= 0)
 		return -1;
+	if(size != 0)
+		printf("\n%08lx:\n", (long)offset + (long)base);
 	for(i = 0; i < calls_cnt; i++)
 		_decode_print(code, &calls[i]);
 	free(calls);

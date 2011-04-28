@@ -85,28 +85,21 @@ int code_delete(Code * code)
 
 /* accessors */
 /* code_get_arch */
-Arch * code_get_arch(Code * code)
-{
-	return code->arch;
-}
-
-
-/* code_get_arch_name */
-char const * code_get_arch_name(Code * code)
+char const * code_get_arch(Code * code)
 {
 	return arch_get_name(code->arch);
 }
 
 
-/* code_get_format */
-Format * code_get_format(Code * code)
+/* code_get_filename */
+char const * code_get_filename(Code * code)
 {
-	return code->format;
+	return code->filename;
 }
 
 
-/* code_get_format_name */
-char const * code_get_format_name(Code * code)
+/* code_get_format */
+char const * code_get_format(Code * code)
 {
 	return format_get_name(code->format);
 }
@@ -120,7 +113,7 @@ int code_close(Code * code)
 
 	ret |= arch_exit(code->arch);
 	ret |= format_exit(code->format);
-	if(fclose(code->fp) != 0 && ret == 0)
+	if(code->fp != NULL && fclose(code->fp) != 0 && ret == 0)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
 	code->fp = NULL;
@@ -144,15 +137,20 @@ int code_decode(Code * code, char const * buffer, size_t size)
 static int _decode_file_callback(void * priv, char const * section,
 		off_t offset, size_t size, off_t base);
 
-int code_decode_file(Code * code, char const * filename, FILE * fp)
+int code_decode_file(Code * code, char const * filename)
 {
 	int ret;
+	FILE * fp;
 
+	if((fp = fopen(filename, "r")) == NULL)
+		return -error_set_code(1, "%s: %s", filename, strerror(errno));
 	arch_init(code->arch, filename, fp);
 	format_init(code->format, filename, fp);
 	ret = format_decode(code->format, _decode_file_callback, code);
 	format_exit(code->format);
 	arch_exit(code->arch);
+	if(fclose(fp) != 0 && ret == 0)
+		ret = -error_set_code(1, "%s: %s", filename, strerror(errno));
 	return ret;
 }
 

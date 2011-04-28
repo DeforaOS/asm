@@ -52,7 +52,7 @@ deasm: $(deasm_OBJS) libasm.so
 arch.o: arch.c arch.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c arch.c
 
-asm.o: asm.c ../include/Asm.h code.h parser.h asm.h ../config.h
+asm.o: asm.c ../include/Asm.h code.h parser.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c asm.c
 
 code.o: code.c ../include/Asm.h arch.h code.h

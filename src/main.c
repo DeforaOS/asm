@@ -39,7 +39,7 @@ static int _asm(char const * arch, char const * format, char const * infile,
 
 	if((a = asm_new(arch, format)) == NULL)
 		return error_print(PACKAGE);
-	if(asm_parse(a, infile, outfile) != 0)
+	if(asm_assemble(a, infile, outfile) != 0)
 		ret = error_print(PACKAGE);
 	asm_delete(a);
 	return ret;

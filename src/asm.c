@@ -26,7 +26,6 @@
 #include <errno.h>
 #include "code.h"
 #include "parser.h"
-#include "asm.h"
 #include "../config.h"
 
 
@@ -35,6 +34,9 @@
 /* types */
 struct _Asm
 {
+	char * arch;
+	char * format;
+
 	Code * code;
 };
 
@@ -49,8 +51,6 @@ typedef struct _AsmPluginDescription
 #define APT_LAST	APT_FORMAT
 #define APT_COUNT	(APT_LAST + 1)
 
-
-/* variables */
 static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 {
 	{ "arch",	"architecture"	},
@@ -60,26 +60,9 @@ static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 
 /* prototypes */
 static char const * _asm_guess_arch(void);
+static char const * _asm_guess_format(void);
 
-
-/* functions */
-/* asm_guess_arch */
-static char const * _asm_guess_arch(void)
-{
-	static struct utsname uts;
-	static int cached = 0;
-
-	if(cached == 0)
-	{
-		if(uname(&uts) != 0)
-		{
-			error_set_code(1, "%s", strerror(errno));
-			return NULL;
-		}
-		cached = 1;
-	}
-	return uts.machine;
-}
+static int _asm_open(Asm * a, char const * outfile);
 
 
 /* public */
@@ -91,9 +74,11 @@ Asm * asm_new(char const * arch, char const * format)
 
 	if((a = object_new(sizeof(*a))) == NULL)
 		return NULL;
-	if(arch == NULL)
-		arch = _asm_guess_arch();
-	if((a->code = code_new(arch, format)) == NULL)
+	a->arch = (arch != NULL) ? string_new(arch) : NULL;
+	a->format = (format != NULL) ? string_new(format) : NULL;
+	a->code = NULL;
+	if((arch != NULL && a->arch == NULL)
+			|| (format != NULL && a->format == NULL))
 	{
 		object_delete(a);
 		return NULL;
@@ -105,76 +90,36 @@ Asm * asm_new(char const * arch, char const * format)
 /* asm_delete */
 void asm_delete(Asm * a)
 {
-	code_delete(a->code);
+	if(a->code != NULL)
+		code_delete(a->code);
+	string_delete(a->format);
+	string_delete(a->arch);
 	object_delete(a);
 }
 
 
 /* accessors */
 /* asm_get_arch */
-Arch * asm_get_arch(Asm * a)
+char const * asm_get_arch(Asm * a)
 {
-	return code_get_arch(a->code);
-}
-
-
-/* asm_get_arch_name */
-char const * asm_get_arch_name(Asm * a)
-{
-	return code_get_arch_name(a->code);
+	return a->arch;
 }
 
 
 /* asm_get_format */
-Format * asm_get_format(Asm * a)
+char const * asm_get_format(Asm * a)
 {
-	return code_get_format(a->code);
-}
-
-
-/* asm_get_format_name */
-char const * asm_get_format_name(Asm * a)
-{
-	return code_get_format_name(a->code);
+	return a->format;
 }
 
 
 /* useful */
-/* asm_close */
-int asm_close(Asm * a)
-{
-	return code_close(a->code);
-}
-
-
-/* asm_decode */
-int asm_decode(Asm * a, char const * buffer, size_t size)
-{
-	return code_decode(a->code, buffer, size);
-}
-
-
-/* asm_decode_file */
-int asm_decode_file(Asm * a, char const * filename, FILE * fp)
+/* asm_assemble */
+int asm_assemble(Asm * a, char const * infile, char const * outfile)
 {
 	int ret;
 
-	if(fp != NULL)
-		return code_decode_file(a->code, filename, fp);
-	if((fp = fopen(filename, "r")) == NULL)
-		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	ret = code_decode_file(a->code, filename, fp);
-	fclose(fp);
-	return ret;
-}
-
-
-/* asm_parse */
-int asm_parse(Asm * a, char const * infile, char const * outfile)
-{
-	int ret;
-
-	if(asm_open(a, outfile) != 0)
+	if(_asm_open(a, outfile) != 0)
 		return -1;
 	ret = parser(a->code, infile);
 	if(ret != 0 && unlink(outfile) != 0)
@@ -184,10 +129,38 @@ int asm_parse(Asm * a, char const * infile, char const * outfile)
 }
 
 
-/* asm_open */
-int asm_open(Asm * a, char const * outfile)
+/* asm_close */
+int asm_close(Asm * a)
 {
-	return code_open(a->code, outfile);
+	int ret;
+
+	if(a->code == NULL)
+		return -error_set_code(1, "%s", "No file opened");
+	ret = code_close(a->code);
+	a->code = NULL;
+	return ret;
+}
+
+
+/* asm_deassemble */
+int asm_deassemble(Asm * a, char const * buffer, size_t size)
+{
+	int ret;
+
+	if(_asm_open(a, NULL) != 0)
+		return -1;
+	ret = code_decode(a->code, buffer, size);
+	asm_close(a);
+	return ret;
+}
+
+
+/* asm_open_deassemble */
+int asm_open_deassemble(Asm * a, char const * filename)
+{
+	if(_asm_open(a, NULL) != 0)
+		return -1;
+	return code_decode_file(a->code, filename);
 }
 
 
@@ -271,4 +244,54 @@ int asm_plugin_list(AsmPluginType type)
 	closedir(dir);
 	fputc('\n', stderr);
 	return 0;
+}
+
+
+/* private */
+/* functions */
+/* asm_guess_arch */
+static char const * _asm_guess_arch(void)
+{
+	static struct utsname uts;
+	static int cached = 0;
+
+	if(cached == 0)
+	{
+		if(uname(&uts) != 0)
+		{
+			error_set_code(1, "%s", strerror(errno));
+			return NULL;
+		}
+		cached = 1;
+	}
+	return uts.machine;
+}
+
+
+/* asm_guess_format */
+static char const * _asm_guess_format(void)
+{
+	/* FIXME really guess from known/guessed architecture plug-in */
+	return "elf";
+}
+
+
+/* asm_open */
+static int _asm_open(Asm * a, char const * outfile)
+{
+	char const * arch = a->arch;
+	char const * format = a->format;
+
+	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
+		return -1;
+	if(format == NULL)
+		format = _asm_guess_format();
+	if(a->code != NULL)
+		return -error_set_code(1, "%s: Operation in progress",
+				code_get_filename(a->code));
+	if((a->code = code_new(arch, format)) == NULL)
+		return -1;
+	if(outfile == NULL)
+		return 0;
+	return code_open(a->code, outfile);
 }

@@ -19,12 +19,34 @@
 # define DEVEL_ASM_ASM_H
 
 # include <stdio.h>
-# include "arch.h"
 
 
 /* Asm */
 /* types */
 typedef struct _Asm Asm;
+
+typedef unsigned int AsmId;
+
+typedef struct _AsmFunction
+{
+	AsmId id;
+	char const * name;
+	off_t offset;
+	ssize_t size;
+} AsmFunction;
+
+typedef struct _AsmLabel
+{
+	char const * name;
+	off_t offset;
+} AsmLabel;
+
+typedef struct _AsmString
+{
+	AsmId id;
+	char const * string;
+	ssize_t size;
+} AsmString;
 
 typedef enum _AsmPluginType { APT_ARCH = 0, APT_FORMAT } AsmPluginType;
 
@@ -35,21 +57,53 @@ void asm_delete(Asm * a);
 
 
 /* accessors */
-char const * asm_get_arch_name(Asm * a);
-char const * asm_get_format_name(Asm * a);
+/* detection */
+char const * asm_get_arch(Asm * a);
+int asm_set_arch(Asm * a, char const * arch);
+
+char const * asm_get_format(Asm * a);
+int asm_set_format(Asm * a, char const * format);
+
+/* functions */
+AsmFunction * asm_get_function_by_name(Asm * a, char const * name);
+int asm_set_function(Asm * a, char const * name, off_t offset, int whence,
+		ssize_t size);
+
+/* labels */
+AsmLabel * asm_get_label_by_name(Asm * a, char const * label);
+AsmLabel * asm_get_label_by_offset(Asm * a, off_t offset);
+int asm_set_label(Asm * a, char const * label, off_t offset, int whence);
+
+/* sections */
+int asm_set_section(Asm * a, char const * name, off_t offset, int whence,
+		ssize_t size);
+
+/* strings */
+AsmString * asm_get_string_by_id(Asm * a, AsmId id);
+AsmString * asm_get_string_by_name(Asm * a, char const * name);
+int asm_set_string(Asm * a, int id, char const * name, off_t offset,
+		int whence, ssize_t size);
 
 
 /* useful */
-int asm_decode(Asm * a, char const * buffer, size_t size);
-int asm_decode_file(Asm * a, char const * filename, FILE * fp);
-int asm_parse(Asm * a, char const * infile, char const * outfile);
+/* detection */
+int asm_guess_arch(Asm * a);
+int asm_guess_format(Asm * a);
 
-int asm_section(Asm * a, char const * name);
-int asm_function(Asm * a, char const * name);
+/* common */
+int asm_close(Asm * a);
+
+/* assemble */
+int asm_assemble(Asm * a, char const * infile, char const * outfile);
+int asm_open_assemble(Asm * a, char const * infile, char const * outfile);
+
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 
+/* deassemble */
+int asm_deassemble(Asm * a, char const * buffer, size_t size);
+int asm_open_deassemble(Asm * a, char const * filename);
 
-/* plugins helpers */
+/* plug-in helpers */
 int asm_plugin_list(AsmPluginType type);
 
 #endif /* !DEVEL_ASM_AS_H */

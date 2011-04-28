@@ -202,16 +202,15 @@ static int _deasm_do_callback(Deasm * deasm, FormatPlugin * format)
 	if(deasm->arch == NULL)
 	{
 		if(format->detect == NULL)
-			return -error_set_code(1, "%s: %s", format->name,
+			return -error_set_code(1, "%s: %s", deasm->filename,
 					"Unable to detect the architecture");
 		if((deasm->arch = format->detect(format)) == NULL)
 			return -1;
 	}
 	if((a = asm_new(deasm->arch, format->name)) == NULL)
 		return -error_print("deasm");
-	printf("\n%s: %s-%s\n", deasm->filename, format->name,
-			asm_get_arch_name(a));
-	ret = asm_decode_file(a, deasm->filename, deasm->fp);
+	printf("\n%s: %s-%s\n", deasm->filename, format->name, asm_get_arch(a));
+	ret = asm_open_deassemble(a, deasm->filename);
 	asm_delete(a);
 	return ret;
 }
@@ -228,7 +227,7 @@ static int _deasm_buffer(char const * arch, char const * format,
 #endif
 	if((a = asm_new(arch, format)) == NULL)
 		return -1;
-	if(asm_decode(a, buffer, size) != 0)
+	if(asm_deassemble(a, buffer, size) != 0)
 		error_print("deasm");
 	asm_delete(a);
 	return 0;

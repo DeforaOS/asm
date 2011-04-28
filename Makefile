@@ -43,7 +43,6 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/deasm.c \
 		$(PACKAGE)-$(VERSION)/src/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch.h \
-		$(PACKAGE)-$(VERSION)/src/asm.h \
 		$(PACKAGE)-$(VERSION)/src/code.h \
 		$(PACKAGE)-$(VERSION)/src/common.h \
 		$(PACKAGE)-$(VERSION)/src/format.h \

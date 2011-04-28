@@ -34,22 +34,22 @@ Code * code_new(char const * arch, char const * format);
 int code_delete(Code * code);
 
 /* accessors */
-Arch * code_get_arch(Code * code);
-char const * code_get_arch_name(Code * code);
-Format * code_get_format(Code * code);
-char const * code_get_format_name(Code * code);
+char const * code_get_arch(Code * code);
+char const * code_get_filename(Code * code);
+char const * code_get_format(Code * code);
 
 /* useful */
-/* assembly */
+/* common */
 int code_open(Code * code, char const * filename);
 int code_close(Code * code);
 
+/* assembly */
 int code_function(Code * code, char const * function);
 int code_instruction(Code * code, ArchInstructionCall * call);
 int code_section(Code * code, char const * section);
 
 /* disassembly */
 int code_decode(Code * code, char const * buffer, size_t size);
-int code_decode_file(Code * code, char const * filename, FILE * fp);
+int code_decode_file(Code * code, char const * filename);
 
 #endif /* !ASM_CODE_H */

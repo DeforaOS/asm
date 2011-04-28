@@ -1,3 +1,4 @@
 .cvsignore
 asm
+asm-static
 deasm

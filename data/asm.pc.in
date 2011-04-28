@@ -8,4 +8,4 @@ Description: DeforaOS Development assembler
 Version: VERSION
 Requires: cpp
 Cflags: -I${includedir}
-Libs: -Wl,-R${libdir} -L${libdir} -las
+Libs: -Wl,-R${libdir} -L${libdir} -lasm

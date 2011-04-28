@@ -113,6 +113,41 @@ char const * asm_get_format(Asm * a)
 }
 
 
+/* asm_set_arch */
+int asm_set_arch(Asm * a, char const * arch)
+{
+	char * p;
+
+	if((p = string_new(arch)) == NULL)
+		return -1;
+	string_delete(a->arch);
+	a->arch = p;
+	return 0;
+}
+
+
+/* asm_set_format */
+int asm_set_format(Asm * a, char const * format)
+{
+	char * p;
+
+	if((p = string_new(format)) == NULL)
+		return -1;
+	string_delete(a->format);
+	a->format = p;
+	return 0;
+}
+
+
+/* asm_set_section */
+int asm_set_section(Asm * a, char const * name, off_t offset, int whence,
+		ssize_t size)
+{
+	/* FIXME fully implement */
+	return code_section(a->code, name);
+}
+
+
 /* useful */
 /* asm_assemble */
 int asm_assemble(Asm * a, char const * infile, char const * outfile)
@@ -155,26 +190,32 @@ int asm_deassemble(Asm * a, char const * buffer, size_t size)
 }
 
 
-/* asm_open_deassemble */
-int asm_open_deassemble(Asm * a, char const * filename)
-{
-	if(_asm_open(a, NULL) != 0)
-		return -1;
-	return code_decode_file(a->code, filename);
-}
-
-
-/* asm_section */
-int asm_section(Asm * a, char const * name)
-{
-	return code_section(a->code, name);
-}
-
-
 /* asm_function */
 int asm_function(Asm * a, char const * name)
 {
 	return code_function(a->code, name);
+}
+
+
+/* asm_guess_arch */
+int asm_guess_arch(Asm * a)
+{
+	char const * arch;
+
+	if((arch = _asm_guess_arch()) == NULL)
+		return -1;
+	return asm_set_arch(a, arch);
+}
+
+
+/* asm_guess_format */
+int asm_guess_format(Asm * a)
+{
+	char const * format;
+
+	if((format = _asm_guess_format()) == NULL)
+		return -1;
+	return asm_set_format(a, format);
 }
 
 
@@ -199,6 +240,22 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 		va_end(ap);
 	}
 	return code_instruction(a->code, &call);
+}
+
+
+/* asm_open_assemble */
+int asm_open_assemble(Asm * a, char const * outfile)
+{
+	return _asm_open(a, outfile);
+}
+
+
+/* asm_open_deassemble */
+int asm_open_deassemble(Asm * a, char const * filename)
+{
+	if(_asm_open(a, NULL) != 0)
+		return -1;
+	return code_decode_file(a->code, filename);
 }
 
 

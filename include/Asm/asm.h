@@ -95,7 +95,7 @@ int asm_close(Asm * a);
 
 /* assemble */
 int asm_assemble(Asm * a, char const * infile, char const * outfile);
-int asm_open_assemble(Asm * a, char const * infile, char const * outfile);
+int asm_open_assemble(Asm * a, char const * outfile);
 
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 

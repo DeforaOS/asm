@@ -41,7 +41,7 @@
 #define OPCBF		(4 << AOD_SIZE)
 /* helpers */
 #define OPCB(opcode)	(opcode << 25 | 0x2 << 22)
-#define OPCB_U22	AO_IMMEDIATE(0, 0, 21)
+#define OPCB_U22	AO_IMMEDIATE(0, 21, 0)
 
 /* integer arithmetic */
 /* opcodes */
@@ -78,8 +78,8 @@
 /* helpers */
 #define OPIA1(opcode)	(0x80000000 | opcode << 19)
 #define OPIA2(opcode)	(0x80000000 | opcode << 19 | 0x1 << 13)
-#define OPIA_S12	AO_IMMEDIATE(AOF_SIGNED, 0, 12)
-#define OPIA_U12	AO_IMMEDIATE(AOF_SIGNED, 0, 12)
+#define OPIA_S12	AO_IMMEDIATE(AOF_SIGNED, 12, 0)
+#define OPIA_U12	AO_IMMEDIATE(AOF_SIGNED, 12, 0)
 
 /* load store */
 /* opcodes */
@@ -111,7 +111,7 @@
 #define OPSHF		(4 << AOD_SIZE)
 /* helpers */
 #define OPSH(opcode)	(opcode << 22)
-#define OPSH_U21	AO_IMMEDIATE(0, 0, 32)
+#define OPSH_U21	AO_IMMEDIATE(0, 32, 0)
 
 
 /* instructions */

@@ -103,8 +103,6 @@ typedef struct _DexString
 
 typedef struct _Dex
 {
-	DexString * strings;
-	size_t strings_cnt;
 } Dex;
 
 
@@ -157,8 +155,6 @@ static int _dex_init(FormatPlugin * format, char const * arch)
 	if((dex = object_new(sizeof(*dex))) == NULL)
 		return -1;
 	format->priv = dex;
-	dex->strings = NULL;
-	dex->strings_cnt = 0;
 	return 0;
 }
 
@@ -169,9 +165,6 @@ static int _dex_destroy(FormatPlugin * format)
 	Dex * dex = format->priv;
 	size_t i;
 
-	for(i = 0; i < dex->strings_cnt; i++)
-		string_delete(dex->strings[i].string);
-	free(dex->strings);
 	object_delete(dex);
 	return 0;
 }
@@ -322,36 +315,26 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 	FormatPluginHelper * helper = format->helper;
 	Dex * dex = format->priv;
 	size_t i;
-	DexStringIdItem dsii;
+	DexStringIdItem * dsii;
 	ssize_t s;
 
-	if(dex->strings_cnt != 0)
-		return -error_set_code(1, "%s: %s", "dex",
-				"String section already parsed");
 	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 		return -1;
-	if((dex->strings = malloc(sizeof(*dex->strings) * size)) == NULL)
-		return -_dex_error(format);
+	s = sizeof(*dsii) * size;
+	if((dsii = malloc(s)) == NULL)
+		return -error_set_code(1, "%s", strerror(errno));
+	if(helper->read(helper->format, dsii, s) != s)
+		return -1;
 	for(i = 0; i < size; i++)
 	{
-		s = sizeof(dsii);
-		if(helper->read(helper->format, &dsii, s) != s)
-			break;
-		dsii.string_data_off = _htol32(dsii.string_data_off);
-#ifdef DEBUG
+		dsii[i].string_data_off = _htol32(dsii[i].string_data_off);
+#if 1 /* def DEBUG */
 		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%x\n",
-				__func__, i, dsii.string_data_off);
+				__func__, i, dsii[i].string_data_off);
 #endif
-		dex->strings[i].offset = dsii.string_data_off;
-		dex->strings[i].string = NULL;
+		helper->set_string(helper->format, i, NULL,
+				dsii[i].string_data_off, -1);
 	}
-	if(i != size)
-	{
-		free(dex->strings);
-		dex->strings = NULL;
-		return -1;
-	}
-	dex->strings_cnt = size;
 	return 0;
 }
 

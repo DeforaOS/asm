@@ -41,9 +41,10 @@ struct _Format
 	FILE * fp;
 
 	/* diassembly */
-	int (*decode_callback)(void * priv, char const * section, off_t offset,
-			size_t size, off_t base);
-	void * decode_priv;
+	/* callbacks */
+	FormatSetStringCallback callback_set_string;
+	FormatDecodeCallback callback_decode;
+	void * callback_priv;
 };
 
 
@@ -113,23 +114,28 @@ char const * format_get_name(Format * format)
 /* format_decode */
 static int _decode_callback(Format * format, char const * section,
 		off_t offset, size_t size, off_t base);
+static int _set_string_callback(Format * format, int id, char const * name,
+		off_t offset, ssize_t size);
 
-int format_decode(Format * format, int (*callback)(void * priv,
-			char const * section, off_t offset, size_t size,
-			off_t base), void * priv)
+int format_decode(Format * format, FormatSetStringCallback set_string,
+			FormatDecodeCallback decode, void * priv)
 {
 	int ret;
 
 	if(format->plugin->decode == NULL)
 		return error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
+	format->helper.set_string = _set_string_callback;
+	format->callback_set_string = set_string;
 	format->helper.decode = _decode_callback;
-	format->decode_callback = callback;
-	format->decode_priv = priv;
+	format->callback_decode = decode;
+	format->callback_priv = priv;
 	ret = format->plugin->decode(format->plugin);
-	format->decode_callback = NULL;
-	format->decode_priv = NULL;
+	format->helper.set_string = NULL;
+	format->callback_set_string = NULL;
 	format->helper.decode = NULL;
+	format->callback_decode = NULL;
+	format->callback_priv = NULL;
 	return ret;
 }
 
@@ -140,8 +146,15 @@ static int _decode_callback(Format * format, char const * section,
 	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
 			section, offset, size, base);
 #endif
-	return format->decode_callback(format->decode_priv, section, offset,
+	return format->callback_decode(format->callback_priv, section, offset,
 			size, base);
+}
+
+static int _set_string_callback(Format * format, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	return format->callback_set_string(format->callback_priv, id, name,
+			offset, size);
 }
 
 

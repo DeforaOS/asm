@@ -29,11 +29,12 @@
 #define OP_REG16	AO_REGISTER(AOF_DALVIK_REGSIZE, 32, 16)
 
 /* immediate values */
-#define OP_U4		AO_IMMEDIATE(0, 0, 4)
-#define OP_U8		AO_IMMEDIATE(0, 0, 8)
-#define OP_U16		AO_IMMEDIATE(0, 0, 16)
-#define OP_U32		AO_IMMEDIATE(0, 0, 32)
-#define OP_U64		AO_IMMEDIATE(0, 0, 64)
+#define OP_U4		AO_IMMEDIATE(0, 4, 0)
+#define OP_U8		AO_IMMEDIATE(0, 8, 0)
+#define OP_U16		AO_IMMEDIATE(0, 16, 0)
+#define OP_U16_STR	AO_IMMEDIATE(0, 16, AOI_REFERS_STRING)
+#define OP_U32		AO_IMMEDIATE(0, 32, 0)
+#define OP_U64		AO_IMMEDIATE(0, 64, 0)
 
 
 { "add-double",		0xab,	OP1F, OP_REG8,     OP_REG8,     OP_REG8     },
@@ -78,7 +79,7 @@
 { "const/16",		0x13,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const/high16",	0x15,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-class",	0x1c,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
-{ "const-string",	0x1a,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
+{ "const-string",	0x1a,	OP1F, OP_REG8,     OP_U16_STR,  AOT_NONE    },
 { "const-wide",		0x18,	OP1F, OP_REG8,     OP_U64,      AOT_NONE    },
 { "const-wide/16",	0x16,	OP1F, OP_REG8,     OP_U16,      AOT_NONE    },
 { "const-wide/32",	0x17,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },

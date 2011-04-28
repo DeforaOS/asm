@@ -66,7 +66,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		{
 			call->name = "db";
-			call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
+			call->operands[0].type = AO_IMMEDIATE(0, 8, 0);
 			call->operands[0].value.immediate.value = u8;
 			call->operands[0].value.immediate.negative = 0;
 			call->operands_cnt = 1;
@@ -77,7 +77,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 						u16)) == NULL)
 		{
 			call->name = "dw";
-			call->operands[0].type = AO_IMMEDIATE(0, 0, 16);
+			call->operands[0].type = AO_IMMEDIATE(0, 16, 0);
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
 			call->operands_cnt = 1;
@@ -106,7 +106,7 @@ static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
 #endif
 	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
 	{
-		ao->type = AO_IMMEDIATE(0, 0, AO_GET_SIZE(aod));
+		ao->type = AO_IMMEDIATE(0, AO_GET_SIZE(aod), 0);
 		ao->value.immediate.value = AO_GET_VALUE(aod);
 		return 0;
 	}
@@ -280,7 +280,7 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 					!= sizeof(uW))
 				return -1;
 			/* FIXME endian */
-			ao->type = AO_IMMEDIATE(0, 0, W);
+			ao->type = AO_IMMEDIATE(0, W, 0);
 			ao->value.immediate.value = uW;
 		}
 		else if((ar = helper->get_register_by_id_size(helper->arch, reg,
@@ -411,7 +411,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 			== NULL)
 		return -1;
 	/* write register */
-	idefinition = AO_IMMEDIATE(0, 0, 8);
+	idefinition = AO_IMMEDIATE(0, 8, 0);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
 	/* FIXME some combinations of register values are illegal */
@@ -449,7 +449,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 	if(_write_immediate(plugin, idefinition, &ioperand) != 0)
 		return -1;
 	/* write offset */
-	idefinition = AO_IMMEDIATE(0, 0, AO_GET_OFFSET(definition));
+	idefinition = AO_IMMEDIATE(0, AO_GET_OFFSET(definition), 0);
 	ioperand.value.immediate.value = operand->value.dregister.offset;
 	return _write_immediate(plugin, idefinition, &ioperand);
 }
@@ -590,7 +590,7 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 			== NULL)
 		return -1;
 	/* write register */
-	idefinition = AO_IMMEDIATE(0, 0, 8);
+	idefinition = AO_IMMEDIATE(0, 8, 0);
 	memset(&ioperand, 0, sizeof(ioperand));
 	ioperand.type = AOT_IMMEDIATE;
 	ioperand.value.immediate.value = ar->id;

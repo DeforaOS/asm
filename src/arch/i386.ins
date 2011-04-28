@@ -127,11 +127,11 @@
 #define OP_C3		AO_CONSTANT(AOF_IMPLICIT, 8, 0x03)
 
 /* immediate values */
-#define OP_S8		AO_IMMEDIATE(AOF_SIGNED, 0, 8)
-#define OP_SW		AO_IMMEDIATE(AOF_SIGNED, 0, W)
-#define OP_U8		AO_IMMEDIATE(0, 0, 8)
-#define OP_U16		AO_IMMEDIATE(0, 0, 16)
-#define OP_UW		AO_IMMEDIATE(0, 0, W)
+#define OP_S8		AO_IMMEDIATE(AOF_SIGNED, 8, 0)
+#define OP_SW		AO_IMMEDIATE(AOF_SIGNED, W, 0)
+#define OP_U8		AO_IMMEDIATE(0, 8, 0)
+#define OP_U16		AO_IMMEDIATE(0, 16, 0)
+#define OP_UW		AO_IMMEDIATE(0, W, 0)
 
 
 /* instructions */

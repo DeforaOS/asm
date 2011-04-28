@@ -23,6 +23,12 @@
 
 /* Format */
 /* public */
+/* types */
+typedef int (*FormatDecodeCallback)(void * priv, char const * section,
+		off_t offset, size_t size, off_t base);
+typedef int (*FormatSetStringCallback)(void * priv, int id, char const * name,
+		off_t offset, ssize_t size);
+
 /* functions */
 Format * format_new(char const * format, char const * arch);
 void format_delete(Format * format);
@@ -39,8 +45,7 @@ int format_function(Format * format, char const * function);
 int format_section(Format * format, char const * section);
 
 /* disassembly */
-int format_decode(Format * format, int (*callback)(void * priv,
-			char const * section, off_t offset, size_t size,
-			off_t base), void * priv);
+int format_decode(Format * format, FormatSetStringCallback set_string,
+		FormatDecodeCallback decode, void * priv);
 
 #endif /* !ASM_FORMAT_H */

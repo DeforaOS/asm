@@ -33,9 +33,9 @@ static ArchRegister _java_registers[] =
 };
 
 #define OP1F	(8 << AOD_SIZE)
-#define OP_U8	AO_IMMEDIATE(0, 0, 8)
-#define OP_U16	AO_IMMEDIATE(0, 0, 16)
-#define OP_U32	AO_IMMEDIATE(0, 0, 32)
+#define OP_U8	AO_IMMEDIATE(0, 8, 0)
+#define OP_U16	AO_IMMEDIATE(0, 16, 0)
+#define OP_U32	AO_IMMEDIATE(0, 32, 0)
 static ArchInstruction _java_instructions[] =
 {
 	{ "aaload",	0x32,	OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},

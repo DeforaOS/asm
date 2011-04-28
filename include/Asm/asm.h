@@ -66,23 +66,21 @@ int asm_set_format(Asm * a, char const * format);
 
 /* functions */
 AsmFunction * asm_get_function_by_name(Asm * a, char const * name);
-int asm_set_function(Asm * a, char const * name, off_t offset, int whence,
-		ssize_t size);
+int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size);
 
 /* labels */
 AsmLabel * asm_get_label_by_name(Asm * a, char const * label);
 AsmLabel * asm_get_label_by_offset(Asm * a, off_t offset);
-int asm_set_label(Asm * a, char const * label, off_t offset, int whence);
+int asm_set_label(Asm * a, char const * label, off_t offset);
 
 /* sections */
-int asm_set_section(Asm * a, char const * name, off_t offset, int whence,
-		ssize_t size);
+int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size);
 
 /* strings */
 AsmString * asm_get_string_by_id(Asm * a, AsmId id);
 AsmString * asm_get_string_by_name(Asm * a, char const * name);
 int asm_set_string(Asm * a, int id, char const * name, off_t offset,
-		int whence, ssize_t size);
+		ssize_t size);
 
 
 /* useful */

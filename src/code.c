@@ -32,6 +32,14 @@
 /* Code */
 /* private */
 /* types */
+typedef struct _CodeString
+{
+	int id;
+	char * name;
+	off_t offset;
+	ssize_t size;
+} CodeString;
+
 struct _Code
 {
 	Arch * arch;
@@ -39,7 +47,22 @@ struct _Code
 	Format * format;
 	char * filename;
 	FILE * fp;
+
+	/* strings */
+	CodeString * strings;
+	size_t strings_cnt;
 };
+
+
+/* prototypes */
+/* strings */
+static void _code_string_delete_all(Code * code);
+
+static CodeString * _code_string_get_by_id(Code * code, AsmId id);
+static int _code_string_set(CodeString * codestring, int id, char const * name,
+		off_t offset, ssize_t size);
+
+static CodeString * _code_string_append(Code * code);
 
 
 /* functions */
@@ -117,6 +140,7 @@ int code_close(Code * code)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
 	code->fp = NULL;
+	_code_string_delete_all(code);
 	return ret;
 }
 
@@ -136,6 +160,8 @@ int code_decode(Code * code, char const * buffer, size_t size)
 /* code_decode_file */
 static int _decode_file_callback(void * priv, char const * section,
 		off_t offset, size_t size, off_t base);
+static int _set_string_callback(void * priv, int id, char const * name,
+		off_t offset, ssize_t size);
 
 int code_decode_file(Code * code, char const * filename)
 {
@@ -146,7 +172,8 @@ int code_decode_file(Code * code, char const * filename)
 		return -error_set_code(1, "%s: %s", filename, strerror(errno));
 	arch_init(code->arch, filename, fp);
 	format_init(code->format, filename, fp);
-	ret = format_decode(code->format, _decode_file_callback, code);
+	ret = format_decode(code->format, _set_string_callback,
+			_decode_file_callback, code);
 	format_exit(code->format);
 	arch_exit(code->arch);
 	if(fclose(fp) != 0 && ret == 0)
@@ -162,6 +189,21 @@ static int _decode_file_callback(void * priv, char const * section,
 	if(section != NULL)
 		printf("%s%s:\n", "\nDisassembly of section ", section);
 	return arch_decode_at(code->arch, offset, size, base);
+}
+
+static int _set_string_callback(void * priv, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	Code * code = priv;
+	CodeString * cs = NULL;
+
+	if(id >= 0)
+		cs = _code_string_get_by_id(code, id);
+	if(cs == NULL)
+		cs = _code_string_append(code);
+	if(cs == NULL || _code_string_set(cs, id, name, offset, size) != 0)
+		return -1;
+	return cs->id;
 }
 
 
@@ -218,4 +260,70 @@ int code_section(Code * code, char const * section)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
 #endif
 	return format_section(code->format, section);
+}
+
+
+/* private */
+/* functions */
+/* strings */
+/* code_string_delete_all */
+static void _code_string_delete_all(Code * code)
+{
+	size_t i;
+
+	for(i = 0; i < code->strings_cnt; i++)
+		free(code->strings[i].name);
+	code->strings_cnt = 0;
+	free(code->strings);
+	code->strings = NULL;
+}
+
+
+/* code_string_get_by_id */
+static CodeString * _code_string_get_by_id(Code * code, AsmId id)
+{
+	size_t i;
+
+	for(i = 0; i < code->strings_cnt; i++)
+		if(code->strings[i].id >= 0 && code->strings[i].id == id)
+			return &code->strings[i];
+	return NULL;
+}
+
+
+/* code_string_set */
+static int _code_string_set(CodeString * codestring, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	char * p = NULL;
+
+	if(name != NULL && (p = strdup(name)) == NULL)
+		return -error_set_code(1, "%s", strerror(errno));
+	codestring->id = id;
+	free(codestring->name);
+	codestring->name = p;
+	codestring->offset = offset;
+	codestring->size = size;
+	return 0;
+}
+
+
+/* code_string_append */
+static CodeString * _code_string_append(Code * code)
+{
+	CodeString * p;
+
+	if((p = realloc(code->strings, sizeof(*p) * (code->strings_cnt + 1)))
+			== NULL)
+	{
+		error_set_code(1, "%s", strerror(errno));
+		return NULL;
+	}
+	code->strings = p;
+	p = &code->strings[code->strings_cnt++];
+	p->id = -1;
+	p->name = NULL;
+	p->offset = -1;
+	p->size = -1;
+	return p;
 }

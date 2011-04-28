@@ -46,7 +46,7 @@ typedef enum _ArchOperandType
 {
 	AOT_NONE	= 0x0,
 	AOT_CONSTANT	= 0x1,		/* flags |      0 |   size |  value */
-	AOT_IMMEDIATE	= 0x2,		/* flags | offset |      0 |   size */
+	AOT_IMMEDIATE	= 0x2,		/* flags |      0 |   size | refers */
 	AOT_REGISTER	= 0x3,		/* flags |      0 |   size |     id */
 	AOT_DREGISTER	= 0x4,		/* flags |  dsize |  rsize |     id */
 	AOT_DREGISTER2	= 0x5		/* flags |    did |  rsize |     id */
@@ -74,6 +74,9 @@ typedef enum _ArchOperandType
 /* for registers */
 # define AOF_IMPLICIT	0x1
 
+/* immediate refers */
+# define AOI_REFERS_STRING	0x1
+
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
 # define AO_GET_OFFSET(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)
@@ -88,11 +91,11 @@ typedef enum _ArchOperandType
 		 | ((flags) << AOD_FLAGS) \
 		 | ((size) << AOD_SIZE) \
 		 | ((value) << AOD_VALUE))
-# define AO_IMMEDIATE(flags, offset, size) \
+# define AO_IMMEDIATE(flags, size, type) \
 		((AOT_IMMEDIATE << AOD_TYPE) \
 		 | ((flags) << AOD_FLAGS) \
-		 | ((offset) << AOD_OFFSET) \
-		 | ((size) << AOD_SIZE))
+		 | ((size) << AOD_SIZE) \
+		 | ((type) << AOD_VALUE))
 # define AO_REGISTER(flags, size, id) \
 		((AOT_REGISTER << AOD_TYPE) \
 		 | ((flags) << AOD_FLAGS) \

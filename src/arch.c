@@ -432,6 +432,7 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 /* useful */
 /* arch_decode */
 static int _decode_print(Arch * arch, ArchInstructionCall * call);
+static void _decode_print_immediate(Arch * arch, ArchOperand * ao);
 
 int arch_decode(Arch * arch)
 {
@@ -492,38 +493,45 @@ static int _decode_print(Arch * arch, ArchInstructionCall * call)
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];
-		switch(AO_GET_TYPE(call->operands[i].type))
+		fputs(sep, stdout);
+		switch(AO_GET_TYPE(ao->type))
 		{
 			case AOT_DREGISTER:
 				name = ao->value.dregister.name;
 				if(ao->value.dregister.offset == 0)
 				{
-					printf("%s[%%%s]", sep, name);
+					printf("[%%%s]", name);
 					break;
 				}
-				printf("%s[%%%s + $0x%lx]", sep, name,
+				printf("[%%%s + $0x%lx]", name,
 						ao->value.dregister.offset);
 				break;
 			case AOT_DREGISTER2:
 				name = ao->value.dregister2.name;
-				printf("%s[%%%s + %%%s]", sep, name,
+				printf("[%%%s + %%%s]", name,
 						ao->value.dregister2.name2);
 				break;
 			case AOT_IMMEDIATE:
-				printf("%s%s$0x%lx", sep,
-						ao->value.immediate.negative
-						? "-" : "",
-						ao->value.immediate.value);
+				_decode_print_immediate(arch, ao);
 				break;
 			case AOT_REGISTER:
 				name = call->operands[i].value._register.name;
-				printf("%s%%%s", sep, name);
+				printf("%%%s", name);
 				break;
 		}
 		sep = ", ";
 	}
 	putchar('\n');
 	return 0;
+}
+
+static void _decode_print_immediate(Arch * arch, ArchOperand * ao)
+{
+	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
+			ao->value.immediate.value);
+	if(AO_GET_VALUE(ao->type) == AOI_REFERS_STRING)
+		/* FIXME really print */
+		printf("%s", " (string)");
 }
 
 

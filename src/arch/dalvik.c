@@ -163,7 +163,7 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		{
 			call->name = "db";
-			call->operands[0].type = AO_IMMEDIATE(0, 0, 8);
+			call->operands[0].type = AO_IMMEDIATE(0, 8, 0);
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
 			return 0;
@@ -173,7 +173,7 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 						u16)) == NULL)
 		{
 			call->name = "dw";
-			call->operands[0].type = AO_IMMEDIATE(0, 0, 16);
+			call->operands[0].type = AO_IMMEDIATE(0, 16, 0);
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
 			return 0;

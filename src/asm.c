@@ -140,8 +140,7 @@ int asm_set_format(Asm * a, char const * format)
 
 
 /* asm_set_section */
-int asm_set_section(Asm * a, char const * name, off_t offset, int whence,
-		ssize_t size)
+int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size)
 {
 	/* FIXME fully implement */
 	return code_section(a->code, name);

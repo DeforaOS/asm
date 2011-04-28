@@ -101,10 +101,6 @@ typedef struct _DexString
 	char * string;
 } DexString;
 
-typedef struct _Dex
-{
-} Dex;
-
 
 /* variables */
 static char _dex_signature[4] = "dex\n";
@@ -113,11 +109,8 @@ static char _dex_signature[4] = "dex\n";
 /* prototypes */
 /* plug-in */
 static int _dex_init(FormatPlugin * format, char const * arch);
-static int _dex_destroy(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
 static int _dex_decode(FormatPlugin * format);
-
-static int _dex_error(FormatPlugin * format);
 
 
 /* public */
@@ -129,7 +122,7 @@ FormatPlugin format_plugin =
 	_dex_signature,
 	sizeof(_dex_signature),
 	_dex_init,
-	_dex_destroy,
+	NULL,
 	NULL,
 	NULL,
 	_dex_detect,
@@ -144,28 +137,12 @@ FormatPlugin format_plugin =
 /* dex_init */
 static int _dex_init(FormatPlugin * format, char const * arch)
 {
-	Dex * dex;
-
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, arch);
 #endif
 	if(arch != NULL && strcmp(arch, "dalvik") != 0)
 		return -error_set_code(1, "%s: %s", arch,
 				"Unsupported Dex architecture");
-	if((dex = object_new(sizeof(*dex))) == NULL)
-		return -1;
-	format->priv = dex;
-	return 0;
-}
-
-
-/* dex_destroy */
-static int _dex_destroy(FormatPlugin * format)
-{
-	Dex * dex = format->priv;
-	size_t i;
-
-	object_delete(dex);
 	return 0;
 }
 
@@ -313,10 +290,10 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size)
 {
 	FormatPluginHelper * helper = format->helper;
-	Dex * dex = format->priv;
 	size_t i;
 	DexStringIdItem * dsii;
 	ssize_t s;
+	uint8_t u8;
 
 	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 		return -1;
@@ -328,22 +305,16 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 	for(i = 0; i < size; i++)
 	{
 		dsii[i].string_data_off = _htol32(dsii[i].string_data_off);
-#if 1 /* def DEBUG */
-		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%x\n",
-				__func__, i, dsii[i].string_data_off);
+		offset = dsii[i].string_data_off;
+		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
+			return -1;
+		if(helper->read(helper->format, &u8, sizeof(u8)) != sizeof(u8))
+			return -1;
+#ifdef DEBUG
+		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%x len %u\n",
+				__func__, i, offset, u8);
 #endif
-		helper->set_string(helper->format, i, NULL,
-				dsii[i].string_data_off, -1);
+		helper->set_string(helper->format, i, NULL, offset + 1, u8);
 	}
 	return 0;
-}
-
-
-/* dex_error */
-static int _dex_error(FormatPlugin * format)
-{
-	FormatPluginHelper * helper = format->helper;
-
-	return -error_set_code(1, "%s: %s",
-			helper->get_filename(helper->format), strerror(errno));
 }

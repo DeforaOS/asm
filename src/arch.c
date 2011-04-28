@@ -431,112 +431,41 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-static int _decode_print(Arch * arch, ArchInstructionCall * call);
-static void _decode_print_immediate(Arch * arch, ArchOperand * ao);
-
-int arch_decode(Arch * arch)
+int arch_decode(Arch * arch, ArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	ArchInstructionCall * calls = NULL;
-	size_t calls_cnt = 0;
+	ArchInstructionCall * c = NULL;
+	size_t c_cnt = 0;
 	ArchInstructionCall * p;
-	size_t i;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
-	printf("\n%08lx:\n", arch->buffer_pos + (long)arch->base);
 	for(;;)
 	{
-		if((p = realloc(calls, sizeof(*calls) * (calls_cnt + 1)))
-				== NULL)
+		if((p = realloc(c, sizeof(*c) * (c_cnt + 1))) == NULL)
 		{
-			free(calls);
+			free(c);
 			return -error_set_code(1, "%s", strerror(errno));
 		}
-		calls = p;
-		p = &calls[calls_cnt];
+		c = p;
+		p = &c[c_cnt];
 		memset(p, 0, sizeof(*p));
 		p->base = arch->base;
 		p->offset = arch->buffer_pos;
 		if(arch->plugin->decode(arch->plugin, p) != 0)
 			break;
 		p->size = arch->buffer_pos - p->offset;
-		calls_cnt++;
+		c_cnt++;
 	}
-	for(i = 0; i < calls_cnt; i++)
-		if(_decode_print(arch, &calls[i]) != 0)
-			return -1;
-	free(calls);
+	*calls = c;
+	*calls_cnt = c_cnt;
 	return 0;
-}
-
-static int _decode_print(Arch * arch, ArchInstructionCall * call)
-{
-	char const * sep = " ";
-	size_t i;
-	uint8_t u8;
-	ArchOperand * ao;
-	char const * name;
-
-	if(arch->helper.seek(arch, call->offset, SEEK_SET) < 0)
-		return -1;
-	printf("%8lx:", (long)call->base + (long)call->offset);
-	for(i = 0; i < call->size; i++)
-	{
-		if(arch->helper.read(arch, &u8, sizeof(u8)) != sizeof(u8))
-			return -1;
-		printf(" %02x", u8);
-	}
-	for(; i < 8; i++)
-		printf("   ");
-	printf(" %-12s", call->name);
-	for(i = 0; i < call->operands_cnt; i++)
-	{
-		ao = &call->operands[i];
-		fputs(sep, stdout);
-		switch(AO_GET_TYPE(ao->type))
-		{
-			case AOT_DREGISTER:
-				name = ao->value.dregister.name;
-				if(ao->value.dregister.offset == 0)
-				{
-					printf("[%%%s]", name);
-					break;
-				}
-				printf("[%%%s + $0x%lx]", name,
-						ao->value.dregister.offset);
-				break;
-			case AOT_DREGISTER2:
-				name = ao->value.dregister2.name;
-				printf("[%%%s + %%%s]", name,
-						ao->value.dregister2.name2);
-				break;
-			case AOT_IMMEDIATE:
-				_decode_print_immediate(arch, ao);
-				break;
-			case AOT_REGISTER:
-				name = call->operands[i].value._register.name;
-				printf("%%%s", name);
-				break;
-		}
-		sep = ", ";
-	}
-	putchar('\n');
-	return 0;
-}
-
-static void _decode_print_immediate(Arch * arch, ArchOperand * ao)
-{
-	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
-			ao->value.immediate.value);
-	if(AO_GET_VALUE(ao->type) == AOI_REFERS_STRING)
-		/* FIXME really print */
-		printf("%s", " (string)");
 }
 
 
 /* arch_decode_at */
-int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
+int arch_decode_at(Arch * arch, ArchInstructionCall ** calls,
+		size_t * calls_cnt, off_t offset, size_t size, off_t base)
 {
 	int ret;
 
@@ -550,9 +479,12 @@ int arch_decode_at(Arch * arch, off_t offset, size_t size, off_t base)
 	arch->base = base;
 	arch->buffer_pos = offset;
 	arch->buffer_cnt = offset + size;
-	if((ret = arch_decode(arch)) == 0
+	if((ret = arch_decode(arch, calls, calls_cnt)) == 0
 			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
+	{
+		free(*calls); /* XXX the pointer was updated anyway... */
 		ret = -error_set_code(1, "%s", strerror(errno));
+	}
 	return ret;
 }
 
@@ -621,6 +553,24 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->helper.seek = _arch_seek_buffer;
 	arch->plugin->helper = &arch->helper;
 	return 0;
+}
+
+
+/* arch_read */
+ssize_t arch_read(Arch * arch, void * buf, size_t size)
+{
+	if(arch->helper.read == NULL)
+		return -error_set_code(1, "%s", "read: No helper defined");
+	return arch->helper.read(arch, buf, size);
+}
+
+
+/* arch_seek */
+off_t arch_seek(Arch * arch, off_t offset, int whence)
+{
+	if(arch->helper.seek == NULL)
+		return -error_set_code(1, "%s", "seek: No helper defined");
+	return arch->helper.seek(arch, offset, whence);
 }
 
 

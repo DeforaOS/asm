@@ -27,7 +27,7 @@
 typedef int (*FormatDecodeCallback)(void * priv, char const * section,
 		off_t offset, size_t size, off_t base);
 typedef int (*FormatSetStringCallback)(void * priv, int id, char const * name,
-		off_t offset, ssize_t size);
+		off_t offset, ssize_t length);
 
 /* functions */
 Format * format_new(char const * format, char const * arch);

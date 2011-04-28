@@ -80,7 +80,7 @@ int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size);
 AsmString * asm_get_string_by_id(Asm * a, AsmId id);
 AsmString * asm_get_string_by_name(Asm * a, char const * name);
 int asm_set_string(Asm * a, int id, char const * name, off_t offset,
-		ssize_t size);
+		ssize_t length);
 
 
 /* useful */

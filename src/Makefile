@@ -60,7 +60,7 @@ arch.o: arch.c arch.h ../config.h
 asm.o: asm.c ../include/Asm.h code.h parser.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c asm.c
 
-code.o: code.c ../include/Asm.h arch.h code.h
+code.o: code.c ../include/Asm.h arch.h code.h format.h
 	$(CC) $(libasm_CFLAGS) -c code.c
 
 format.o: format.c format.h ../config.h

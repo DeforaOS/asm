@@ -22,6 +22,9 @@
 #  include <sys/endian.h>
 # elif defined(__linux__)
 #  include <endian.h>
+#  define _BYTE_ORDER __BYTE_ORDER
+#  define _BIG_ENDIAN __BIG_ENDIAN
+#  define _LITTLE_ENDIAN __LITTLE_ENDIAN
 # endif
 
 # include "Asm/arch.h"

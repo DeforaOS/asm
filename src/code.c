@@ -25,7 +25,6 @@
 #include <arpa/inet.h>
 #include "arch.h"
 #include "format.h"
-#include "common.h"
 #include "code.h"
 
 
@@ -129,6 +128,47 @@ char const * code_get_format(Code * code)
 }
 
 
+/* code_get_function_by_id */
+AsmFunction * code_get_function_by_id(Code * code, AsmId id)
+{
+	/* FIXME implement */
+	return NULL;
+}
+
+
+/* code_get_string_by_id */
+AsmString * code_get_string_by_id(Code * code, AsmId id)
+{
+	/* XXX CodeString has to be exactly like an AsmString */
+	return _code_string_get_by_id(code, id);
+}
+
+
+/* code_set_function */
+int code_set_function(Code * code, int id, char const * name, off_t offset,
+		ssize_t size)
+{
+	/* FIXME implement */
+	return -1;
+}
+
+
+/* code_set_string */
+int code_set_string(Code * code, int id, char const * name, off_t offset,
+		ssize_t length)
+{
+	CodeString * cs = NULL;
+
+	if(id >= 0)
+		cs = _code_string_get_by_id(code, id);
+	if(cs == NULL)
+		cs = _code_string_append(code);
+	if(cs == NULL || _code_string_set(cs, id, name, offset, length) != 0)
+		return -1;
+	return cs->id;
+}
+
+
 /* useful */
 /* code_close */
 int code_close(Code * code)
@@ -158,7 +198,7 @@ int code_decode(Code * code, char const * buffer, size_t size)
 	size_t i;
 
 	arch_init_buffer(code->arch, buffer, size);
-	if((ret = arch_decode(code->arch, &calls, &calls_cnt)) == 0)
+	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt)) == 0)
 	{
 		fprintf(stderr, "DEBUG: %lu\n", calls_cnt);
 		for(i = 0; i < calls_cnt; i++)
@@ -226,59 +266,37 @@ static int _decode_print(Code * code, ArchInstructionCall * call)
 
 static void _decode_print_immediate(Code * code, ArchOperand * ao)
 {
-	CodeString * cs;
-
 	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
 			ao->value.immediate.value);
 	if(AO_GET_VALUE(ao->type) == AOI_REFERS_STRING)
 	{
-		cs = _code_string_get_by_id(code, ao->value.immediate.value);
-		if(cs != NULL && cs->name == NULL)
-			_code_string_read(code, cs);
-		if(cs != NULL && cs->name != NULL)
-			printf(" \"%s\"", cs->name);
+		if(ao->value.immediate.name != NULL)
+			printf(" \"%s\"", ao->value.immediate.name);
 		else
 			printf("%s", " (string)");
+	}
+	else if(AO_GET_VALUE(ao->type) == AOI_REFERS_FUNCTION)
+	{
+		if(ao->value.immediate.name != NULL)
+			printf(" call \"%s\"", ao->value.immediate.name);
+		else
+			printf("%s", " (call)");
 	}
 }
 
 
-/* code_decode_file */
-static int _decode_file_callback(void * priv, char const * section,
-		off_t offset, size_t size, off_t base);
-static int _set_string_callback(void * priv, int id, char const * name,
-		off_t offset, ssize_t size);
-
-int code_decode_file(Code * code, char const * filename)
+/* code_decode_at */
+int code_decode_at(Code * code, char const * section, off_t offset,
+		size_t size, off_t base)
 {
-	int ret;
-	FILE * fp;
-
-	if((fp = fopen(filename, "r")) == NULL)
-		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	arch_init(code->arch, filename, fp);
-	format_init(code->format, filename, fp);
-	ret = format_decode(code->format, _set_string_callback,
-			_decode_file_callback, code);
-	format_exit(code->format);
-	arch_exit(code->arch);
-	if(fclose(fp) != 0 && ret == 0)
-		ret = -error_set_code(1, "%s: %s", filename, strerror(errno));
-	return ret;
-}
-
-static int _decode_file_callback(void * priv, char const * section,
-		off_t offset, size_t size, off_t base)
-{
-	Code * code = priv;
 	ArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;
 	size_t i;
 
 	if(section != NULL)
 		printf("%s%s:\n", "\nDisassembly of section ", section);
-	if(arch_decode_at(code->arch, &calls, &calls_cnt, offset, size, base)
-			!= 0)
+	if(arch_decode_at(code->arch, code, &calls, &calls_cnt, offset, size,
+				base) != 0)
 		return -1;
 	if(size != 0)
 		printf("\n%08lx:\n", (long)offset + (long)base);
@@ -288,19 +306,23 @@ static int _decode_file_callback(void * priv, char const * section,
 	return 0;
 }
 
-static int _set_string_callback(void * priv, int id, char const * name,
-		off_t offset, ssize_t length)
-{
-	Code * code = priv;
-	CodeString * cs = NULL;
 
-	if(id >= 0)
-		cs = _code_string_get_by_id(code, id);
-	if(cs == NULL)
-		cs = _code_string_append(code);
-	if(cs == NULL || _code_string_set(cs, id, name, offset, length) != 0)
-		return -1;
-	return cs->id;
+/* code_decode_file */
+int code_decode_file(Code * code, char const * filename)
+{
+	int ret;
+	FILE * fp;
+
+	if((fp = fopen(filename, "r")) == NULL)
+		return -error_set_code(1, "%s: %s", filename, strerror(errno));
+	arch_init(code->arch, filename, fp);
+	format_init(code->format, filename, fp);
+	ret = format_decode(code->format, code);
+	format_exit(code->format);
+	arch_exit(code->arch);
+	if(fclose(fp) != 0 && ret == 0)
+		ret = -error_set_code(1, "%s: %s", filename, strerror(errno));
+	return ret;
 }
 
 
@@ -382,9 +404,13 @@ static CodeString * _code_string_get_by_id(Code * code, AsmId id)
 	size_t i;
 
 	for(i = 0; i < code->strings_cnt; i++)
-		if(code->strings[i].id >= 0 && code->strings[i].id == id)
-			return &code->strings[i];
-	return NULL;
+		if(code->strings[i].id >= 0 && (AsmId)code->strings[i].id == id)
+			break;
+	if(i == code->strings_cnt)
+		return NULL;
+	if(code->strings[i].name == NULL)
+		_code_string_read(code, &code->strings[i]);
+	return &code->strings[i];
 }
 
 
@@ -429,23 +455,28 @@ static CodeString * _code_string_append(Code * code)
 /* code_string_read */
 static int _code_string_read(Code * code, CodeString * codestring)
 {
+	off_t offset; /* XXX should not have to be kept */
 	char * buf;
 
 	if(codestring->offset < 0 || codestring->length < 0)
 		return -error_set_code(1, "%s", "Insufficient information to"
 				" read string");
-	if(arch_seek(code->arch, codestring->offset, SEEK_SET)
-			!= codestring->offset)
+	if((offset = arch_seek(code->arch, 0, SEEK_CUR)) < 0)
 		return -1;
 	if((buf = malloc(codestring->length + 1)) == NULL)
 		return -error_set_code(1, "%s", strerror(errno));
+	if(arch_seek(code->arch, codestring->offset, SEEK_SET)
+			!= codestring->offset)
+		return -1;
 	if(arch_read(code->arch, buf, codestring->length) != codestring->length)
 	{
 		free(buf);
+		arch_seek(code->arch, offset, SEEK_SET);
 		return -1;
 	}
 	buf[codestring->length] = '\0';
 	free(codestring->name);
 	codestring->name = buf;
+	arch_seek(code->arch, offset, SEEK_SET);
 	return 0;
 }

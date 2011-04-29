@@ -198,8 +198,10 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 	uint8_t u8;
 	uint16_t u16;
 	uint32_t u32;
+	AsmFunction * af;
+	AsmString * as;
 
-	switch(AO_GET_SIZE(dd->call->operands[i].type))
+	switch(AO_GET_SIZE(ao->type))
 	{
 		case 4:
 			if(dd->u8 >= 0)
@@ -235,6 +237,21 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 		default:
 			return -error_set_code(1, "%s", "Unsupported immediate"
 					" operand");
+	}
+	switch(AO_GET_VALUE(ao->type))
+	{
+		case AOI_REFERS_FUNCTION:
+			af = helper->get_function_by_id(helper->arch,
+					ao->value.immediate.value);
+			if(af != NULL)
+				ao->value.immediate.name = af->name;
+			break;
+		case AOI_REFERS_STRING:
+			as = helper->get_string_by_id(helper->arch,
+					ao->value.immediate.value);
+			if(as != NULL)
+				ao->value.immediate.name = as->name;
+			break;
 	}
 	ao->value.immediate.negative = 0;
 	return 0;

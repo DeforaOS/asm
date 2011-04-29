@@ -20,6 +20,7 @@
 
 # include <sys/types.h>
 # include <stdint.h>
+# include "asm.h"
 
 
 /* AsmArch */
@@ -76,6 +77,7 @@ typedef enum _ArchOperandType
 
 /* immediate refers */
 # define AOI_REFERS_STRING	0x1
+# define AOI_REFERS_FUNCTION	0x2
 
 /* macros */
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
@@ -136,6 +138,7 @@ typedef struct _ArchOperand
 		/* AOT_IMMEDIATE */
 		struct
 		{
+			char const * name;		/* optional */
 			uint64_t value;
 			int negative;
 		} immediate;
@@ -187,12 +190,14 @@ typedef struct _ArchPluginHelper
 	/* callbacks */
 	/* accessors */
 	char const * (*get_filename)(Arch * arch);
+	AsmFunction * (*get_function_by_id)(Arch * arch, AsmId id);
 	ArchInstruction * (*get_instruction_by_opcode)(Arch * arch,
 			uint8_t size, uint32_t opcode);
 	ArchRegister * (*get_register_by_id_size)(Arch * arch, uint32_t id,
 			uint32_t size);
 	ArchRegister * (*get_register_by_name_size)(Arch * arch,
 			char const * name, uint32_t size);
+	AsmString * (*get_string_by_id)(Arch * arch, AsmId id);
 
 	/* assembly */
 	ssize_t (*write)(Arch * arch, void const * buf, size_t size);

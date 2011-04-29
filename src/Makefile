@@ -54,28 +54,28 @@ deasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L. -Wl,-rpath,$(LIBDIR) -lasm
 deasm: $(deasm_OBJS) libasm.so
 	$(CC) -o deasm $(deasm_OBJS) $(deasm_LDFLAGS)
 
-arch.o: arch.c arch.h ../config.h
+arch.o: arch.c ../include/Asm/arch.h ../include/Asm/asm.h arch.h code.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c arch.c
 
 asm.o: asm.c ../include/Asm.h code.h parser.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c asm.c
 
-code.o: code.c ../include/Asm.h arch.h code.h format.h
+code.o: code.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h arch.h code.h format.h
 	$(CC) $(libasm_CFLAGS) -c code.c
 
-format.o: format.c format.h ../config.h
+format.o: format.c ../include/Asm/asm.h ../include/Asm/format.h code.h format.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c format.c
 
-parser.o: parser.c parser.h
+parser.o: parser.c parser.h token.h
 	$(CC) $(libasm_CFLAGS) -c parser.c
 
-token.o: token.c token.h
+token.o: token.c common.h token.h
 	$(CC) $(libasm_CFLAGS) -c token.c
 
-main.o: main.c ../include/Asm.h
+main.o: main.c ../include/Asm/asm.h ../config.h
 	$(CC) $(asm_CFLAGS) -c main.c
 
-deasm.o: deasm.c ../include/Asm.h
+deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h ../config.h
 	$(CC) $(deasm_CFLAGS) -c deasm.c
 
 clean:

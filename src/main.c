@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "Asm/asm.h"
-#include "common.h"
 #include "../config.h"
 
 

@@ -18,7 +18,7 @@
 #ifndef DEVEL_ASM_ASM_H
 # define DEVEL_ASM_ASM_H
 
-# include <stdio.h>
+# include <sys/types.h>
 
 
 /* Asm */
@@ -43,9 +43,10 @@ typedef struct _AsmLabel
 
 typedef struct _AsmString
 {
-	AsmId id;
-	char const * string;
-	ssize_t size;
+	int id;
+	char const * name;
+	off_t offset;
+	ssize_t length;
 } AsmString;
 
 typedef enum _AsmPluginType { APT_ARCH = 0, APT_FORMAT } AsmPluginType;

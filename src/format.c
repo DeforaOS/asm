@@ -40,11 +40,8 @@ struct _Format
 	char const * filename;
 	FILE * fp;
 
-	/* diassembly */
-	/* callbacks */
-	FormatSetStringCallback callback_set_string;
-	FormatDecodeCallback callback_decode;
-	void * callback_priv;
+	/* deassembly */
+	Code * code;
 };
 
 
@@ -114,28 +111,30 @@ char const * format_get_name(Format * format)
 /* format_decode */
 static int _decode_callback(Format * format, char const * section,
 		off_t offset, size_t size, off_t base);
+static AsmString * _get_string_by_id_callback(Format * format, AsmId id);
+static int _set_function_callback(Format * format, int id, char const * name,
+		off_t offset, ssize_t size);
 static int _set_string_callback(Format * format, int id, char const * name,
 		off_t offset, ssize_t size);
 
-int format_decode(Format * format, FormatSetStringCallback set_string,
-			FormatDecodeCallback decode, void * priv)
+int format_decode(Format * format, Code * code)
 {
 	int ret;
 
 	if(format->plugin->decode == NULL)
 		return error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
-	format->helper.set_string = _set_string_callback;
-	format->callback_set_string = set_string;
 	format->helper.decode = _decode_callback;
-	format->callback_decode = decode;
-	format->callback_priv = priv;
+	format->helper.get_string_by_id = _get_string_by_id_callback;
+	format->helper.set_function = _set_string_callback;
+	format->helper.set_string = _set_string_callback;
+	format->code = code;
 	ret = format->plugin->decode(format->plugin);
+	format->code = NULL;
 	format->helper.set_string = NULL;
-	format->callback_set_string = NULL;
+	format->helper.set_function = NULL;
+	format->helper.get_string_by_id = NULL;
 	format->helper.decode = NULL;
-	format->callback_decode = NULL;
-	format->callback_priv = NULL;
 	return ret;
 }
 
@@ -146,15 +145,24 @@ static int _decode_callback(Format * format, char const * section,
 	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
 			section, offset, size, base);
 #endif
-	return format->callback_decode(format->callback_priv, section, offset,
-			size, base);
+	return code_decode_at(format->code, section, offset, size, base);
+}
+
+static AsmString * _get_string_by_id_callback(Format * format, AsmId id)
+{
+	return code_get_string_by_id(format->code, id);
+}
+
+static int _set_function_callback(Format * format, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	return code_set_function(format->code, id, name, offset, size);
 }
 
 static int _set_string_callback(Format * format, int id, char const * name,
 		off_t offset, ssize_t size)
 {
-	return format->callback_set_string(format->callback_priv, id, name,
-			offset, size);
+	return code_set_string(format->code, id, name, offset, size);
 }
 
 

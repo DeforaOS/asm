@@ -22,6 +22,7 @@
 #include <string.h>
 #include <errno.h>
 #include "common.h"
+#include "token.h"
 #include "parser.h"
 
 

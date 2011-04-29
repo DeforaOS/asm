@@ -46,6 +46,7 @@ struct _Arch
 	size_t registers_cnt;
 
 	/* internal */
+	Code * code;
 	off_t base;
 	char const * filename;
 	FILE * fp;
@@ -64,6 +65,8 @@ struct _Arch
 /* prototypes */
 /* callbacks */
 static char const * _arch_get_filename(Arch * arch);
+static AsmFunction * _arch_get_function_by_id(Arch * arch, AsmId id);
+static AsmString * _arch_get_string_by_id(Arch * arch, AsmId id);
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
 static off_t _arch_seek(Arch * arch, off_t offset, int whence);
@@ -431,8 +434,10 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-int arch_decode(Arch * arch, ArchInstructionCall ** calls, size_t * calls_cnt)
+int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
+		size_t * calls_cnt)
 {
+	int ret = 0;
 	ArchInstructionCall * c = NULL;
 	size_t c_cnt = 0;
 	ArchInstructionCall * p;
@@ -440,12 +445,14 @@ int arch_decode(Arch * arch, ArchInstructionCall ** calls, size_t * calls_cnt)
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
+	arch->code = code;
 	for(;;)
 	{
 		if((p = realloc(c, sizeof(*c) * (c_cnt + 1))) == NULL)
 		{
 			free(c);
-			return -error_set_code(1, "%s", strerror(errno));
+			ret = -error_set_code(1, "%s", strerror(errno));
+			break;
 		}
 		c = p;
 		p = &c[c_cnt];
@@ -457,14 +464,18 @@ int arch_decode(Arch * arch, ArchInstructionCall ** calls, size_t * calls_cnt)
 		p->size = arch->buffer_pos - p->offset;
 		c_cnt++;
 	}
-	*calls = c;
-	*calls_cnt = c_cnt;
-	return 0;
+	if(ret == 0)
+	{
+		*calls = c;
+		*calls_cnt = c_cnt;
+	}
+	arch->code = NULL;
+	return ret;
 }
 
 
 /* arch_decode_at */
-int arch_decode_at(Arch * arch, ArchInstructionCall ** calls,
+int arch_decode_at(Arch * arch, Code * code, ArchInstructionCall ** calls,
 		size_t * calls_cnt, off_t offset, size_t size, off_t base)
 {
 	int ret;
@@ -476,10 +487,10 @@ int arch_decode_at(Arch * arch, ArchInstructionCall ** calls,
 		return -error_set_code(1, "%s", strerror(errno));
 	if(size == 0)
 		return 0;
-	arch->base = base;
+	arch->code = code;
 	arch->buffer_pos = offset;
 	arch->buffer_cnt = offset + size;
-	if((ret = arch_decode(arch, calls, calls_cnt)) == 0
+	if((ret = arch_decode(arch, code, calls, calls_cnt)) == 0
 			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
 	{
 		free(*calls); /* XXX the pointer was updated anyway... */
@@ -520,9 +531,11 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->buffer_pos = 0; /* XXX used as offset */
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
+	arch->helper.get_function_by_id = _arch_get_function_by_id;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
+	arch->helper.get_string_by_id = _arch_get_string_by_id;
 	arch->helper.read = _arch_read;
 	arch->helper.seek = _arch_seek;
 	arch->helper.write = _arch_write;
@@ -545,9 +558,11 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->buffer_pos = 0;
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
+	arch->helper.get_function_by_id = _arch_get_function_by_id;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
+	arch->helper.get_string_by_id = _arch_get_string_by_id;
 	arch->helper.write = NULL;
 	arch->helper.read = _arch_read_buffer;
 	arch->helper.seek = _arch_seek_buffer;
@@ -591,6 +606,20 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 static char const * _arch_get_filename(Arch * arch)
 {
 	return arch->filename;
+}
+
+
+/* arch_get_function_by_id */
+static AsmFunction * _arch_get_function_by_id(Arch * arch, AsmId id)
+{
+	return code_get_function_by_id(arch->code, id);
+}
+
+
+/* arch_get_string_by_id */
+static AsmString * _arch_get_string_by_id(Arch * arch, AsmId id)
+{
+	return code_get_string_by_id(arch->code, id);
 }
 
 

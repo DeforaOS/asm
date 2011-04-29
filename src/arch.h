@@ -21,6 +21,7 @@
 # include <stdint.h>
 # include <stdio.h>
 # include "Asm/arch.h"
+# include "code.h"
 
 
 /* Arch */
@@ -59,8 +60,9 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 /* disassembly */
-int arch_decode(Arch * arch, ArchInstructionCall ** calls, size_t * calls_cnt);
-int arch_decode_at(Arch * arch, ArchInstructionCall ** calls,
+int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
+		size_t * calls_cnt);
+int arch_decode_at(Arch * arch, Code * code, ArchInstructionCall ** calls,
 		size_t * calls_cnt, off_t offset, size_t size, off_t base);
 ssize_t arch_read(Arch * arch, void * buf, size_t cnt);
 off_t arch_seek(Arch * arch, off_t offset, int whence);

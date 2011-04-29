@@ -59,6 +59,7 @@ enum
 {
 	TYPE_HEADER_ITEM	= 0x0000,
 	TYPE_STRING_ID_ITEM	= 0x0001,
+	TYPE_METHOD_ID_ITEM	= 0x0005,
 	TYPE_CODE_ITEM		= 0x2001,
 	TYPE_STRING_DATA_ITEM	= 0x2002
 };
@@ -89,6 +90,13 @@ typedef struct _DexMapTryItem
 	uint16_t handler_off;
 } DexMapTryItem;
 
+typedef struct _DexMethodIdItem
+{
+	uint16_t class_idx;
+	uint16_t proto_idx;
+	uint32_t name_idx;
+} DexMethodIdItem;
+
 typedef struct _DexStringIdItem
 {
 	uint32_t string_data_off;
@@ -101,6 +109,12 @@ typedef struct _DexString
 	char * string;
 } DexString;
 
+typedef struct _Dex
+{
+	DexMethodIdItem * dmii;
+	size_t dmii_cnt;
+} Dex;
+
 
 /* variables */
 static char _dex_signature[4] = "dex\n";
@@ -109,6 +123,7 @@ static char _dex_signature[4] = "dex\n";
 /* prototypes */
 /* plug-in */
 static int _dex_init(FormatPlugin * format, char const * arch);
+static int _dex_exit(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
 static int _dex_decode(FormatPlugin * format);
 
@@ -122,7 +137,7 @@ FormatPlugin format_plugin =
 	_dex_signature,
 	sizeof(_dex_signature),
 	_dex_init,
-	NULL,
+	_dex_exit,
 	NULL,
 	NULL,
 	_dex_detect,
@@ -137,12 +152,30 @@ FormatPlugin format_plugin =
 /* dex_init */
 static int _dex_init(FormatPlugin * format, char const * arch)
 {
+	Dex * dex;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, arch);
 #endif
 	if(arch != NULL && strcmp(arch, "dalvik") != 0)
 		return -error_set_code(1, "%s: %s", arch,
 				"Unsupported Dex architecture");
+	if((dex = object_new(sizeof(*dex))) == NULL)
+		return -1;
+	format->priv = dex;
+	dex->dmii = NULL;
+	dex->dmii_cnt = 0;
+	return 0;
+}
+
+
+/* dex_exit */
+static int _dex_exit(FormatPlugin * format)
+{
+	Dex * dex = format->priv;
+
+	free(dex->dmii);
+	free(dex);
 	return 0;
 }
 
@@ -158,6 +191,8 @@ static char const * _dex_detect(FormatPlugin * format)
 /* dex_decode */
 static int _decode_map(FormatPlugin * format, DexHeader * dh);
 static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size);
+static int _decode_map_method_id(FormatPlugin * format, off_t offset,
+		size_t size);
 static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size);
 
@@ -215,9 +250,14 @@ static int _decode_map(FormatPlugin * format, DexHeader * dh)
 				ret |= _decode_map_code(format, dmi.offset,
 						dmi.size);
 				break;
+			case TYPE_METHOD_ID_ITEM:
+				ret |= _decode_map_method_id(format, dmi.offset,
+						dmi.size);
+				break;
 			case TYPE_STRING_ID_ITEM:
 				ret |= _decode_map_string_id(format, dmi.offset,
 						dmi.size);
+				break;
 		}
 		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 			return -1;
@@ -286,13 +326,49 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 	return 0;
 }
 
+static int _decode_map_method_id(FormatPlugin * format, off_t offset,
+		size_t size)
+{
+	FormatPluginHelper * helper = format->helper;
+	Dex * dex = format->priv;
+	ssize_t s;
+	size_t i;
+	AsmString * string;
+	char const * name;
+
+	if(dex->dmii != NULL)
+		return 0; /* already parsed */
+	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
+		return -1;
+	s = sizeof(*dex->dmii) * size;
+	if((dex->dmii = malloc(s)) == NULL)
+		return -error_set_code(1, "%s", strerror(errno));
+	if(helper->read(helper->format, dex->dmii, s) != s)
+		return -1;
+	for(i = 0; i < size; i++)
+	{
+		dex->dmii[i].class_idx = _htol16(dex->dmii[i].class_idx);
+		dex->dmii[i].proto_idx = _htol16(dex->dmii[i].proto_idx);
+		dex->dmii[i].name_idx = _htol32(dex->dmii[i].name_idx);
+		if((string = helper->get_string_by_id(helper->format,
+						dex->dmii[i].name_idx)) != NULL)
+			name = string->name;
+		else
+			/* XXX report error? */
+			name = NULL;
+		helper->set_function(helper->format, i, name, -1, -1);
+	}
+	dex->dmii_cnt = size;
+	return 0;
+}
+
 static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size)
 {
 	FormatPluginHelper * helper = format->helper;
-	size_t i;
 	DexStringIdItem * dsii;
 	ssize_t s;
+	size_t i;
 	uint8_t u8;
 
 	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
@@ -307,14 +383,15 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		dsii[i].string_data_off = _htol32(dsii[i].string_data_off);
 		offset = dsii[i].string_data_off;
 		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
-			return -1;
+			break;
 		if(helper->read(helper->format, &u8, sizeof(u8)) != sizeof(u8))
-			return -1;
+			break;
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%x len %u\n",
 				__func__, i, offset, u8);
 #endif
 		helper->set_string(helper->format, i, NULL, offset + 1, u8);
 	}
-	return 0;
+	free(dsii);
+	return (i == size) ? 0 : -1;
 }

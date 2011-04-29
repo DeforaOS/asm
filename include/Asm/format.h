@@ -19,6 +19,7 @@
 # define DEVEL_ASM_FORMAT_H
 
 # include <stdio.h>
+# include "asm.h"
 
 
 /* AsmFormat */
@@ -44,6 +45,9 @@ typedef struct _FormatPluginHelper
 
 	/* disassembly */
 	/* FIXME let a different architecture be specified in the callback */
+	AsmString * (*get_string_by_id)(Format * format, AsmId id);
+	int (*set_function)(Format * format, int id, char const * name,
+			off_t offset, ssize_t size);
 	int (*set_string)(Format * format, int id, char const * name,
 			off_t offset, ssize_t size);
 	int (*decode)(Format * format, char const * section,

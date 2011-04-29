@@ -19,6 +19,7 @@
 # define ASM_FORMAT_H
 
 # include "Asm/format.h"
+# include "code.h"
 
 
 /* Format */
@@ -26,6 +27,9 @@
 /* types */
 typedef int (*FormatDecodeCallback)(void * priv, char const * section,
 		off_t offset, size_t size, off_t base);
+typedef AsmString * (*FormatGetStringByIdCallback)(void * priv, AsmId id);
+typedef int (*FormatSetFunctionCallback)(void * priv, int id, char const * name,
+		off_t offset, ssize_t length);
 typedef int (*FormatSetStringCallback)(void * priv, int id, char const * name,
 		off_t offset, ssize_t length);
 
@@ -45,7 +49,6 @@ int format_function(Format * format, char const * function);
 int format_section(Format * format, char const * section);
 
 /* disassembly */
-int format_decode(Format * format, FormatSetStringCallback set_string,
-		FormatDecodeCallback decode, void * priv);
+int format_decode(Format * format, Code * code);
 
 #endif /* !ASM_FORMAT_H */

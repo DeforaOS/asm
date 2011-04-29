@@ -19,10 +19,7 @@
 # define ASM_CODE_H
 
 # include <stdio.h>
-# include "Asm/asm.h"
-# include "arch.h"
-# include "format.h"
-# include "token.h"
+# include "Asm/arch.h"
 
 
 /* types */
@@ -38,6 +35,14 @@ char const * code_get_arch(Code * code);
 char const * code_get_filename(Code * code);
 char const * code_get_format(Code * code);
 
+AsmFunction * code_get_function_by_id(Code * code, AsmId id);
+AsmString * code_get_string_by_id(Code * code, AsmId id);
+
+int code_set_function(Code * code, int id, char const * name, off_t offset,
+		ssize_t size);
+int code_set_string(Code * code, int id, char const * name, off_t offset,
+		ssize_t length);
+
 /* useful */
 /* common */
 int code_open(Code * code, char const * filename);
@@ -50,6 +55,8 @@ int code_section(Code * code, char const * section);
 
 /* disassembly */
 int code_decode(Code * code, char const * buffer, size_t size);
+int code_decode_at(Code * code, char const * section, off_t offset,
+		size_t size, off_t base);
 int code_decode_file(Code * code, char const * filename);
 
 #endif /* !ASM_CODE_H */

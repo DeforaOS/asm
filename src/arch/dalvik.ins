@@ -33,6 +33,7 @@
 #define OP_U8		AO_IMMEDIATE(0, 8, 0)
 #define OP_U16		AO_IMMEDIATE(0, 16, 0)
 #define OP_U16_STR	AO_IMMEDIATE(0, 16, AOI_REFERS_STRING)
+#define OP_U16_FUNC	AO_IMMEDIATE(0, 16, AOI_REFERS_FUNCTION)
 #define OP_U32		AO_IMMEDIATE(0, 32, 0)
 #define OP_U64		AO_IMMEDIATE(0, 64, 0)
 
@@ -96,6 +97,7 @@
 { "double-to-float",	0x8c,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "double-to-int",	0x8a,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "double-to-long",	0x8b,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
+{ "execute-inline",	0xee,	OP1F, OP_U8,       OP_U16,      OP_U16      },
 { "fill-array-data",	0x26,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 { "filled-new-array",	0x24,	OP1F, OP_REG8,     OP_U32,      AOT_NONE    },
 { "filled-new-array-range",
@@ -129,7 +131,8 @@
 { "int-to-float",	0x82,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "int-to-long",	0x81,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
 { "int-to-short",	0x8f,	OP1F, OP_REG4,     OP_REG4,     AOT_NONE    },
-{ "invoke-direct",	0x70,	OP1F, OP_U8,       OP_U16,      OP_U16      },
+{ "invoke-direct",	0x70,	OP1F, OP_U8,       OP_U16_FUNC, OP_U16      },
+{ "invoke-direct-empty",0xf0,	OP1F, OP_U8,       OP_U16_FUNC, OP_U16      },
 { "invoke-direct/range",0x76,	OP1F, OP_U8,       OP_U16,      OP_U16      },
 { "invoke-interface",	0x72,	OP1F, OP_U8,       OP_U16,      OP_U16      },
 { "invoke-interface-range",

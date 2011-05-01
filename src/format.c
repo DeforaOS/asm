@@ -30,7 +30,6 @@
 /* types */
 struct _Format
 {
-	char * arch;
 	FormatPluginHelper helper;
 	Plugin * handle;
 	FormatPlugin * plugin;
@@ -46,24 +45,34 @@ struct _Format
 
 
 /* prototypes */
-/* callbacks */
-static char const * _format_get_filename(Format * format);
+/* helpers */
+static char const * _format_helper_get_filename(Format * format);
+static AsmString * _format_helper_get_string_by_id(Format * format, AsmId id);
+static int _format_helper_set_function(Format * format, int id,
+		char const * name, off_t offset, ssize_t size);
+static int _format_helper_set_string(Format * format, int id, char const * name,
+		off_t offset, ssize_t size);
 
-static ssize_t _format_read(Format * format, void * buf, size_t size);
-static off_t _format_seek(Format * format, off_t offset, int whence);
-
-static ssize_t _format_write(Format * format, void const * buf, size_t size);
+static int _format_helper_decode(Format * format, char const * section,
+		off_t offset, size_t size, off_t base);
+static ssize_t _format_helper_read(Format * format, void * buf, size_t size);
+static off_t _format_helper_seek(Format * format, off_t offset, int whence);
+static ssize_t _format_helper_write(Format * format, void const * buf,
+		size_t size);
 
 
 /* public */
 /* functions */
 /* format_new */
-Format * format_new(char const * format, char const * arch)
+Format * format_new(char const * format)
 {
 	Format * f;
 	Plugin * handle;
 	FormatPlugin * plugin;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format);
+#endif
 	if(format == NULL)
 	{
 		error_set_code(1, "%s", strerror(EINVAL));
@@ -77,15 +86,18 @@ Format * format_new(char const * format, char const * arch)
 		plugin_delete(handle);
 		return NULL;
 	}
-	f->arch = string_new(arch);
-	memset(&f->helper, 0, sizeof(f->helper));
-	f->plugin = plugin;
 	f->handle = handle;
-	if(f->arch == NULL)
-	{
-		format_delete(f);
-		return NULL;
-	}
+	f->plugin = plugin;
+	memset(&f->helper, 0, sizeof(f->helper));
+	f->helper.format = f;
+	f->helper.decode = _format_helper_decode;
+	f->helper.get_filename = _format_helper_get_filename;
+	f->helper.get_string_by_id = _format_helper_get_string_by_id;
+	f->helper.set_function = _format_helper_set_function;
+	f->helper.set_string = _format_helper_set_string;
+	f->helper.read = _format_helper_read;
+	f->helper.seek = _format_helper_seek;
+	f->helper.write = _format_helper_write;
 	return f;
 }
 
@@ -94,12 +106,20 @@ Format * format_new(char const * format, char const * arch)
 void format_delete(Format * format)
 {
 	plugin_delete(format->handle);
-	string_delete(format->arch);
 	object_delete(format);
 }
 
 
 /* accessors */
+/* format_get_arch */
+char const * format_get_arch(Format * format)
+{
+	if(format->plugin->detect == NULL)
+		return NULL;
+	return format->plugin->detect(format->plugin);
+}
+
+
 /* format_get_name */
 char const * format_get_name(Format * format)
 {
@@ -109,14 +129,6 @@ char const * format_get_name(Format * format)
 
 /* useful */
 /* format_decode */
-static int _decode_callback(Format * format, char const * section,
-		off_t offset, size_t size, off_t base);
-static AsmString * _get_string_by_id_callback(Format * format, AsmId id);
-static int _set_function_callback(Format * format, int id, char const * name,
-		off_t offset, ssize_t size);
-static int _set_string_callback(Format * format, int id, char const * name,
-		off_t offset, ssize_t size);
-
 int format_decode(Format * format, Code * code)
 {
 	int ret;
@@ -124,45 +136,23 @@ int format_decode(Format * format, Code * code)
 	if(format->plugin->decode == NULL)
 		return error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
-	format->helper.decode = _decode_callback;
-	format->helper.get_string_by_id = _get_string_by_id_callback;
-	format->helper.set_function = _set_string_callback;
-	format->helper.set_string = _set_string_callback;
 	format->code = code;
 	ret = format->plugin->decode(format->plugin);
 	format->code = NULL;
-	format->helper.set_string = NULL;
-	format->helper.set_function = NULL;
-	format->helper.get_string_by_id = NULL;
-	format->helper.decode = NULL;
 	return ret;
 }
 
-static int _decode_callback(Format * format, char const * section,
-		off_t offset, size_t size, off_t base)
-{
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
-			section, offset, size, base);
-#endif
-	return code_decode_at(format->code, section, offset, size, base);
-}
 
-static AsmString * _get_string_by_id_callback(Format * format, AsmId id)
+/* format_detect_arch */
+char const * format_detect_arch(Format * format)
 {
-	return code_get_string_by_id(format->code, id);
-}
-
-static int _set_function_callback(Format * format, int id, char const * name,
-		off_t offset, ssize_t size)
-{
-	return code_set_function(format->code, id, name, offset, size);
-}
-
-static int _set_string_callback(Format * format, int id, char const * name,
-		off_t offset, ssize_t size)
-{
-	return code_set_string(format->code, id, name, offset, size);
+	if(format->plugin->detect == NULL)
+	{
+		error_set_code(1, "%s: %s", format->plugin->name,
+				"Unable to detect the architecture");
+		return NULL;
+	}
+	return format->plugin->detect(format->plugin);
 }
 
 
@@ -176,10 +166,6 @@ int format_exit(Format * format)
 #endif
 	if(format->plugin->exit != NULL)
 		ret = format->plugin->exit(format->plugin);
-	format->helper.format = NULL;
-	format->helper.decode = NULL;
-	format->helper.read = NULL;
-	format->helper.seek = NULL;
 	format->plugin->helper = NULL;
 	format->fp = NULL;
 	format->filename = NULL;
@@ -197,7 +183,8 @@ int format_function(Format * format, char const * function)
 
 
 /* format_init */
-int format_init(Format * format, char const * filename, FILE * fp)
+int format_init(Format * format, char const * arch, char const * filename,
+		FILE * fp)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
@@ -205,16 +192,38 @@ int format_init(Format * format, char const * filename, FILE * fp)
 #endif
 	format->filename = filename;
 	format->fp = fp;
-	format->helper.format = format;
-	format->helper.decode = NULL;
-	format->helper.get_filename = _format_get_filename;
-	format->helper.read = _format_read;
-	format->helper.seek = _format_seek;
-	format->helper.write = _format_write;
 	format->plugin->helper = &format->helper;
 	if(format->plugin->init != NULL)
-		return format->plugin->init(format->plugin, format->arch);
+		return format->plugin->init(format->plugin, arch);
 	return 0;
+}
+
+
+/* format_match */
+int format_match(Format * format)
+{
+	int ret = 0;
+	char const * s = format->plugin->signature;
+	ssize_t s_len = format->plugin->signature_len;
+	char * buf = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(s_len > 0)
+		if((buf = malloc(s_len)) == NULL)
+			ret = -error_set_code(1, "%s", strerror(errno));
+	if(buf != NULL)
+	{
+		if(_format_helper_seek(format, 0, SEEK_SET) != 0)
+			ret = -1;
+		else if(_format_helper_read(format, buf, s_len) != s_len)
+			ret = -1;
+		else if(memcmp(buf, s, s_len) == 0)
+			ret = 1;
+		free(buf);
+	}
+	return ret;
 }
 
 
@@ -229,15 +238,51 @@ int format_section(Format * format, char const * section)
 
 /* private */
 /* functions */
-/* format_get_filename */
-static char const * _format_get_filename(Format * format)
+/* helpers */
+/* format_helper_get_filename */
+static char const * _format_helper_get_filename(Format * format)
 {
 	return format->filename;
 }
 
 
-/* format_read */
-static ssize_t _format_read(Format * format, void * buf, size_t size)
+/* format_helper_get_string_by_id */
+static AsmString * _format_helper_get_string_by_id(Format * format, AsmId id)
+{
+	return code_get_string_by_id(format->code, id);
+}
+
+
+/* format_helper_set_function */
+static int _format_helper_set_function(Format * format, int id,
+		char const * name, off_t offset, ssize_t size)
+{
+	return code_set_function(format->code, id, name, offset, size);
+}
+
+
+/* format_helper_set_string */
+static int _format_helper_set_string(Format * format, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	return code_set_string(format->code, id, name, offset, size);
+}
+
+
+/* format_helper_decode */
+static int _format_helper_decode(Format * format, char const * section,
+		off_t offset, size_t size, off_t base)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
+			section, offset, size, base);
+#endif
+	return code_decode_at(format->code, section, offset, size, base);
+}
+
+
+/* format_helper_read */
+static ssize_t _format_helper_read(Format * format, void * buf, size_t size)
 {
 	if(fread(buf, size, 1, format->fp) == 1)
 		return size;
@@ -251,8 +296,8 @@ static ssize_t _format_read(Format * format, void * buf, size_t size)
 }
 
 
-/* format_seek */
-static off_t _format_seek(Format * format, off_t offset, int whence)
+/* format_helper_seek */
+static off_t _format_helper_seek(Format * format, off_t offset, int whence)
 {
 	if(whence == SEEK_SET)
 	{
@@ -271,8 +316,9 @@ static off_t _format_seek(Format * format, off_t offset, int whence)
 }
 
 
-/* format_write */
-static ssize_t _format_write(Format * format, void const * buf, size_t size)
+/* format_helper_write */
+static ssize_t _format_helper_write(Format * format, void const * buf,
+		size_t size)
 {
 	if(fwrite(buf, size, 1, format->fp) == 1)
 		return size;

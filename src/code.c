@@ -17,6 +17,7 @@
 
 #include <System.h>
 #include <assert.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,6 +27,7 @@
 #include "arch.h"
 #include "format.h"
 #include "code.h"
+#include "../config.h"
 
 
 /* Code */
@@ -77,7 +79,7 @@ Code * code_new(char const * arch, char const * format)
 	if((code->arch = arch_new(arch)) != NULL && format == NULL)
 		format = arch_get_format(code->arch);
 	if(format != NULL)
-		code->format = format_new(format, arch);
+		code->format = format_new(format);
 	if(code->arch == NULL || code->format == NULL)
 	{
 		code_delete(code);
@@ -85,6 +87,101 @@ Code * code_new(char const * arch, char const * format)
 	}
 	code->description = arch_get_description(code->arch);
 	return code;
+}
+
+
+/* code_new_file */
+static Format * _new_file_format(char const * filename, FILE * fp);
+
+Code * code_new_file(char const * arch, char const * format,
+		char const * filename)
+{
+	Code * code;
+	FILE * fp;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
+#endif
+	if((fp = fopen(filename, "r")) == NULL)
+	{
+		error_set_code(1, "%s: %s", filename, strerror(errno));
+		return NULL;
+	}
+	if((code = object_new(sizeof(*code))) == NULL)
+	{
+		fclose(fp);
+		return NULL;
+	}
+	memset(code, 0, sizeof(*code));
+	if(format == NULL)
+		code->format = _new_file_format(filename, fp);
+	else if((code->format = format_new(format)) != NULL
+			&& format_init(code->format, NULL, filename, fp) != 0)
+	{
+		format_delete(code->format);
+		code->format = NULL;
+	}
+	if(arch == NULL && code->format != NULL)
+		arch = format_detect_arch(code->format);
+	if(arch != NULL && (code->arch = arch_new(arch)) != NULL
+			&& arch_init(code->arch, filename, fp) != 0)
+	{
+		arch_delete(code->arch);
+		code->arch = NULL;
+	}
+	if(code->arch == NULL || code->format == NULL)
+	{
+		code_delete(code);
+		return NULL;
+	}
+	code->description = arch_get_description(code->arch);
+	return code;
+}
+
+static Format * _new_file_format(char const * filename, FILE * fp)
+{
+	char const path[] = LIBDIR "/" PACKAGE "/format";
+	DIR * dir;
+	struct dirent * de;
+	size_t len;
+	char const ext[] = ".so";
+	int hasflat = 0;
+	Format * format = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
+#endif
+	if((dir = opendir(path)) == NULL)
+	{
+		error_set_code(1, "%s: %s", path, strerror(errno));
+		return NULL;
+	}
+	while((de = readdir(dir)) != NULL)
+	{
+		if((len = strlen(de->d_name)) < 4)
+			continue;
+		if(strcmp(&de->d_name[len - sizeof(ext) + 1], ext) != 0)
+			continue;
+		de->d_name[len - sizeof(ext) + 1] = '\0';
+		if(strcmp(de->d_name, "flat") == 0)
+			hasflat = 1;
+		if((format = format_new(de->d_name)) == NULL)
+			continue;
+		if(format_init(format, NULL, filename, fp) == 0
+				&& format_match(format) == 1)
+			break;
+		format_delete(format);
+		format = NULL;
+	}
+	closedir(dir);
+	/* fallback on the "flat" format plug-in if necessary and available */
+	if(format == NULL && hasflat && (format = format_new("flat")) != NULL
+			&& format_init(format, NULL, filename, fp) != 0)
+		{
+			format_delete(format);
+			format = NULL;
+		}
+	return format;
 }
 
 
@@ -187,10 +284,36 @@ int code_close(Code * code)
 
 
 /* code_decode */
-static int _decode_print(Code * code, ArchInstructionCall * call);
-static void _decode_print_immediate(Code * code, ArchOperand * ao);
+int code_decode(Code * code)
+{
+	return format_decode(code->format, code);
+}
 
-int code_decode(Code * code, char const * buffer, size_t size)
+
+/* code_decode_at */
+int code_decode_at(Code * code, char const * section, off_t offset,
+		size_t size, off_t base)
+{
+	ArchInstructionCall * calls = NULL;
+	size_t calls_cnt = 0;
+	size_t i;
+
+	if(section != NULL)
+		printf("%s%s:\n", "\nDisassembly of section ", section);
+	if(arch_decode_at(code->arch, code, &calls, &calls_cnt, offset, size,
+				base) != 0)
+		return -1;
+	if(size != 0)
+		printf("\n%08lx:\n", (long)offset + (long)base);
+	for(i = 0; i < calls_cnt; i++)
+		code_print(code, &calls[i]);
+	free(calls);
+	return 0;
+}
+
+
+/* code_decode_buffer */
+int code_decode_buffer(Code * code, char const * buffer, size_t size)
 {
 	int ret;
 	ArchInstructionCall * calls = NULL;
@@ -202,14 +325,66 @@ int code_decode(Code * code, char const * buffer, size_t size)
 	{
 		fprintf(stderr, "DEBUG: %lu\n", calls_cnt);
 		for(i = 0; i < calls_cnt; i++)
-			_decode_print(code, &calls[i]);
+			code_print(code, &calls[i]);
 		free(calls);
 	}
 	arch_exit(code->arch);
 	return ret;
 }
 
-static int _decode_print(Code * code, ArchInstructionCall * call)
+
+/* code_function */
+int code_function(Code * code, char const * function)
+{
+	return format_function(code->format, function);
+}
+
+
+/* code_instruction */
+int code_instruction(Code * code, ArchInstructionCall * call)
+{
+	ArchInstruction * ai;
+
+	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
+		return -1;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: instruction %s, opcode 0x%x, 1 0x%x, 2 0x%x"
+			", 3 0x%x\n", call->name, ai->opcode, ai->op1, ai->op2,
+			ai->op3);
+#endif
+	return arch_write(code->arch, ai, call);
+}
+
+
+/* code_open */
+int code_open(Code * code, char const * filename)
+{
+	if(code->filename != NULL || code->fp != NULL)
+		return -error_set_code(1, "A file is already opened");
+	if((code->filename = string_new(filename)) == NULL)
+		return -1;
+	if((code->fp = fopen(filename, "w+")) == NULL)
+		return -error_set_code(1, "%s: %s", filename, strerror(errno));
+	if(arch_init(code->arch, code->filename, code->fp) == 0)
+	{
+		if(format_init(code->format, arch_get_name(code->arch),
+					code->filename, code->fp) == 0)
+			return 0;
+		arch_exit(code->arch);
+	}
+	fclose(code->fp);
+	code->fp = NULL;
+	unlink(code->filename); /* XXX may fail */
+	string_delete(code->filename);
+	code->filename = NULL;
+	return -1;
+}
+
+
+/* code_print */
+static void _print_immediate(ArchOperand * ao);
+
+int code_print(Code * code, ArchInstructionCall * call)
 {
 	char const * sep = " ";
 	size_t i;
@@ -251,7 +426,7 @@ static int _decode_print(Code * code, ArchInstructionCall * call)
 						ao->value.dregister2.name2);
 				break;
 			case AOT_IMMEDIATE:
-				_decode_print_immediate(code, ao);
+				_print_immediate(ao);
 				break;
 			case AOT_REGISTER:
 				name = call->operands[i].value._register.name;
@@ -264,7 +439,7 @@ static int _decode_print(Code * code, ArchInstructionCall * call)
 	return 0;
 }
 
-static void _decode_print_immediate(Code * code, ArchOperand * ao)
+static void _print_immediate(ArchOperand * ao)
 {
 	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
 			ao->value.immediate.value);
@@ -282,93 +457,6 @@ static void _decode_print_immediate(Code * code, ArchOperand * ao)
 		else
 			printf("%s", " (call)");
 	}
-}
-
-
-/* code_decode_at */
-int code_decode_at(Code * code, char const * section, off_t offset,
-		size_t size, off_t base)
-{
-	ArchInstructionCall * calls = NULL;
-	size_t calls_cnt = 0;
-	size_t i;
-
-	if(section != NULL)
-		printf("%s%s:\n", "\nDisassembly of section ", section);
-	if(arch_decode_at(code->arch, code, &calls, &calls_cnt, offset, size,
-				base) != 0)
-		return -1;
-	if(size != 0)
-		printf("\n%08lx:\n", (long)offset + (long)base);
-	for(i = 0; i < calls_cnt; i++)
-		_decode_print(code, &calls[i]);
-	free(calls);
-	return 0;
-}
-
-
-/* code_decode_file */
-int code_decode_file(Code * code, char const * filename)
-{
-	int ret;
-	FILE * fp;
-
-	if((fp = fopen(filename, "r")) == NULL)
-		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	arch_init(code->arch, filename, fp);
-	format_init(code->format, filename, fp);
-	ret = format_decode(code->format, code);
-	format_exit(code->format);
-	arch_exit(code->arch);
-	if(fclose(fp) != 0 && ret == 0)
-		ret = -error_set_code(1, "%s: %s", filename, strerror(errno));
-	return ret;
-}
-
-
-/* code_function */
-int code_function(Code * code, char const * function)
-{
-	return format_function(code->format, function);
-}
-
-
-/* code_instruction */
-int code_instruction(Code * code, ArchInstructionCall * call)
-{
-	ArchInstruction * ai;
-
-	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
-		return -1;
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: instruction %s, opcode 0x%x, 1 0x%x, 2 0x%x"
-			", 3 0x%x\n", call->name, ai->opcode, ai->op1, ai->op2,
-			ai->op3);
-#endif
-	return arch_write(code->arch, ai, call);
-}
-
-
-/* code_open */
-int code_open(Code * code, char const * filename)
-{
-	if(code->filename != NULL || code->fp != NULL)
-		return -error_set_code(1, "A file is already opened");
-	if((code->filename = string_new(filename)) == NULL)
-		return -1;
-	if((code->fp = fopen(filename, "w+")) == NULL)
-		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	if(format_init(code->format, code->filename, code->fp) != 0
-			|| arch_init(code->arch, code->filename, code->fp) != 0)
-	{
-		fclose(code->fp);
-		code->fp = NULL;
-		unlink(code->filename); /* XXX may fail */
-		string_delete(code->filename);
-		code->filename = NULL;
-		return -1;
-	}
-	return 0;
 }
 
 

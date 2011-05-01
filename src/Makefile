@@ -60,7 +60,7 @@ arch.o: arch.c ../include/Asm/arch.h ../include/Asm/asm.h arch.h code.h ../confi
 asm.o: asm.c ../include/Asm.h code.h parser.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c asm.c
 
-code.o: code.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h arch.h code.h format.h
+code.o: code.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h arch.h code.h format.h ../config.h
 	$(CC) $(libasm_CFLAGS) -c code.c
 
 format.o: format.c ../include/Asm/asm.h ../include/Asm/format.h code.h format.h ../config.h
@@ -75,7 +75,7 @@ token.o: token.c common.h token.h
 main.o: main.c ../include/Asm/asm.h ../config.h
 	$(CC) $(asm_CFLAGS) -c main.c
 
-deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h ../config.h
+deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h
 	$(CC) $(deasm_CFLAGS) -c deasm.c
 
 clean:

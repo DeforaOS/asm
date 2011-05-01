@@ -54,12 +54,18 @@ typedef struct _ElfStrtab
 	size_t cnt;
 } ElfStrtab;
 
+typedef struct _Elf
+{
+	ElfArch * arch;
+} Elf;
+
 
 /* prototypes */
 static int _elf_error(FormatPlugin * format);
 
 /* plug-in */
 static int _elf_init(FormatPlugin * format, char const * arch);
+static int _elf_exit(FormatPlugin * format);
 static char const * _elf_detect(FormatPlugin * format);
 static int _elf_decode(FormatPlugin * format);
 static int _elf_decode32(FormatPlugin * format);
@@ -92,7 +98,6 @@ static ElfArch elf_arch[] =
 	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB	},
 	{ NULL,		'\0',		'\0',		'\0'		}
 };
-static ElfArch * ea;
 
 static ElfSectionValues elf_section_values[] =
 {
@@ -134,7 +139,7 @@ FormatPlugin format_plugin =
 	ELFMAG,
 	SELFMAG,
 	_elf_init,
-	NULL,
+	_elf_exit,
 	NULL,
 	NULL,
 	_elf_detect,
@@ -158,16 +163,32 @@ static ElfArch * _init_arch(char const * arch);
 
 static int _elf_init(FormatPlugin * format, char const * arch)
 {
-	if((ea = _init_arch(arch)) == NULL)
+	Elf * elf;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, arch);
+#endif
+	if((elf = object_new(sizeof(*elf))) == NULL)
 		return -1;
-	if(ea->capacity == ELFCLASS32)
+	format->priv = elf;
+	if(arch == NULL)
+	{
+		elf->arch = NULL;
+		return 0;
+	}
+	if((elf->arch = _init_arch(arch)) == NULL)
+	{
+		object_delete(elf);
+		return -1;
+	}
+	if(elf->arch->capacity == ELFCLASS32)
 	{
 		if(_init_32(format) != 0)
 			return -1;
 		format->exit = _exit_32;
 		format->section = _section_32;
 	}
-	else if(ea->capacity == ELFCLASS64)
+	else if(elf->arch->capacity == ELFCLASS64)
 	{
 		if(_init_64(format) != 0)
 			return -1;
@@ -188,6 +209,19 @@ static ElfArch * _init_arch(char const * arch)
 			return ea;
 	error_set_code(1, "%s: %s", arch, "Unsupported ELF architecture");
 	return NULL;
+}
+
+
+/* elf_exit */
+static int _elf_exit(FormatPlugin * format)
+{
+	Elf * elf = format->priv;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	object_delete(elf);
+	return 0;
 }
 
 
@@ -555,8 +589,13 @@ static int es32_cnt = 0;
 static int _init_32(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	memset(&hdr, 0, sizeof(hdr));
 	memcpy(&hdr.e_ident, ELFMAG, SELFMAG);
 	hdr.e_ident[EI_CLASS] = ELFCLASS32;
@@ -612,12 +651,15 @@ static int _exit_32(FormatPlugin * format)
 	free(shstrtab.buf);
 	shstrtab.buf = NULL;
 	shstrtab.cnt = 0;
+	ret |= _elf_exit(format);
 	return ret;
 }
 
 static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
 
 	if(es32_cnt == 0)
@@ -648,6 +690,8 @@ static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	Elf32_Shdr hdr;
 	int i;
 
@@ -721,8 +765,13 @@ static int es64_cnt = 0;
 static int _init_64(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	Elf64_Ehdr hdr;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	memset(&hdr, 0, sizeof(hdr));
 	memcpy(&hdr.e_ident, ELFMAG, SELFMAG);
 	hdr.e_ident[EI_CLASS] = ELFCLASS64;
@@ -777,12 +826,15 @@ static int _exit_64(FormatPlugin * format)
 	free(shstrtab.buf);
 	shstrtab.buf = NULL;
 	shstrtab.cnt = 0;
+	ret |= _elf_exit(format);
 	return ret;
 }
 
 static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	Elf64_Ehdr hdr;
 
 	if(es64_cnt == 0)
@@ -813,6 +865,8 @@ static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
 static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
+	ElfArch * ea = elf->arch;
 	int i;
 
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)

@@ -124,6 +124,8 @@ static int _pe_init(FormatPlugin * format, char const * arch)
 	struct pe_msdos pm;
 	struct pe_header ph;
 
+	if(arch == NULL)
+		return 0;
 	if((machine = _pe_get_machine(arch)) < 0)
 		return -1;
 	memset(&pm, 0, sizeof(pm));

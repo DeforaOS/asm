@@ -183,7 +183,7 @@ int asm_deassemble(Asm * a, char const * buffer, size_t size)
 
 	if(_asm_open(a, NULL) != 0)
 		return -1;
-	ret = code_decode(a->code, buffer, size);
+	ret = code_decode_buffer(a->code, buffer, size);
 	asm_close(a);
 	return ret;
 }
@@ -252,9 +252,17 @@ int asm_open_assemble(Asm * a, char const * outfile)
 /* asm_open_deassemble */
 int asm_open_deassemble(Asm * a, char const * filename)
 {
-	if(_asm_open(a, NULL) != 0)
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
+#endif
+	if(a->code != NULL)
+		return -error_set_code(1, "%s: Operation in progress",
+				code_get_filename(a->code));
+	if((a->code = code_new_file(a->arch, a->format, filename)) == NULL)
 		return -1;
-	return code_decode_file(a->code, filename);
+	if(code_decode(a->code) != 0)
+		return -1;
+	return 0;
 }
 
 

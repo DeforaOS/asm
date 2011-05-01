@@ -34,7 +34,7 @@ typedef int (*FormatSetStringCallback)(void * priv, int id, char const * name,
 		off_t offset, ssize_t length);
 
 /* functions */
-Format * format_new(char const * format, char const * arch);
+Format * format_new(char const * format);
 void format_delete(Format * format);
 
 /* accessors */
@@ -42,7 +42,8 @@ char const * format_get_name(Format * format);
 
 /* useful */
 /* assembly */
-int format_init(Format * format, char const * filename, FILE * fp);
+int format_init(Format * format, char const * arch, char const * filename,
+		FILE * fp);
 int format_exit(Format * format);
 
 int format_function(Format * format, char const * function);
@@ -50,5 +51,7 @@ int format_section(Format * format, char const * section);
 
 /* disassembly */
 int format_decode(Format * format, Code * code);
+char const * format_detect_arch(Format * format);
+int format_match(Format * format);
 
 #endif /* !ASM_FORMAT_H */

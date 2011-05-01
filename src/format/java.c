@@ -138,6 +138,11 @@ static int _java_init(FormatPlugin * format, char const * arch)
 	JavaHeader jh;
 	JavaPlugin * java;
 
+	if(arch == NULL)
+	{
+		format->priv = NULL;
+		return 0;
+	}
 	if(strcmp(arch, "java") != 0)
 		return error_set_code(1, "%s: %s", arch,
 				"Unsupported architecture for java");

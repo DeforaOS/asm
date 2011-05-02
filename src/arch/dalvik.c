@@ -153,9 +153,6 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
-	call->operands[0].type = AOT_NONE;
-	call->operands[1].type = AOT_NONE;
-	call->operands[2].type = AOT_NONE;
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
 			== NULL)
 	{
@@ -163,9 +160,11 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		{
 			call->name = "db";
-			call->operands[0].type = AO_IMMEDIATE(0, 8, 0);
+			call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
+			call->operands[0].value.immediate.name = NULL;
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
+			call->operands_cnt = 1;
 			return 0;
 		}
 		u16 = _htol16((u16 << 8) | u8);
@@ -173,18 +172,20 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 						u16)) == NULL)
 		{
 			call->name = "dw";
-			call->operands[0].type = AO_IMMEDIATE(0, 16, 0);
+			call->operands[0].definition = AO_IMMEDIATE(0, 16, 0);
+			call->operands[0].value.immediate.name = NULL;
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
+			call->operands_cnt = 1;
 			return 0;
 		}
 	}
 	call->name = ai->name;
-	call->operands[0].type = ai->op1;
-	call->operands[1].type = ai->op2;
-	call->operands[2].type = ai->op3;
-	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].type) != AOT_NONE;
-			i++)
+	call->operands[0].definition = ai->op1;
+	call->operands[1].definition = ai->op2;
+	call->operands[2].definition = ai->op3;
+	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].definition)
+			!= AOT_NONE; i++)
 		if(_decode_operand(&dd, i) != 0)
 			return -1;
 	call->operands_cnt = i;
@@ -201,7 +202,7 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 	AsmFunction * af;
 	AsmString * as;
 
-	switch(AO_GET_SIZE(ao->type))
+	switch(AO_GET_SIZE(ao->definition))
 	{
 		case 4:
 			if(dd->u8 >= 0)
@@ -238,7 +239,7 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 			return -error_set_code(1, "%s", "Unsupported immediate"
 					" operand");
 	}
-	switch(AO_GET_VALUE(ao->type))
+	switch(AO_GET_VALUE(ao->definition))
 	{
 		case AOI_REFERS_FUNCTION:
 			af = helper->get_function_by_id(helper->arch,
@@ -259,7 +260,7 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 
 static int _decode_operand(DalvikDecode * dd, size_t i)
 {
-	switch(AO_GET_TYPE(dd->call->operands[i].type))
+	switch(AO_GET_TYPE(dd->call->operands[i].definition))
 	{
 		case AOT_IMMEDIATE:
 			return _decode_immediate(dd, i);
@@ -275,16 +276,17 @@ static int _decode_operand(DalvikDecode * dd, size_t i)
 static int _decode_register(DalvikDecode * dd, size_t i)
 {
 	ArchPluginHelper * helper = dd->plugin->helper;
+	ArchOperandDefinition aod = dd->call->operands[i].definition;
 	uint32_t id;
 	uint8_t u8;
 	uint16_t u16;
 	ArchRegister * ar;
 
-	if(AO_GET_FLAGS(dd->call->operands[i].type) & AOF_IMPLICIT)
-		id = AO_GET_VALUE(dd->call->operands[i].type);
-	else if(AO_GET_FLAGS(dd->call->operands[i].type) & AOF_DALVIK_REGSIZE)
+	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
+		id = AO_GET_VALUE(aod);
+	else if(AO_GET_FLAGS(aod) & AOF_DALVIK_REGSIZE)
 	{
-		switch(AO_GET_VALUE(dd->call->operands[i].type))
+		switch(AO_GET_VALUE(aod))
 		{
 			case 4:
 				if(dd->u8 >= 0)

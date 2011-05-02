@@ -116,9 +116,11 @@ typedef enum _ArchOperandType
 		 | ((dsize) << AOD_SIZE) \
 		 | ((id) << AOD_VALUE))
 
+typedef uint32_t ArchOperandDefinition;
+
 typedef struct _ArchOperand
 {
-	ArchOperandType type;
+	ArchOperandDefinition definition;
 	union
 	{
 		/* AOT_DREGISTER */
@@ -151,8 +153,6 @@ typedef struct _ArchOperand
 		/* FIXME complete */
 	} value;
 } ArchOperand;
-
-typedef uint32_t ArchOperandDefinition;
 
 typedef struct _ArchInstruction
 {

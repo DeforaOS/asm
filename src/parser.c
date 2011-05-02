@@ -493,7 +493,7 @@ static int _operand(State * state)
 				string = token_get_string(state->token);
 				if(string == NULL)
 					break;
-				p->type = AOT_IMMEDIATE;
+				p->definition = AO_IMMEDIATE(0, 0, 0);
 				/* FIXME also true for numbers? */
 				p->value.immediate.value = strtoul(string + 1,
 						NULL, 0);
@@ -501,14 +501,16 @@ static int _operand(State * state)
 				break;
 			case AS_CODE_IMMEDIATE:
 			case AS_CODE_NUMBER:
-				p->type = AOT_IMMEDIATE;
+				p->definition = AO_IMMEDIATE(0, 0, 0);
 				/* FIXME also true for numbers? */
 				p->value.immediate.value = strtoul(string + 1,
 						NULL, 0);
 				break;
 			case AS_CODE_REGISTER:
-				p->type = (code == AS_CODE_OPERATOR_LBRACKET)
-					? AOT_DREGISTER : AOT_REGISTER;
+				p->definition = (code
+						== AS_CODE_OPERATOR_LBRACKET)
+					? AO_DREGISTER(0, 0, 0, 0)
+					: AO_REGISTER(0, 0, 0);
 				/* FIXME check errors */
 				p->value._register.name = strdup(string);
 				break;
@@ -544,7 +546,8 @@ static int _operand(State * state)
 					break;
 				case AS_CODE_REGISTER:
 					/* FIXME check everything... */
-					p->type = AOT_DREGISTER2;
+					p->definition = AO_DREGISTER2(0, 0, 0,
+							0);
 					p->value.dregister2.name2 = strdup(
 							string);
 					break;

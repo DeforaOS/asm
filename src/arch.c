@@ -246,10 +246,11 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 #endif
 		if(AO_GET_TYPE(definition) == AOT_CONSTANT)
 		{
-			if(operand->type != AOT_IMMEDIATE)
+			if(AO_GET_TYPE(operand->definition) != AOT_IMMEDIATE)
 				return -1;
 		}
-		else if(AO_GET_TYPE(definition) != operand->type)
+		else if(AO_GET_TYPE(definition)
+				!= AO_GET_TYPE(operand->definition))
 			return -1;
 		switch(AO_GET_TYPE(definition))
 		{
@@ -289,8 +290,8 @@ static int _call_operands_constant(ArchOperandDefinition definition,
 	if(AO_GET_VALUE(definition) != operand->value.immediate.value)
 		return -1;
 	/* set this operand as a constant */
-	operand->type &= AOM_TYPE;
-	operand->type |= AOT_CONSTANT;
+	operand->definition &= AOM_TYPE;
+	operand->definition |= (AOT_CONSTANT << AOD_TYPE);
 	return 0;
 }
 

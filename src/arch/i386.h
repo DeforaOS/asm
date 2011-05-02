@@ -56,9 +56,6 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
-	call->operands[0].type = AOT_NONE;
-	call->operands[1].type = AOT_NONE;
-	call->operands[2].type = AOT_NONE;
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
 			== NULL)
 	{
@@ -66,7 +63,8 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		{
 			call->name = "db";
-			call->operands[0].type = AO_IMMEDIATE(0, 8, 0);
+			call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
+			call->operands[0].value.immediate.name = NULL;
 			call->operands[0].value.immediate.value = u8;
 			call->operands[0].value.immediate.negative = 0;
 			call->operands_cnt = 1;
@@ -77,7 +75,8 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 						u16)) == NULL)
 		{
 			call->name = "dw";
-			call->operands[0].type = AO_IMMEDIATE(0, 16, 0);
+			call->operands[0].definition = AO_IMMEDIATE(0, 16, 0);
+			call->operands[0].value.immediate.name = NULL;
 			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
 			call->operands_cnt = 1;
@@ -85,10 +84,11 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		}
 	}
 	call->name = ai->name;
-	call->operands[0].type = ai->op1;
-	call->operands[1].type = ai->op2;
-	call->operands[2].type = ai->op3;
-	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].type) != 0; i++)
+	call->operands[0].definition = ai->op1;
+	call->operands[1].definition = ai->op2;
+	call->operands[2].definition = ai->op3;
+	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].definition)
+			!= AOT_NONE; i++)
 		if(_decode_operand(plugin, call, &i) != 0)
 			return -1;
 	call->operands_cnt = i;
@@ -98,7 +98,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
-	ArchOperandDefinition aod = call->operands[i].type;
+	ArchOperandDefinition aod = call->operands[i].definition;
 	ArchOperand * ao = &call->operands[i];
 
 #ifdef DEBUG
@@ -106,8 +106,10 @@ static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
 #endif
 	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
 	{
-		ao->type = AO_IMMEDIATE(0, AO_GET_SIZE(aod), 0);
+		ao->definition = AO_IMMEDIATE(0, AO_GET_SIZE(aod), 0);
+		ao->value.immediate.name = NULL;
 		ao->value.immediate.value = AO_GET_VALUE(aod);
+		ao->value.immediate.negative = 0;
 		return 0;
 	}
 	return -error_set_code(1, "%s", "Not implemented");
@@ -117,7 +119,7 @@ static int _decode_dregister(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	ArchOperandDefinition aod = call->operands[i].type;
+	ArchOperandDefinition aod = call->operands[i].definition;
 	ArchRegister * ar;
 	uint8_t id;
 
@@ -146,9 +148,10 @@ static int _decode_immediate(ArchPlugin * plugin, ArchInstructionCall * call,
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() size=%u\n", __func__,
-			AO_GET_SIZE(ao->type) >> 3);
+			AO_GET_SIZE(ao->definition) >> 3);
 #endif
-	switch(AO_GET_SIZE(ao->type) >> 3)
+	ao->value.immediate.name = NULL;
+	switch(AO_GET_SIZE(ao->definition) >> 3)
 	{
 		case sizeof(u8):
 			if(helper->read(helper->arch, &u8, sizeof(u8))
@@ -180,6 +183,7 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 {
 	int ret = -1;
 	ArchPluginHelper * helper = plugin->helper;
+	ArchOperand * ao = call->operands;
 	ArchOperand * ao1 = &call->operands[*i];
 	ArchOperand * ao2 = NULL;
 	uint8_t u8;
@@ -190,9 +194,8 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", &%lu)\n", __func__, call->name, *i);
 #endif
-	if(*i + 1 < 3 && (AO_GET_TYPE(call->operands[*i + 1].type)
-				== AOT_REGISTER
-				|| AO_GET_TYPE(call->operands[*i + 1].type)
+	if(*i + 1 < 3 && (AO_GET_TYPE(ao[*i + 1].definition) == AOT_REGISTER
+				|| AO_GET_TYPE(ao[*i + 1].definition)
 				== AOT_DREGISTER))
 		ao2 = &call->operands[*i + 1];
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
@@ -203,17 +206,17 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: u8=0x%02x (%u %u %u)\n", u8, mod, reg, rm);
 #endif
-	if(AO_GET_TYPE(ao1->type) == AOT_DREGISTER && ao2 != NULL
-			&& AO_GET_TYPE(ao2->type) & AOT_REGISTER
-			&& AO_GET_FLAGS(ao2->type) & AOF_I386_MODRM)
+	if(AO_GET_TYPE(ao1->definition) == AOT_DREGISTER && ao2 != NULL
+			&& AO_GET_TYPE(ao2->definition) & AOT_REGISTER
+			&& AO_GET_FLAGS(ao2->definition) & AOF_I386_MODRM)
 	{
 		ret = _decode_modrm_do(plugin, call, (*i)++,
 				(mod << 6) | (rm << 3));
 		ret |= _decode_modrm_do(plugin, call, *i,
 				(0x3 << 6) | (reg << 3));
 	}
-	else if(AO_GET_TYPE(ao1->type) == AOT_REGISTER && ao2 != NULL
-			&& AO_GET_FLAGS(ao2->type) & AOF_I386_MODRM)
+	else if(AO_GET_TYPE(ao1->definition) == AOT_REGISTER && ao2 != NULL
+			&& AO_GET_FLAGS(ao2->definition) & AOF_I386_MODRM)
 	{
 		ret = _decode_modrm_do(plugin, call, (*i)++,
 				(0x3 << 6) | (reg << 3));
@@ -242,14 +245,15 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 	rm = u8 & 0x7;
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: u8=0x%02x (%u %u %u) size=%u\n",
-			u8, mod, reg, rm, AO_GET_SIZE(ao->type));
+			u8, mod, reg, rm, AO_GET_SIZE(ao->definition));
 #endif
 	if(mod == 3)
 	{
 		if((ar = helper->get_register_by_id_size(helper->arch, reg,
-						AO_GET_SIZE(ao->type))) == NULL)
+						AO_GET_SIZE(ao->definition)))
+						== NULL)
 			return -1;
-		ao->type = AO_REGISTER(0, 32, 0);
+		ao->definition = AO_REGISTER(0, 32, 0);
 		ao->value._register.name = ar->name;
 	}
 	else if(mod == 2)
@@ -259,7 +263,7 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 			return -1;
 		if(helper->read(helper->arch, &uW, sizeof(uW)) != sizeof(uW))
 			return -1;
-		ao->type = AO_DREGISTER(0, W, W, 0);
+		ao->definition = AO_DREGISTER(0, W, W, 0);
 		ao->value.dregister.name = ar->name;
 		ao->value.dregister.offset = _htol32(uW); /* XXX _htolW() */
 	}
@@ -268,7 +272,7 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 		if((ar = helper->get_register_by_id_size(helper->arch, reg, W))
 				== NULL)
 			return -1;
-		ao->type = AO_DREGISTER(0, 8, W, 0);
+		ao->definition = AO_DREGISTER(0, 8, W, 0);
 		ao->value.dregister.name = ar->name;
 	}
 	else /* mod == 0 */
@@ -280,13 +284,13 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 					!= sizeof(uW))
 				return -1;
 			/* FIXME endian */
-			ao->type = AO_IMMEDIATE(0, W, 0);
+			ao->definition = AO_IMMEDIATE(0, W, 0);
 			ao->value.immediate.value = uW;
 		}
 		else if((ar = helper->get_register_by_id_size(helper->arch, reg,
 						W)) != NULL)
 		{
-			ao->type = AO_DREGISTER(0, 0, W, 0);
+			ao->definition = AO_DREGISTER(0, 0, W, 0);
 			ao->value.dregister.name = ar->name;
 		}
 		else
@@ -300,18 +304,18 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 {
 	ArchOperand * ao = &call->operands[*i];
 
-	switch(AO_GET_TYPE(ao->type))
+	switch(AO_GET_TYPE(ao->definition))
 	{
 		case AOT_CONSTANT:
 			return _decode_constant(plugin, call, *i);
 		case AOT_DREGISTER:
-			if(AO_GET_FLAGS(ao->type) & AOF_I386_MODRM)
+			if(AO_GET_FLAGS(ao->definition) & AOF_I386_MODRM)
 				return _decode_modrm(plugin, call, i);
 			return _decode_dregister(plugin, call, *i);
 		case AOT_IMMEDIATE:
 			return _decode_immediate(plugin, call, *i);
 		case AOT_REGISTER:
-			if(AO_GET_FLAGS(ao->type) & AOF_I386_MODRM)
+			if(AO_GET_FLAGS(ao->definition) & AOF_I386_MODRM)
 				return _decode_modrm(plugin, call, i);
 			return _decode_register(plugin, call, *i);
 	}
@@ -322,7 +326,7 @@ static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	ArchOperandDefinition aod = call->operands[i].type;
+	ArchOperandDefinition aod = call->operands[i].definition;
 	ArchRegister * ar;
 	uint8_t id;
 
@@ -354,8 +358,7 @@ static int _write_constant(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
 static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands);
-static int _write_immediate(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand);
+static int _write_immediate(ArchPlugin * plugin, ArchOperand * operand);
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
 static int _write_immediate16(ArchPlugin * plugin, uint16_t value);
 static int _write_immediate24(ArchPlugin * plugin, uint32_t value);
@@ -389,10 +392,13 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 static int _write_constant(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
+	ArchOperand ao;
+
 	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
 		return 0;
-	definition &= ~(AOM_FLAGS);
-	return _write_immediate(plugin, definition, operand);
+	ao = *operand;
+	ao.definition &= ~(AOM_FLAGS);
+	return _write_immediate(plugin, &ao);
 }
 
 static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
@@ -404,16 +410,14 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	ArchRegister * ar;
-	ArchOperandDefinition idefinition;
 	ArchOperand ioperand;
 
 	if((ar = helper->get_register_by_name_size(helper->arch, name, size))
 			== NULL)
 		return -1;
 	/* write register */
-	idefinition = AO_IMMEDIATE(0, 8, 0);
 	memset(&ioperand, 0, sizeof(ioperand));
-	ioperand.type = AOT_IMMEDIATE;
+	ioperand.definition = AO_IMMEDIATE(0, 8, 0);
 	/* FIXME some combinations of register values are illegal */
 	ioperand.value.immediate.value = ar->id;
 	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM
@@ -433,7 +437,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 				<< 3);
 	if(operand->value.dregister.offset == 0)
 		/* there is no offset */
-		return _write_immediate(plugin, idefinition, &ioperand);
+		return _write_immediate(plugin, &ioperand);
 	/* declare offset */
 	switch(AO_GET_OFFSET(definition) >> 3)
 	{
@@ -446,23 +450,22 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 		default:
 			return -error_set_code(1, "%s", "Invalid offset");
 	}
-	if(_write_immediate(plugin, idefinition, &ioperand) != 0)
+	if(_write_immediate(plugin, &ioperand) != 0)
 		return -1;
 	/* write offset */
-	idefinition = AO_IMMEDIATE(0, AO_GET_OFFSET(definition), 0);
+	ioperand.definition = AO_IMMEDIATE(0, AO_GET_OFFSET(definition), 0);
 	ioperand.value.immediate.value = operand->value.dregister.offset;
-	return _write_immediate(plugin, idefinition, &ioperand);
+	return _write_immediate(plugin, &ioperand);
 }
 
-static int _write_immediate(ArchPlugin * plugin,
-		ArchOperandDefinition definition, ArchOperand * operand)
+static int _write_immediate(ArchPlugin * plugin, ArchOperand * operand)
 {
 	uint64_t value = operand->value.immediate.value;
 
-	if((AO_GET_FLAGS(definition) & AOF_SIGNED)
+	if((AO_GET_FLAGS(operand->definition) & AOF_SIGNED)
 			&& operand->value.immediate.negative != 0)
-		value = -value;
-	switch(AO_GET_SIZE(definition) >> 3)
+		value = -value; /* XXX check */
+	switch(AO_GET_SIZE(operand->definition) >> 3)
 	{
 		case 0:
 			return 0;
@@ -475,7 +478,7 @@ static int _write_immediate(ArchPlugin * plugin,
 		case sizeof(uint32_t):
 			return _write_immediate32(plugin, value);
 	}
-	return -error_set_code(1, "Invalid size");
+	return -error_set_code(1, "%s", "Invalid size");
 }
 
 static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
@@ -526,7 +529,8 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 			AO_GET_SIZE(instruction->flags), instruction->opcode);
 #endif
 	memset(&operand, 0, sizeof(operand));
-	operand.type = AOT_IMMEDIATE;
+	operand.definition = AO_IMMEDIATE(0, AO_GET_SIZE(instruction->flags),
+			0);
 	switch(AO_GET_SIZE(instruction->flags) >> 3)
 	{
 		case sizeof(uint8_t):
@@ -544,13 +548,13 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 		default:
 			return -error_set_code(1, "%s", "Invalid size");
 	}
-	return _write_immediate(plugin, instruction->flags, &operand);
+	return _write_immediate(plugin, &operand);
 }
 
 static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
-	switch(operands[*i].type)
+	switch(operands[*i].definition)
 	{
 		case AOT_CONSTANT:
 			return _write_constant(plugin, definitions[*i],
@@ -559,8 +563,7 @@ static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 			return _write_dregister(plugin, i, definitions,
 					operands);
 		case AOT_IMMEDIATE:
-			return _write_immediate(plugin, definitions[*i],
-					&operands[*i]);
+			return _write_immediate(plugin, &operands[*i]);
 		case AOT_REGISTER:
 			return _write_register(plugin, i, definitions,
 					operands);
@@ -581,7 +584,6 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	ArchRegister * ar;
-	ArchOperandDefinition idefinition;
 	ArchOperand ioperand;
 
 	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT)
@@ -590,9 +592,8 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 			== NULL)
 		return -1;
 	/* write register */
-	idefinition = AO_IMMEDIATE(0, 8, 0);
 	memset(&ioperand, 0, sizeof(ioperand));
-	ioperand.type = AOT_IMMEDIATE;
+	ioperand.definition = AO_IMMEDIATE(0, 8, 0);
 	ioperand.value.immediate.value = ar->id;
 	if(AO_GET_FLAGS(definition) & AOF_I386_MODRM
 			&& AO_GET_VALUE(definition) == 8) /* mod r/m, /r */
@@ -611,5 +612,5 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 			| (AO_GET_VALUE(definition) << 3);
 	else
 		ioperand.value.immediate.value = ar->id;
-	return _write_immediate(plugin, idefinition, &ioperand);
+	return _write_immediate(plugin, &ioperand);
 }

@@ -113,6 +113,7 @@ Code * code_new_file(char const * arch, char const * format,
 		return NULL;
 	}
 	memset(code, 0, sizeof(*code));
+	code->filename = string_new(filename);
 	if(format == NULL)
 		code->format = _new_file_format(filename, fp);
 	else if((code->format = format_new(format)) != NULL
@@ -129,7 +130,7 @@ Code * code_new_file(char const * arch, char const * format,
 		arch_delete(code->arch);
 		code->arch = NULL;
 	}
-	if(code->arch == NULL || code->format == NULL)
+	if(code->filename == NULL || code->arch == NULL || code->format == NULL)
 	{
 		code_delete(code);
 		return NULL;
@@ -286,6 +287,8 @@ int code_close(Code * code)
 /* code_decode */
 int code_decode(Code * code)
 {
+	printf("%s: %s-%s\n", code->filename, format_get_name(code->format),
+			arch_get_name(code->arch));
 	return format_decode(code->format, code);
 }
 
@@ -408,7 +411,7 @@ int code_print(Code * code, ArchInstructionCall * call)
 	{
 		ao = &call->operands[i];
 		fputs(sep, stdout);
-		switch(AO_GET_TYPE(ao->type))
+		switch(AO_GET_TYPE(ao->definition))
 		{
 			case AOT_DREGISTER:
 				name = ao->value.dregister.name;
@@ -443,14 +446,14 @@ static void _print_immediate(ArchOperand * ao)
 {
 	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
 			ao->value.immediate.value);
-	if(AO_GET_VALUE(ao->type) == AOI_REFERS_STRING)
+	if(AO_GET_VALUE(ao->definition) == AOI_REFERS_STRING)
 	{
 		if(ao->value.immediate.name != NULL)
 			printf(" \"%s\"", ao->value.immediate.name);
 		else
 			printf("%s", " (string)");
 	}
-	else if(AO_GET_VALUE(ao->type) == AOI_REFERS_FUNCTION)
+	else if(AO_GET_VALUE(ao->definition) == AOI_REFERS_FUNCTION)
 	{
 		if(ao->value.immediate.name != NULL)
 			printf(" call \"%s\"", ao->value.immediate.name);
@@ -508,7 +511,7 @@ static int _code_string_set(CodeString * codestring, int id, char const * name,
 {
 	char * p = NULL;
 
-	if(name != NULL && (p = strdup(name)) == NULL)
+	if(name != NULL && (p = string_new(name)) == NULL)
 		return -error_set_code(1, "%s", strerror(errno));
 	codestring->id = id;
 	free(codestring->name);

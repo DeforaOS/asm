@@ -250,6 +250,7 @@ static ArchInstruction _java_instructions[] =
 /* plug-in */
 static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
+static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
 
 /* public */
@@ -262,7 +263,7 @@ ArchPlugin arch_plugin =
 	_java_registers,
 	_java_instructions,
 	_java_write,
-	NULL
+	_java_decode
 };
 
 
@@ -273,8 +274,108 @@ static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
+	size_t i;
+	ArchOperandDefinition definitions[3];
+	ArchOperand * ao;
+	uint8_t u8;
+	uint16_t u16;
+	uint32_t u32;
 
-	/* FIXME really implement */
-	return (helper->write(helper->arch, &instruction->opcode, 1) == 1)
-		? 0 : -1;
+	if((helper->write(helper->arch, &instruction->opcode, 1)) != 1)
+		return -1;
+	definitions[0] = instruction->op1;
+	definitions[1] = instruction->op2;
+	definitions[2] = instruction->op3;
+	for(i = 0; i < call->operands_cnt; i++)
+	{
+		ao = &call->operands[i];
+		if(AO_GET_TYPE(ao->definition) != AOT_IMMEDIATE)
+			return -error_set_code(1, "%s", "Not implemented");
+		if(AO_GET_SIZE(definitions[i]) == 8)
+		{
+			u8 = ao->value.immediate.value;
+			if(helper->write(helper->arch, &u8, 1) != 1)
+				return -1;
+		}
+		else if(AO_GET_SIZE(definitions[i]) == 16)
+		{
+			u16 = _htob16(ao->value.immediate.value);
+			if(helper->write(helper->arch, &u16, 2) != 2)
+				return -1;
+		}
+		else if(AO_GET_SIZE(definitions[i]) == 32)
+		{
+			u32 = _htob32(ao->value.immediate.value);
+			if(helper->write(helper->arch, &u32, 4) != 4)
+				return -1;
+		}
+		else
+			return -error_set_code(1, "%s", "Size not implemented");
+	}
+	return 0;
+}
+
+
+/* java_decode */
+static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	uint8_t u8;
+	ArchInstruction * ai;
+	size_t i;
+	ArchOperand * ao;
+	uint16_t u16;
+	uint32_t u32;
+
+	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+		return -1;
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
+			== NULL)
+	{
+		call->name = "db";
+		call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
+		call->operands[0].value.immediate.name = NULL;
+		call->operands[0].value.immediate.value = u8;
+		call->operands[0].value.immediate.negative = 0;
+		call->operands_cnt = 1;
+		return 0;
+	}
+	call->name = ai->name;
+	call->operands[0].definition = ai->op1;
+	call->operands[1].definition = ai->op2;
+	call->operands[2].definition = ai->op3;
+	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].definition)
+			!= AOT_NONE; i++)
+	{
+		ao = &call->operands[i];
+		if(AO_GET_TYPE(ao->definition) != AOT_IMMEDIATE)
+			/* XXX should there be more types? */
+			return -error_set_code(1, "%s", "Not implemented");
+		if(AO_GET_SIZE(ao->definition) == 8)
+		{
+			if(helper->read(helper->arch, &u8, 1) != 1)
+				return -1;
+			ao->value.immediate.value = u8;
+		}
+		else if(AO_GET_SIZE(ao->definition) == 16)
+		{
+			if(helper->read(helper->arch, &u16, 2) != 2)
+				return -1;
+			u16 = _htob16(u16);
+			ao->value.immediate.value = u16;
+		}
+		else if(AO_GET_SIZE(ao->definition) == 32)
+		{
+			if(helper->read(helper->arch, &u32, 4) != 4)
+				return -1;
+			u32 = _htob32(u32);
+			ao->value.immediate.value = u32;
+		}
+		else
+			return -error_set_code(1, "%s", "Size not implemented");
+		ao->value.immediate.name = NULL;
+		ao->value.immediate.negative = 0;
+	}
+	call->operands_cnt = i;
+	return 0;
 }

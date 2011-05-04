@@ -17,7 +17,10 @@
 
 #include <System.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include "Asm/asm.h"
 #include "../config.h"
 
@@ -30,15 +33,15 @@
 
 /* functions */
 /* asm */
-static int _asm(char const * arch, char const * format, char const * infile,
-		char const * outfile)
+static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
+		char const * infile, char const * outfile)
 {
 	int ret = 0;
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
 		return error_print(PACKAGE);
-	if(asm_assemble(a, infile, outfile) != 0)
+	if(asm_assemble(a, prefs, infile, outfile) != 0)
 		ret = error_print(PACKAGE);
 	asm_delete(a);
 	return ret;
@@ -48,31 +51,40 @@ static int _asm(char const * arch, char const * format, char const * infile,
 /* usage */
 static unsigned int _usage(void)
 {
-	fputs("Usage: as [-a arch][-f format][-o file] file\n"
-"       as -l\n"
-"  -a	target architecture\n"
-"  -f	target file format\n"
-"  -o	filename to use for output (default: " ASM_FILENAME_DEFAULT ")\n"
-"  -l	list available architectures and formats\n", stderr);
+	fputs("Usage: asm [-D name][-a arch][-f format][-o file] file\n"
+"       asm -l\n"
+"  -D	Set a variable in the pre-processor\n"
+"  -a	Target architecture\n"
+"  -f	Target file format\n"
+"  -o	Filename to use for output (default: " ASM_FILENAME_DEFAULT ")\n"
+"  -l	List available architectures and formats\n", stderr);
 	return 1;
 }
 
 
 /* public */
 /* main */
+static int _main_add_define(AsmPrefs * prefs, char * define);
+
 int main(int argc, char * argv[])
 {
+	int ret;
+	AsmPrefs prefs;
 	int o;
 	char * outfile = ASM_FILENAME_DEFAULT;
 	char const * arch = NULL;
 	char const * format = NULL;
 
-	while((o = getopt(argc, argv, "a:f:o:l")) != -1)
-	{
+	memset(&prefs, 0, sizeof(prefs));
+	while((o = getopt(argc, argv, "a:D:f:o:l")) != -1)
 		switch(o)
 		{
 			case 'a':
 				arch = optarg;
+				break;
+			case 'D':
+				if(_main_add_define(&prefs, optarg) != 0)
+					return 2;
 				break;
 			case 'f':
 				format = optarg;
@@ -92,8 +104,28 @@ int main(int argc, char * argv[])
 			default:
 				return _usage();
 		}
-	}
 	if(optind + 1 != argc)
 		return _usage();
-	return (_asm(arch, format, argv[optind], outfile) == 0) ? 0 : 2;
+	ret = _asm(&prefs, arch, format, argv[optind], outfile);
+	free(prefs.defines);
+	return (ret == 0) ? 0 : 2;
+}
+
+static int _main_add_define(AsmPrefs * prefs, char * define)
+{
+	char ** p;
+	char * value;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, define);
+#endif
+	if(strlen(define) == 0)
+		return -_usage();
+	value = strtok(define, "=");
+	if((p = realloc(prefs->defines, sizeof(*p) * (prefs->defines_cnt + 1)))
+			== NULL)
+		return -error_set_print(PACKAGE, 1, "%s", strerror(errno));
+	prefs->defines = p;
+	prefs->defines[prefs->defines_cnt++] = define;
+	return 0;
 }

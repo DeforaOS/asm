@@ -149,13 +149,14 @@ int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size)
 
 /* useful */
 /* asm_assemble */
-int asm_assemble(Asm * a, char const * infile, char const * outfile)
+int asm_assemble(Asm * a, AsmPrefs * prefs, char const * infile,
+		char const * outfile)
 {
 	int ret;
 
 	if(_asm_open(a, outfile) != 0)
 		return -1;
-	ret = parser(a->code, infile);
+	ret = parser(prefs, a->code, infile);
 	if(ret != 0 && unlink(outfile) != 0)
 		ret |= error_set_code(3, "%s: %s", outfile, strerror(errno));
 	ret |= asm_close(a);

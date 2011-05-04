@@ -25,6 +25,12 @@
 /* types */
 typedef struct _Asm Asm;
 
+typedef struct _AsmPrefs
+{
+	char ** defines;
+	size_t defines_cnt;
+} AsmPrefs;
+
 typedef unsigned int AsmId;
 
 typedef struct _AsmFunction
@@ -93,7 +99,8 @@ int asm_guess_format(Asm * a);
 int asm_close(Asm * a);
 
 /* assemble */
-int asm_assemble(Asm * a, char const * infile, char const * outfile);
+int asm_assemble(Asm * a, AsmPrefs * prefs, char const * infile,
+		char const * outfile);
 int asm_open_assemble(Asm * a, char const * outfile);
 
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);

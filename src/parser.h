@@ -21,6 +21,6 @@
 # include "code.h"
 
 
-int parser(Code * code, char const * infile);
+int parser(AsmPrefs * prefs, Code * code, char const * infile);
 
 #endif /* !ASM_PARSER_H */

@@ -199,7 +199,7 @@ int parser(AsmPrefs * ap, Code * code, char const * infile)
 	memset(&state, 0, sizeof(state));
 	state.code = code;
 	if((state.cpp = cpp_new(&prefs)) == NULL)
-		return _parser_error(&state, "%s", error_get());
+		return -1;
 	if(ap != NULL)
 		for(i = 0; i < ap->defines_cnt; i++)
 			/* FIXME check errors */

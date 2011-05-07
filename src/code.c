@@ -41,6 +41,14 @@ typedef struct _CodeString
 	ssize_t length;
 } CodeString;
 
+typedef struct _CodeFunction
+{
+	int id;
+	char * name;
+	off_t offset;
+	ssize_t size;
+} CodeFunction;
+
 struct _Code
 {
 	Arch * arch;
@@ -49,6 +57,10 @@ struct _Code
 	char * filename;
 	FILE * fp;
 
+	/* functions */
+	CodeFunction * functions;
+	size_t functions_cnt;
+
 	/* strings */
 	CodeString * strings;
 	size_t strings_cnt;
@@ -56,6 +68,15 @@ struct _Code
 
 
 /* prototypes */
+/* functions */
+static void _code_function_delete_all(Code * code);
+
+static CodeFunction * _code_function_get_by_id(Code * code, AsmId id);
+static int _code_function_set(CodeFunction * codefunction, int id,
+		char const * name, off_t offset, ssize_t size);
+
+static CodeFunction * _code_function_append(Code * code);
+
 /* strings */
 static void _code_string_delete_all(Code * code);
 
@@ -191,6 +212,8 @@ int code_delete(Code * code)
 {
 	int ret = 0;
 
+	_code_function_delete_all(code);
+	_code_string_delete_all(code);
 	if(code->format != NULL)
 		format_delete(code->format);
 	if(code->arch != NULL)
@@ -229,8 +252,8 @@ char const * code_get_format(Code * code)
 /* code_get_function_by_id */
 AsmFunction * code_get_function_by_id(Code * code, AsmId id)
 {
-	/* FIXME implement */
-	return NULL;
+	/* XXX CodeFunction has to be exactly like an AsmFunction */
+	return _code_function_get_by_id(code, id);
 }
 
 
@@ -246,8 +269,16 @@ AsmString * code_get_string_by_id(Code * code, AsmId id)
 int code_set_function(Code * code, int id, char const * name, off_t offset,
 		ssize_t size)
 {
-	/* FIXME implement */
-	return -1;
+	CodeFunction * cf = NULL;
+
+	if(id >= 0)
+		cf = _code_function_get_by_id(code, id);
+	if(cf == NULL)
+		cf = _code_function_append(code);
+	if(cf == NULL || _code_function_set(cf, id, name, offset, size) != 0)
+		return -1;
+	/* FIXME isn't it considered an error if no ID is known yet? */
+	return cf->id;
 }
 
 
@@ -263,6 +294,7 @@ int code_set_string(Code * code, int id, char const * name, off_t offset,
 		cs = _code_string_append(code);
 	if(cs == NULL || _code_string_set(cs, id, name, offset, length) != 0)
 		return -1;
+	/* FIXME isn't it considered an error if no ID is known yet? */
 	return cs->id;
 }
 
@@ -475,6 +507,73 @@ int code_section(Code * code, char const * section)
 
 /* private */
 /* functions */
+/* functions */
+/* code_function_delete_all */
+static void _code_function_delete_all(Code * code)
+{
+	size_t i;
+
+	for(i = 0; i < code->functions_cnt; i++)
+		free(code->functions[i].name);
+	code->functions_cnt = 0;
+	free(code->functions);
+	code->functions = NULL;
+}
+
+
+/* code_function_get_by_id */
+static CodeFunction * _code_function_get_by_id(Code * code, AsmId id)
+{
+	size_t i;
+
+	for(i = 0; i < code->functions_cnt; i++)
+		if(code->functions[i].id >= 0
+				&& (AsmId)code->functions[i].id == id)
+			break;
+	if(i == code->functions_cnt)
+		return NULL;
+	return &code->functions[i];
+}
+
+
+/* code_function_set */
+static int _code_function_set(CodeFunction * codefunction, int id,
+		char const * name, off_t offset, ssize_t size)
+{
+	char * p = NULL;
+
+	if(name != NULL && (p = string_new(name)) == NULL)
+		return -error_set_code(1, "%s", strerror(errno));
+	codefunction->id = id;
+	free(codefunction->name);
+	codefunction->name = p;
+	codefunction->offset = offset;
+	codefunction->size = size;
+	return 0;
+}
+
+
+/* code_function_append */
+static CodeFunction * _code_function_append(Code * code)
+{
+	CodeFunction * p;
+
+	if((p = realloc(code->functions, sizeof(*p) * (code->functions_cnt
+						+ 1))) == NULL)
+	{
+		error_set_code(1, "%s", strerror(errno));
+		return NULL;
+	}
+	code->functions = p;
+	p = &code->functions[code->functions_cnt++];
+	p->id = -1;
+	p->name = NULL;
+	p->offset = -1;
+	p->size = -1;
+	return p;
+}
+
+
 /* strings */
 /* code_string_delete_all */
 static void _code_string_delete_all(Code * code)

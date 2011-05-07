@@ -342,6 +342,8 @@ int code_decode_at(Code * code, char const * section, off_t offset,
 	for(i = 0; i < calls_cnt; i++)
 		code_print(code, &calls[i]);
 	free(calls);
+	if(arch_seek(code->arch, offset + size, SEEK_SET) < 0)
+		return -1;
 	return 0;
 }
 

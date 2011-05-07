@@ -359,7 +359,6 @@ int code_decode_buffer(Code * code, char const * buffer, size_t size)
 	arch_init_buffer(code->arch, buffer, size);
 	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt)) == 0)
 	{
-		fprintf(stderr, "DEBUG: %lu\n", calls_cnt);
 		for(i = 0; i < calls_cnt; i++)
 			code_print(code, &calls[i]);
 		free(calls);
@@ -453,7 +452,7 @@ int code_print(Code * code, ArchInstructionCall * call)
 					printf("[%%%s]", name);
 					break;
 				}
-				printf("[%%%s + $0x%lx]", name,
+				printf("[%%%s + $0x%lx]", name, (unsigned long)
 						ao->value.dregister.offset);
 				break;
 			case AOT_DREGISTER2:
@@ -478,7 +477,7 @@ int code_print(Code * code, ArchInstructionCall * call)
 static void _print_immediate(ArchOperand * ao)
 {
 	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
-			ao->value.immediate.value);
+			(unsigned long)ao->value.immediate.value);
 	if(AO_GET_VALUE(ao->definition) == AOI_REFERS_STRING)
 	{
 		if(ao->value.immediate.name != NULL)

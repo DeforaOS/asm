@@ -212,8 +212,6 @@ int code_delete(Code * code)
 {
 	int ret = 0;
 
-	_code_function_delete_all(code);
-	_code_string_delete_all(code);
 	if(code->format != NULL)
 		format_delete(code->format);
 	if(code->arch != NULL)
@@ -312,6 +310,7 @@ int code_close(Code * code)
 				strerror(errno));
 	code->fp = NULL;
 	_code_string_delete_all(code);
+	_code_function_delete_all(code);
 	return ret;
 }
 

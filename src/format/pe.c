@@ -145,8 +145,6 @@ static int _pe_init(FormatPlugin * format, char const * arch)
 
 
 /* pe_detect */
-static char const * _detect_error(FormatPlugin * format);
-
 static char const * _pe_detect(FormatPlugin * format)
 {
 	FormatPluginHelper * helper = format->helper;
@@ -164,13 +162,6 @@ static char const * _pe_detect(FormatPlugin * format)
 		return NULL;
 	ph.machine = _htol16(ph.machine);
 	return _pe_get_arch(ph.machine);
-}
-
-static char const * _detect_error(FormatPlugin * format)
-{
-	error_set_code(1, "%s: %s", format->helper->get_filename(
-				format->helper->format), strerror(errno));
-	return NULL;
 }
 
 

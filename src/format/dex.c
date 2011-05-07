@@ -175,7 +175,7 @@ static int _dex_exit(FormatPlugin * format)
 	Dex * dex = format->priv;
 
 	free(dex->dmii);
-	free(dex);
+	object_delete(dex);
 	return 0;
 }
 
@@ -297,9 +297,11 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
 #ifdef DEBUG
-		fprintf(stderr, "DEBUG: code item %lu, registers 0x%x"
-				", size 0x%x, debug @0x%x, tries 0x%x"
-				", seek 0x%lx\n", i, dmci.registers_size,
+		fprintf(stderr, "DEBUG: code item %lu, offset 0x%lx"
+				", registers 0x%x, size 0x%x, debug @0x%x"
+				", tries 0x%x, seek 0x%lx\n", i,
+				helper->seek(helper->format, 0, SEEK_CUR),
+				dmci.registers_size,
 				dmci.insns_size * 2, dmci.debug_info_off,
 				dmci.tries_size, seek);
 #endif
@@ -387,7 +389,7 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		if(helper->read(helper->format, &u8, sizeof(u8)) != sizeof(u8))
 			break;
 #ifdef DEBUG
-		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%x len %u\n",
+		fprintf(stderr, "DEBUG: %s() string %lu offset 0x%lx len %u\n",
 				__func__, i, offset, u8);
 #endif
 		helper->set_string(helper->format, i, NULL, offset + 1, u8);

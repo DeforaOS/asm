@@ -301,9 +301,8 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 				", registers 0x%x, size 0x%x, debug @0x%x"
 				", tries 0x%x, seek 0x%lx\n", i,
 				helper->seek(helper->format, 0, SEEK_CUR),
-				dmci.registers_size,
-				dmci.insns_size * 2, dmci.debug_info_off,
-				dmci.tries_size, seek);
+				dmci.registers_size, dmci.insns_size * 2,
+				dmci.debug_info_off, dmci.tries_size, seek);
 #endif
 		if(seek != 0 && helper->seek(helper->format, seek, SEEK_CUR)
 				< 0)

@@ -157,8 +157,7 @@ static char const * _pe_detect(FormatPlugin * format)
 		return NULL;
 	if(helper->read(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return NULL;
-	if((pm.offset = _htol16(pm.offset)) != sizeof(pm))
-		return _detect_error(format);
+	pm.offset = _htol16(pm.offset);
 	if(helper->seek(helper->format, pm.offset, SEEK_SET) != pm.offset)
 		return NULL;
 	if(helper->read(helper->format, &ph, sizeof(ph)) != sizeof(ph))

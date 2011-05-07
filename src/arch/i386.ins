@@ -365,6 +365,8 @@
 /* CDQ		0x99		1					*/
 { "cdq",	0x99,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #endif
+/* CS		0x2e		1					*/
+{ "cs",		0x2e,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 #ifndef ARCH_amd64
 /* DAA		0x27		1					*/
 { "daa",	0x27,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
@@ -847,8 +849,14 @@
 /* MOV		0x8e /r		1     Sreg        r/m16			*/
 #endif
 { "mov",	0x8e,		OP1F, OP_R16_R,   OP_R16_R,  AOT_NONE	},
-/* MOV		0xa3		1     AX          moffsW		*/
-{ "mov",	0xa3,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
+/* MOV		0xa0		1     al          moffs8		*/
+{ "mov",	0xa0,		OP1F, OP_al,      OP_SW,     AOT_NONE	},
+/* MOV		0xa1		1     AX          moffs16		*/
+{ "mov",	0xa1,		OP1F, OP_AX,      OP_SW,     AOT_NONE	},
+/* MOV		0xa2		1     moffs8      al			*/
+{ "mov",	0xa2,		OP1F, OP_SW,      OP_al,     AOT_NONE	},
+/* MOV		0xa3		1     moffsW      AX			*/
+{ "mov",	0xa3,		OP1F, OP_SW,      OP_AX,     AOT_NONE	},
 /* MOV		0xb0 +rb	1     r8          imm8			*/
 { "mov",	0xb0,		OP1F, OP_al,      OP_S8,     AOT_NONE	},
 { "mov",	0xb1,		OP1F, OP_cl,      OP_S8,     AOT_NONE	},

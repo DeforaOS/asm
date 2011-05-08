@@ -533,6 +533,8 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 			0);
 	switch(AO_GET_SIZE(instruction->flags) >> 3)
 	{
+		case 0:
+			return 0;
 		case sizeof(uint8_t):
 			operand.value.immediate.value = instruction->opcode;
 			break;

@@ -393,6 +393,7 @@ static int _instruction(State * state)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	memset(&state->call, 0, sizeof(state->call));
 	ret = _operator(state);
 	if(_parser_in_set(state, TS_SPACE))
 	{

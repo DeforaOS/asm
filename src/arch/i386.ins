@@ -356,8 +356,31 @@
 { "cmc",	0xf5,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* CMOVcc								*/
 /* FIXME implement */
-/* CMP									*/
-/* FIXME implement */
+/* CMP		0x38 /r		1     r/m8        r8			*/
+{ "cmp",	0x38,		OP1F, OP_RM8_D0,  OP_R8_R,   AOT_NONE	},
+{ "cmp",	0x38,		OP1F, OP_RM8_D8,  OP_R8_R,   AOT_NONE	},
+{ "cmp",	0x38,		OP1F, OP_RM8_DW,  OP_R8_R,   AOT_NONE	},
+{ "cmp",	0x38,		OP1F, OP_RM8_R8,  OP_R8_R,   AOT_NONE	},
+/* CMP		0x39 /r		1     r/mW        rW			*/
+{ "cmp",	0x39,		OP1F, OP_RMW_D0,  OP_RW_R,   AOT_NONE	},
+{ "cmp",	0x39,		OP1F, OP_RMW_D8,  OP_RW_R,   AOT_NONE	},
+{ "cmp",	0x39,		OP1F, OP_RMW_DW,  OP_RW_R,   AOT_NONE	},
+{ "cmp",	0x39,		OP1F, OP_RMW_RW,  OP_RW_R,   AOT_NONE	},
+/* CMP		0x3a /r		1     r8          r/m8			*/
+{ "cmp",	0x3a,		OP1F, OP_R8_R,    OP_RM8_D0, AOT_NONE	},
+{ "cmp",	0x3a,		OP1F, OP_R8_R,    OP_RM8_D8, AOT_NONE	},
+{ "cmp",	0x3a,		OP1F, OP_R8_R,    OP_RM8_DW, AOT_NONE	},
+{ "cmp",	0x3a,		OP1F, OP_R8_R,    OP_RM8_R8, AOT_NONE	},
+/* CMP		0x3b /r		1     rW          r/mW			*/
+{ "cmp",	0x3b,		OP1F, OP_RW_R,    OP_RMW_D0, AOT_NONE	},
+{ "cmp",	0x3b,		OP1F, OP_RW_R,    OP_RMW_D8, AOT_NONE	},
+{ "cmp",	0x3b,		OP1F, OP_RW_R,    OP_RMW_DW, AOT_NONE	},
+{ "cmp",	0x3b,		OP1F, OP_RW_R,    OP_RMW_RW, AOT_NONE	},
+/* CMP		0x3c		1     al          imm8			*/
+{ "cmp",	0x3c,		OP1F, OP_al,      OP_U8,     AOT_NONE   },
+/* CMP		0x3d		1     AX          immW			*/
+{ "cmp",	0x3d,		OP1F, OP_AX,      OP_UW,     AOT_NONE   },
+/* FIXME implement the rest */
 #if defined(ARCH_i386_real)
 /* CWD		0x99		1					*/
 { "cwd",	0x99,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
@@ -408,6 +431,8 @@
 { "div",	0xf7,		OP1F, OP_RMW_RW+6,AOT_NONE,  AOT_NONE	},
 /* ENTER	0xc8 iw		1     imm16       imm8			*/
 { "enter",	0xc8,		OP1F, OP_U16,     OP_U8,     AOT_NONE	},
+/* ES		0x26		1					*/
+{ "es",		0x26,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* F2XM1	0xd9f0		2					*/
 { "f2xm1",	0xd9f0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FABS		0xd9e1		2					*/
@@ -652,10 +677,14 @@
 { "fninit",	0xdbe3,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FNOP		0xd9d0		2					*/
 { "fnop",	0xd9d0,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* FS		0x64		1					*/
+{ "fs",		0x64,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FWAIT	0x9b		1					*/
 { "fwait",	0x9b,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* FYL2XP1	0xd9f9		2					*/
 { "fyl2xp1",	0xd9f9,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+/* GS		0x65		1					*/
+{ "gs",		0x65,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* HLT		0xf4		1					*/
 { "hlt",	0xf4,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* IDIV									*/
@@ -1235,6 +1264,8 @@
 /* FIXME implement */
 /* SMSW		0x0f01 /4	2     r/mW				*/
 /* FIXME implement */
+/* SS		0x36		1					*/
+{ "ss",		0x36,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* STC		0xf9							*/
 { "stc",	0xf9,		OP1F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
 /* STD		0xfd							*/

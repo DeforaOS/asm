@@ -242,7 +242,7 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() operand %lu, type %u, type %u\n",
 				__func__, i, AO_GET_TYPE(definition),
-				AO_GET_TYPE(operand->type));
+				AO_GET_TYPE(operand->definition));
 #endif
 		if(AO_GET_TYPE(definition) == AOT_CONSTANT)
 		{

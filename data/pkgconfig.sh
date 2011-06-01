@@ -26,12 +26,12 @@
 
 
 #variables
+PREFIX="/usr/local"
 . "../config.sh"
 DEBUG="_debug"
 DEVNULL="/dev/null"
 INSTALL="install -m 0644"
 MKDIR="mkdir -p"
-PREFIX="/usr/local"
 RM="rm -f"
 SED="sed"
 

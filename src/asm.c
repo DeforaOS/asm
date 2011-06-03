@@ -142,7 +142,7 @@ int asm_set_format(Asm * a, char const * format)
 /* asm_set_function */
 int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size)
 {
-	return code_set_function(a, -1, name, offset, size);
+	return code_set_function(a->code, -1, name, offset, size);
 }
 
 

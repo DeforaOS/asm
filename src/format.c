@@ -273,11 +273,16 @@ static int _format_helper_set_string(Format * format, int id, char const * name,
 static int _format_helper_decode(Format * format, char const * section,
 		off_t offset, size_t size, off_t base)
 {
+	int ret;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
 			section, offset, size, base);
 #endif
-	return code_decode_at(format->code, section, offset, size, base);
+	if((ret = code_decode_at(format->code, section, offset, size, base))
+			!= 0)
+		error_print("deasm");
+	return ret;
 }
 
 

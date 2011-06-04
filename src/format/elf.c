@@ -76,12 +76,16 @@ static int _init_32(FormatPlugin * format);
 static int _exit_32(FormatPlugin * format);
 static int _section_32(FormatPlugin * format, char const * name);
 static void _swap_32_ehdr(Elf32_Ehdr * ehdr);
+static void _swap_32_phdr(Elf32_Phdr * phdr);
+static void _swap_32_shdr(Elf32_Shdr * shdr);
 
 /* ELF64 */
 static int _init_64(FormatPlugin * format);
 static int _exit_64(FormatPlugin * format);
 static int _section_64(FormatPlugin * format, char const * name);
 static void _swap_64_ehdr(Elf64_Ehdr * ehdr);
+static void _swap_64_phdr(Elf64_Phdr * phdr);
+static void _swap_64_shdr(Elf64_Shdr * shdr);
 
 /* ElfStrtab */
 static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
@@ -348,6 +352,8 @@ static int _elf_decode32(FormatPlugin * format)
 			|| helper->read(helper->format, &ehdr, sizeof(ehdr))
 			!= sizeof(ehdr))
 		return -1;
+	if(ehdr.e_ident[EI_DATA] != elf_arch_native->endian)
+		_swap_32_ehdr(&ehdr);
 	if(_decode32_shdr(format, &ehdr, &shdr) != 0)
 		return -1;
 	if(_decode32_addr(format, &ehdr, &base) != 0
@@ -379,6 +385,7 @@ static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 {
 	FormatPluginHelper * helper = format->helper;
 	ssize_t size;
+	size_t i;
 
 	if(ehdr->e_shentsize == 0)
 	{
@@ -399,6 +406,9 @@ static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		free(*shdr);
 		return -1;
 	}
+	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+		for(i = 0; i < ehdr->e_shnum; i++)
+			_swap_32_shdr(*shdr + i);
 	return 0;
 }
 
@@ -412,14 +422,18 @@ static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 	if(helper->seek(helper->format, ehdr->e_phoff, SEEK_SET) < 0)
 		return -1;
 	for(i = 0; i < ehdr->e_phnum; i++)
+	{
 		if(helper->read(helper->format, &phdr, sizeof(phdr))
 				!= sizeof(phdr))
 			return -1;
-		else if(phdr.p_type == PT_LOAD && phdr.p_flags & (PF_R | PF_X))
+		if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+			_swap_32_phdr(&phdr);
+		if(phdr.p_type == PT_LOAD && phdr.p_flags & (PF_R | PF_X))
 		{
 			*addr = phdr.p_vaddr;
 			return 0;
 		}
+	}
 	*addr = 0x0;
 	return 0;
 }
@@ -477,6 +491,8 @@ static int _elf_decode64(FormatPlugin * format)
 			|| helper->read(helper->format, &ehdr, sizeof(ehdr))
 			!= sizeof(ehdr))
 		return -1;
+	if(ehdr.e_ident[EI_DATA] != elf_arch_native->endian)
+		_swap_64_ehdr(&ehdr);
 	if(_decode64_shdr(format, &ehdr, &shdr) != 0)
 		return -1;
 	if(_decode64_addr(format, &ehdr, &base) != 0
@@ -508,6 +524,7 @@ static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 {
 	FormatPluginHelper * helper = format->helper;
 	ssize_t size;
+	size_t i;
 
 	if(ehdr->e_shentsize == 0)
 	{
@@ -528,6 +545,9 @@ static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		free(*shdr);
 		return -1;
 	}
+	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+		for(i = 0; i < ehdr->e_shnum; i++)
+			_swap_64_shdr(*shdr + i);
 	return 0;
 }
 
@@ -541,14 +561,18 @@ static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 	if(helper->seek(helper->format, ehdr->e_phoff, SEEK_SET) < 0)
 		return -1;
 	for(i = 0; i < ehdr->e_phnum; i++)
+	{
 		if(helper->read(helper->format, &phdr, sizeof(phdr))
 				!= sizeof(phdr))
 			return -1;
-		else if(phdr.p_type == PT_LOAD && phdr.p_flags & (PF_R | PF_X))
+		if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+			_swap_64_phdr(&phdr);
+		if(phdr.p_type == PT_LOAD && phdr.p_flags & (PF_R | PF_X))
 		{
 			*addr = phdr.p_vaddr;
 			return 0;
 		}
+	}
 	*addr = 0x0;
 	return 0;
 }
@@ -791,6 +815,36 @@ static void _swap_32_ehdr(Elf32_Ehdr * ehdr)
 }
 
 
+/* swap_32_phdr */
+static void _swap_32_phdr(Elf32_Phdr * phdr)
+{
+	phdr->p_type = _bswap32(phdr->p_type);
+	phdr->p_offset = _bswap32(phdr->p_offset);
+	phdr->p_vaddr = _bswap32(phdr->p_vaddr);
+	phdr->p_paddr = _bswap32(phdr->p_paddr);
+	phdr->p_filesz = _bswap32(phdr->p_filesz);
+	phdr->p_memsz = _bswap32(phdr->p_memsz);
+	phdr->p_flags = _bswap32(phdr->p_flags);
+	phdr->p_align = _bswap32(phdr->p_align);
+}
+
+
+/* swap_32_shdr */
+static void _swap_32_shdr(Elf32_Shdr * shdr)
+{
+	shdr->sh_name = _bswap32(shdr->sh_name);
+	shdr->sh_type = _bswap32(shdr->sh_type);
+	shdr->sh_flags = _bswap32(shdr->sh_flags);
+	shdr->sh_addr = _bswap32(shdr->sh_addr);
+	shdr->sh_offset = _bswap32(shdr->sh_offset);
+	shdr->sh_size = _bswap32(shdr->sh_size);
+	shdr->sh_link = _bswap32(shdr->sh_link);
+	shdr->sh_info = _bswap32(shdr->sh_info);
+	shdr->sh_addralign = _bswap32(shdr->sh_addralign);
+	shdr->sh_entsize = _bswap32(shdr->sh_entsize);
+}
+
+
 /* ELF64 */
 /* variables */
 static Elf64_Shdr * es64 = NULL;
@@ -968,6 +1022,36 @@ static void _swap_64_ehdr(Elf64_Ehdr * ehdr)
 	ehdr->e_shentsize = _bswap16(ehdr->e_shentsize);
 	ehdr->e_shnum = _bswap16(ehdr->e_shnum);
 	ehdr->e_shstrndx = _bswap16(ehdr->e_shstrndx);
+}
+
+
+/* swap_64_phdr */
+static void _swap_64_phdr(Elf64_Phdr * phdr)
+{
+	phdr->p_type = _bswap32(phdr->p_type);
+	phdr->p_flags = _bswap32(phdr->p_flags);
+	phdr->p_offset = _bswap64(phdr->p_offset);
+	phdr->p_vaddr = _bswap64(phdr->p_vaddr);
+	phdr->p_paddr = _bswap64(phdr->p_paddr);
+	phdr->p_filesz = _bswap64(phdr->p_filesz);
+	phdr->p_memsz = _bswap64(phdr->p_memsz);
+	phdr->p_align = _bswap64(phdr->p_align);
+}
+
+
+/* swap_64_shdr */
+static void _swap_64_shdr(Elf64_Shdr * shdr)
+{
+	shdr->sh_name = _bswap32(shdr->sh_name);
+	shdr->sh_type = _bswap32(shdr->sh_type);
+	shdr->sh_flags = _bswap64(shdr->sh_flags);
+	shdr->sh_addr = _bswap64(shdr->sh_addr);
+	shdr->sh_offset = _bswap64(shdr->sh_offset);
+	shdr->sh_size = _bswap64(shdr->sh_size);
+	shdr->sh_link = _bswap32(shdr->sh_link);
+	shdr->sh_info = _bswap32(shdr->sh_info);
+	shdr->sh_addralign = _bswap64(shdr->sh_addralign);
+	shdr->sh_entsize = _bswap64(shdr->sh_entsize);
 }
 
 

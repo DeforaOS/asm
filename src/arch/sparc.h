@@ -53,10 +53,17 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		opcode = u32 & (0x00800000 | (0xf << 25));
 #endif
 	else
-		return -1;
+	{
+		call->name = "dw";
+		return 0;
+	}
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 32, opcode))
 			== NULL)
 		return -1;
+	call->name = ai->name;
+	call->operands[0].definition = ai->op1;
+	call->operands[1].definition = ai->op2;
+	call->operands[2].definition = ai->op3;
 	return 0;
 }
 

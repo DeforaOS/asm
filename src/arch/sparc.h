@@ -22,12 +22,45 @@
 /* private */
 /* prototypes */
 /* plug-in */
+static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
 /* functions */
 /* plug-in */
+/* sparc_decode */
+static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	uint32_t u32;
+	uint32_t opcode;
+	ArchInstruction * ai;
+
+	if(helper->read(helper->arch, &u32, sizeof(u32)) != sizeof(u32))
+		return -1;
+	u32 = _htob32(u32);
+	if((u32 & 0xc0000000) == 0xc0000000) /* load store */
+		opcode = u32 & (0xc0000000 | (0xf << 19) | (0x1 << 13));
+	else if((u32 & 0xc1c00000) == 0x01000000) /* sethi */
+		opcode = u32 & (0x7 << 22);
+	else if((u32 & 0xc0000000) == 0x80000000) /* integer arithmetic */
+		opcode = u32 & (0x80000000 | (0x1f << 19) | (0x1 << 13));
+	else if((u32 & 0xc1c00000) == 0x00800000) /* branch */
+#if 0 /* FIXME figure what's wrong */
+		opcode = u32 & (0x00800000 | (0xf << 25) | (0x3 << 2));
+#else
+		opcode = u32 & (0x00800000 | (0xf << 25));
+#endif
+	else
+		return -1;
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 32, opcode))
+			== NULL)
+		return -1;
+	return 0;
+}
+
+
 /* sparc_write */
 static int _write_branch(ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);

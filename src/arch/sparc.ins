@@ -38,7 +38,7 @@
 #define bgeu		0xd
 #define bcc		bgeu
 /* flags */
-#define OPCBF		(4 << AOD_SIZE)
+#define OPCBF		(32 << AOD_SIZE)
 /* helpers */
 #define OPCB(opcode)	(opcode << 25 | 0x2 << 22)
 #define OPCB_U22	AO_IMMEDIATE(0, 21, 0)
@@ -70,8 +70,8 @@
 #define udivcc		(0x10 | udiv)
 #define sdivcc		(0x10 | sdiv)
 /* flags */
-#define OPIA1F		(4 << AOD_SIZE)
-#define OPIA2F		(4 << AOD_SIZE)
+#define OPIA1F		(32 << AOD_SIZE)
+#define OPIA2F		(32 << AOD_SIZE)
 /* registers */
 #define OPIA_RS1	AO_REGISTER(0, 32, 0)
 #define OPIA_RS2	AO_REGISTER(0, 32, 0)
@@ -94,8 +94,8 @@
 #define ldsb		0x9
 #define ldsh		0xa
 /* flags */
-#define OPLS1F		(4 << AOD_SIZE)
-#define OPLS2F		(4 << AOD_SIZE)
+#define OPLS1F		(32 << AOD_SIZE)
+#define OPLS2F		(32 << AOD_SIZE)
 /* registers */
 #define OPLS_RS1	AO_DREGISTER(0, 12, 32, 0)
 #define OPLS_RS1D	AO_DREGISTER(0, 0, 32, 0)
@@ -108,7 +108,7 @@
 /* opcodes */
 #define sethi		0x4
 /* flags */
-#define OPSHF		(4 << AOD_SIZE)
+#define OPSHF		(32 << AOD_SIZE)
 /* helpers */
 #define OPSH(opcode)	(opcode << 22)
 #define OPSH_U21	AO_IMMEDIATE(0, 32, 0)

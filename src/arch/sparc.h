@@ -42,7 +42,7 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	u32 = _htob32(u32);
 	if((u32 & 0xc0000000) == 0xc0000000) /* load store */
 		opcode = u32 & (0xc0000000 | (0xf << 19) | (0x1 << 13));
-	else if((u32 & 0xc1c00000) == 0x01000000) /* sethi */
+	else if((u32 & 0xc1c00000) == 0x01000000) /* nop, sethi */
 		opcode = u32 & (0x7 << 22);
 	else if((u32 & 0xc0000000) == 0x80000000) /* integer arithmetic */
 		opcode = u32 & (0x80000000 | (0x1f << 19) | (0x1 << 13));
@@ -272,6 +272,9 @@ static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
 	char const * name;
 	ArchRegister * ar;
 
+	/* nop */
+	if(AO_GET_TYPE(instruction->op1) == AOT_NONE)
+		return 0;
 	/* value */
 	if(AO_GET_TYPE(instruction->op1) != AOT_IMMEDIATE)
 		return -1;

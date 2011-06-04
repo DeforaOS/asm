@@ -36,6 +36,7 @@
 	ldub	[%r23], %r19
 	lduh	[%r4 + %r7], %r11
 	lduh	[%r23], %r19
+	nop
 	or	%r16, %r26, %r27
 	or	%r29, -$23, %r19
 	orcc	%r16, %r26, %r27

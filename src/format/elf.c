@@ -75,11 +75,13 @@ static int _elf_decode64(FormatPlugin * format);
 static int _init_32(FormatPlugin * format);
 static int _exit_32(FormatPlugin * format);
 static int _section_32(FormatPlugin * format, char const * name);
+static void _swap_32_ehdr(Elf32_Ehdr * ehdr);
 
 /* ELF64 */
 static int _init_64(FormatPlugin * format);
 static int _exit_64(FormatPlugin * format);
 static int _section_64(FormatPlugin * format, char const * name);
+static void _swap_64_ehdr(Elf64_Ehdr * ehdr);
 
 /* ElfStrtab */
 static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
@@ -98,6 +100,17 @@ static ElfArch elf_arch[] =
 	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB	},
 	{ NULL,		'\0',		'\0',		'\0'		}
 };
+#if defined(__amd64__)
+static const ElfArch * elf_arch_native = &elf_arch[0];
+#elif defined(__i386__)
+static const ElfArch * elf_arch_native = &elf_arch[1];
+#elif defined(__sparc64__)
+static const ElfArch * elf_arch_native = &elf_arch[6];
+#elif defined(__sparc__)
+static const ElfArch * elf_arch_native = &elf_arch[5];
+#else
+# error "Unsupported architecture"
+#endif
 
 static ElfSectionValues elf_section_values[] =
 {
@@ -257,6 +270,8 @@ static char const * _elf_detect(FormatPlugin * format)
 static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 {
 	format->decode = _elf_decode32;
+	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+		_swap_32_ehdr(ehdr);
 	switch(ehdr->e_machine)
 	{
 		case EM_386:
@@ -280,6 +295,8 @@ static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 {
 	format->decode = _elf_decode64;
+	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
+		_swap_64_ehdr(ehdr);
 	switch(ehdr->e_machine)
 	{
 		case EM_SPARC:
@@ -755,6 +772,25 @@ static int _section_32(FormatPlugin * format, char const * name)
 }
 
 
+/* swap_32_ehdr */
+static void _swap_32_ehdr(Elf32_Ehdr * ehdr)
+{
+	ehdr->e_type = _bswap16(ehdr->e_type);
+	ehdr->e_machine = _bswap16(ehdr->e_machine);
+	ehdr->e_version = _bswap32(ehdr->e_version);
+	ehdr->e_entry = _bswap32(ehdr->e_entry);
+	ehdr->e_phoff = _bswap32(ehdr->e_phoff);
+	ehdr->e_shoff = _bswap32(ehdr->e_shoff);
+	ehdr->e_flags = _bswap32(ehdr->e_flags);
+	ehdr->e_ehsize = _bswap16(ehdr->e_ehsize);
+	ehdr->e_phentsize = _bswap16(ehdr->e_phentsize);
+	ehdr->e_phnum = _bswap16(ehdr->e_phnum);
+	ehdr->e_shentsize = _bswap16(ehdr->e_shentsize);
+	ehdr->e_shnum = _bswap16(ehdr->e_shnum);
+	ehdr->e_shstrndx = _bswap16(ehdr->e_shstrndx);
+}
+
+
 /* ELF64 */
 /* variables */
 static Elf64_Shdr * es64 = NULL;
@@ -913,6 +949,25 @@ static int _section_64(FormatPlugin * format, char const * name)
 	p->sh_offset = offset;
 	p->sh_link = SHN_UNDEF; /* FIXME */
 	return 0;
+}
+
+
+/* swap_64_ehdr */
+static void _swap_64_ehdr(Elf64_Ehdr * ehdr)
+{
+	ehdr->e_type = _bswap16(ehdr->e_type);
+	ehdr->e_machine = _bswap16(ehdr->e_machine);
+	ehdr->e_version = _bswap32(ehdr->e_version);
+	ehdr->e_entry = _bswap64(ehdr->e_entry);
+	ehdr->e_phoff = _bswap64(ehdr->e_phoff);
+	ehdr->e_shoff = _bswap64(ehdr->e_shoff);
+	ehdr->e_flags = _bswap32(ehdr->e_flags);
+	ehdr->e_ehsize = _bswap16(ehdr->e_ehsize);
+	ehdr->e_phentsize = _bswap16(ehdr->e_phentsize);
+	ehdr->e_phnum = _bswap16(ehdr->e_phnum);
+	ehdr->e_shentsize = _bswap16(ehdr->e_shentsize);
+	ehdr->e_shnum = _bswap16(ehdr->e_shnum);
+	ehdr->e_shstrndx = _bswap16(ehdr->e_shstrndx);
 }
 
 

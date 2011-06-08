@@ -57,6 +57,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i586.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i686.c \
 		$(PACKAGE)-$(VERSION)/src/arch/java.c \
+		$(PACKAGE)-$(VERSION)/src/arch/mips.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
@@ -72,6 +73,9 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i586.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i686.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/i686.reg \
+		$(PACKAGE)-$(VERSION)/src/arch/mips.h \
+		$(PACKAGE)-$(VERSION)/src/arch/mips.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/mips.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/null.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.h \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
@@ -91,6 +95,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/i486.S \
 		$(PACKAGE)-$(VERSION)/test/i586.S \
 		$(PACKAGE)-$(VERSION)/test/i686.S \
+		$(PACKAGE)-$(VERSION)/test/mips.S \
 		$(PACKAGE)-$(VERSION)/test/java.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/sparc64.S \

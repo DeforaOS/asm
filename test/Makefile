@@ -1,4 +1,4 @@
-TARGETS	= amd64.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o java.o sparc.o sparc64.o
+TARGETS	= amd64.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o java.o sparc.o sparc64.o
 PREFIX	= /usr/local
 DESTDIR	= 
 BINDIR	= $(PREFIX)/bin
@@ -33,6 +33,9 @@ i586.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i586
 i686.o_OBJS = i686.o
 i686.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i686
 
+mips.o_OBJS = mips.o
+mips.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a mips
+
 java.o_OBJS = java.o
 java.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a java -f flat
 
@@ -63,6 +66,9 @@ i586.o: i586.S ../src/asm
 i686.o: i686.S ../src/asm
 	$(AS) $(i686.o_ASFLAGS) -o i686.o i686.S
 
+mips.o: mips.S ../src/asm
+	$(AS) $(mips.o_ASFLAGS) -o mips.o mips.S
+
 java.o: java.S ../src/asm
 	$(AS) $(java.o_ASFLAGS) -o java.o java.S
 
@@ -73,7 +79,7 @@ sparc64.o: sparc64.S ../src/asm
 	$(AS) $(sparc64.o_ASFLAGS) -o sparc64.o sparc64.S
 
 clean:
-	$(RM) -- $(amd64.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS)
+	$(RM) -- $(amd64.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

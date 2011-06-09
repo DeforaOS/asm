@@ -50,6 +50,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/token.h \
 		$(PACKAGE)-$(VERSION)/src/project.conf \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.c \
+		$(PACKAGE)-$(VERSION)/src/arch/arm.c \
 		$(PACKAGE)-$(VERSION)/src/arch/dalvik.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386_real.c \
@@ -63,6 +64,9 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.reg \
+		$(PACKAGE)-$(VERSION)/src/arch/arm.h \
+		$(PACKAGE)-$(VERSION)/src/arch/arm.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/arm.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/common.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/dalvik.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/dalvik.reg \
@@ -89,6 +93,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
 		$(PACKAGE)-$(VERSION)/test/amd64.S \
+		$(PACKAGE)-$(VERSION)/test/arm.S \
 		$(PACKAGE)-$(VERSION)/test/dalvik.S \
 		$(PACKAGE)-$(VERSION)/test/i386.S \
 		$(PACKAGE)-$(VERSION)/test/i386_real.S \

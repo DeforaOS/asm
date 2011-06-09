@@ -1,4 +1,4 @@
-TARGETS	= amd64.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so sparc.so sparc64.so
+TARGETS	= amd64.so arm.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so sparc.so sparc64.so
 PREFIX	= /usr/local
 DESTDIR	= 
 LIBDIR	= $(PREFIX)/lib
@@ -24,6 +24,13 @@ amd64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 amd64.so: $(amd64_OBJS)
 	$(LD) -o amd64.so $(amd64_OBJS) $(amd64_LDFLAGS)
+
+arm_OBJS = arm.o
+arm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+arm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+arm.so: $(arm_OBJS)
+	$(LD) -o arm.so $(arm_OBJS) $(arm_LDFLAGS)
 
 dalvik_OBJS = dalvik.o
 dalvik_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
@@ -98,6 +105,9 @@ sparc64.so: $(sparc64_OBJS)
 amd64.o: amd64.c amd64.ins amd64.reg common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(amd64_CFLAGS) -c amd64.c
 
+arm.o: arm.c arm.h arm.ins arm.reg common.ins null.ins
+	$(CC) $(arm_CFLAGS) -c arm.c
+
 dalvik.o: dalvik.c common.ins null.ins dalvik.ins dalvik.reg
 	$(CC) $(dalvik_CFLAGS) -c dalvik.c
 
@@ -129,7 +139,7 @@ sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
 clean:
-	$(RM) -- $(amd64_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
+	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(sparc_OBJS) $(sparc64_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -137,6 +147,8 @@ distclean: clean
 install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- amd64.so $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- arm.so $(DESTDIR)$(LIBDIR)/asm/arch/arm.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- dalvik.so $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
@@ -160,6 +172,7 @@ install: $(TARGETS)
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/arm.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386_real.so

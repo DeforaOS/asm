@@ -96,6 +96,7 @@ static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
 static ElfArch elf_arch[] =
 {
 	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB	},
+	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB	},
 	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
 	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
 	{ "i586",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},

@@ -36,7 +36,6 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	uint32_t opcode = instruction->opcode;
 
 	/* FIXME really implement */
-	opcode = _htob32(opcode);
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;

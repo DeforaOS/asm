@@ -19,28 +19,32 @@
 /* registers */
 
 /* conditions */
-#define eq		0x0
-#define ne		0x1
-#define cs		0x2
-#define cc		0x3
-#define mi		0x4
-#define pl		0x5
-#define vs		0x6
-#define vc		0x7
-#define hi		0x8
-#define ls		0x9
-#define ge		0xa
-#define lt		0xb
-#define gt		0xc
-#define le		0xd
-#define al		0xe
+#define eq		(0x0 << 28)
+#define ne		(0x1 << 28)
+#define cs		(0x2 << 28)
+#define cc		(0x3 << 28)
+#define mi		(0x4 << 28)
+#define pl		(0x5 << 28)
+#define vs		(0x6 << 28)
+#define vc		(0x7 << 28)
+#define hi		(0x8 << 28)
+#define ls		(0x9 << 28)
+#define ge		(0xa << 28)
+#define lt		(0xb << 28)
+#define gt		(0xc << 28)
+#define le		(0xd << 28)
+#define al		(0xe << 28)
 
 /* opcodes */
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
 #define OP_R		AO_REGISTER(0, 32, 0)
 
+/* branch, branch with link */
+#define OPB(cond)	(cond | 0x5 << 25)
+#define OPBL(cond)	(cond | 0x5 << 25 | 0x1 << 24)
+
 /* branch and exchange */
-#define OPBX(cond)	(cond | 0x97ff9 << 4)
+#define OPBX(cond)	(cond | 0x12fff1 << 4)
 
 /* data processing */
 #define OP_DATA2	AO_IMMEDIATE(0, 12, 0)
@@ -52,41 +56,41 @@
 { "add",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "and",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 /* b */
-{ "b",		0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "beq",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bne",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bcs",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bcc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bmi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bpl",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bvs",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bvc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bhi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bls",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bge",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blt",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bgt",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bge",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bal",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "b",		OPB(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "beq",	OPB(eq),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bne",	OPB(ne),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bcs",	OPB(cs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bcc",	OPB(cc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bmi",	OPB(mi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bpl",	OPB(pl),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bvs",	OPB(vs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bvc",	OPB(vc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bhi",	OPB(hi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bls",	OPB(ls),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bge",	OPB(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blt",	OPB(lt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bgt",	OPB(gt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bge",	OPB(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bal",	OPB(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 /* bic */
 { "bic",	0x00000000,	OPNOP,	OP_R,     OP_R,     OP_DATA2	},
 /* bl */
-{ "bl",		0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bleq",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blne",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blcs",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blcc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blmi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blpl",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blvs",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blvc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blhi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blls",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blge",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bllt",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blgt",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blge",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blal",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bl",		OPBL(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bleq",	OPBL(eq),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blne",	OPBL(ne),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blcs",	OPBL(cs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blcc",	OPBL(cc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blmi",	OPBL(mi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blpl",	OPBL(pl),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blvs",	OPBL(vs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blvc",	OPBL(vc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blhi",	OPBL(hi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blls",	OPBL(ls),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blge",	OPBL(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bllt",	OPBL(lt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blgt",	OPBL(gt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blge",	OPBL(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "blal",	OPBL(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 /* bx */
 { "bx",		OPBX(al),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
 { "bxeq",	OPBX(eq),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},

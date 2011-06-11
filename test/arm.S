@@ -1,4 +1,8 @@
 .text
+	b
+	beq
+	bl
+	bleq
 	bx	%r0
 	bxeq	%r0
 	bic	%r0, %r0, $0x1f

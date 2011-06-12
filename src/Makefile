@@ -55,16 +55,16 @@ deasm: $(deasm_OBJS) libasm.so
 	$(CC) -o deasm $(deasm_OBJS) $(deasm_LDFLAGS)
 
 arch.o: arch.c ../include/Asm/arch.h ../include/Asm/asm.h arch.h code.h ../config.h
-	$(CC) $(libasm_CFLAGS) -c arch.c
+	$(CC) -D PREFIX=\"$(PREFIX)\" $(libasm_CFLAGS) -c arch.c
 
 asm.o: asm.c ../include/Asm.h code.h parser.h ../config.h
-	$(CC) $(libasm_CFLAGS) -c asm.c
+	$(CC) -D PREFIX=\"$(PREFIX)\" $(libasm_CFLAGS) -c asm.c
 
 code.o: code.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../include/Asm/format.h arch.h code.h format.h ../config.h
-	$(CC) $(libasm_CFLAGS) -c code.c
+	$(CC) -D PREFIX=\"$(PREFIX)\" $(libasm_CFLAGS) -c code.c
 
 format.o: format.c ../include/Asm/asm.h ../include/Asm/format.h code.h format.h ../config.h
-	$(CC) $(libasm_CFLAGS) -c format.c
+	$(CC) -D PREFIX=\"$(PREFIX)\" $(libasm_CFLAGS) -c format.c
 
 parser.o: parser.c parser.h token.h
 	$(CC) $(libasm_CFLAGS) -c parser.c

@@ -40,11 +40,16 @@
 #define OP_R		AO_REGISTER(0, 32, 0)
 
 /* branch, branch with link */
-#define OPB(cond)	(cond | 0x5 << 25)
-#define OPBL(cond)	(cond | 0x5 << 25 | 0x1 << 24)
+#define OPB(cond)	(cond | (0x5 << 25))
+#define OPBF		(32 << AOD_SIZE)
+#define OPB_S26		AO_IMMEDIATE(AOF_SIGNED, 26, 0)
+#define OPBL(cond)	(cond | (0x5 << 25) | (0x1 << 24))
+#define OPBLF		(32 << AOD_SIZE)
+#define OPBL_S26	AO_IMMEDIATE(AOF_SIGNED, 26, 0)
 
 /* branch and exchange */
-#define OPBX(cond)	(cond | 0x12fff1 << 4)
+#define OPBX(cond)	(cond | (0x12fff1 << 4))
+#define OPBXF		(32 << AOD_SIZE)
 
 /* data processing */
 #define OP_DATA2	AO_IMMEDIATE(0, 12, 0)
@@ -55,59 +60,63 @@
 { "adc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "add",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "and",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+#endif
 /* b */
-{ "b",		OPB(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "beq",	OPB(eq),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bne",	OPB(ne),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bcs",	OPB(cs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bcc",	OPB(cc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bmi",	OPB(mi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bpl",	OPB(pl),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bvs",	OPB(vs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bvc",	OPB(vc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bhi",	OPB(hi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bls",	OPB(ls),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bge",	OPB(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blt",	OPB(lt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bgt",	OPB(gt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bge",	OPB(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bal",	OPB(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "b",		OPB(al),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "beq",	OPB(eq),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bne",	OPB(ne),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bcs",	OPB(cs),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bcc",	OPB(cc),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bmi",	OPB(mi),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bpl",	OPB(pl),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bvs",	OPB(vs),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bvc",	OPB(vc),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bhi",	OPB(hi),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bls",	OPB(ls),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bge",	OPB(ge),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "blt",	OPB(lt),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bgt",	OPB(gt),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bge",	OPB(ge),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "bal",	OPB(al),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+#if 1 /* FIXME really implement */
 /* bic */
 { "bic",	0x00000000,	OPNOP,	OP_R,     OP_R,     OP_DATA2	},
+#endif
 /* bl */
-{ "bl",		OPBL(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bleq",	OPBL(eq),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blne",	OPBL(ne),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blcs",	OPBL(cs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blcc",	OPBL(cc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blmi",	OPBL(mi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blpl",	OPBL(pl),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blvs",	OPBL(vs),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blvc",	OPBL(vc),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blhi",	OPBL(hi),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blls",	OPBL(ls),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blge",	OPBL(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "bllt",	OPBL(lt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blgt",	OPBL(gt),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blge",	OPBL(ge),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "blal",	OPBL(al),	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+{ "bl",		OPBL(al),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "bleq",	OPBL(eq),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blne",	OPBL(ne),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blcs",	OPBL(cs),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blcc",	OPBL(cc),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blmi",	OPBL(mi),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blpl",	OPBL(pl),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blvs",	OPBL(vs),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blvc",	OPBL(vc),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blhi",	OPBL(hi),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blls",	OPBL(ls),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blge",	OPBL(ge),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "bllt",	OPBL(lt),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blgt",	OPBL(gt),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blge",	OPBL(ge),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blal",	OPBL(al),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
 /* bx */
-{ "bx",		OPBX(al),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxeq",	OPBX(eq),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxne",	OPBX(ne),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxcs",	OPBX(cs),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxcc",	OPBX(cc),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxmi",	OPBX(mi),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxpl",	OPBX(pl),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxvs",	OPBX(vs),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxvc",	OPBX(vc),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxhi",	OPBX(hi),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxls",	OPBX(ls),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxge",	OPBX(ge),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxlt",	OPBX(lt),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxgt",	OPBX(gt),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxge",	OPBX(ge),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxal",	OPBX(al),	OPNOP,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bx",		OPBX(al),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxeq",	OPBX(eq),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxne",	OPBX(ne),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxcs",	OPBX(cs),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxcc",	OPBX(cc),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxmi",	OPBX(mi),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxpl",	OPBX(pl),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxvs",	OPBX(vs),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxvc",	OPBX(vc),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxhi",	OPBX(hi),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxls",	OPBX(ls),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxge",	OPBX(ge),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxlt",	OPBX(lt),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxgt",	OPBX(gt),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxge",	OPBX(ge),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxal",	OPBX(al),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+#if 1 /* FIXME really implement */
 /* cdp */
 { "cdp",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "cmn",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},

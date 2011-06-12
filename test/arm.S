@@ -11,7 +11,28 @@
 	bleq	$0xa0
 	bx	%r0
 	bxeq	%r0
-	bic	%r0, %r0, $0x1f
+	bic	%r0, %r0, %r0
+	biceq	%r2, %r0, %r1
+	cmn	%r5, %r4, %r3
+	cmneq	%r5, %r4, %r3
+	cmp	%r5, %r4, %r3
+	cmpeq	%r5, %r4, %r3
+	eor	%r5, %r4, %r3
+	eoreq	%r5, %r4, %r3
+	mov	%r5, %r4, %r3
+	moveq	%r5, %r4, %r3
 	mrs	%r0, %cpsr
 	msr	%r0, %cpsr
+	mvn	%r5, %r4, %r3
+	mvneq	%r5, %r4, %r3
 	nop
+	orr	%r5, %r4, %r3
+	orreq	%r5, %r4, %r3
+	rsb	%r5, %r4, %r3
+	rsbeq	%r5, %r4, %r3
+	rsc	%r5, %r4, %r3
+	rsceq	%r5, %r4, %r3
+	sbc	%r5, %r4, %r3
+	sbceq	%r5, %r4, %r3
+	sub	%r5, %r4, %r3
+	subeq	%r5, %r4, %r3

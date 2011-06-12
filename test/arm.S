@@ -20,6 +20,8 @@
 	cmpeq	%r5, %r4, %r3
 	eor	%r5, %r4, %r3
 	eoreq	%r5, %r4, %r3
+	ldc	%r0, %r0, %r0
+	ldceq	%r0, %r0, %r0
 	ldm	%r0, %r0, %r0
 	ldmeq	%r0, %r0, %r0
 	ldr	%r0, %r0, %r0
@@ -41,6 +43,8 @@
 	rsceq	%r5, %r4, %r3
 	sbc	%r5, %r4, %r3
 	sbceq	%r5, %r4, %r3
+	stc	%r0, %r0, %r0
+	stceq	%r0, %r0, %r0
 	stm	%r0, %r0, %r0
 	stmeq	%r0, %r0, %r0
 	str	%r0, %r0, %r0

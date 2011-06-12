@@ -75,6 +75,12 @@
 #define OPBX(cond)	(cond | (0x12fff1 << 4))
 #define OPBXF		(32 << AOD_SIZE)
 
+/* coprocessor data transfers */
+#define OPCDTL(cond)	(cond | (0x6 << 25) | (0x1 << 20))
+#define OPCDTLF		(32 << AOD_SIZE)
+#define OPCDTS(cond)	(cond | (0x6 << 25))
+#define OPCDTSF		(32 << AOD_SIZE)
+
 /* data processing */
 #define OPDATA(cond, op)(cond | op)
 #define OPDATAF		(32 << AOD_SIZE)
@@ -279,9 +285,24 @@
 { "eorgt",	OPDATA(gt,eor),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "eorle",	OPDATA(le,eor),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "eoral",	OPDATA(al,eor),	OPDATAF,OP_R,     OP_R,     OP_R	},
-#if 1 /* FIXME implement correctly */
-{ "ldc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+/* ldc */
+{ "ldc",	OPCDTL(al),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldceq",	OPCDTL(eq),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcne",	OPCDTL(ne),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldccs",	OPCDTL(cs),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldccc",	OPCDTL(cc),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcmi",	OPCDTL(mi),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcpl",	OPCDTL(pl),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcvs",	OPCDTL(vs),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcvc",	OPCDTL(vc),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldchi",	OPCDTL(hi),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcls",	OPCDTL(ls),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcge",	OPCDTL(ge),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldclt",	OPCDTL(lt),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcgt",	OPCDTL(gt),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcle",	OPCDTL(le),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldcal",	OPCDTL(al),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+/* ldm */
 { "ldm",	OPBDTL(al),	OPBDTLF,OP_R,     OP_R,     OP_R	},
 { "ldmeq",	OPBDTL(eq),	OPBDTLF,OP_R,     OP_R,     OP_R	},
 { "ldmne",	OPBDTL(ne),	OPBDTLF,OP_R,     OP_R,     OP_R	},
@@ -446,9 +467,23 @@
 { "sbcgt",	OPDATA(gt,sbc),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "sbcle",	OPDATA(le,sbc),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "sbcal",	OPDATA(al,sbc),	OPDATAF,OP_R,     OP_R,     OP_R	},
-#if 1 /* FIXME implement correctly */
-{ "stc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+/* stc */
+{ "stc",	OPCDTS(al),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stceq",	OPCDTS(eq),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcne",	OPCDTS(ne),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stccs",	OPCDTS(cs),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stccc",	OPCDTS(cc),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcmi",	OPCDTS(mi),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcpl",	OPCDTS(pl),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcvs",	OPCDTS(vs),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcvc",	OPCDTS(vc),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stchi",	OPCDTS(hi),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcls",	OPCDTS(ls),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcge",	OPCDTS(ge),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stclt",	OPCDTS(lt),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcgt",	OPCDTS(gt),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcle",	OPCDTS(le),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stcal",	OPCDTS(al),	OPCDTSF,OP_R,     OP_R,     OP_R	},
 /* stm */
 { "stm",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "stmeq",	OPBDTS(eq),	OPBDTSF,OP_R,     OP_R,     OP_R	},

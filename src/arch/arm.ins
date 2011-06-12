@@ -35,6 +35,24 @@
 #define le		(0xd << 28)
 #define al		(0xe << 28)
 
+/* operations */
+#define and		(0x0 << 21)
+#define eor		(0x1 << 21)
+#define sub		(0x2 << 21)
+#define rsb		(0x3 << 21)
+#define add		(0x4 << 21)
+#define adc		(0x5 << 21)
+#define sbc		(0x6 << 21)
+#define rsc		(0x7 << 21)
+#define tst		(0x8 << 21)
+#define teq		(0x9 << 21)
+#define cmp		(0xa << 21)
+#define cmn		(0xb << 21)
+#define orr		(0xc << 21)
+#define mov		(0xd << 21)
+#define bic		(0xe << 21)
+#define mvn		(0xf << 21)
+
 /* opcodes */
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
 #define OP_R		AO_REGISTER(0, 32, 0)
@@ -52,15 +70,63 @@
 #define OPBXF		(32 << AOD_SIZE)
 
 /* data processing */
+#define OPDATA(cond, op)(cond | op)
+#define OPDATAF		(32 << AOD_SIZE)
 #define OP_DATA2	AO_IMMEDIATE(0, 12, 0)
 
 
 /* instructions */
-#if 1 /* FIXME really implement */
-{ "adc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "add",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "and",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+/* adc */
+{ "adc",	OPDATA(al,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adceq",	OPDATA(eq,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcne",	OPDATA(ne,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adccs",	OPDATA(cs,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adccc",	OPDATA(cc,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcmi",	OPDATA(mi,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcpl",	OPDATA(pl,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcvs",	OPDATA(vs,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcvc",	OPDATA(vc,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adchi",	OPDATA(hi,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcls",	OPDATA(ls,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcge",	OPDATA(ge,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adclt",	OPDATA(lt,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcgt",	OPDATA(gt,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcle",	OPDATA(le,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "adcal",	OPDATA(al,adc),	OPDATAF,OP_R,     OP_R,     OP_R	},
+/* add */
+{ "add",	OPDATA(al,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addeq",	OPDATA(eq,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addne",	OPDATA(ne,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addcs",	OPDATA(cs,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addcc",	OPDATA(cc,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addmi",	OPDATA(mi,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addpl",	OPDATA(pl,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addvs",	OPDATA(vs,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addvc",	OPDATA(vc,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addhi",	OPDATA(hi,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addls",	OPDATA(ls,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addge",	OPDATA(ge,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addlt",	OPDATA(lt,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addgt",	OPDATA(gt,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addle",	OPDATA(le,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "addal",	OPDATA(al,add),	OPDATAF,OP_R,     OP_R,     OP_R	},
+/* and */
+{ "and",	OPDATA(al,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andeq",	OPDATA(eq,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andne",	OPDATA(ne,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andcs",	OPDATA(cs,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andcc",	OPDATA(cc,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andmi",	OPDATA(mi,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andpl",	OPDATA(pl,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andvs",	OPDATA(vs,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andvc",	OPDATA(vc,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andhi",	OPDATA(hi,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andls",	OPDATA(ls,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andge",	OPDATA(ge,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andlt",	OPDATA(lt,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andgt",	OPDATA(gt,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andle",	OPDATA(le,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
+{ "andal",	OPDATA(al,and),	OPDATAF,OP_R,     OP_R,     OP_R	},
 /* b */
 { "b",		OPB(al),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
 { "beq",	OPB(eq),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},

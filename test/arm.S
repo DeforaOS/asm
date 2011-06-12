@@ -1,4 +1,10 @@
 .text
+	adc	%r0, %r1, %r2
+	adceq	%r0, %r1, %r2
+	add	%r2, %r1, %r0
+	addeq	%r2, %r1, %r0
+	and	%r3, %r4, %r5
+	andeq	%r3, %r4, %r5
 	b	$0xa0
 	beq	$0xa0
 	bl	$0xa0

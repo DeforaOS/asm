@@ -24,6 +24,8 @@
 	moveq	%r5, %r4, %r3
 	mrs	%r0, %cpsr
 	msr	%r0, %cpsr
+	mul	%r0, %r1, %r2
+	muls	%r0, %r1, %r2
 	mvn	%r5, %r4, %r3
 	mvneq	%r5, %r4, %r3
 	nop

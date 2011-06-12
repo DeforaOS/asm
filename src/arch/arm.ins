@@ -74,6 +74,14 @@
 #define OPDATAF		(32 << AOD_SIZE)
 #define OP_DATA2	AO_IMMEDIATE(0, 12, 0)
 
+/* multiply and multiply-accumulate */
+#define OPMUL(cond)	(cond | (0x9 << 4))
+#define OPMULF		(32 << AOD_SIZE)
+#define OPMULS(cond)	(cond | (0x1 << 20) | (0x9 << 4))
+#define OPMULSF		(32 << AOD_SIZE)
+#define OPMULA(cond)	(cond | (0x1 << 21) | (0x9 << 4))
+#define OPMULAF		(32 << AOD_SIZE)
+
 
 /* instructions */
 /* adc */
@@ -293,8 +301,11 @@
 { "msrgt",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
 { "msrle",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
 { "msral",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
-{ "mul",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
+/* mul */
+{ "mul",	OPMUL(al),	OPMULF,	OP_R,     OP_R,     OP_R	},
+/* muls */
+{ "muls",	OPMULS(al),	OPMULSF,OP_R,     OP_R,     OP_R	},
 /* mvn */
 { "mvn",	OPDATA(al,mvn),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "mvneq",	OPDATA(eq,mvn),	OPDATAF,OP_R,     OP_R,     OP_R	},

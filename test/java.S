@@ -1,3 +1,4 @@
+/* $Id$ */
 .text
 	aaload
 	aastore

@@ -1,3 +1,4 @@
+/* $Id$ */
 .text
 	adc	%r0, %r1, %r2
 	adceq	%r0, %r1, %r2

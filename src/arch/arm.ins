@@ -57,6 +57,12 @@
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
 #define OP_R		AO_REGISTER(0, 32, 0)
 
+/* block data transfer */
+#define OPBDTL(cond)	(cond | (0x4 << 25) | (0x1 << 20))
+#define OPBDTLF		(32 << AOD_SIZE)
+#define OPBDTS(cond)	(cond | (0x4 << 25))
+#define OPBDTSF		(32 << AOD_SIZE)
+
 /* branch, branch with link */
 #define OPB(cond)	(cond | (0x5 << 25))
 #define OPBF		(32 << AOD_SIZE)
@@ -266,8 +272,23 @@
 { "eoral",	OPDATA(al,eor),	OPDATAF,OP_R,     OP_R,     OP_R	},
 #if 1 /* FIXME implement correctly */
 { "ldc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "ldm",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
+{ "ldm",	OPBDTL(al),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmeq",	OPBDTL(eq),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmne",	OPBDTL(ne),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmcs",	OPBDTL(cs),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmcc",	OPBDTL(cc),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmmi",	OPBDTL(mi),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmpl",	OPBDTL(pl),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmvs",	OPBDTL(vs),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmvc",	OPBDTL(vc),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmhi",	OPBDTL(hi),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmls",	OPBDTL(ls),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmge",	OPBDTL(ge),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmlt",	OPBDTL(lt),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmgt",	OPBDTL(gt),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmle",	OPBDTL(ge),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldmal",	OPBDTL(al),	OPBDTLF,OP_R,     OP_R,     OP_R	},
 /* ldr */
 { "ldr",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
 { "ldreq",	OPSDTL(eq),	OPSDTLF,OP_R,     OP_R,     OP_R	},
@@ -418,8 +439,23 @@
 { "sbcal",	OPDATA(al,sbc),	OPDATAF,OP_R,     OP_R,     OP_R	},
 #if 1 /* FIXME implement correctly */
 { "stc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "stm",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
+{ "stm",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmeq",	OPBDTS(eq),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmne",	OPBDTS(ne),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmcs",	OPBDTS(cs),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmcc",	OPBDTS(cc),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmmi",	OPBDTS(mi),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmpl",	OPBDTS(pl),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmvs",	OPBDTS(vs),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmvc",	OPBDTS(vc),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmhi",	OPBDTS(hi),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmls",	OPBDTS(ls),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmge",	OPBDTS(ge),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmlt",	OPBDTS(lt),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmgt",	OPBDTS(gt),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmle",	OPBDTS(le),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stmal",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "str",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
 { "streq",	OPSDTS(eq),	OPSDTSF,OP_R,     OP_R,     OP_R	},
 { "strne",	OPSDTS(ne),	OPSDTSF,OP_R,     OP_R,     OP_R	},

@@ -94,6 +94,10 @@
 #define OPSDTS(cond)	(cond | (0x1 << 26))
 #define OPSDTSF		(32 << AOD_SIZE)
 
+/* single data swap */
+#define OPSDS(cond)	(cond | (0x2 << 23) | (0x9 << 4))
+#define OPSDSF		(32 << AOD_SIZE)
+
 
 /* instructions */
 /* adc */
@@ -440,6 +444,7 @@
 #if 1 /* FIXME implement correctly */
 { "stc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
+/* stm */
 { "stm",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "stmeq",	OPBDTS(eq),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "stmne",	OPBDTS(ne),	OPBDTSF,OP_R,     OP_R,     OP_R	},
@@ -456,6 +461,7 @@
 { "stmgt",	OPBDTS(gt),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "stmle",	OPBDTS(le),	OPBDTSF,OP_R,     OP_R,     OP_R	},
 { "stmal",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+/* str */
 { "str",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
 { "streq",	OPSDTS(eq),	OPSDTSF,OP_R,     OP_R,     OP_R	},
 { "strne",	OPSDTS(ne),	OPSDTSF,OP_R,     OP_R,     OP_R	},
@@ -491,7 +497,25 @@
 { "subal",	OPDATA(al,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},
 #if 1 /* FIXME implement correctly */
 { "swi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "swp",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+#endif
+/* swp */
+{ "swp",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpeq",	OPSDS(eq),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpne",	OPSDS(ne),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpcs",	OPSDS(cs),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpcc",	OPSDS(cc),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpmi",	OPSDS(mi),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swppl",	OPSDS(pl),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpvs",	OPSDS(vs),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpvc",	OPSDS(vc),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swphi",	OPSDS(hi),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpls",	OPSDS(ls),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpge",	OPSDS(ge),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swplt",	OPSDS(lt),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpgt",	OPSDS(gt),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swple",	OPSDS(le),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swpal",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_R	},
+#if 1 /* FIXME implement correctly */
 { "teq",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "tst",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif

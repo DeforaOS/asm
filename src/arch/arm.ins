@@ -82,6 +82,12 @@
 #define OPMULA(cond)	(cond | (0x1 << 21) | (0x9 << 4))
 #define OPMULAF		(32 << AOD_SIZE)
 
+/* single data transfer */
+#define OPSDTL(cond)	(cond | (0x1 << 26) | (0x1 << 20))
+#define OPSDTLF		(32 << AOD_SIZE)
+#define OPSDTS(cond)	(cond | (0x1 << 26))
+#define OPSDTSF		(32 << AOD_SIZE)
+
 
 /* instructions */
 /* adc */
@@ -261,7 +267,25 @@
 #if 1 /* FIXME implement correctly */
 { "ldc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "ldm",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "ldr",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
+#endif
+/* ldr */
+{ "ldr",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldreq",	OPSDTL(eq),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrne",	OPSDTL(ne),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrcs",	OPSDTL(cs),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrcc",	OPSDTL(cc),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrmi",	OPSDTL(mi),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrpl",	OPSDTL(pl),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrvs",	OPSDTL(vs),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrvc",	OPSDTL(vc),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrhi",	OPSDTL(hi),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrls",	OPSDTL(ls),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrge",	OPSDTL(ge),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrlt",	OPSDTL(lt),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrgt",	OPSDTL(gt),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldrle",	OPSDTL(le),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldral",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+#if 1 /* FIXME implement correctly */
 { "mla",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
 /* mov */
@@ -395,8 +419,23 @@
 #if 1 /* FIXME implement correctly */
 { "stc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "stm",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-{ "str",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
+{ "str",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "streq",	OPSDTS(eq),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strne",	OPSDTS(ne),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strcs",	OPSDTS(cs),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strcc",	OPSDTS(cc),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strmi",	OPSDTS(mi),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strpl",	OPSDTS(pl),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strvs",	OPSDTS(vs),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strvc",	OPSDTS(vc),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strhi",	OPSDTS(hi),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strls",	OPSDTS(ls),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strge",	OPSDTS(ge),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strlt",	OPSDTS(lt),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strgt",	OPSDTS(gt),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "strle",	OPSDTS(le),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "stral",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
 /* sub */
 { "sub",	OPDATA(al,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "subeq",	OPDATA(eq,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},

@@ -20,6 +20,8 @@
 	cmpeq	%r5, %r4, %r3
 	eor	%r5, %r4, %r3
 	eoreq	%r5, %r4, %r3
+	ldr	%r0, %r0, %r0
+	ldreq	%r0, %r0, %r0
 	mov	%r5, %r4, %r3
 	moveq	%r5, %r4, %r3
 	mrs	%r0, %cpsr
@@ -37,5 +39,7 @@
 	rsceq	%r5, %r4, %r3
 	sbc	%r5, %r4, %r3
 	sbceq	%r5, %r4, %r3
+	str	%r0, %r0, %r0
+	streq	%r0, %r0, %r0
 	sub	%r5, %r4, %r3
 	subeq	%r5, %r4, %r3

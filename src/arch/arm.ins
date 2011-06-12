@@ -98,6 +98,11 @@
 #define OPSDS(cond)	(cond | (0x2 << 23) | (0x9 << 4))
 #define OPSDSF		(32 << AOD_SIZE)
 
+/* software interrupt */
+#define OPSI(cond)	(cond | (0xf << 24))
+#define OPSIF		(32 << AOD_SIZE)
+#define OPSI_U24	AO_IMMEDIATE(0, 24, 0)
+
 
 /* instructions */
 /* adc */
@@ -495,9 +500,23 @@
 { "subgt",	OPDATA(gt,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "suble",	OPDATA(le,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "subal",	OPDATA(al,sub),	OPDATAF,OP_R,     OP_R,     OP_R	},
-#if 1 /* FIXME implement correctly */
-{ "swi",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+/* swi */
+{ "swi",	OPSI(al),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swieq",	OPSI(eq),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swine",	OPSI(ne),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swics",	OPSI(cs),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swicc",	OPSI(cc),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swimi",	OPSI(mi),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swipl",	OPSI(pl),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swivs",	OPSI(vs),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swivc",	OPSI(vc),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swihi",	OPSI(hi),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swils",	OPSI(ls),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swige",	OPSI(ge),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swilt",	OPSI(lt),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swigt",	OPSI(gt),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swile",	OPSI(le),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
+{ "swial",	OPSI(al),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
 /* swp */
 { "swp",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_R	},
 { "swpeq",	OPSDS(eq),	OPSDSF, OP_R,     OP_R,     OP_R	},

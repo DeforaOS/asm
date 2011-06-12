@@ -47,5 +47,7 @@
 	streq	%r0, %r0, %r0
 	sub	%r5, %r4, %r3
 	subeq	%r5, %r4, %r3
+	swi	$0x0
+	swine	$0x0
 	swp	%r5, %r4, %r3
 	swpeq	%r5, %r4, %r3

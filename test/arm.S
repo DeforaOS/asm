@@ -26,8 +26,12 @@
 	ldmeq	%r0, %r0, %r0
 	ldr	%r0, %r0, %r0
 	ldreq	%r0, %r0, %r0
+	mcr	%r0, %r0, %r0
+	mcreq	%r0, %r0, %r0
 	mov	%r5, %r4, %r3
 	moveq	%r5, %r4, %r3
+	mrc	%r0, %r0, %r0
+	mrceq	%r0, %r0, %r0
 	mrs	%r0, %cpsr
 	msr	%r0, %cpsr
 	mul	%r0, %r1, %r2

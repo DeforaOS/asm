@@ -81,6 +81,12 @@
 #define OPCDTS(cond)	(cond | (0x6 << 25))
 #define OPCDTSF		(32 << AOD_SIZE)
 
+/* coprocessor register transfers */
+#define OPCRTL(cond)	(cond | (0xe << 24) | (0x1 << 20) | (0x1 << 4))
+#define OPCRTLF		(32 << AOD_SIZE)
+#define OPCRTS(cond)	(cond | (0xe << 24) | (0x1 << 4))
+#define OPCRTSF		(32 << AOD_SIZE)
+
 /* data processing */
 #define OPDATA(cond, op)(cond | op)
 #define OPDATAF		(32 << AOD_SIZE)
@@ -336,6 +342,23 @@
 { "ldrgt",	OPSDTL(gt),	OPSDTLF,OP_R,     OP_R,     OP_R	},
 { "ldrle",	OPSDTL(le),	OPSDTLF,OP_R,     OP_R,     OP_R	},
 { "ldral",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+/* mcr */
+{ "mcr",	OPCRTS(al),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcreq",	OPCRTS(eq),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrne",	OPCRTS(ne),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrcs",	OPCRTS(cs),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrcc",	OPCRTS(cc),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrmi",	OPCRTS(mi),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrpl",	OPCRTS(pl),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrvs",	OPCRTS(vs),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrvc",	OPCRTS(vc),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrhi",	OPCRTS(hi),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrls",	OPCRTS(ls),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrge",	OPCRTS(ge),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrlt",	OPCRTS(lt),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrgt",	OPCRTS(gt),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcrle",	OPCRTS(le),	OPCRTSF,OP_R,     OP_R,     OP_R	},
+{ "mcral",	OPCRTS(al),	OPCRTSF,OP_R,     OP_R,     OP_R	},
 #if 1 /* FIXME implement correctly */
 { "mla",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 #endif
@@ -356,9 +379,26 @@
 { "movgt",	OPDATA(gt,mov),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "movle",	OPDATA(le,mov),	OPDATAF,OP_R,     OP_R,     OP_R	},
 { "moval",	OPDATA(al,mov),	OPDATAF,OP_R,     OP_R,     OP_R	},
+/* mrc */
+{ "mrc",	OPCRTL(al),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrceq",	OPCRTL(eq),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcne",	OPCRTL(ne),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrccs",	OPCRTL(cs),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrccc",	OPCRTL(cc),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcmi",	OPCRTL(mi),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcpl",	OPCRTL(pl),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcvs",	OPCRTL(vs),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcvc",	OPCRTL(vc),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrchi",	OPCRTL(hi),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcls",	OPCRTL(ls),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcge",	OPCRTL(ge),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrclt",	OPCRTL(lt),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcgt",	OPCRTL(gt),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcle",	OPCRTL(le),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrcal",	OPCRTL(al),	OPCRTLF,OP_R,     OP_R,     OP_R	},
 #if 1 /* FIXME implement correctly */
-{ "mrc",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
 { "mrs",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
+#endif
 /* msr */
 { "msr",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
 { "msreq",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
@@ -376,7 +416,6 @@
 { "msrgt",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
 { "msrle",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
 { "msral",	0x00000000,	OPNOP,	OP_R,     OP_R,     AOT_NONE	},
-#endif
 /* mul */
 { "mul",	OPMUL(al),	OPMULF,	OP_R,     OP_R,     OP_R	},
 /* muls */

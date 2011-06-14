@@ -21,6 +21,17 @@
 
 /* arm */
 /* private */
+/* types */
+/* register ids */
+#define REG(name, size, id) REG_ ## name ## _id = id,
+enum
+{
+#include "arm.reg"
+	REG_id_count
+};
+#undef REG
+
+
 /* variables */
 static ArchDescription _arm_description = { "elf", ARCH_ENDIAN_BIG, 32, 32 };
 

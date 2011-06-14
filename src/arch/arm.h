@@ -88,16 +88,16 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		case rsc | (0x1 << 25):
 		case orr | (0x1 << 25):
 		case bic | (0x1 << 25):
-		case and | (0x1 << 20) | (0x1 << 25):
-		case eor | (0x1 << 20) | (0x1 << 25):
-		case sub | (0x1 << 20) | (0x1 << 25):
-		case rsb | (0x1 << 20) | (0x1 << 25):
-		case add | (0x1 << 20) | (0x1 << 25):
-		case adc | (0x1 << 20) | (0x1 << 25):
-		case sbc | (0x1 << 20) | (0x1 << 25):
-		case rsc | (0x1 << 20) | (0x1 << 25):
-		case orr | (0x1 << 20) | (0x1 << 25):
-		case bic | (0x1 << 20) | (0x1 << 25):
+		case and | (0x1 << 25) | (0x1 << 20):	/* ands (immediate) */
+		case eor | (0x1 << 25) | (0x1 << 20):	/* eors (immediate) */
+		case sub | (0x1 << 25) | (0x1 << 20):	/* subs (immediate) */
+		case rsb | (0x1 << 25) | (0x1 << 20):	/* rsbs (immediate) */
+		case add | (0x1 << 25) | (0x1 << 20):	/* adds (immediate) */
+		case adc | (0x1 << 25) | (0x1 << 20):	/* adcs (immediate) */
+		case sbc | (0x1 << 25) | (0x1 << 20):	/* sbcs (immediate) */
+		case rsc | (0x1 << 25) | (0x1 << 20):	/* rscs (immediate) */
+		case orr | (0x1 << 25) | (0x1 << 20):	/* orrs (immediate) */
+		case bic | (0x1 << 25) | (0x1 << 20):	/* bics (immediate) */
 			/* first operand, Rd */
 			p = call->operands[0].value._register.name;
 			if((ar = helper->get_register_by_name_size(helper->arch,
@@ -113,13 +113,44 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			/* third operand */
 			opcode |= call->operands[2].value.immediate.value;
 			break;
-#if 1 /* FIXME implement */
 		case tst:
 		case teq:
 		case cmp:
 		case cmn:
+		case tst | (0x1 << 20):			/* tsts */
+		case teq | (0x1 << 20):			/* teqs */
+		case cmp | (0x1 << 20):			/* cmps */
+		case cmn | (0x1 << 20):			/* cmns */
+			/* first operand, Rn */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* second operand, Rm */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
 			break;
-#endif
+		case tst | (0x1 << 25):
+		case teq | (0x1 << 25):
+		case cmp | (0x1 << 25):
+		case cmn | (0x1 << 25):
+		case tst | (0x1 << 25) | (0x1 << 20):	/* tsts (immediate) */
+		case teq | (0x1 << 25) | (0x1 << 20):	/* teqs (immediate) */
+		case cmp | (0x1 << 25) | (0x1 << 20):	/* cmps (immediate) */
+		case cmn | (0x1 << 25) | (0x1 << 20):	/* cmns (immediate) */
+			/* first operand, Rn */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* second operand */
+			opcode |= call->operands[1].value.immediate.value;
+			break;
 		case mov:
 		case mov | (0x1 << 20):			/* movs */
 		case mvn:

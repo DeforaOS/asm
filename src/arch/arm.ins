@@ -16,8 +16,6 @@
 
 
 /* generic */
-/* registers */
-
 /* conditions */
 #define eq		(0x0 << 28)
 #define ne		(0x1 << 28)
@@ -34,24 +32,6 @@
 #define gt		(0xc << 28)
 #define le		(0xd << 28)
 #define al		(0xe << 28)
-
-/* operations */
-#define and		(0x0 << 21)
-#define eor		(0x1 << 21)
-#define sub		(0x2 << 21)
-#define rsb		(0x3 << 21)
-#define add		(0x4 << 21)
-#define adc		(0x5 << 21)
-#define sbc		(0x6 << 21)
-#define rsc		(0x7 << 21)
-#define tst		(0x8 << 21)
-#define teq		(0x9 << 21)
-#define cmp		(0xa << 21)
-#define cmn		(0xb << 21)
-#define orr		(0xc << 21)
-#define mov		(0xd << 21)
-#define bic		(0xe << 21)
-#define mvn		(0xf << 21)
 
 /* opcodes */
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
@@ -90,6 +70,24 @@
 #define OPCRTSF		(32 << AOD_SIZE)
 
 /* data processing */
+/* operations */
+#define and		(0x0 << 21)
+#define eor		(0x1 << 21)
+#define sub		(0x2 << 21)
+#define rsb		(0x3 << 21)
+#define add		(0x4 << 21)
+#define adc		(0x5 << 21)
+#define sbc		(0x6 << 21)
+#define rsc		(0x7 << 21)
+#define tst		(0x8 << 21)
+#define teq		(0x9 << 21)
+#define cmp		(0xa << 21)
+#define cmn		(0xb << 21)
+#define orr		(0xc << 21)
+#define mov		(0xd << 21)
+#define bic		(0xe << 21)
+#define mvn		(0xf << 21)
+
 #define OPDP(cond, op)	(cond | op)
 #define OPDPF		(32 << AOD_SIZE)
 #define OPDPI(cond, op)	(cond | op | (0x1 << 25))

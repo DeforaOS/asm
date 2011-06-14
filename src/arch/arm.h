@@ -39,6 +39,11 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 	switch(instruction->opcode & 0x0fffffff) /* ignore condition code */
 	{
+		/* branch, branch with link */
+		case OPB(0):
+		case OPBL(0):
+			opcode |= call->operands[0].value.immediate.value;
+			break;
 		/* branch and exchange */
 		case OPBX(0):
 			/* first operand, Rn */
@@ -194,6 +199,23 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			opcode |= (ar->id << 12);
 			/* second operand */
 			opcode |= call->operands[1].value.immediate.value;
+			break;
+		/* psr transfer */
+		case OPPT(0):
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			break;
+		case OPPTI(0):
+			/* second operand, Rm */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
 			break;
 #if 1 /* FIXME really implement */
 		default:

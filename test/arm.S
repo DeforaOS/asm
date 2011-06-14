@@ -81,13 +81,13 @@
 	mrc	%r0, %r0, %r0
 	mrceq	%r0, %r0, %r0
 	mrs	%r0, %cpsr
-	mrseq	%r0, %cpsr
-	mrs	%r0, %spsr
-	mrseq	%r0, %spsr
-	msr	%cpsr, %r0
-	msreq	%cpsr, %r1
-	msr	%spsr, %r0
-	msreq	%spsr, %r1
+	mrseq	%r1, %cpsr
+	mrs	%r2, %spsr
+	mrseq	%r3, %spsr
+	msr	%cpsr, %r4
+	msreq	%cpsr, %r5
+	msr	%spsr, %r6
+	msreq	%spsr, %r7
 	mul	%r0, %r1, %r2
 	muls	%r0, %r1, %r2
 	mvn	%r5, %r4

@@ -34,8 +34,66 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 {
 	ArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
+	ArchRegister * ar;
+	char const * p;
 
-	/* FIXME really implement */
+	switch(instruction->opcode & 0x0fffffff)
+	{
+#if 1 /* FIXME implement */
+		case and:
+		case eor:
+		case sub:
+		case rsb:
+		case add:
+		case adc:
+		case sbc:
+		case rsc:
+		case tst:
+		case teq:
+		case cmp:
+		case cmn:
+		case orr:
+		case bic:
+			break;
+#endif
+		case mov:
+		case mov | (0x1 << 20):			/* movs */
+		case mvn:
+		case mvn | (0x1 << 20):			/* mvns */
+			if(call->operands_cnt == 0) /* nop */
+				break;
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			/* second operand, Rm */
+			opcode |= (ar->id << 12);
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			break;
+		case mov | (0x1 << 25):			/* mov (immediate) */
+		case mov | (0x1 << 25) | (0x1 << 20):	/* movs (immediate) */
+		case mvn | (0x1 << 25):			/* mvn (immediate) */
+		case mvn | (0x1 << 25) | (0x1 << 20):	/* mvns (immediate) */
+			if(call->operands_cnt == 0) /* nop */
+				break;
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* FIXME immediate value */
+			break;
+#if 1 /* FIXME really implement */
+		default:
+			break;
+#endif
+	}
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;

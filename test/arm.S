@@ -36,8 +36,8 @@
 	biceqs	%r3, %r4, $0x1
 	bl	$0xa0
 	bleq	$0xa0
-	bx	%r0
-	bxeq	%r0
+	bx	%r1
+	bxeq	%r2
 	cmn	%r5, %r4
 	cmneq	%r5, %r4
 	cmn	%r5, $0x1

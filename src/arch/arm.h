@@ -39,6 +39,15 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 	switch(instruction->opcode & 0x0fffffff) /* ignore condition code */
 	{
+		/* branch and exchange */
+		case OPBX(0):
+			/* first operand, Rn */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			break;
 		/* data processing */
 		case OPDP(0, and):
 		case OPDP(0, eor):

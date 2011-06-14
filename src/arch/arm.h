@@ -37,9 +37,8 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	ArchRegister * ar;
 	char const * p;
 
-	switch(instruction->opcode & 0x0fffffff)
+	switch(instruction->opcode & 0x0fffffff) /* ignore condition code */
 	{
-#if 1 /* FIXME implement */
 		case and:
 		case eor:
 		case sub:
@@ -48,12 +47,77 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		case adc:
 		case sbc:
 		case rsc:
+		case orr:
+		case bic:
+		case and | (0x1 << 20):			/* ands */
+		case eor | (0x1 << 20):			/* eors */
+		case sub | (0x1 << 20):			/* subs */
+		case rsb | (0x1 << 20):			/* rsbs */
+		case add | (0x1 << 20):			/* adds */
+		case adc | (0x1 << 20):			/* adcs */
+		case sbc | (0x1 << 20):			/* sbcs */
+		case rsc | (0x1 << 20):			/* rscs */
+		case orr | (0x1 << 20):			/* orrs */
+		case bic | (0x1 << 20):			/* bics */
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* second operand, Rn */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* third operand, Rm */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			break;
+		case and | (0x1 << 25):
+		case eor | (0x1 << 25):
+		case sub | (0x1 << 25):
+		case rsb | (0x1 << 25):
+		case add | (0x1 << 25):
+		case adc | (0x1 << 25):
+		case sbc | (0x1 << 25):
+		case rsc | (0x1 << 25):
+		case orr | (0x1 << 25):
+		case bic | (0x1 << 25):
+		case and | (0x1 << 20) | (0x1 << 25):
+		case eor | (0x1 << 20) | (0x1 << 25):
+		case sub | (0x1 << 20) | (0x1 << 25):
+		case rsb | (0x1 << 20) | (0x1 << 25):
+		case add | (0x1 << 20) | (0x1 << 25):
+		case adc | (0x1 << 20) | (0x1 << 25):
+		case sbc | (0x1 << 20) | (0x1 << 25):
+		case rsc | (0x1 << 20) | (0x1 << 25):
+		case orr | (0x1 << 20) | (0x1 << 25):
+		case bic | (0x1 << 20) | (0x1 << 25):
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* second operand, Rn */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* third operand */
+			opcode |= call->operands[2].value.immediate.value;
+			break;
+#if 1 /* FIXME implement */
 		case tst:
 		case teq:
 		case cmp:
 		case cmn:
-		case orr:
-		case bic:
 			break;
 #endif
 		case mov:
@@ -87,7 +151,8 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 							p, 32)) == NULL)
 				return -1;
 			opcode |= (ar->id << 12);
-			/* FIXME immediate value */
+			/* second operand */
+			opcode |= call->operands[1].value.immediate.value;
 			break;
 #if 1 /* FIXME really implement */
 		default:

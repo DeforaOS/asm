@@ -2,8 +2,8 @@
 .text
 	adc	%r3, %r4, %r5
 	adceq	%r3, %r4, %r5
-	adc	%r3, %r4, $0x0
-	adceq	%r3, %r4, $0x1
+	adc	%r4, %r5, $0x0
+	adceq	%r4, %r5, $0x1
 	adcs	%r3, %r4, %r5
 	adceqs	%r3, %r4, %r5
 	adcs	%r3, %r4, $0x0
@@ -76,8 +76,8 @@
 	moveq	%r7, $0x2
 	movs	%r8, %r4
 	moveqs	%r9, %r5
-	movs	%r10, $0x1
-	moveqs	%r11, $0x2
+	movs	%r10, $0x3
+	moveqs	%r11, $0x4
 	mrc	%r0, %r0, %r0
 	mrceq	%r0, %r0, %r0
 	mrs	%r0, %cpsr
@@ -96,8 +96,8 @@
 	mvneq	%r5, $0x2
 	mvns	%r5, %r4
 	mvneqs	%r5, %r4
-	mvns	%r5, $0x1
-	mvneqs	%r5, $0x2
+	mvns	%r5, $0x3
+	mvneqs	%r5, $0x4
 	nop
 	orr	%r3, %r4, %r5
 	orreq	%r3, %r4, %r5

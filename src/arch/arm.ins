@@ -35,6 +35,7 @@
 
 /* opcodes */
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
+#define OP_DR		AO_DREGISTER(0, 0, 32, 0)
 #define OP_R		AO_REGISTER(0, 32, 0)
 #define OP_R_CPSR	AO_REGISTER(AOF_IMPLICIT, 32, REG_cpsr_id)
 #define OP_R_SPSR	AO_REGISTER(AOF_IMPLICIT, 32, REG_spsr_id)
@@ -42,6 +43,7 @@
 /* block data transfer */
 #define OPBDTL(cond)	(cond | (0x4 << 25) | (0x1 << 20))
 #define OPBDTLF		(32 << AOD_SIZE)
+#define OPBDT_U16	AO_IMMEDIATE(0, 16, 0)
 #define OPBDTS(cond)	(cond | (0x4 << 25))
 #define OPBDTSF		(32 << AOD_SIZE)
 
@@ -57,17 +59,30 @@
 #define OPBX(cond)	(cond | (0x12fff1 << 4))
 #define OPBXF		(32 << AOD_SIZE)
 
+/* coprocessor data operation */
+#define OPCDO(cond)	(cond | (0xe << 24))
+#define OPCDOF		(32 << AOD_SIZE)
+#define OPCDO_U4	AO_IMMEDIATE(0, 4, 0)
+
 /* coprocessor data transfers */
 #define OPCDTL(cond)	(cond | (0x6 << 25) | (0x1 << 20))
 #define OPCDTLF		(32 << AOD_SIZE)
+#define OPCDTL_U4	AO_IMMEDIATE(0, 4, 0)
+#define OPCDTL_U8	AO_IMMEDIATE(0, 8, 0)
 #define OPCDTS(cond)	(cond | (0x6 << 25))
 #define OPCDTSF		(32 << AOD_SIZE)
+#define OPCDTS_U4	AO_IMMEDIATE(0, 4, 0)
+#define OPCDTS_U8	AO_IMMEDIATE(0, 8, 0)
 
 /* coprocessor register transfers */
 #define OPCRTL(cond)	(cond | (0xe << 24) | (0x1 << 20) | (0x1 << 4))
 #define OPCRTLF		(32 << AOD_SIZE)
+#define OPCRTL_U3	AO_IMMEDIATE(0, 3, 0)
+#define OPCRTL_U4	AO_IMMEDIATE(0, 4, 0)
 #define OPCRTS(cond)	(cond | (0xe << 24) | (0x1 << 4))
 #define OPCRTSF		(32 << AOD_SIZE)
+#define OPCRTS_U3	AO_IMMEDIATE(0, 3, 0)
+#define OPCRTS_U4	AO_IMMEDIATE(0, 4, 0)
 
 /* data processing */
 /* operations */
@@ -106,6 +121,8 @@
 #define OPMULSF		(32 << AOD_SIZE)
 #define OPMULA(cond)	(cond | (0x1 << 21) | (0x9 << 4))
 #define OPMULAF		(32 << AOD_SIZE)
+#define OPMULAS(cond)	(cond | (0x1 << 21) | (0x1 << 20) | (0x9 << 4))
+#define OPMULASF	(32 << AOD_SIZE)
 
 /* psr transfer */
 #define OPPT(cond)	(cond | (0x2 << 23) | (0xf << 16))
@@ -114,14 +131,21 @@
 #define OPPTIF		(32 << AOD_SIZE)
 
 /* single data transfer */
-#define OPSDTL(cond)	(cond | (0x1 << 26) | (0x1 << 20))
+#define OPSDTL(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 20))
 #define OPSDTLF		(32 << AOD_SIZE)
-#define OPSDTS(cond)	(cond | (0x1 << 26))
+#define OPSDTS(cond)	(cond | (0x1 << 26) | (0x1 << 25))
 #define OPSDTSF		(32 << AOD_SIZE)
+#define OPSDTLB(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 22) \
+		| (0x1 << 20))
+#define OPSDTLBF	(32 << AOD_SIZE)
+#define OPSDTSB(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 22))
+#define OPSDTSBF	(32 << AOD_SIZE)
 
 /* single data swap */
 #define OPSDS(cond)	(cond | (0x2 << 23) | (0x9 << 4))
 #define OPSDSF		(32 << AOD_SIZE)
+#define OPSDSB(cond)	(cond | (0x2 << 23) | (0x1 << 22) | (0x9 << 4))
+#define OPSDSBF		(32 << AOD_SIZE)
 
 /* software interrupt */
 #define OPSI(cond)	(cond | (0xf << 24))
@@ -340,7 +364,7 @@
 { "bge",	OPB(ge),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
 { "blt",	OPB(lt),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
 { "bgt",	OPB(gt),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
-{ "bge",	OPB(ge),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
+{ "ble",	OPB(le),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
 { "bal",	OPB(al),	OPBF,	OPB_S26,  AOT_NONE, AOT_NONE	},
 /* bic */
 { "bic",	OPDP(al,bic),	OPDPF,  OP_R,     OP_R,     OP_R	},
@@ -422,7 +446,7 @@
 { "blge",	OPBL(ge),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
 { "bllt",	OPBL(lt),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
 { "blgt",	OPBL(gt),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
-{ "blge",	OPBL(ge),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
+{ "blle",	OPBL(le),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
 { "blal",	OPBL(al),	OPBLF,	OPBL_S26, AOT_NONE, AOT_NONE	},
 /* bx */
 { "bx",		OPBX(al),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
@@ -439,12 +463,25 @@
 { "bxge",	OPBX(ge),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
 { "bxlt",	OPBX(lt),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
 { "bxgt",	OPBX(gt),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
-{ "bxge",	OPBX(ge),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
+{ "bxle",	OPBX(le),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
 { "bxal",	OPBX(al),	OPBXF,	OP_R,     AOT_NONE, AOT_NONE	},
-#if 1 /* FIXME implement correctly */
 /* cdp */
-{ "cdp",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+{ "cdp",	OPCDO(al),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpeq",	OPCDO(eq),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpne",	OPCDO(ne),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpcs",	OPCDO(cs),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpcc",	OPCDO(cc),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpmi",	OPCDO(mi),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdppl",	OPCDO(pl),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpvs",	OPCDO(vs),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpvc",	OPCDO(vc),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdphi",	OPCDO(hi),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpls",	OPCDO(ls),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpge",	OPCDO(ge),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdplt",	OPCDO(lt),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpgt",	OPCDO(gt),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdple",	OPCDO(le),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
+{ "cdpal",	OPCDO(al),	OPCDOF,	OPCDO_U4, OPCDO_U4, OP_R	},
 /* cmn */
 { "cmn",	OPDP(al,cmn),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
 { "cmneq",	OPDP(eq,cmn),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
@@ -641,76 +678,123 @@
 { "eorles",	OPDPIS(le,eor),	OPDPISF,OP_R,     OP_R,     OPDPIS_U12	},
 { "eorals",	OPDPIS(al,eor),	OPDPISF,OP_R,     OP_R,     OPDPIS_U12	},
 /* ldc */
-{ "ldc",	OPCDTL(al),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldceq",	OPCDTL(eq),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcne",	OPCDTL(ne),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldccs",	OPCDTL(cs),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldccc",	OPCDTL(cc),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcmi",	OPCDTL(mi),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcpl",	OPCDTL(pl),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcvs",	OPCDTL(vs),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcvc",	OPCDTL(vc),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldchi",	OPCDTL(hi),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcls",	OPCDTL(ls),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcge",	OPCDTL(ge),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldclt",	OPCDTL(lt),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcgt",	OPCDTL(gt),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcle",	OPCDTL(le),	OPCDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldcal",	OPCDTL(al),	OPCDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldc",	OPCDTL(al),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldceq",	OPCDTL(eq),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcne",	OPCDTL(ne),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldccs",	OPCDTL(cs),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldccc",	OPCDTL(cc),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcmi",	OPCDTL(mi),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcpl",	OPCDTL(pl),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcvs",	OPCDTL(vs),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcvc",	OPCDTL(vc),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldchi",	OPCDTL(hi),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcls",	OPCDTL(ls),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcge",	OPCDTL(ge),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldclt",	OPCDTL(lt),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcgt",	OPCDTL(gt),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcle",	OPCDTL(le),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
+{ "ldcal",	OPCDTL(al),	OPCDTLF,OPCDTL_U4,OP_R,     OPCDTL_U8	},
 /* ldm */
-{ "ldm",	OPBDTL(al),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmeq",	OPBDTL(eq),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmne",	OPBDTL(ne),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmcs",	OPBDTL(cs),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmcc",	OPBDTL(cc),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmmi",	OPBDTL(mi),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmpl",	OPBDTL(pl),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmvs",	OPBDTL(vs),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmvc",	OPBDTL(vc),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmhi",	OPBDTL(hi),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmls",	OPBDTL(ls),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmge",	OPBDTL(ge),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmlt",	OPBDTL(lt),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmgt",	OPBDTL(gt),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmle",	OPBDTL(ge),	OPBDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldmal",	OPBDTL(al),	OPBDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldm",	OPBDTL(al),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmeq",	OPBDTL(eq),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmne",	OPBDTL(ne),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmcs",	OPBDTL(cs),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmcc",	OPBDTL(cc),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmmi",	OPBDTL(mi),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmpl",	OPBDTL(pl),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmvs",	OPBDTL(vs),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmvc",	OPBDTL(vc),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmhi",	OPBDTL(hi),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmls",	OPBDTL(ls),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmge",	OPBDTL(ge),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmlt",	OPBDTL(lt),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmgt",	OPBDTL(gt),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmle",	OPBDTL(ge),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "ldmal",	OPBDTL(al),	OPBDTLF,OP_R,     OPBDT_U16,AOT_NONE	},
 /* ldr */
-{ "ldr",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldreq",	OPSDTL(eq),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrne",	OPSDTL(ne),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrcs",	OPSDTL(cs),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrcc",	OPSDTL(cc),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrmi",	OPSDTL(mi),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrpl",	OPSDTL(pl),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrvs",	OPSDTL(vs),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrvc",	OPSDTL(vc),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrhi",	OPSDTL(hi),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrls",	OPSDTL(ls),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrge",	OPSDTL(ge),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrlt",	OPSDTL(lt),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrgt",	OPSDTL(gt),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldrle",	OPSDTL(le),	OPSDTLF,OP_R,     OP_R,     OP_R	},
-{ "ldral",	OPSDTL(al),	OPSDTLF,OP_R,     OP_R,     OP_R	},
+{ "ldr",	OPSDTL(al),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldreq",	OPSDTL(eq),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrne",	OPSDTL(ne),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrcs",	OPSDTL(cs),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrcc",	OPSDTL(cc),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrmi",	OPSDTL(mi),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrpl",	OPSDTL(pl),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrvs",	OPSDTL(vs),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrvc",	OPSDTL(vc),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrhi",	OPSDTL(hi),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrls",	OPSDTL(ls),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrge",	OPSDTL(ge),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrlt",	OPSDTL(lt),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrgt",	OPSDTL(gt),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldrle",	OPSDTL(le),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+{ "ldral",	OPSDTL(al),	OPSDTLF,OP_R,     OP_DR,    OP_R	},
+/* ldrb */
+{ "ldrb",	OPSDTLB(al),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldreqb",	OPSDTLB(eq),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrneb",	OPSDTLB(ne),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrcsb",	OPSDTLB(cs),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrccb",	OPSDTLB(cc),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrmib",	OPSDTLB(mi),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrplb",	OPSDTLB(pl),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrvsb",	OPSDTLB(vs),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrvcb",	OPSDTLB(vc),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrhib",	OPSDTLB(hi),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrlsb",	OPSDTLB(ls),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrgeb",	OPSDTLB(ge),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrltb",	OPSDTLB(lt),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrgtb",	OPSDTLB(gt),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldrleb",	OPSDTLB(le),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
+{ "ldralb",	OPSDTLB(al),	OPSDTLBF,OP_R,    OP_DR,    OP_R	},
 /* mcr */
-{ "mcr",	OPCRTS(al),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcreq",	OPCRTS(eq),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrne",	OPCRTS(ne),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrcs",	OPCRTS(cs),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrcc",	OPCRTS(cc),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrmi",	OPCRTS(mi),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrpl",	OPCRTS(pl),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrvs",	OPCRTS(vs),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrvc",	OPCRTS(vc),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrhi",	OPCRTS(hi),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrls",	OPCRTS(ls),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrge",	OPCRTS(ge),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrlt",	OPCRTS(lt),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrgt",	OPCRTS(gt),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcrle",	OPCRTS(le),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-{ "mcral",	OPCRTS(al),	OPCRTSF,OP_R,     OP_R,     OP_R	},
-#if 1 /* FIXME implement correctly */
-{ "mla",	0x00000000,	OPNOP,	AOT_NONE, AOT_NONE, AOT_NONE	},
-#endif
+{ "mcr",	OPCRTS(al),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcreq",	OPCRTS(eq),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrne",	OPCRTS(ne),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrcs",	OPCRTS(cs),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrcc",	OPCRTS(cc),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrmi",	OPCRTS(mi),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrpl",	OPCRTS(pl),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrvs",	OPCRTS(vs),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrvc",	OPCRTS(vc),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrhi",	OPCRTS(hi),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrls",	OPCRTS(ls),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrge",	OPCRTS(ge),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrlt",	OPCRTS(lt),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrgt",	OPCRTS(gt),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcrle",	OPCRTS(le),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+{ "mcral",	OPCRTS(al),	OPCRTSF,OPCRTS_U4,OPCRTS_U3,OP_R	},
+/* mla */
+{ "mla",	OPMULA(al),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlaeq",	OPMULA(eq),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlane",	OPMULA(ne),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlacs",	OPMULA(cs),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlacc",	OPMULA(cc),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlami",	OPMULA(mi),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlapl",	OPMULA(pl),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlavs",	OPMULA(vs),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlavc",	OPMULA(vc),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlahi",	OPMULA(hi),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlals",	OPMULA(ls),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlage",	OPMULA(ge),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlalt",	OPMULA(lt),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlagt",	OPMULA(gt),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlale",	OPMULA(le),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlaal",	OPMULA(al),	OPMULAF,OP_R,     OP_R,     OP_R	},
+{ "mlas",	OPMULAS(al),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlaeqs",	OPMULAS(eq),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlanes",	OPMULAS(ne),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlacss",	OPMULAS(cs),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlaccs",	OPMULAS(cc),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlamis",	OPMULAS(mi),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlapls",	OPMULAS(pl),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlavss",	OPMULAS(vs),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlavcs",	OPMULAS(vc),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlahis",	OPMULAS(hi),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlalss",	OPMULAS(ls),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlages",	OPMULAS(ge),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlalts",	OPMULAS(lt),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlagts",	OPMULAS(gt),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlales",	OPMULAS(le),	OPMULASF,OP_R,    OP_R,     OP_R	},
+{ "mlaals",	OPMULAS(al),	OPMULASF,OP_R,    OP_R,     OP_R	},
 /* mov */
 { "mov",	OPDP(al,mov),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
 { "moveq",	OPDP(eq,mov),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
@@ -777,22 +861,22 @@
 { "movles",	OPDPIS(le,mov),	OPDPISF,OP_R,     OPDPI_U12,AOT_NONE	},
 { "movals",	OPDPIS(al,mov),	OPDPISF,OP_R,     OPDPI_U12,AOT_NONE	},
 /* mrc */
-{ "mrc",	OPCRTL(al),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrceq",	OPCRTL(eq),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcne",	OPCRTL(ne),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrccs",	OPCRTL(cs),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrccc",	OPCRTL(cc),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcmi",	OPCRTL(mi),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcpl",	OPCRTL(pl),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcvs",	OPCRTL(vs),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcvc",	OPCRTL(vc),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrchi",	OPCRTL(hi),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcls",	OPCRTL(ls),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcge",	OPCRTL(ge),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrclt",	OPCRTL(lt),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcgt",	OPCRTL(gt),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcle",	OPCRTL(le),	OPCRTLF,OP_R,     OP_R,     OP_R	},
-{ "mrcal",	OPCRTL(al),	OPCRTLF,OP_R,     OP_R,     OP_R	},
+{ "mrc",	OPCRTL(al),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrceq",	OPCRTL(eq),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcne",	OPCRTL(ne),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrccs",	OPCRTL(cs),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrccc",	OPCRTL(cc),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcmi",	OPCRTL(mi),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcpl",	OPCRTL(pl),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcvs",	OPCRTL(vs),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcvc",	OPCRTL(vc),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrchi",	OPCRTL(hi),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcls",	OPCRTL(ls),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcge",	OPCRTL(ge),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrclt",	OPCRTL(lt),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcgt",	OPCRTL(gt),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcle",	OPCRTL(le),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
+{ "mrcal",	OPCRTL(al),	OPCRTLF,OPCRTL_U4,OPCRTL_U3,OP_R	},
 /* mrs */
 { "mrs",	OPPT(al),	OPPTF,	OP_R,     OP_R_CPSR,AOT_NONE	},
 { "mrseq",	OPPT(eq),	OPPTF,	OP_R,     OP_R_CPSR,AOT_NONE	},
@@ -861,8 +945,38 @@
 { "msral",	OPPTI(al),	OPPTIF,	OP_R_SPSR,OP_R,     AOT_NONE	},
 /* mul */
 { "mul",	OPMUL(al),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "muleq",	OPMUL(eq),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulne",	OPMUL(ne),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulcs",	OPMUL(cs),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulcc",	OPMUL(cc),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulmi",	OPMUL(mi),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulpl",	OPMUL(pl),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulvs",	OPMUL(vs),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulvc",	OPMUL(vc),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulhi",	OPMUL(hi),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulls",	OPMUL(ls),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulge",	OPMUL(ge),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mullt",	OPMUL(lt),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulgt",	OPMUL(gt),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulle",	OPMUL(le),	OPMULF,	OP_R,     OP_R,     OP_R	},
+{ "mulal",	OPMUL(al),	OPMULF,	OP_R,     OP_R,     OP_R	},
 /* muls */
 { "muls",	OPMULS(al),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "muleqs",	OPMULS(eq),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulnes",	OPMULS(ne),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulcss",	OPMULS(cs),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulccs",	OPMULS(cc),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulmis",	OPMULS(mi),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulpls",	OPMULS(pl),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulvss",	OPMULS(vs),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulvcs",	OPMULS(vc),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulhis",	OPMULS(hi),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mullss",	OPMULS(ls),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulges",	OPMULS(ge),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mullts",	OPMULS(lt),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulgts",	OPMULS(gt),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulles",	OPMULS(le),	OPMULSF,OP_R,     OP_R,     OP_R	},
+{ "mulals",	OPMULS(al),	OPMULSF,OP_R,     OP_R,     OP_R	},
 /* mvn */
 { "mvn",	OPDP(al,mvn),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
 { "mvneq",	OPDP(eq,mvn),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
@@ -1191,56 +1305,73 @@
 { "sbcles",	OPDPIS(le,sbc),	OPDPISF,OP_R,     OP_R,     OPDPIS_U12	},
 { "sbcals",	OPDPIS(al,sbc),	OPDPISF,OP_R,     OP_R,     OPDPIS_U12	},
 /* stc */
-{ "stc",	OPCDTS(al),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stceq",	OPCDTS(eq),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcne",	OPCDTS(ne),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stccs",	OPCDTS(cs),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stccc",	OPCDTS(cc),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcmi",	OPCDTS(mi),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcpl",	OPCDTS(pl),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcvs",	OPCDTS(vs),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcvc",	OPCDTS(vc),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stchi",	OPCDTS(hi),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcls",	OPCDTS(ls),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcge",	OPCDTS(ge),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stclt",	OPCDTS(lt),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcgt",	OPCDTS(gt),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcle",	OPCDTS(le),	OPCDTSF,OP_R,     OP_R,     OP_R	},
-{ "stcal",	OPCDTS(al),	OPCDTSF,OP_R,     OP_R,     OP_R	},
+{ "stc",	OPCDTS(al),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stceq",	OPCDTS(eq),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcne",	OPCDTS(ne),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stccs",	OPCDTS(cs),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stccc",	OPCDTS(cc),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcmi",	OPCDTS(mi),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcpl",	OPCDTS(pl),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcvs",	OPCDTS(vs),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcvc",	OPCDTS(vc),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stchi",	OPCDTS(hi),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcls",	OPCDTS(ls),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcge",	OPCDTS(ge),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stclt",	OPCDTS(lt),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcgt",	OPCDTS(gt),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcle",	OPCDTS(le),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
+{ "stcal",	OPCDTS(al),	OPCDTSF,OPCDTS_U4,OP_R,     OPCDTS_U8	},
 /* stm */
-{ "stm",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmeq",	OPBDTS(eq),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmne",	OPBDTS(ne),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmcs",	OPBDTS(cs),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmcc",	OPBDTS(cc),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmmi",	OPBDTS(mi),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmpl",	OPBDTS(pl),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmvs",	OPBDTS(vs),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmvc",	OPBDTS(vc),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmhi",	OPBDTS(hi),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmls",	OPBDTS(ls),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmge",	OPBDTS(ge),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmlt",	OPBDTS(lt),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmgt",	OPBDTS(gt),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmle",	OPBDTS(le),	OPBDTSF,OP_R,     OP_R,     OP_R	},
-{ "stmal",	OPBDTS(al),	OPBDTSF,OP_R,     OP_R,     OP_R	},
+{ "stm",	OPBDTS(al),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmeq",	OPBDTS(eq),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmne",	OPBDTS(ne),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmcs",	OPBDTS(cs),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmcc",	OPBDTS(cc),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmmi",	OPBDTS(mi),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmpl",	OPBDTS(pl),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmvs",	OPBDTS(vs),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmvc",	OPBDTS(vc),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmhi",	OPBDTS(hi),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmls",	OPBDTS(ls),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmge",	OPBDTS(ge),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmlt",	OPBDTS(lt),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmgt",	OPBDTS(gt),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmle",	OPBDTS(ge),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
+{ "stmal",	OPBDTS(al),	OPBDTSF,OP_R,     OPBDT_U16,AOT_NONE	},
 /* str */
-{ "str",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "streq",	OPSDTS(eq),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strne",	OPSDTS(ne),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strcs",	OPSDTS(cs),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strcc",	OPSDTS(cc),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strmi",	OPSDTS(mi),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strpl",	OPSDTS(pl),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strvs",	OPSDTS(vs),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strvc",	OPSDTS(vc),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strhi",	OPSDTS(hi),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strls",	OPSDTS(ls),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strge",	OPSDTS(ge),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strlt",	OPSDTS(lt),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strgt",	OPSDTS(gt),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "strle",	OPSDTS(le),	OPSDTSF,OP_R,     OP_R,     OP_R	},
-{ "stral",	OPSDTS(al),	OPSDTSF,OP_R,     OP_R,     OP_R	},
+{ "str",	OPSDTS(al),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "streq",	OPSDTS(eq),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strne",	OPSDTS(ne),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strcs",	OPSDTS(cs),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strcc",	OPSDTS(cc),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strmi",	OPSDTS(mi),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strpl",	OPSDTS(pl),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strvs",	OPSDTS(vs),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strvc",	OPSDTS(vc),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strhi",	OPSDTS(hi),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strls",	OPSDTS(ls),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strge",	OPSDTS(ge),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strlt",	OPSDTS(lt),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strgt",	OPSDTS(gt),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "strle",	OPSDTS(le),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+{ "stral",	OPSDTS(al),	OPSDTSF,OP_R,     OP_DR,    OP_R	},
+/* strb */
+{ "strb",	OPSDTSB(al),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "streqb",	OPSDTSB(eq),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strneb",	OPSDTSB(ne),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strcsb",	OPSDTSB(cs),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strccb",	OPSDTSB(cc),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strmib",	OPSDTSB(mi),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strplb",	OPSDTSB(pl),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strvsb",	OPSDTSB(vs),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strvcb",	OPSDTSB(vc),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strhib",	OPSDTSB(hi),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strlsb",	OPSDTSB(ls),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strgeb",	OPSDTSB(ge),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strltb",	OPSDTSB(lt),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strgtb",	OPSDTSB(gt),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "strleb",	OPSDTSB(le),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
+{ "stralb",	OPSDTSB(al),	OPSDTSBF,OP_R,    OP_DR,    OP_R	},
 /* sub */
 { "sub",	OPDP(al,sub),	OPDPF,  OP_R,     OP_R,     OP_R	},
 { "subeq",	OPDP(eq,sub),	OPDPF,  OP_R,     OP_R,     OP_R	},
@@ -1324,22 +1455,39 @@
 { "swile",	OPSI(le),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
 { "swial",	OPSI(al),	OPSIF,	OPSI_U24, AOT_NONE, AOT_NONE	},
 /* swp */
-{ "swp",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpeq",	OPSDS(eq),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpne",	OPSDS(ne),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpcs",	OPSDS(cs),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpcc",	OPSDS(cc),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpmi",	OPSDS(mi),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swppl",	OPSDS(pl),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpvs",	OPSDS(vs),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpvc",	OPSDS(vc),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swphi",	OPSDS(hi),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpls",	OPSDS(ls),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpge",	OPSDS(ge),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swplt",	OPSDS(lt),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpgt",	OPSDS(gt),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swple",	OPSDS(le),	OPSDSF, OP_R,     OP_R,     OP_R	},
-{ "swpal",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_R	},
+{ "swp",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpeq",	OPSDS(eq),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpne",	OPSDS(ne),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpcs",	OPSDS(cs),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpcc",	OPSDS(cc),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpmi",	OPSDS(mi),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swppl",	OPSDS(pl),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpvs",	OPSDS(vs),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpvc",	OPSDS(vc),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swphi",	OPSDS(hi),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpls",	OPSDS(ls),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpge",	OPSDS(ge),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swplt",	OPSDS(lt),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpgt",	OPSDS(gt),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swple",	OPSDS(le),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+{ "swpal",	OPSDS(al),	OPSDSF, OP_R,     OP_R,     OP_DR	},
+/* swpb */
+{ "swpb",	OPSDSB(al),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpeqb",	OPSDSB(eq),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpneb",	OPSDSB(ne),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpcsb",	OPSDSB(cs),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpccb",	OPSDSB(cc),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpmib",	OPSDSB(mi),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpplb",	OPSDSB(pl),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpvsb",	OPSDSB(vs),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpvcb",	OPSDSB(vc),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swphib",	OPSDSB(hi),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swplsb",	OPSDSB(ls),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpgeb",	OPSDSB(ge),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpltb",	OPSDSB(lt),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpgtb",	OPSDSB(gt),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpleb",	OPSDSB(le),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
+{ "swpalb",	OPSDSB(al),	OPSDSBF,OP_R,     OP_R,     OP_DR	},
 /* teq */
 { "teq",	OPDP(al,teq),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},
 { "teqeq",	OPDP(eq,teq),	OPDPF,  OP_R,     OP_R,     AOT_NONE	},

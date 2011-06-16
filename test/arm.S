@@ -38,6 +38,8 @@
 	bleq	$0xa0
 	bx	%r1
 	bxeq	%r2
+	cdp	$0x1, $0xf, %r0
+	cdpeq	$0x2, $0xe, %r0
 	cmn	%r5, %r4
 	cmneq	%r5, %r4
 	cmn	%r5, $0x1
@@ -62,14 +64,20 @@
 	eoreqs	%r3, %r4, %r5
 	eors	%r3, %r4, $0x0
 	eoreqs	%r3, %r4, $0x1
-	ldc	%r0, %r0, %r0
-	ldceq	%r0, %r0, %r0
-	ldm	%r0, %r0, %r0
-	ldmeq	%r0, %r0, %r0
-	ldr	%r0, %r0, %r0
-	ldreq	%r0, %r0, %r0
-	mcr	%r0, %r0, %r0
-	mcreq	%r0, %r0, %r0
+	ldc	$0x1, %r2, $0x42
+	ldceq	$0x2, %r1, $0x42
+	ldm	%r2, $0x4442
+	ldmeq	%r1, $0x4341
+	ldr	%r4, [%r3], %r2
+	ldreq	%r4, [%r3], %r2
+	ldrb	%r4, [%r3], %r2
+	ldreqb	%r4, [%r3], %r2
+	mcr	$0x1, $0x4, %r3
+	mcreq	$0x2, $0x3, %r1
+	mla	%r3, %r1, %r2
+	mlaeq	%r3, %r1, %r2
+	mlas	%r3, %r1, %r2
+	mlaeqs	%r3, %r1, %r2
 	mov	%r4, %r0
 	moveq	%r5, %r1
 	mov	%r6, $0x1
@@ -78,8 +86,8 @@
 	moveqs	%r9, %r5
 	movs	%r10, $0x3
 	moveqs	%r11, $0x4
-	mrc	%r0, %r0, %r0
-	mrceq	%r0, %r0, %r0
+	mrc	$0x1, $0x4, %r3
+	mrceq	$0x2, $0x3, %r1
 	mrs	%r0, %cpsr
 	mrseq	%r1, %cpsr
 	mrs	%r2, %spsr
@@ -88,8 +96,10 @@
 	msreq	%cpsr, %r5
 	msr	%spsr, %r6
 	msreq	%spsr, %r7
-	mul	%r0, %r1, %r2
-	muls	%r0, %r1, %r2
+	mul	%r3, %r1, %r2
+	muleq	%r3, %r1, %r2
+	muls	%r3, %r1, %r2
+	muleqs	%r3, %r1, %r2
 	mvn	%r5, %r4
 	mvneq	%r5, %r4
 	mvn	%r5, $0x1
@@ -131,12 +141,14 @@
 	sbceqs	%r3, %r4, %r5
 	sbcs	%r3, %r4, $0x0
 	sbceqs	%r3, %r4, $0x1
-	stc	%r0, %r0, %r0
-	stceq	%r0, %r0, %r0
-	stm	%r0, %r0, %r0
-	stmeq	%r0, %r0, %r0
-	str	%r0, %r0, %r0
-	streq	%r0, %r0, %r0
+	stc	$0x1, %r2, $0x42
+	stceq	$0x2, %r1, $0x42
+	stm	%r2, $0x4442
+	stmeq	%r1, $0x4341
+	str	%r7, [%r5], %r6
+	streq	%r7, [%r5], %r6
+	strb	%r7, [%r5], %r6
+	streqb	%r7, [%r5], %r6
 	sub	%r3, %r4, %r5
 	subeq	%r3, %r4, %r5
 	sub	%r3, %r4, $0x0
@@ -145,10 +157,12 @@
 	subeqs	%r3, %r4, %r5
 	subs	%r3, %r4, $0x0
 	subeqs	%r3, %r4, $0x1
-	swi	$0x0
-	swine	$0x0
-	swp	%r5, %r4, %r3
-	swpeq	%r5, %r4, %r3
+	swi	$0x42
+	swine	$0x43
+	swp	%r5, %r4, [%r3]
+	swpeq	%r5, %r4, [%r3]
+	swpb	%r5, %r4, [%r3]
+	swpeqb	%r5, %r4, [%r3]
 	teq	%r5, %r4
 	teqeq	%r5, %r4
 	teq	%r5, $0x1

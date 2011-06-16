@@ -40,12 +40,12 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	switch(instruction->opcode & 0x0fffffff) /* ignore condition code */
 	{
 		/* branch, branch with link */
-		case OPB(0):
-		case OPBL(0):
+		case OPB(0):				/* b */
+		case OPBL(0):				/* bl */
 			opcode |= call->operands[0].value.immediate.value;
 			break;
 		/* branch and exchange */
-		case OPBX(0):
+		case OPBX(0):				/* bx */
 			/* first operand, Rn */
 			p = call->operands[0].value._register.name;
 			if((ar = helper->get_register_by_name_size(helper->arch,
@@ -54,16 +54,16 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			opcode |= ar->id;
 			break;
 		/* data processing */
-		case OPDP(0, and):
-		case OPDP(0, eor):
-		case OPDP(0, sub):
-		case OPDP(0, rsb):
-		case OPDP(0, add):
-		case OPDP(0, adc):
-		case OPDP(0, sbc):
-		case OPDP(0, rsc):
-		case OPDP(0, orr):
-		case OPDP(0, bic):
+		case OPDP(0, and):			/* and */
+		case OPDP(0, eor):			/* eor */
+		case OPDP(0, sub):			/* sub */
+		case OPDP(0, rsb):			/* rsb */
+		case OPDP(0, add):			/* add */
+		case OPDP(0, adc):			/* adc */
+		case OPDP(0, sbc):			/* sbc */
+		case OPDP(0, rsc):			/* rsc */
+		case OPDP(0, orr):			/* orr */
+		case OPDP(0, bic):			/* bic */
 		case OPDPS(0, and):			/* ands */
 		case OPDPS(0, eor):			/* eors */
 		case OPDPS(0, sub):			/* subs */
@@ -93,16 +93,16 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 				return -1;
 			opcode |= ar->id;
 			break;
-		case OPDPI(0, and):
-		case OPDPI(0, eor):
-		case OPDPI(0, sub):
-		case OPDPI(0, rsb):
-		case OPDPI(0, add):
-		case OPDPI(0, adc):
-		case OPDPI(0, sbc):
-		case OPDPI(0, rsc):
-		case OPDPI(0, orr):
-		case OPDPI(0, bic):
+		case OPDPI(0, and):			/* and (immediate) */
+		case OPDPI(0, eor):			/* eor (immediate) */
+		case OPDPI(0, sub):			/* sub (immediate) */
+		case OPDPI(0, rsb):			/* rsb (immediate) */
+		case OPDPI(0, add):			/* add (immediate) */
+		case OPDPI(0, adc):			/* adc (immediate) */
+		case OPDPI(0, sbc):			/* sbc (immediate) */
+		case OPDPI(0, rsc):			/* rsc (immediate) */
+		case OPDPI(0, orr):			/* orr (immediate) */
+		case OPDPI(0, bic):			/* bic (immediate) */
 		case OPDPIS(0, and):			/* ands (immediate) */
 		case OPDPIS(0, eor):			/* eors (immediate) */
 		case OPDPIS(0, sub):			/* subs (immediate) */
@@ -128,10 +128,10 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			/* third operand */
 			opcode |= call->operands[2].value.immediate.value;
 			break;
-		case OPDP(0, tst):
-		case OPDP(0, teq):
-		case OPDP(0, cmp):
-		case OPDP(0, cmn):
+		case OPDP(0, tst):			/* tst */
+		case OPDP(0, teq):			/* teq */
+		case OPDP(0, cmp):			/* cmp */
+		case OPDP(0, cmn):			/* cmn */
 		case OPDPS(0, tst):			/* tsts */
 		case OPDPS(0, teq):			/* teqs */
 		case OPDPS(0, cmp):			/* cmps */
@@ -149,10 +149,10 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 				return -1;
 			opcode |= ar->id;
 			break;
-		case OPDPI(0, tst):
-		case OPDPI(0, teq):
-		case OPDPI(0, cmp):
-		case OPDPI(0, cmn):
+		case OPDPI(0, tst):			/* tst (immediate) */
+		case OPDPI(0, teq):			/* teq (immediate) */
+		case OPDPI(0, cmp):			/* cmp (immediate) */
+		case OPDPI(0, cmn):			/* cmn (immediate) */
 		case OPDPIS(0, tst):			/* tsts (immediate) */
 		case OPDPIS(0, teq):			/* teqs (immediate) */
 		case OPDPIS(0, cmp):			/* cmps (immediate) */
@@ -166,11 +166,12 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 			/* second operand */
 			opcode |= call->operands[1].value.immediate.value;
 			break;
-		case OPDP(0, mov):
+		case OPDP(0, mov):			/* mov */
 		case OPDPS(0, mov):			/* movs */
-		case OPDP(0, mvn):
+		case OPDP(0, mvn):			/* mvn */
 		case OPDPS(0, mvn):			/* mvns */
-			if(call->operands_cnt == 0) /* nop */
+			/* take care of nop */
+			if(call->operands_cnt == 0)
 				break;
 			/* first operand, Rd */
 			p = call->operands[0].value._register.name;
@@ -216,6 +217,139 @@ static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
 							p, 32)) == NULL)
 				return -1;
 			opcode |= ar->id;
+			break;
+		/* multiply and multiply-accumulate */
+		case OPMUL(0):				/* mul */
+		case OPMULS(0):				/* muls */
+		case OPMULA(0):				/* mla */
+		case OPMULAS(0):			/* mlas */
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* second operand, Rm */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			/* third operand, Rs */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 8);
+			break;
+		/* single data transfer */
+		case OPSDTL(0):				/* ldr */
+		case OPSDTS(0):				/* str */
+		case OPSDTLB(0):			/* ldrb */
+		case OPSDTSB(0):			/* strb */
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* second operand, Rn */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* third operand, Rm */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			break;
+		/* block data transfer */
+		case OPBDTL(0):				/* ldm */
+		case OPBDTS(0):				/* stm */
+			/* first operand, Rn */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			/* second operand, register list */
+			opcode |= call->operands[1].value.immediate.value;
+			break;
+		/* single data swap */
+		case OPSDS(0):
+		case OPSDSB(0):
+			/* first operand, Rd */
+			p = call->operands[0].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* second operand, Rm */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= ar->id;
+			/* third operand, Rn */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 16);
+			break;
+		/* software interrupt */
+		case OPSI(0):
+			opcode |= call->operands[0].value.immediate.value;
+			break;
+		/* coprocessor data operation */
+		case OPCDO(0):
+			/* first operand, coprocessor number */
+			opcode |= (call->operands[0].value.immediate.value
+					<< 8);
+			/* second operand, coprocessor operation code */
+			opcode |= (call->operands[1].value.immediate.value
+					<< 20);
+			/* third operand, CRd */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			break;
+		/* coprocessor data transfers */
+		case OPCDTL(0):
+		case OPCDTS(0):
+			/* first operand, coprocessor number */
+			opcode |= (call->operands[0].value.immediate.value
+					<< 8);
+			/* second operand, CRd */
+			p = call->operands[1].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* third operand, address */
+			opcode |= call->operands[2].value.immediate.value;
+			break;
+		/* coprocessor register transfers */
+		case OPCRTL(0):
+		case OPCRTS(0):
+			/* first operand, coprocessor number */
+			opcode |= (call->operands[0].value.immediate.value
+					<< 8);
+			/* second operand, opcode */
+			opcode |= (call->operands[1].value.immediate.value
+					<< 21);
+			/* third operand, Rd */
+			p = call->operands[2].value._register.name;
+			if((ar = helper->get_register_by_name_size(helper->arch,
+							p, 32)) == NULL)
+				return -1;
+			opcode |= (ar->id << 12);
+			/* FIXME implement */
 			break;
 #if 1 /* FIXME really implement */
 		default:

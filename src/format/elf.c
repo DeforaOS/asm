@@ -58,6 +58,14 @@ typedef struct _ElfStrtab
 typedef struct _Elf
 {
 	ElfArch * arch;
+
+	/* ELF32 */
+	Elf32_Shdr * es32;
+	int es32_cnt;
+
+	/* ELF64 */
+	Elf64_Shdr * es64;
+	int es64_cnt;
 } Elf;
 
 
@@ -96,7 +104,7 @@ static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
 /* variables */
 static ElfArch elf_arch[] =
 {
-	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x0 },
+	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
 	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB, 0x0 },
 	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
 	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
@@ -242,6 +250,8 @@ static int _elf_exit(FormatPlugin * format)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	free(elf->es32);
+	free(elf->es64);
 	object_delete(elf);
 	return 0;
 }
@@ -626,11 +636,6 @@ static ElfSectionValues * _section_values(char const * name)
 
 
 /* ELF32 */
-/* variables */
-static Elf32_Shdr * es32 = NULL;
-static int es32_cnt = 0;
-
-
 /* init_32 */
 static int _init_32(FormatPlugin * format)
 {
@@ -691,9 +696,6 @@ static int _exit_32(FormatPlugin * format)
 	else if(_exit_32_phdr(format, offset) != 0
 			|| _exit_32_shdr(format, offset) != 0)
 		ret = -1;
-	free(es32);
-	es32 = NULL;
-	es32_cnt = 0;
 	free(shstrtab.buf);
 	shstrtab.buf = NULL;
 	shstrtab.cnt = 0;
@@ -708,7 +710,7 @@ static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
 
-	if(es32_cnt == 0)
+	if(elf->es32_cnt == 0)
 		return 0;
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
@@ -717,14 +719,14 @@ static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 	if(ea->endian == ELFDATA2MSB)
 	{
 		hdr.e_shoff = _htob32(offset);
-		hdr.e_shnum = _htob16(es32_cnt + 1);
-		hdr.e_shstrndx = _htob16(es32_cnt);
+		hdr.e_shnum = _htob16(elf->es32_cnt + 1);
+		hdr.e_shstrndx = _htob16(elf->es32_cnt);
 	}
 	else
 	{
 		hdr.e_shoff = _htol32(offset);
-		hdr.e_shnum = _htol16(es32_cnt + 1);
-		hdr.e_shstrndx = _htol16(es32_cnt);
+		hdr.e_shnum = _htol16(elf->es32_cnt + 1);
+		hdr.e_shstrndx = _htol16(elf->es32_cnt);
 	}
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
@@ -738,6 +740,7 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 	FormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
+	Elf32_Shdr * es32 = elf->es32;
 	Elf32_Shdr hdr;
 	int i;
 
@@ -756,9 +759,9 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 	}
 	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
 		return -1;
-	for(i = 0; i < es32_cnt; i++)
+	for(i = 0; i < elf->es32_cnt; i++)
 	{
-		if(i + 1 == es32_cnt)
+		if(i + 1 == elf->es32_cnt)
 			es32[i].sh_size = offset - es32[i].sh_offset;
 		else
 			es32[i].sh_size = es32[i + 1].sh_offset
@@ -783,6 +786,7 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 static int _section_32(FormatPlugin * format, char const * name)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
 	int ss;
 	Elf32_Shdr * p;
 	ElfSectionValues * esv;
@@ -790,10 +794,10 @@ static int _section_32(FormatPlugin * format, char const * name)
 
 	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
 		return -1;
-	if((p = realloc(es32, sizeof(*es32) * (es32_cnt + 1))) == NULL)
+	if((p = realloc(elf->es32, sizeof(*p) * (elf->es32_cnt + 1))) == NULL)
 		return _elf_error(format);
-	es32 = p;
-	p = &es32[es32_cnt++];
+	elf->es32 = p;
+	p = &elf->es32[elf->es32_cnt++];
 	memset(p, 0, sizeof(*p));
 	esv = _section_values(name);
 	p->sh_name = ss;
@@ -857,11 +861,6 @@ static void _swap_32_shdr(Elf32_Shdr * shdr)
 
 
 /* ELF64 */
-/* variables */
-static Elf64_Shdr * es64 = NULL;
-static int es64_cnt = 0;
-
-
 /* init_64 */
 static int _init_64(FormatPlugin * format)
 {
@@ -921,9 +920,6 @@ static int _exit_64(FormatPlugin * format)
 	else if(_exit_64_phdr(format, offset) != 0
 			|| _exit_64_shdr(format, offset) != 0)
 		ret = 1;
-	free(es64);
-	es64 = NULL;
-	es64_cnt = 0;
 	free(shstrtab.buf);
 	shstrtab.buf = NULL;
 	shstrtab.cnt = 0;
@@ -938,7 +934,7 @@ static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
 	ElfArch * ea = elf->arch;
 	Elf64_Ehdr hdr;
 
-	if(es64_cnt == 0)
+	if(elf->es64_cnt == 0)
 		return 0;
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
@@ -947,14 +943,14 @@ static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
 	if(ea->endian == ELFDATA2MSB)
 	{
 		hdr.e_shoff = _htob64(offset);
-		hdr.e_shnum = _htob16(es64_cnt);
-		hdr.e_shstrndx = _htob16(es64_cnt - 1);
+		hdr.e_shnum = _htob16(elf->es64_cnt);
+		hdr.e_shstrndx = _htob16(elf->es64_cnt - 1);
 	}
 	else
 	{
 		hdr.e_shoff = _htol64(offset);
-		hdr.e_shnum = _htol16(es64_cnt);
-		hdr.e_shstrndx = _htol16(es64_cnt - 1);
+		hdr.e_shnum = _htol16(elf->es64_cnt);
+		hdr.e_shstrndx = _htol16(elf->es64_cnt - 1);
 	}
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
@@ -968,16 +964,31 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 	FormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
+	Elf64_Shdr * es64 = elf->es64;
+	Elf64_Shdr hdr;
 	int i;
 
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)
-		return -1;
-	for(i = 0; i < es64_cnt; i++)
+		return _elf_error(format);
+	memset(&hdr, 0, sizeof(hdr));
+	if(ea->endian == ELFDATA2MSB)
 	{
-		if(i + 1 == es64_cnt)
+		hdr.sh_type = _htob32(SHT_NULL);
+		hdr.sh_link = _htob32(SHN_UNDEF);
+	}
+	else
+	{
+		hdr.sh_type = _htol32(SHT_NULL);
+		hdr.sh_link = _htol32(SHN_UNDEF);
+	}
+	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
+		return -1;
+	for(i = 0; i < elf->es64_cnt; i++)
+	{
+		if(i + 1 == elf->es64_cnt)
 			es64[i].sh_size = offset - es64[i].sh_offset;
 		else
-			es64[i].sh_size = es64[i+1].sh_offset
+			es64[i].sh_size = es64[i + 1].sh_offset
 				- es64[i].sh_offset;
 		es64[i].sh_size = (ea->endian == ELFDATA2MSB)
 			? _htob64(es64[i].sh_size) : _htol64(es64[i].sh_size);
@@ -985,8 +996,8 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 			es64[i].sh_addralign = (ea->endian == ELFDATA2MSB)
 				? _htob64(ea->addralign)
 				: _htol64(ea->addralign);
-		es32[i].sh_type = (ea->endian == ELFDATA2MSB)
-			? _htob32(es32[i].sh_type) : _htol32(es32[i].sh_type);
+		es64[i].sh_type = (ea->endian == ELFDATA2MSB)
+			? _htob32(es64[i].sh_type) : _htol32(es64[i].sh_type);
 		if(helper->write(helper->format, &es64[i], sizeof(Elf64_Shdr))
 				!= sizeof(Elf64_Shdr))
 			return -1;
@@ -999,6 +1010,7 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 static int _section_64(FormatPlugin * format, char const * name)
 {
 	FormatPluginHelper * helper = format->helper;
+	Elf * elf = format->priv;
 	int ss;
 	Elf64_Shdr * p;
 	ElfSectionValues * esv;
@@ -1006,10 +1018,10 @@ static int _section_64(FormatPlugin * format, char const * name)
 
 	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
 		return 1;
-	if((p = realloc(es64, sizeof(*es64) * (es64_cnt + 1))) == NULL)
+	if((p = realloc(elf->es64, sizeof(*p) * (elf->es64_cnt + 1))) == NULL)
 		return _elf_error(format);
-	es64 = p;
-	p = &es64[es64_cnt++];
+	elf->es64 = p;
+	p = &elf->es64[elf->es64_cnt++];
 	memset(p, 0, sizeof(*p));
 	esv = _section_values(name);
 	p->sh_name = ss;

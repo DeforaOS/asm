@@ -105,7 +105,7 @@ static ElfArch elf_arch[] =
 	{ "mips",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
 	{ "sparc",	EM_SPARC,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
 	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB, 0x0 },
-	{ NULL,		'\0',		'\0',		'\0', 0x0 	}
+	{ NULL,		'\0',		'\0',		'\0',        0x0 }
 };
 #if defined(__amd64__)
 static const ElfArch * elf_arch_native = &elf_arch[0];

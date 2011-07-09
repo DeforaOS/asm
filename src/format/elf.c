@@ -39,6 +39,7 @@ typedef struct _ElfArch
 	unsigned char machine;
 	unsigned char capacity;
 	unsigned char endian;
+	unsigned long addralign;
 } ElfArch;
 
 typedef struct _ElfSectionValues
@@ -95,25 +96,27 @@ static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
 /* variables */
 static ElfArch elf_arch[] =
 {
-	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB	},
-	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB	},
-	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
-	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
-	{ "i586",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
-	{ "i686",	EM_386,		ELFCLASS32,	ELFDATA2LSB	},
-	{ "mips",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB	},
-	{ "sparc",	EM_SPARC,	ELFCLASS32,	ELFDATA2MSB	},
-	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB	},
-	{ NULL,		'\0',		'\0',		'\0'		}
+	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x0 },
+	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i586",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i686",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "mips",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "sparc",	EM_SPARC,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB, 0x0 },
+	{ NULL,		'\0',		'\0',		'\0', 0x0 	}
 };
 #if defined(__amd64__)
 static const ElfArch * elf_arch_native = &elf_arch[0];
-#elif defined(__i386__)
+#elif defined(__arm__)
 static const ElfArch * elf_arch_native = &elf_arch[1];
+#elif defined(__i386__)
+static const ElfArch * elf_arch_native = &elf_arch[2];
 #elif defined(__sparc64__)
-static const ElfArch * elf_arch_native = &elf_arch[6];
+static const ElfArch * elf_arch_native = &elf_arch[8];
 #elif defined(__sparc__)
-static const ElfArch * elf_arch_native = &elf_arch[5];
+static const ElfArch * elf_arch_native = &elf_arch[7];
 #else
 # error "Unsupported architecture"
 #endif
@@ -760,8 +763,14 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 		else
 			es32[i].sh_size = es32[i + 1].sh_offset
 				- es32[i].sh_offset;
-		es32[i].sh_size = ea->endian == ELFDATA2MSB
+		es32[i].sh_size = (ea->endian == ELFDATA2MSB)
 			? _htob32(es32[i].sh_size) : _htol32(es32[i].sh_size);
+		if(es32[i].sh_type == SHT_PROGBITS)
+			es32[i].sh_addralign = (ea->endian == ELFDATA2MSB)
+				? _htob32(ea->addralign)
+				: _htol32(ea->addralign);
+		es32[i].sh_type = (ea->endian == ELFDATA2MSB)
+			? _htob32(es32[i].sh_type) : _htol32(es32[i].sh_type);
 		if(helper->write(helper->format, &es32[i], sizeof(Elf32_Shdr))
 				!= sizeof(Elf32_Shdr))
 			return -1;
@@ -970,8 +979,14 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 		else
 			es64[i].sh_size = es64[i+1].sh_offset
 				- es64[i].sh_offset;
-		es64[i].sh_size = ea->endian == ELFDATA2MSB
+		es64[i].sh_size = (ea->endian == ELFDATA2MSB)
 			? _htob64(es64[i].sh_size) : _htol64(es64[i].sh_size);
+		if(es64[i].sh_type == SHT_PROGBITS)
+			es64[i].sh_addralign = (ea->endian == ELFDATA2MSB)
+				? _htob64(ea->addralign)
+				: _htol64(ea->addralign);
+		es32[i].sh_type = (ea->endian == ELFDATA2MSB)
+			? _htob32(es32[i].sh_type) : _htol32(es32[i].sh_type);
 		if(helper->write(helper->format, &es64[i], sizeof(Elf64_Shdr))
 				!= sizeof(Elf64_Shdr))
 			return -1;

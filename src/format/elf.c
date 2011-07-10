@@ -39,7 +39,7 @@ typedef struct _ElfArch
 	unsigned char machine;
 	unsigned char capacity;
 	unsigned char endian;
-	unsigned long addralign;
+	uint64_t addralign;
 } ElfArch;
 
 typedef struct _ElfSectionValues
@@ -740,6 +740,7 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 	FormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
+	Elf32_Word addralign = ea->addralign;
 	Elf32_Shdr * es32 = elf->es32;
 	Elf32_Shdr hdr;
 	int i;
@@ -770,8 +771,7 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 			? _htob32(es32[i].sh_size) : _htol32(es32[i].sh_size);
 		if(es32[i].sh_type == SHT_PROGBITS)
 			es32[i].sh_addralign = (ea->endian == ELFDATA2MSB)
-				? _htob32(ea->addralign)
-				: _htol32(ea->addralign);
+				? _htob32(addralign) : _htol32(addralign);
 		es32[i].sh_type = (ea->endian == ELFDATA2MSB)
 			? _htob32(es32[i].sh_type) : _htol32(es32[i].sh_type);
 		if(helper->write(helper->format, &es32[i], sizeof(Elf32_Shdr))
@@ -964,6 +964,7 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 	FormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
+	Elf64_Xword addralign = ea->addralign;
 	Elf64_Shdr * es64 = elf->es64;
 	Elf64_Shdr hdr;
 	int i;
@@ -994,8 +995,7 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 			? _htob64(es64[i].sh_size) : _htol64(es64[i].sh_size);
 		if(es64[i].sh_type == SHT_PROGBITS)
 			es64[i].sh_addralign = (ea->endian == ELFDATA2MSB)
-				? _htob64(ea->addralign)
-				: _htol64(ea->addralign);
+				? _htob64(addralign) : _htol64(addralign);
 		es64[i].sh_type = (ea->endian == ELFDATA2MSB)
 			? _htob32(es64[i].sh_type) : _htol32(es64[i].sh_type);
 		if(helper->write(helper->format, &es64[i], sizeof(Elf64_Shdr))

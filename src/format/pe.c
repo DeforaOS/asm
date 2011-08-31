@@ -17,6 +17,7 @@
 
 #include <System.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -30,7 +31,6 @@
 #pragma pack(1)
 struct pe_header
 {
-	char signature[4];
 	uint16_t machine;
 	uint16_t section_cnt;
 	uint32_t timestamp;
@@ -38,6 +38,75 @@ struct pe_header
 	uint32_t symbol_cnt;
 	uint16_t opthdr_size;
 	uint16_t flags;
+};
+
+struct pe_image_header
+{
+	uint16_t signature;
+	uint8_t major;
+	uint8_t minor;
+	uint32_t code_size;
+	uint32_t code_initialized;
+	uint32_t code_uninitialized;
+	uint32_t entrypoint;
+	uint32_t code_base;
+};
+
+struct pe_image_header_data
+{
+	uint32_t vaddr;
+	uint32_t size;
+};
+
+struct pe_image_header_pe32
+{
+	uint32_t data_base;
+	uint32_t image_base;
+	uint32_t section_alignment;
+	uint32_t file_alignment;
+	uint16_t os_major;
+	uint16_t os_minor;
+	uint16_t image_major;
+	uint16_t image_minor;
+	uint16_t subsys_major;
+	uint16_t subsys_minor;
+	uint32_t win32_version;
+	uint32_t image_size;
+	uint32_t headers_size;
+	uint32_t checksum;
+	uint16_t subsys;
+	uint16_t dll_flags;
+	uint32_t stack_reserved;
+	uint32_t stack_commit;
+	uint32_t heap_reserved;
+	uint32_t heap_commit;
+	uint32_t loader_flags;
+	uint32_t rvasizes_cnt;
+};
+
+struct pe_image_header_pe32_plus
+{
+	uint64_t image_base;
+	uint32_t section_alignment;
+	uint32_t file_alignment;
+	uint16_t os_major;
+	uint16_t os_minor;
+	uint16_t image_major;
+	uint16_t image_minor;
+	uint16_t subsys_major;
+	uint16_t subsys_minor;
+	uint32_t win32_version;
+	uint32_t image_size;
+	uint32_t headers_size;
+	uint32_t checksum;
+	uint16_t subsys;
+	uint16_t dll_flags;
+	uint32_t stack_reserved;
+	uint64_t stack_commit;
+	uint64_t heap_reserved;
+	uint64_t heap_commit;
+	uint32_t loader_flags;
+	uint32_t rvasizes_cnt;
 };
 
 struct pe_msdos
@@ -64,7 +133,34 @@ struct pe_section_header
 	uint16_t lines_cnt;
 	uint32_t flags;
 };
+
+struct pe_symbol
+{
+	union
+	{
+		struct
+		{
+			char name[8];
+		} _short;
+		struct
+		{
+			uint32_t zero;
+			uint32_t offset;
+		} _long;
+	} name;
+	uint32_t value;
+	uint16_t section;
+	uint16_t type;
+	uint8_t storage_class;
+	uint8_t aux_cnt;
+};
 #pragma pack()
+
+
+/* constants */
+#define PE_IMAGE_HEADER_ROM		0x107
+#define PE_IMAGE_HEADER_PE32		0x10b
+#define PE_IMAGE_HEADER_PE32_PLUS	0x20b
 
 
 /* variables */
@@ -120,6 +216,7 @@ FormatPlugin format_plugin =
 static int _pe_init(FormatPlugin * format, char const * arch)
 {
 	FormatPluginHelper * helper = format->helper;
+	char const ps[4] = { 'P', 'E', '\0', '\0' };
 	int machine;
 	struct pe_msdos pm;
 	struct pe_header ph;
@@ -128,16 +225,20 @@ static int _pe_init(FormatPlugin * format, char const * arch)
 		return 0;
 	if((machine = _pe_get_machine(arch)) < 0)
 		return -1;
+	/* output the MS-DOS header */
 	memset(&pm, 0, sizeof(pm));
 	memcpy(pm.signature, _pe_msdos_signature, sizeof(pm.signature));
 	pm.offset = sizeof(pm);
+	if(helper->write(helper->format, &pm, sizeof(pm)) != sizeof(pm))
+		return -1;
+	/* output the PE signature */
+	if(helper->write(helper->format, &ps, sizeof(ps)) != sizeof(ps))
+		return -1;
+	/* output the PE header */
 	memset(&ph, 0, sizeof(ph));
-	memcpy(ph.signature, _pe_header_signature, sizeof(ph.signature));
 	ph.machine = _htol16(machine);
 	ph.timestamp = _htol32(time(NULL));
 	/* FIXME update the section and symbol lists */
-	if(helper->write(helper->format, &pm, sizeof(pm)) != sizeof(pm))
-		return -1;
 	if(helper->write(helper->format, &ph, sizeof(ph)) != sizeof(ph))
 		return -1;
 	return 0;
@@ -155,7 +256,7 @@ static char const * _pe_detect(FormatPlugin * format)
 		return NULL;
 	if(helper->read(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return NULL;
-	pm.offset = _htol16(pm.offset);
+	pm.offset = _htol16(pm.offset) + 4;
 	if(helper->seek(helper->format, pm.offset, SEEK_SET) != pm.offset)
 		return NULL;
 	if(helper->read(helper->format, &ph, sizeof(ph)) != sizeof(ph))
@@ -174,36 +275,117 @@ static int _pe_decode(FormatPlugin * format)
 	struct pe_msdos pm;
 	struct pe_header ph;
 	size_t i;
+	size_t cnt;
 	struct pe_section_header psh;
+	char * p = NULL;
+	struct pe_image_header * pih;
+	struct pe_image_header_pe32 * pih32;
+	struct pe_image_header_pe32_plus * pih32p;
+	struct pe_image_header_data * pid = NULL;
+	off_t offset = 0;
+	struct pe_symbol ps;
 
+	/* read the MS-DOS header */
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
 	if(helper->read(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return -1;
-	if((pm.offset = _htol16(pm.offset)) != sizeof(pm)
-			&& helper->seek(helper->format, pm.offset, SEEK_SET)
-			!= pm.offset)
+	/* read the PE header, skipping the PE signature */
+	pm.offset = _htol16(pm.offset) + 4;
+	if(helper->seek(helper->format, pm.offset, SEEK_SET) != pm.offset)
 		return -1;
 	if(helper->read(helper->format, &ph, sizeof(ph)) != sizeof(ph))
 		return _decode_error(format);
 	ph.section_cnt = _htol16(ph.section_cnt);
 	ph.opthdr_size = _htol16(ph.opthdr_size);
-	if(ph.section_cnt > 0 && ph.opthdr_size != 0
-			&& helper->seek(helper->format, ph.opthdr_size,
-				SEEK_CUR) < 0)
+	/* read the optional header if available, skip it if bogus */
+	if(ph.opthdr_size >= sizeof(*pih))
+	{
+		if((p = malloc(ph.opthdr_size)) == NULL)
+			return _decode_error(format);
+		if(helper->read(helper->format, p, ph.opthdr_size)
+				!= ph.opthdr_size)
+		{
+			free(p);
+			return _decode_error(format);
+		}
+		pih = (struct pe_image_header *)p;
+		pih->signature = _htol16(pih->signature);
+		/* read any additional part of the optional header */
+		cnt = 0;
+		if(pih->signature == PE_IMAGE_HEADER_PE32
+				&& ph.opthdr_size >= sizeof(*pih)
+				+ sizeof(*pih32))
+		{
+			/* PE32 executable */
+			pih32 = (struct pe_image_header_pe32 *)(pih + 1);
+			pih32->image_base = _htol32(pih32->image_base);
+			pih32->rvasizes_cnt = _htol32(pih32->rvasizes_cnt);
+			offset = pih32->image_base;
+			pid = (struct pe_image_header_data *)pih32 + 1;
+			cnt = pih32->rvasizes_cnt;
+		}
+		else if(pih->signature == PE_IMAGE_HEADER_PE32_PLUS
+				&& ph.opthdr_size >= sizeof(*pih)
+				+ sizeof(*pih32p))
+		{
+			/* PE32+ executable */
+			pih32p = (struct pe_image_header_pe32_plus *)(pih + 1);
+			pih32p->image_base = _htol64(pih32p->image_base);
+			pih32p->rvasizes_cnt = _htol32(pih32p->rvasizes_cnt);
+			offset = pih32p->image_base;
+			pid = (struct pe_image_header_data *)pih32p + 1;
+			cnt = pih32p->rvasizes_cnt;
+		}
+		/* read the data directories */
+		for(i = 0; pid != NULL && (char *)(&pid[i + 1]) < p
+				+ ph.opthdr_size && i < cnt; i++)
+		{
+			pid[i].vaddr = _htol32(pid[i].vaddr);
+			pid[i].size = _htol32(pid[i].size);
+			/* FIXME really implement */
+#ifdef DEBUG
+			fprintf(stderr, "DEBUG: %s() pid[%lu] 0x%08x, 0x%08x\n",
+					__func__, i, pid[i].vaddr, pid[i].size);
+#endif
+		}
+	}
+	else if(ph.opthdr_size != 0 && helper->seek(helper->format,
+				ph.opthdr_size, SEEK_CUR) != ph.opthdr_size)
 		return _decode_error(format);
+	/* read and decode each section */
 	for(i = 0; i < ph.section_cnt; i++)
 	{
 		if(helper->read(helper->format, &psh, sizeof(psh))
 				!= sizeof(psh))
-			return -1;
+			break;
 		psh.name[sizeof(psh.name) - 1] = '\0';
 		psh.vaddr = _htol32(psh.vaddr);
 		psh.raw_size = _htol32(psh.raw_size);
 		psh.raw_offset = _htol32(psh.raw_offset);
 		helper->decode(helper->format, psh.name, psh.raw_offset,
-				psh.raw_size, psh.vaddr);
+				psh.raw_size, psh.vaddr + offset);
 	}
+	if(i != ph.section_cnt)
+	{
+		free(p);
+		return -1;
+	}
+	/* read symbols (deprecated COFF debugging information) */
+	if(ph.symbol_offset != 0 && helper->seek(helper->format,
+				ph.symbol_offset, SEEK_SET) == ph.symbol_offset)
+	{
+		for(i = 0; i < ph.symbol_cnt; i++)
+		{
+			if(helper->read(helper->format, &ps, sizeof(ps))
+					!= sizeof(ps))
+				break;
+			/* FIXME implement */
+		}
+	}
+	/* read symbols */
+	/* FIXME implement */
+	free(p);
 	return 0;
 }
 

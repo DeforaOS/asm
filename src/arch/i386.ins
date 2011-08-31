@@ -129,6 +129,7 @@
 /* immediate values */
 #define OP_S8		AO_IMMEDIATE(AOF_SIGNED, 8, 0)
 #define OP_SW		AO_IMMEDIATE(AOF_SIGNED, W, 0)
+#define OP_SW_FUNC	AO_IMMEDIATE(AOF_SIGNED, W, AOI_REFERS_FUNCTION)
 #define OP_U8		AO_IMMEDIATE(0, 8, 0)
 #define OP_U16		AO_IMMEDIATE(0, 16, 0)
 #define OP_UW		AO_IMMEDIATE(0, W, 0)
@@ -335,7 +336,7 @@
 { "bts",	0x0fba,		OP2F, OP_RMW_DW+5,OP_S8,     AOT_NONE	},
 { "bts",	0x0fba,		OP2F, OP_RMW_RW+5,OP_S8,     AOT_NONE	},
 /* CALL */
-{ "call",	0xe8,		OP1F, OP_SW,      AOT_NONE,  AOT_NONE	},
+{ "call",	0xe8,		OP1F, OP_SW_FUNC, AOT_NONE,  AOT_NONE	},
 /* FIXME implement */
 #if defined(ARCH_i386_real)
 /* CBW		0x98		1					*/

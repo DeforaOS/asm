@@ -338,7 +338,7 @@ int code_decode_at(Code * code, char const * section, off_t offset,
 				base) != 0)
 		return -1;
 	if(size != 0)
-		printf("\n%08lx:\n", (long)offset + (long)base);
+		printf("\n%08lx:\n", (long)base);
 	for(i = 0; i < calls_cnt; i++)
 		code_print(code, &calls[i]);
 	free(calls);
@@ -357,7 +357,7 @@ int code_decode_buffer(Code * code, char const * buffer, size_t size)
 	size_t i;
 
 	arch_init_buffer(code->arch, buffer, size);
-	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt)) == 0)
+	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt, 0)) == 0)
 	{
 		for(i = 0; i < calls_cnt; i++)
 			code_print(code, &calls[i]);
@@ -429,7 +429,7 @@ int code_print(Code * code, ArchInstructionCall * call)
 
 	if(arch_seek(code->arch, call->offset, SEEK_SET) < 0)
 		return -1;
-	printf("%8lx:", (long)call->base + (long)call->offset);
+	printf("%8lx:", (long)call->base);
 	for(i = 0; i < call->size; i++)
 	{
 		if(arch_read(code->arch, &u8, sizeof(u8)) != sizeof(u8))

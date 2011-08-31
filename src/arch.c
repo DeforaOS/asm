@@ -436,12 +436,13 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 /* useful */
 /* arch_decode */
 int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
-		size_t * calls_cnt)
+		size_t * calls_cnt, off_t base)
 {
 	int ret = 0;
 	ArchInstructionCall * c = NULL;
 	size_t c_cnt = 0;
 	ArchInstructionCall * p;
+	size_t offset = 0;
 
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
@@ -458,11 +459,12 @@ int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
 		c = p;
 		p = &c[c_cnt];
 		memset(p, 0, sizeof(*p));
-		p->base = arch->base;
+		p->base = base + offset;
 		p->offset = arch->buffer_pos;
-		if(arch->plugin->decode(arch->plugin, p) != 0)
+		if(arch->plugin->decode(arch->plugin, p, base) != 0)
 			break;
 		p->size = arch->buffer_pos - p->offset;
+		offset += p->size;
 		c_cnt++;
 	}
 	if(ret == 0)
@@ -491,7 +493,7 @@ int arch_decode_at(Arch * arch, Code * code, ArchInstructionCall ** calls,
 	arch->code = code;
 	arch->buffer_pos = offset;
 	arch->buffer_cnt = offset + size;
-	if((ret = arch_decode(arch, code, calls, calls_cnt)) == 0
+	if((ret = arch_decode(arch, code, calls, calls_cnt, base)) == 0
 			&& fseek(arch->fp, offset + size, SEEK_SET) != 0)
 	{
 		free(*calls); /* XXX the pointer was updated anyway... */

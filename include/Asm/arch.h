@@ -221,7 +221,8 @@ struct _ArchPlugin
 
 	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
 			ArchInstructionCall * call);
-	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);
+	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call,
+			off_t base);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

@@ -61,7 +61,7 @@ int arch_write(Arch * arch, ArchInstruction * instruction,
 
 /* disassembly */
 int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
-		size_t * calls_cnt);
+		size_t * calls_cnt, off_t base);
 int arch_decode_at(Arch * arch, Code * code, ArchInstructionCall ** calls,
 		size_t * calls_cnt, off_t offset, size_t size, off_t base);
 ssize_t arch_read(Arch * arch, void * buf, size_t cnt);

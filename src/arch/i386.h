@@ -23,7 +23,8 @@
 /* i386 */
 /* private */
 /* prototypes */
-static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call);
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
+		off_t base);
 static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
@@ -45,18 +46,22 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 
-static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
+		off_t base)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	ArchInstruction * ai = NULL;
+	unsigned int opcode;
 	uint8_t u8;
 	uint16_t u16;
 	size_t i;
+	off_t offset;
 
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
-	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
+	opcode = u8;
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
 			== NULL)
 	{
 		u16 = u8;
@@ -70,9 +75,9 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			call->operands_cnt = 1;
 			return 0;
 		}
-		u16 = (u16 << 8) | u8;
+		opcode = (u16 << 8) | u8;
 		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
-						u16)) == NULL)
+						opcode)) == NULL)
 		{
 			call->name = "dw";
 			call->operands[0].definition = AO_IMMEDIATE(0, 16, 0);
@@ -92,6 +97,14 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		if(_decode_operand(plugin, call, &i) != 0)
 			return -1;
 	call->operands_cnt = i;
+	/* additional adjustments */
+	switch(opcode)
+	{
+		case 0xe8: /* call */
+			call->operands[0].value.immediate.value += call->base
+				+ 5;
+			break;
+	}
 	return 0;
 }
 

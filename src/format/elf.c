@@ -388,7 +388,7 @@ static int _elf_decode32(FormatPlugin * format)
 			helper->decode(helper->format,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
-					base);
+					base + shdr[i].sh_offset);
 	}
 	free(shstrtab);
 	free(shdr);

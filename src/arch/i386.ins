@@ -772,10 +772,16 @@
 { "jg",		0x0f8f,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JGE		0x7d		1     rel8				*/
 { "jge",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JGE		0x0f8d		2     relW				*/
+{ "jge",	0x0f8d,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JL		0x7c		1     rel8				*/
 { "jl",		0x7c,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JL		0x0f8c		2     relW				*/
+{ "jl",		0x0f8c,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JLE		0x7e		1     rel8				*/
 { "jle",	0x7e,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JLE		0x0f8e		2     relW				*/
+{ "jle",	0x0f8e,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JMP		0xeb		1     imm8				*/
 { "jmp",	0xeb,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JMP		0xe9		1     immW				*/
@@ -785,40 +791,83 @@
 { "jmp",	0xff,		OP1F, OP_RMW_D8+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_DW+4,AOT_NONE,  AOT_NONE	},
 { "jmp",	0xff,		OP1F, OP_RMW_RW+4,AOT_NONE,  AOT_NONE	},
+/* JMP		0xff /5		1     m16int				*/
+{ "jmp",	0xff,		OP1F, OP_RMW_D0+5,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_D8+5,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_DW+5,AOT_NONE,  AOT_NONE	},
+{ "jmp",	0xff,		OP1F, OP_RMW_RW+5,AOT_NONE,  AOT_NONE	},
 /* JNA		0x76		1     rel8				*/
 { "jna",	0x76,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNA		0x0f86		2     relW				*/
+{ "jna",	0x0f86,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNAE		0x72		1     rel8				*/
 { "jnae",	0x72,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNAE		0x0f82		2     relW				*/
+{ "jnae",	0x0f82,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNB		0x73		1     rel8				*/
 { "jnb",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNB		0x0f83		2     relW				*/
+{ "jnb",	0x0f83,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNBE		0x77		1     rel8				*/
 { "jnbe",	0x77,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNBE		0x0f87		2     relW				*/
+{ "jnbe",	0x0f87,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNC		0x73		1     rel8				*/
 { "jnc",	0x73,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNC		0x0f83		2     relW				*/
+{ "jnc",	0x0f83,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNE		0x75		1     rel8				*/
 { "jne",	0x75,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNE		0x0f85		2     relW				*/
+{ "jne",	0x0f85,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNG		0x7e		1     rel8				*/
 { "jng",	0x7e,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNG		0x0f8e		2     relW				*/
+{ "jng",	0x0f8e,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNGE		0x7c		1     rel8				*/
 { "jnge",	0x7c,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNGE		0x0f8c		2     relW				*/
+{ "jnge",	0x0f8c,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNL		0x7d		1     rel8				*/
 { "jnl",	0x7d,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNL		0x0f8d		2     relW				*/
+{ "jnl",	0x0f8d,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNLE		0x7f		1     rel8				*/
 { "jnle",	0x7f,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNLE		0x0f8f		2     relW				*/
+{ "jnle",	0x0f8f,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNO		0x71		1     rel8				*/
 { "jno",	0x71,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNO		0x0f81		2     relW				*/
+{ "jno",	0x0f81,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JNP		0x7b		1     rel8				*/
 { "jnp",	0x7b,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNP		0x0f8b		2     relW				*/
+{ "jnp",	0x0f8b,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
+/* JNS		0x79		1     rel8				*/
+{ "jns",	0x79,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JNS		0x0f89		2     relW				*/
+{ "jns",	0x0f89,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JO		0x70		1     rel8				*/
 { "jo",		0x70,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JO		0x0f80		2     relW				*/
+{ "jo",		0x0f80,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JP		0x7a		1     rel8				*/
 { "jp",		0x7a,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JP		0x0f8a		2     relW				*/
+{ "jp",		0x0f8a,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JPE		0x7a		1     rel8				*/
 { "jpe",	0x7a,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JPE		0x0f8a		2     relW				*/
+{ "jpe",	0x0f8a,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JPO		0x7b		1     rel8				*/
 { "jpo",	0x7b,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JPO		0x0f8b		2     relW				*/
+{ "jpo",	0x0f8b,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JS		0x78		1     rel8				*/
 { "js",		0x78,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
+/* JS		0x0f88		2     relW				*/
+{ "js",		0x0f88,		OP2F, OP_SW,      AOT_NONE,  AOT_NONE	},
 /* JZ		0x74		1     rel8				*/
 { "jz",		0x74,		OP1F, OP_S8,      AOT_NONE,  AOT_NONE	},
 /* JZ		0x0f84		2     relW				*/

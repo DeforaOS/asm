@@ -22,8 +22,7 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base);
+static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
@@ -31,8 +30,7 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 /* functions */
 /* plug-in */
 /* sparc_decode */
-static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base)
+static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	uint32_t u32;

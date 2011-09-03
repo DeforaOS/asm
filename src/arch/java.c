@@ -250,8 +250,7 @@ static ArchInstruction _java_instructions[] =
 /* plug-in */
 static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
-static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base);
+static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
 
 /* public */
@@ -318,8 +317,7 @@ static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 
 /* java_decode */
-static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base)
+static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;

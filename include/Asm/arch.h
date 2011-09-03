@@ -203,6 +203,7 @@ typedef struct _ArchPluginHelper
 	ssize_t (*write)(Arch * arch, void const * buf, size_t size);
 
 	/* disassembly */
+	ssize_t (*peek)(Arch * arch, void * buf, size_t size);
 	ssize_t (*read)(Arch * arch, void * buf, size_t size);
 	off_t (*seek)(Arch * arch, off_t offset, int whence);
 } ArchPluginHelper;
@@ -221,8 +222,7 @@ struct _ArchPlugin
 
 	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
 			ArchInstructionCall * call);
-	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call,
-			off_t base);
+	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

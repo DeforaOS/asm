@@ -23,8 +23,7 @@
 /* i386 */
 /* private */
 /* prototypes */
-static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base);
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
@@ -41,13 +40,16 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t * i);
 static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i, uint8_t u8);
+static ArchInstruction * _decode_opcode(ArchPlugin * plugin,
+		ArchInstruction * ai);
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t * i);
+static int _decode_postproc(ArchPlugin * plugin, ArchInstructionCall * call,
+		unsigned int opcode);
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t i);
 
-static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
-		off_t base)
+static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
 	ArchInstruction * ai = NULL;
@@ -55,7 +57,6 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
 	uint8_t u8;
 	uint16_t u16;
 	size_t i;
-	off_t offset;
 
 	/* FIXME detect end of input */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
@@ -88,6 +89,8 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
 			return 0;
 		}
 	}
+	if((ai = _decode_opcode(plugin, ai)) == NULL)
+		return -1;
 	call->name = ai->name;
 	call->operands[0].definition = ai->op1;
 	call->operands[1].definition = ai->op2;
@@ -97,15 +100,7 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call,
 		if(_decode_operand(plugin, call, &i) != 0)
 			return -1;
 	call->operands_cnt = i;
-	/* additional adjustments */
-	switch(opcode)
-	{
-		case 0xe8: /* call */
-			call->operands[0].value.immediate.value += call->base
-				+ 5;
-			break;
-	}
-	return 0;
+	return _decode_postproc(plugin, call, opcode);
 }
 
 static int _decode_constant(ArchPlugin * plugin, ArchInstructionCall * call,
@@ -211,6 +206,7 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 				|| AO_GET_TYPE(ao[*i + 1].definition)
 				== AOT_DREGISTER))
 		ao2 = &call->operands[*i + 1];
+	/* FIXME invert ao1 and ao2 if the instruction is meant this way? */
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
 	mod = (u8 >> 6) & 0x3;
@@ -233,8 +229,7 @@ static int _decode_modrm(ArchPlugin * plugin, ArchInstructionCall * call,
 	{
 		ret = _decode_modrm_do(plugin, call, (*i)++,
 				(0x3 << 6) | (reg << 3));
-		ret |= _decode_modrm_do(plugin, call, *i,
-				(mod << 6) | (rm << 3));
+		ret |= _decode_modrm_do(plugin, call, *i, (mod << 6) | rm);
 	}
 	else
 		/* FIXME really implement */
@@ -257,7 +252,7 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 	reg = (u8 >> 3) & 0x7;
 	rm = u8 & 0x7;
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: u8=0x%02x (%u %u %u) size=%u\n",
+	fprintf(stderr, "DEBUG: %s() u8=0x%02x (%u %u %u) size=%u\n", __func__,
 			u8, mod, reg, rm, AO_GET_SIZE(ao->definition));
 #endif
 	if(mod == 3)
@@ -312,6 +307,41 @@ static int _decode_modrm_do(ArchPlugin * plugin, ArchInstructionCall * call,
 	return 0;
 }
 
+static ArchInstruction * _decode_opcode(ArchPlugin * plugin,
+		ArchInstruction * ai)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	ArchInstruction * p;
+	size_t i;
+	uint8_t mod;
+
+	if(AO_GET_FLAGS(ai->op1) & AOF_I386_MODRM)
+	{
+		if(helper->peek(helper->arch, &mod, 1) != 1)
+			return NULL;
+		/* XXX this assumes helper->get_instruction_by_opcode() returns
+		 * the first match, and from the plugin->instructions list */
+		for(i = 0; plugin->instructions[i].name != NULL
+				&& &plugin->instructions[i] != ai; i++);
+		if(plugin->instructions[i].name == NULL)
+			return ai;
+		for(i++; plugin->instructions[i].name != NULL; i++)
+		{
+			p = &plugin->instructions[i];
+			if(p->opcode != ai->opcode || AO_GET_SIZE(ai->flags)
+					!= AO_GET_SIZE(p->flags))
+				continue;
+			if((AO_GET_FLAGS(p->op1) & AOF_I386_MODRM)
+					!= AOF_I386_MODRM)
+				continue;
+			if((mod & 0x07) == (AO_GET_VALUE(p->op1) & 0x07))
+				return p;
+		}
+		/* XXX should we return NULL there? */
+	}
+	return ai;
+}
+
 static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 		size_t * i)
 {
@@ -333,6 +363,43 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 			return _decode_register(plugin, call, *i);
 	}
 	return -error_set_code(1, "%s", strerror(ENOSYS));
+}
+
+static int _decode_postproc(ArchPlugin * plugin, ArchInstructionCall * call,
+		unsigned int opcode)
+{
+	switch(opcode)
+	{
+		case 0xe8: /* call */
+		case 0xe9: /* jump */
+			call->operands[0].value.immediate.value += call->base
+				+ 5;
+			break;
+		case 0x0f80: /* jo */
+		case 0x0f81: /* jno */
+		case 0x0f82: /* jnae */
+		case 0x0f83: /* jae, jnb, jnc */
+		case 0x0f84: /* je, jz */
+		case 0x0f85: /* jne */
+		case 0x0f86: /* jna */
+		case 0x0f87: /* ja, jnbe */
+		case 0x0f88: /* js */
+		case 0x0f89: /* jns */
+		case 0x0f8a: /* jp, jpe */
+		case 0x0f8b: /* jnp, jpo */
+		case 0x0f8c: /* jl, jnge */
+		case 0x0f8d: /* jnl, jge */
+		case 0x0f8e: /* jle, jng */
+		case 0x0f8f: /* jg, jnle */
+			call->operands[0].value.immediate.value += call->base
+				+ 6;
+			break;
+		case 0xeb: /* jump */
+			call->operands[0].value.immediate.value += call->base
+				+ 2;
+			break;
+	}
+	return 0;
 }
 
 static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,

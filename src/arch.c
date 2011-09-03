@@ -67,7 +67,9 @@ struct _Arch
 static char const * _arch_get_filename(Arch * arch);
 static AsmFunction * _arch_get_function_by_id(Arch * arch, AsmId id);
 static AsmString * _arch_get_string_by_id(Arch * arch, AsmId id);
+static ssize_t _arch_peek(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size);
+static ssize_t _arch_peek_buffer(Arch * arch, void * buf, size_t size);
 static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
 static off_t _arch_seek(Arch * arch, off_t offset, int whence);
 static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence);
@@ -461,7 +463,7 @@ int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
 		memset(p, 0, sizeof(*p));
 		p->base = base + offset;
 		p->offset = arch->buffer_pos;
-		if(arch->plugin->decode(arch->plugin, p, base) != 0)
+		if(arch->plugin->decode(arch->plugin, p) != 0)
 			break;
 		p->size = arch->buffer_pos - p->offset;
 		offset += p->size;
@@ -539,6 +541,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.get_string_by_id = _arch_get_string_by_id;
+	arch->helper.peek = _arch_peek;
 	arch->helper.read = _arch_read;
 	arch->helper.seek = _arch_seek;
 	arch->helper.write = _arch_write;
@@ -567,6 +570,7 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
 	arch->helper.get_string_by_id = _arch_get_string_by_id;
 	arch->helper.write = NULL;
+	arch->helper.peek = _arch_peek_buffer;
 	arch->helper.read = _arch_read_buffer;
 	arch->helper.seek = _arch_seek_buffer;
 	arch->plugin->helper = &arch->helper;
@@ -626,6 +630,36 @@ static AsmString * _arch_get_string_by_id(Arch * arch, AsmId id)
 }
 
 
+/* arch_peek */
+static ssize_t _arch_peek(Arch * arch, void * buf, size_t size)
+{
+	size_t pos = arch->buffer_pos;
+	ssize_t s;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(arch, %p, %zu)\n", __func__, buf, size);
+#endif
+	if((s = _arch_read(arch, buf, size)) == -1)
+		return -1;
+	if(_arch_seek(arch, -s, SEEK_CUR) == -1)
+		return -1;
+	return s;
+}
+
+
+/* arch_peek_buffer */
+static ssize_t _arch_peek_buffer(Arch * arch, void * buf, size_t size)
+{
+	ssize_t s;
+
+	if((s = _arch_read_buffer(arch, buf, size)) == -1)
+		return -1;
+	if(_arch_seek_buffer(arch, -s, SEEK_CUR) == -1)
+		return -1;
+	return s;
+}
+
+
 /* arch_read */
 static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
 {
@@ -665,9 +699,12 @@ static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
 /* arch_seek */
 static off_t _arch_seek(Arch * arch, off_t offset, int whence)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(arch, %ld, %d)\n", __func__, offset, whence);
+#endif
 	if(fseek(arch->fp, offset, whence) != 0)
-		return -error_set_code(1, "%s: %s", arch->filename,
-				strerror(errno));
+		return -error_set_code(1, "%s: %s", arch->filename, strerror(
+					errno));
 	arch->buffer_pos = ftello(arch->fp);
 	return arch->buffer_pos;
 }

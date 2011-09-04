@@ -277,7 +277,7 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 	DexMapTryItem dmti;
 	ssize_t s;
 
-	if(helper->decode(helper->format, ".text", offset, 0, 0) != 0)
+	if(helper->decode(helper->format, ".text", offset, 0, offset) != 0)
 		return -1;
 	for(i = 0; i < size; i++)
 	{
@@ -292,7 +292,7 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 		dmci.insns_size = _htol32(dmci.insns_size);
 		seek = helper->seek(helper->format, 0, SEEK_CUR);
 		if(helper->decode(helper->format, NULL, seek,
-					dmci.insns_size * 2, 0) != 0)
+					dmci.insns_size * 2, seek) != 0)
 			return -1;
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
@@ -319,7 +319,7 @@ static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
 				dmti.handler_off = _htol16(dmti.handler_off);
 			}
 			seek = helper->seek(helper->format, 0, SEEK_CUR);
-			if(helper->decode(helper->format, NULL, seek, 8, 0)
+			if(helper->decode(helper->format, NULL, seek, 8, seek)
 					!= 0)
 				return -1;
 		}

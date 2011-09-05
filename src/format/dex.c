@@ -125,7 +125,7 @@ static char _dex_signature[4] = "dex\n";
 static int _dex_init(FormatPlugin * format, char const * arch);
 static int _dex_exit(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
-static int _dex_decode(FormatPlugin * format);
+static int _dex_decode(FormatPlugin * format, int raw);
 
 
 /* public */
@@ -196,7 +196,7 @@ static int _decode_map_method_id(FormatPlugin * format, off_t offset,
 static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 		size_t size);
 
-static int _dex_decode(FormatPlugin * format)
+static int _dex_decode(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	DexHeader dh;

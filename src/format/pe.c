@@ -193,7 +193,7 @@ static char const _pe_header_signature[4] = "PE\0\0";
 /* plug-in */
 static int _pe_init(FormatPlugin * format, char const * arch);
 static char const * _pe_detect(FormatPlugin * format);
-static int _pe_decode(FormatPlugin * format);
+static int _pe_decode(FormatPlugin * format, int raw);
 
 /* useful */
 static char const * _pe_get_arch(uint16_t machine);
@@ -277,7 +277,7 @@ static char const * _pe_detect(FormatPlugin * format)
 /* pe_decode */
 static int _decode_error(FormatPlugin * format);
 
-static int _pe_decode(FormatPlugin * format)
+static int _pe_decode(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	struct pe_msdos pm;

@@ -28,8 +28,8 @@
 /* deasm */
 /* private */
 /* prototypes */
-static int _deasm(char const * arch, char const * format,
-		char const * filename);
+static int _deasm(char const * arch, char const * format, char const * filename,
+		int raw);
 static int _deasm_buffer(char const * arch, char const * format,
 		char const * buffer, size_t size);
 static int _deasm_string(char const * arch, char const * format,
@@ -41,14 +41,15 @@ static int _usage(void);
 
 /* functions */
 /* deasm */
-static int _deasm(char const * arch, char const * format, char const * filename)
+static int _deasm(char const * arch, char const * format, char const * filename,
+		int raw)
 {
 	int ret;
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
 		return -error_print("deasm");
-	if((ret = asm_open_deassemble(a, filename)) != 0)
+	if((ret = asm_open_deassemble(a, filename, raw)) != 0)
 		error_print("deasm");
 	else
 		asm_close(a);
@@ -164,8 +165,9 @@ int main(int argc, char * argv[])
 	char const * arch = NULL;
 	char const * format = NULL;
 	char const * string = NULL;
+	int raw = 0;
 
-	while((o = getopt(argc, argv, "a:f:ls:")) != -1)
+	while((o = getopt(argc, argv, "a:f:ls:D")) != -1)
 		switch(o)
 		{
 			case 'a':
@@ -179,12 +181,15 @@ int main(int argc, char * argv[])
 			case 's':
 				string = optarg;
 				break;
+			case 'D':
+				raw = 1;
+				break;
 			default:
 				return _usage();
 		}
 	if(optind == argc && string != NULL)
 		return _deasm_string(arch, format, string);
 	else if(optind + 1 == argc && string == NULL)
-		return (_deasm(arch, format, argv[optind]) == 0) ? 0 : 2;
+		return (_deasm(arch, format, argv[optind], raw) == 0) ? 0 : 2;
 	return _usage();
 }

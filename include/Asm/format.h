@@ -69,7 +69,7 @@ struct _FormatPlugin
 	int (*section)(FormatPlugin * format, char const * section);
 
 	char const * (*detect)(FormatPlugin * format);
-	int (*decode)(FormatPlugin * format);
+	int (*decode)(FormatPlugin * format, int raw);
 
 	void * priv;
 };

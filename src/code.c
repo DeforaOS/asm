@@ -316,11 +316,11 @@ int code_close(Code * code)
 
 
 /* code_decode */
-int code_decode(Code * code)
+int code_decode(Code * code, int raw)
 {
 	printf("%s: %s-%s\n", code->filename, format_get_name(code->format),
 			arch_get_name(code->arch));
-	return format_decode(code->format, code);
+	return format_decode(code->format, code, raw);
 }
 
 

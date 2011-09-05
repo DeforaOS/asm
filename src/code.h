@@ -56,7 +56,7 @@ int code_instruction(Code * code, ArchInstructionCall * call);
 int code_section(Code * code, char const * section);
 
 /* disassembly */
-int code_decode(Code * code);
+int code_decode(Code * code, int raw);
 int code_decode_at(Code * code, char const * section, off_t offset,
 		size_t size, off_t base);
 int code_decode_buffer(Code * code, char const * buffer, size_t size);

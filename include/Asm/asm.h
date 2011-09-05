@@ -109,7 +109,7 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 
 /* deassemble */
 int asm_deassemble(Asm * a, char const * buffer, size_t size);
-int asm_open_deassemble(Asm * a, char const * filename);
+int asm_open_deassemble(Asm * a, char const * filename, int raw);
 
 /* plug-in helpers */
 int asm_plugin_list(AsmPluginType type);

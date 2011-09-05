@@ -24,7 +24,7 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _flat_decode(FormatPlugin * format);
+static int _flat_decode(FormatPlugin * format, int raw);
 
 
 /* public */
@@ -49,7 +49,7 @@ FormatPlugin format_plugin =
 /* functions */
 /* plug-in */
 /* flat_decode */
-static int _flat_decode(FormatPlugin * format)
+static int _flat_decode(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	off_t offset;

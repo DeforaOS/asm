@@ -258,7 +258,7 @@ int asm_open_assemble(Asm * a, char const * outfile)
 
 
 /* asm_open_deassemble */
-int asm_open_deassemble(Asm * a, char const * filename)
+int asm_open_deassemble(Asm * a, char const * filename, int raw)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
@@ -268,7 +268,7 @@ int asm_open_deassemble(Asm * a, char const * filename)
 				code_get_filename(a->code));
 	if((a->code = code_new_file(a->arch, a->format, filename)) == NULL)
 		return -1;
-	if(code_decode(a->code) != 0)
+	if(code_decode(a->code, raw) != 0)
 		return -1;
 	return 0;
 }

@@ -76,9 +76,9 @@ static int _elf_error(FormatPlugin * format);
 static int _elf_init(FormatPlugin * format, char const * arch);
 static int _elf_exit(FormatPlugin * format);
 static char const * _elf_detect(FormatPlugin * format);
-static int _elf_decode(FormatPlugin * format);
-static int _elf_decode32(FormatPlugin * format);
-static int _elf_decode64(FormatPlugin * format);
+static int _elf_decode(FormatPlugin * format, int raw);
+static int _elf_decode32(FormatPlugin * format, int raw);
+static int _elf_decode64(FormatPlugin * format, int raw);
 
 /* ELF32 */
 static int _init_32(FormatPlugin * format);
@@ -332,11 +332,11 @@ static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 
 
 /* elf_decode */
-static int _elf_decode(FormatPlugin * format)
+static int _elf_decode(FormatPlugin * format, int raw)
 {
 	if(_elf_detect(format) == NULL)
 		return -1;
-	return format->decode(format);
+	return format->decode(format, raw);
 }
 
 
@@ -349,7 +349,7 @@ static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
 
-static int _elf_decode32(FormatPlugin * format)
+static int _elf_decode32(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	Elf32_Ehdr ehdr;
@@ -488,7 +488,7 @@ static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
 
-static int _elf_decode64(FormatPlugin * format)
+static int _elf_decode64(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	Elf64_Ehdr ehdr;

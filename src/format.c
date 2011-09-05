@@ -129,7 +129,7 @@ char const * format_get_name(Format * format)
 
 /* useful */
 /* format_decode */
-int format_decode(Format * format, Code * code)
+int format_decode(Format * format, Code * code, int raw)
 {
 	int ret;
 
@@ -137,7 +137,7 @@ int format_decode(Format * format, Code * code)
 		return error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
 	format->code = code;
-	ret = format->plugin->decode(format->plugin);
+	ret = format->plugin->decode(format->plugin, raw);
 	format->code = NULL;
 	return ret;
 }

@@ -105,7 +105,7 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 static int _java_init(FormatPlugin * format, char const * arch);
 static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
-static int _java_decode(FormatPlugin * format);
+static int _java_decode(FormatPlugin * format, int raw);
 
 static int _java_error(FormatPlugin * format);
 
@@ -297,7 +297,7 @@ static int _decode_skip_constants(FormatPlugin * format, uint16_t cnt);
 static int _decode_skip_fields(FormatPlugin * format, uint16_t cnt);
 static int _decode_skip_interfaces(FormatPlugin * format, uint16_t cnt);
 
-static int _java_decode(FormatPlugin * format)
+static int _java_decode(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	JavaHeader jh;

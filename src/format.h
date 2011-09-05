@@ -50,7 +50,7 @@ int format_function(Format * format, char const * function);
 int format_section(Format * format, char const * section);
 
 /* disassembly */
-int format_decode(Format * format, Code * code);
+int format_decode(Format * format, Code * code, int raw);
 char const * format_detect_arch(Format * format);
 int format_match(Format * format);
 

@@ -383,8 +383,8 @@ static int _elf_decode32(FormatPlugin * format, int raw)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
 			continue;
-		if(shdr[i].sh_type == SHT_PROGBITS
-				&& shdr[i].sh_flags & SHF_EXECINSTR)
+		if(raw || (shdr[i].sh_type == SHT_PROGBITS
+					&& shdr[i].sh_flags & SHF_EXECINSTR))
 			helper->decode(helper->format,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
@@ -512,8 +512,7 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 		return -1;
 	if(_decode64_addr(format, &ehdr, &base) != 0
 			|| _decode64_strtab(format, shdr, ehdr.e_shnum,
-				ehdr.e_shstrndx, &shstrtab, &shstrtab_cnt)
-			!= 0)
+				ehdr.e_shstrndx, &shstrtab, &shstrtab_cnt) != 0)
 	{
 		free(shdr);
 		return -1;
@@ -522,8 +521,8 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
 			continue;
-		if(shdr[i].sh_type == SHT_PROGBITS
-				&& shdr[i].sh_flags & SHF_EXECINSTR)
+		if(raw || (shdr[i].sh_type == SHT_PROGBITS
+					&& shdr[i].sh_flags & SHF_EXECINSTR))
 			helper->decode(helper->format,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,

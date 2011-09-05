@@ -322,7 +322,7 @@ static int _pe_decode(FormatPlugin * format)
 			pih32->image_base = _htol32(pih32->image_base);
 			pih32->rvasizes_cnt = _htol32(pih32->rvasizes_cnt);
 			offset = pih32->image_base;
-			pid = (struct pe_image_header_data *)pih32 + 1;
+			pid = (struct pe_image_header_data *)(pih32 + 1);
 			cnt = pih32->rvasizes_cnt;
 		}
 		else if(pih->signature == PE_IMAGE_HEADER_PE32_PLUS
@@ -334,7 +334,7 @@ static int _pe_decode(FormatPlugin * format)
 			pih32p->image_base = _htol64(pih32p->image_base);
 			pih32p->rvasizes_cnt = _htol32(pih32p->rvasizes_cnt);
 			offset = pih32p->image_base;
-			pid = (struct pe_image_header_data *)pih32p + 1;
+			pid = (struct pe_image_header_data *)(pih32p + 1);
 			cnt = pih32p->rvasizes_cnt;
 		}
 		/* read the data directories */

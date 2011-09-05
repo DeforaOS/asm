@@ -327,7 +327,7 @@ static int _java_decode(FormatPlugin * format, int raw)
 	u16 = _htob16(u16);
 	if(_decode_skip_fields(format, u16) != 0)
 		return -1;
-	/* decodesemble the rest */
+	/* disassemble the rest */
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0
 			|| (end = helper->seek(helper->format, 0, SEEK_END))
 			< 0)

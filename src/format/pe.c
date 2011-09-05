@@ -158,15 +158,19 @@ struct pe_symbol
 
 
 /* constants */
-#define PE_IMAGE_HEADER_ROM		0x0107
-#define PE_IMAGE_HEADER_PE32		0x010b
-#define PE_IMAGE_HEADER_PE32_PLUS	0x020b
-
-/* machine types */
+/* program header machine types */
 #define PE_IMAGE_FILE_MACHINE_AMD64	0x8664
 #define PE_IMAGE_FILE_MACHINE_ARM	0x1c00
 #define PE_IMAGE_FILE_MACHINE_I386	0x014c
 #define PE_IMAGE_FILE_MACHINE_UNKNOWN	0x0000
+
+/* program image header signatures */
+#define PE_IMAGE_HEADER_ROM		0x0107
+#define PE_IMAGE_HEADER_PE32		0x010b
+#define PE_IMAGE_HEADER_PE32_PLUS	0x020b
+
+/* section header flags */
+#define PE_IMAGE_SCN_CNT_CODE		0x00000020
 
 
 /* variables */
@@ -379,6 +383,11 @@ static int _pe_decode(FormatPlugin * format, int raw)
 		psh.vaddr = _htol32(psh.vaddr);
 		psh.raw_size = _htol32(psh.raw_size);
 		psh.raw_offset = _htol32(psh.raw_offset);
+		psh.flags = _htol32(psh.flags);
+		/* decode non-executable sections only if requested */
+		if((psh.flags & PE_IMAGE_SCN_CNT_CODE) != PE_IMAGE_SCN_CNT_CODE
+				&& !raw)
+			continue;
 		/* the $ sign has a special meaning for the linker */
 		if((q = strchr(psh.name, '$')) != NULL)
 			*q = '\0';

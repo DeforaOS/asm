@@ -158,9 +158,15 @@ struct pe_symbol
 
 
 /* constants */
-#define PE_IMAGE_HEADER_ROM		0x107
-#define PE_IMAGE_HEADER_PE32		0x10b
-#define PE_IMAGE_HEADER_PE32_PLUS	0x20b
+#define PE_IMAGE_HEADER_ROM		0x0107
+#define PE_IMAGE_HEADER_PE32		0x010b
+#define PE_IMAGE_HEADER_PE32_PLUS	0x020b
+
+/* machine types */
+#define PE_IMAGE_FILE_MACHINE_AMD64	0x8664
+#define PE_IMAGE_FILE_MACHINE_ARM	0x1c00
+#define PE_IMAGE_FILE_MACHINE_I386	0x014c
+#define PE_IMAGE_FILE_MACHINE_UNKNOWN	0x0000
 
 
 /* variables */
@@ -170,11 +176,13 @@ static const struct
 	uint16_t machine;
 } _pe_arch[] =
 {
-	{ "i386",	0x14c	},
-	{ "i486",	0x14c	},
-	{ "i586",	0x14c	},
-	{ "i686",	0x14c	},
-	{ NULL,		0x0	}
+	{ "amd64",	PE_IMAGE_FILE_MACHINE_AMD64	},
+	{ "arm",	PE_IMAGE_FILE_MACHINE_ARM	},
+	{ "i386",	PE_IMAGE_FILE_MACHINE_I386	},
+	{ "i486",	PE_IMAGE_FILE_MACHINE_I386	},
+	{ "i586",	PE_IMAGE_FILE_MACHINE_I386	},
+	{ "i686",	PE_IMAGE_FILE_MACHINE_I386	},
+	{ NULL,		PE_IMAGE_FILE_MACHINE_UNKNOWN	}
 };
 
 static char const _pe_msdos_signature[2] = "MZ";

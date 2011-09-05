@@ -286,6 +286,7 @@ static int _pe_decode(FormatPlugin * format)
 	size_t cnt;
 	struct pe_section_header psh;
 	char * p = NULL;
+	char * q;
 	struct pe_image_header * pih;
 	struct pe_image_header_pe32 * pih32;
 	struct pe_image_header_pe32_plus * pih32p;
@@ -378,6 +379,9 @@ static int _pe_decode(FormatPlugin * format)
 		psh.vaddr = _htol32(psh.vaddr);
 		psh.raw_size = _htol32(psh.raw_size);
 		psh.raw_offset = _htol32(psh.raw_offset);
+		/* the $ sign has a special meaning for the linker */
+		if((q = strchr(psh.name, '$')) != NULL)
+			*q = '\0';
 		if(helper->decode(helper->format, psh.name, psh.raw_offset,
 					psh.raw_size, psh.vaddr + base) != 0)
 			break;

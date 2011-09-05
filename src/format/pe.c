@@ -290,7 +290,8 @@ static int _pe_decode(FormatPlugin * format)
 	struct pe_image_header_pe32 * pih32;
 	struct pe_image_header_pe32_plus * pih32p;
 	struct pe_image_header_data * pid = NULL;
-	off_t offset = 0;
+	off_t base = 0;
+	off_t offset;
 	struct pe_symbol ps;
 
 	/* read the MS-DOS header */
@@ -298,7 +299,8 @@ static int _pe_decode(FormatPlugin * format)
 		return -1;
 	if(helper->read(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return -1;
-	/* read the PE header, skipping the PE signature */
+	/* FIXME check the PE signature */
+	/* read the PE header */
 	pm.offset = _htol16(pm.offset) + 4;
 	if(helper->seek(helper->format, pm.offset, SEEK_SET) != pm.offset)
 		return -1;
@@ -329,7 +331,7 @@ static int _pe_decode(FormatPlugin * format)
 			pih32 = (struct pe_image_header_pe32 *)(pih + 1);
 			pih32->image_base = _htol32(pih32->image_base);
 			pih32->rvasizes_cnt = _htol32(pih32->rvasizes_cnt);
-			offset = pih32->image_base;
+			base = pih32->image_base;
 			pid = (struct pe_image_header_data *)(pih32 + 1);
 			cnt = pih32->rvasizes_cnt;
 		}
@@ -341,7 +343,7 @@ static int _pe_decode(FormatPlugin * format)
 			pih32p = (struct pe_image_header_pe32_plus *)(pih + 1);
 			pih32p->image_base = _htol64(pih32p->image_base);
 			pih32p->rvasizes_cnt = _htol32(pih32p->rvasizes_cnt);
-			offset = pih32p->image_base;
+			base = pih32p->image_base;
 			pid = (struct pe_image_header_data *)(pih32p + 1);
 			cnt = pih32p->rvasizes_cnt;
 		}
@@ -362,17 +364,25 @@ static int _pe_decode(FormatPlugin * format)
 				ph.opthdr_size, SEEK_CUR) != ph.opthdr_size)
 		return _decode_error(format);
 	/* read and decode each section */
+	offset = pm.offset + sizeof(ph) + ph.opthdr_size;
+	if(ph.opthdr_size != 0 && helper->seek(helper->format, offset, SEEK_SET)
+			!= offset)
+		return _decode_error(format);
 	for(i = 0; i < ph.section_cnt; i++)
 	{
 		if(helper->read(helper->format, &psh, sizeof(psh))
 				!= sizeof(psh))
 			break;
+		offset += sizeof(psh);
 		psh.name[sizeof(psh.name) - 1] = '\0';
 		psh.vaddr = _htol32(psh.vaddr);
 		psh.raw_size = _htol32(psh.raw_size);
 		psh.raw_offset = _htol32(psh.raw_offset);
-		helper->decode(helper->format, psh.name, psh.raw_offset,
-				psh.raw_size, psh.vaddr + offset);
+		if(helper->decode(helper->format, psh.name, psh.raw_offset,
+					psh.raw_size, psh.vaddr + base) != 0)
+			break;
+		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
+			break;
 	}
 	if(i != ph.section_cnt)
 	{

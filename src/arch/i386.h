@@ -368,12 +368,23 @@ static int _decode_operand(ArchPlugin * plugin, ArchInstructionCall * call,
 static int _decode_postproc(ArchPlugin * plugin, ArchInstructionCall * call,
 		unsigned int opcode)
 {
+	ArchPluginHelper * helper = plugin->helper;
+	ArchOperand * ao;
+	AsmFunction * af;
+
 	switch(opcode)
 	{
 		case 0xe8: /* call */
+			ao = &call->operands[0];
+			ao->value.immediate.value += call->base + 5;
+			af = helper->get_function_by_id(helper->arch,
+					ao->value.immediate.value);
+			if(af != NULL)
+				ao->value.immediate.name = af->name;
+			break;
 		case 0xe9: /* jump */
-			call->operands[0].value.immediate.value += call->base
-				+ 5;
+			ao = &call->operands[0];
+			ao->value.immediate.value += call->base + 5;
 			break;
 		case 0x0f80: /* jo */
 		case 0x0f81: /* jno */
@@ -391,12 +402,12 @@ static int _decode_postproc(ArchPlugin * plugin, ArchInstructionCall * call,
 		case 0x0f8d: /* jnl, jge */
 		case 0x0f8e: /* jle, jng */
 		case 0x0f8f: /* jg, jnle */
-			call->operands[0].value.immediate.value += call->base
-				+ 6;
+			ao = &call->operands[0];
+			ao->value.immediate.value += call->base + 6;
 			break;
 		case 0xeb: /* jump */
-			call->operands[0].value.immediate.value += call->base
-				+ 2;
+			ao = &call->operands[0];
+			ao->value.immediate.value += call->base + 2;
 			break;
 	}
 	return 0;

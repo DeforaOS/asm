@@ -488,7 +488,7 @@ static void _print_immediate(ArchOperand * ao)
 	else if(AO_GET_VALUE(ao->definition) == AOI_REFERS_FUNCTION)
 	{
 		if(ao->value.immediate.name != NULL)
-			printf(" call \"%s\"", ao->value.immediate.name);
+			printf(" (call \"%s\")", ao->value.immediate.name);
 		else
 			printf("%s", " (call)");
 	}

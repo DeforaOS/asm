@@ -29,6 +29,21 @@
 /* private */
 /* types */
 #pragma pack(1)
+struct pe_export_directory
+{
+	uint32_t flags;
+	uint32_t time;
+	uint16_t major;
+	uint16_t minor;
+	uint32_t name;
+	uint32_t base;
+	uint32_t functions_cnt;
+	uint32_t names_cnt;
+	uint32_t functions_addr;
+	uint32_t names_addr;
+	uint32_t ordinals_addr;
+};
+
 struct pe_header
 {
 	uint16_t machine;
@@ -228,7 +243,6 @@ FormatPlugin format_plugin =
 static int _pe_init(FormatPlugin * format, char const * arch)
 {
 	FormatPluginHelper * helper = format->helper;
-	char const ps[4] = { 'P', 'E', '\0', '\0' };
 	int machine;
 	struct pe_msdos pm;
 	struct pe_header ph;
@@ -244,7 +258,9 @@ static int _pe_init(FormatPlugin * format, char const * arch)
 	if(helper->write(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return -1;
 	/* output the PE signature */
-	if(helper->write(helper->format, &ps, sizeof(ps)) != sizeof(ps))
+	if(helper->write(helper->format, _pe_header_signature,
+				sizeof(_pe_header_signature))
+			!= sizeof(_pe_header_signature))
 		return -1;
 	/* output the PE header */
 	memset(&ph, 0, sizeof(ph));
@@ -279,12 +295,18 @@ static char const * _pe_detect(FormatPlugin * format)
 
 
 /* pe_decode */
+static int _decode_data(FormatPlugin * format, uint32_t vaddr, uint32_t base,
+		struct pe_image_header_data * pid, size_t i);
+static int _decode_data_export_directory(FormatPlugin * format, uint32_t vaddr,
+		uint32_t base, struct pe_image_header_data * pid);
 static int _decode_error(FormatPlugin * format);
+static char * _decode_string(FormatPlugin * format, off_t offset);
 
 static int _pe_decode(FormatPlugin * format, int raw)
 {
 	FormatPluginHelper * helper = format->helper;
 	struct pe_msdos pm;
+	char buf[sizeof(_pe_header_signature)];
 	struct pe_header ph;
 	size_t i;
 	size_t cnt;
@@ -304,11 +326,14 @@ static int _pe_decode(FormatPlugin * format, int raw)
 		return -1;
 	if(helper->read(helper->format, &pm, sizeof(pm)) != sizeof(pm))
 		return -1;
-	/* FIXME check the PE signature */
-	/* read the PE header */
-	pm.offset = _htol16(pm.offset) + 4;
+	/* check the PE signature */
 	if(helper->seek(helper->format, pm.offset, SEEK_SET) != pm.offset)
 		return -1;
+	if(helper->read(helper->format, &buf, sizeof(buf)) != sizeof(buf))
+		return -1;
+	if(memcmp(buf, _pe_header_signature, sizeof(buf)) != 0)
+		return -1;
+	/* read the PE header */
 	if(helper->read(helper->format, &ph, sizeof(ph)) != sizeof(ph))
 		return _decode_error(format);
 	ph.section_cnt = _htol16(ph.section_cnt);
@@ -326,6 +351,7 @@ static int _pe_decode(FormatPlugin * format, int raw)
 		}
 		pih = (struct pe_image_header *)p;
 		pih->signature = _htol16(pih->signature);
+		pih->code_base = _htol32(pih->code_base);
 		/* read any additional part of the optional header */
 		cnt = 0;
 		if(pih->signature == PE_IMAGE_HEADER_PE32
@@ -355,21 +381,13 @@ static int _pe_decode(FormatPlugin * format, int raw)
 		/* read the data directories */
 		for(i = 0; pid != NULL && (char *)(&pid[i + 1]) < p
 				+ ph.opthdr_size && i < cnt; i++)
-		{
-			pid[i].vaddr = _htol32(pid[i].vaddr);
-			pid[i].size = _htol32(pid[i].size);
-			/* FIXME really implement */
-#ifdef DEBUG
-			fprintf(stderr, "DEBUG: %s() pid[%lu] 0x%08x, 0x%08x\n",
-					__func__, i, pid[i].vaddr, pid[i].size);
-#endif
-		}
+			if(_decode_data(format, base, pih->code_base, &pid[i],
+						i) != 0)
+				break; /* XXX report error */
 	}
-	else if(ph.opthdr_size != 0 && helper->seek(helper->format,
-				ph.opthdr_size, SEEK_CUR) != ph.opthdr_size)
-		return _decode_error(format);
 	/* read and decode each section */
-	offset = pm.offset + sizeof(ph) + ph.opthdr_size;
+	offset = pm.offset + sizeof(_pe_header_signature) + sizeof(ph)
+		+ ph.opthdr_size;
 	if(ph.opthdr_size != 0 && helper->seek(helper->format, offset, SEEK_SET)
 			!= offset)
 		return _decode_error(format);
@@ -414,9 +432,85 @@ static int _pe_decode(FormatPlugin * format, int raw)
 			/* FIXME implement */
 		}
 	}
-	/* read symbols */
-	/* FIXME implement */
 	free(p);
+	return 0;
+}
+
+static int _decode_data(FormatPlugin * format, uint32_t vaddr, uint32_t base,
+		struct pe_image_header_data * pid, size_t i)
+{
+	pid->vaddr = _htol32(pid->vaddr);
+	pid->size = _htol32(pid->size);
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() pid[%lu] 0x%08x, 0x%08x\n", __func__, i,
+			pid->vaddr, pid->size);
+#endif
+	switch(i)
+	{
+		case 0:
+			return _decode_data_export_directory(format, vaddr,
+					base, pid);
+		default:
+			/* FIXME implement the rest */
+			break;
+	}
+	return 0;
+}
+
+static int _decode_data_export_directory(FormatPlugin * format, uint32_t vaddr,
+		uint32_t base, struct pe_image_header_data * pid)
+{
+	FormatPluginHelper * helper = format->helper;
+	struct pe_export_directory ped;
+	size_t j;
+	uint32_t f;
+	uint32_t n;
+	char * p;
+
+	if(base > pid->vaddr || helper->seek(helper->format, pid->vaddr - base,
+				SEEK_SET) < 0
+			|| helper->read(helper->format, &ped, sizeof(ped))
+			!= sizeof(ped))
+		return -1;
+	ped.major = _htol16(ped.major);
+	ped.minor = _htol16(ped.minor);
+	ped.name = _htol32(ped.name);
+	ped.base = _htol32(ped.base);
+	ped.functions_cnt = _htol32(ped.functions_cnt);
+	ped.names_cnt = _htol32(ped.names_cnt);
+	ped.functions_addr = _htol32(ped.functions_addr);
+	ped.names_addr = _htol32(ped.names_addr);
+	ped.ordinals_addr = _htol32(ped.ordinals_addr);
+	ped.time = _htol32(ped.time);
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() M:0x%04x m:0x%04x n:0x%08x f:0x%08x@0x%08x"
+			" n:0x%0x8@0x%08x 0x%08x t:0x%08x\n", __func__,
+			ped.major, ped.minor, ped.name, ped.functions_cnt,
+			ped.functions_addr, ped.names_cnt, ped.names_addr,
+			ped.base, ped.time);
+#endif
+	for(j = 0; j < ped.functions_cnt && j < ped.names_cnt; j++)
+	{
+		if(helper->seek(helper->format, ped.functions_addr - base
+					+ j * sizeof(f), SEEK_SET) < 0)
+			return -1;
+		if(helper->read(helper->format, &f, sizeof(f)) != sizeof(f))
+			return -1;
+		if(helper->seek(helper->format, ped.names_addr - base
+					+ j * sizeof(n), SEEK_SET) < 0)
+			return -1;
+		if(helper->read(helper->format, &n, sizeof(n)) != sizeof(n))
+			return -1;
+		if((p = _decode_string(format, n - base)) == NULL)
+			continue;
+#ifdef DEBUG
+		fprintf(stderr, "DEBUG: %s() 0x%08x@0x%08x \"%s\"\n", __func__,
+				n - base, f + vaddr, p);
+#endif
+		/* XXX report errors */
+		helper->set_function(helper->format, f + vaddr, p, f, -1);
+		free(p);
+	}
 	return 0;
 }
 
@@ -424,6 +518,39 @@ static int _decode_error(FormatPlugin * format)
 {
 	return -error_set_code(1, "%s: %s", format->helper->get_filename(
 				format->helper->format), strerror(errno));
+}
+
+static char * _decode_string(FormatPlugin * format, off_t offset)
+{
+	FormatPluginHelper * helper = format->helper;
+	char * ret = NULL;
+	char * p;
+	size_t len = 0;
+	ssize_t s;
+	size_t i;
+	const int inc = 32;
+
+	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
+		return NULL;
+	for(;;)
+	{
+		if((p = realloc(ret, len + inc)) == NULL)
+		{
+			free(ret);
+			return NULL;
+		}
+		ret = p;
+		if((s = helper->read(helper->format, &ret[len], inc)) < 0)
+		{
+			free(ret);
+			return NULL;
+		}
+		for(i = len; i < len + inc; i++)
+			if(ret[i] == '\0')
+				return ret;
+		len += s;
+	}
+	return ret;
 }
 
 

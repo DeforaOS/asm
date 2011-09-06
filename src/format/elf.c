@@ -201,6 +201,8 @@ static int _elf_init(FormatPlugin * format, char const * arch)
 	if((elf = object_new(sizeof(*elf))) == NULL)
 		return -1;
 	format->priv = elf;
+	elf->es32 = NULL;
+	elf->es64 = NULL;
 	if(arch == NULL)
 	{
 		elf->arch = NULL;

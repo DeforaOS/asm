@@ -437,7 +437,7 @@ int code_print(Code * code, ArchInstructionCall * call)
 		printf(" %02x", u8);
 	}
 	for(; i < 8; i++)
-		printf("   ");
+		fputs("   ", stdout);
 	printf(" %-12s", call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{

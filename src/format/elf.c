@@ -350,6 +350,8 @@ static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
+static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
+		size_t shdr_cnt, uint16_t ndx);
 
 static int _elf_decode32(FormatPlugin * format, int raw)
 {
@@ -381,6 +383,13 @@ static int _elf_decode32(FormatPlugin * format, int raw)
 		free(shdr);
 		return -1;
 	}
+	for(i = 0; i < ehdr.e_shnum; i++)
+		if(shdr[i].sh_type == SHT_SYMTAB)
+		{
+			/* XXX ignore errors? */
+			_decode32_symtab(format, shdr, ehdr.e_shnum, i);
+			break;
+		}
 	for(i = 0; i < ehdr.e_shnum; i++)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
@@ -480,6 +489,48 @@ static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 	return 0;
 }
 
+static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
+		size_t shdr_cnt, uint16_t ndx)
+{
+	FormatPluginHelper * helper = format->helper;
+	char * strtab = NULL;
+	size_t strtab_cnt = 0;
+	Elf32_Sym sym;
+	size_t i;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(ndx >= shdr_cnt || shdr[ndx].sh_entsize != sizeof(sym))
+		return -1;
+	if(_decode32_strtab(format, shdr, shdr_cnt, shdr[ndx].sh_link, &strtab,
+				&strtab_cnt) != 0)
+		return -1;
+	/* read and process symbols */
+	if(helper->seek(helper->format, shdr[ndx].sh_offset, SEEK_SET)
+			!= shdr[ndx].sh_offset)
+	{
+		free(strtab);
+		return -1;
+	}
+	for(i = 0; i * sizeof(sym) < shdr[ndx].sh_size; i++)
+		if(helper->read(helper->format, &sym, sizeof(sym))
+				!= sizeof(sym))
+			break;
+		else if(sym.st_name >= strtab_cnt)
+			break;
+		else if(ELF32_ST_TYPE(sym.st_info) == STT_FUNC)
+			/* record the function */
+			helper->set_function(helper->format, sym.st_value,
+					&strtab[sym.st_name], -1, sym.st_size);
+	if(i * sizeof(sym) != shdr[ndx].sh_size)
+	{
+		free(strtab);
+		return -1;
+	}
+	return 0;
+}
+
 
 /* elf_decode64 */
 static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
@@ -489,6 +540,8 @@ static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
+static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
+		size_t shdr_cnt, uint16_t ndx);
 
 static int _elf_decode64(FormatPlugin * format, int raw)
 {
@@ -519,6 +572,13 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 		free(shdr);
 		return -1;
 	}
+	for(i = 0; i < ehdr.e_shnum; i++)
+		if(shdr[i].sh_type == SHT_SYMTAB)
+		{
+			/* XXX ignore errors? */
+			_decode64_symtab(format, shdr, ehdr.e_shnum, i);
+			break;
+		}
 	for(i = 0; i < ehdr.e_shnum; i++)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
@@ -616,6 +676,48 @@ static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		return -1;
 	}
 	*strtab_cnt = shdr->sh_size;
+	return 0;
+}
+
+static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
+		size_t shdr_cnt, uint16_t ndx)
+{
+	FormatPluginHelper * helper = format->helper;
+	char * strtab = NULL;
+	size_t strtab_cnt = 0;
+	Elf64_Sym sym;
+	size_t i;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(ndx >= shdr_cnt || shdr[ndx].sh_entsize != sizeof(sym))
+		return -1;
+	if(_decode64_strtab(format, shdr, shdr_cnt, shdr[ndx].sh_link, &strtab,
+				&strtab_cnt) != 0)
+		return -1;
+	/* read and process symbols */
+	if(helper->seek(helper->format, shdr[ndx].sh_offset, SEEK_SET)
+			!= shdr[ndx].sh_offset)
+	{
+		free(strtab);
+		return -1;
+	}
+	for(i = 0; i * sizeof(sym) < shdr[ndx].sh_size; i++)
+		if(helper->read(helper->format, &sym, sizeof(sym))
+				!= sizeof(sym))
+			break;
+		else if(sym.st_name >= strtab_cnt)
+			break;
+		else if(ELF64_ST_TYPE(sym.st_info) == STT_FUNC)
+			/* record the function */
+			helper->set_function(helper->format, sym.st_value,
+					&strtab[sym.st_name], -1, sym.st_size);
+	if(i * sizeof(sym) != shdr[ndx].sh_size)
+	{
+		free(strtab);
+		return -1;
+	}
 	return 0;
 }
 

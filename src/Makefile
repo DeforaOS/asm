@@ -1,11 +1,11 @@
 SUBDIRS	= arch format
 TARGETS	= libasm.a libasm.so asm asm-static deasm
 PREFIX	= /usr/local
-DESTDIR	= 
+DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
 CC	= cc
 CPPFLAGSF= -I ../include
-CPPFLAGS= 
+CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags cpp`
 CFLAGS	= -Wall -g -O2 -pedantic
 LDFLAGSF= 

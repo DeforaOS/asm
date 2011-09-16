@@ -1,6 +1,6 @@
 TARGETS	= dex.so elf.so flat.so java.so pe.so
 PREFIX	= /usr/local
-DESTDIR	= 
+DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
 CC	= cc
 CPPFLAGSF= -I ../../include

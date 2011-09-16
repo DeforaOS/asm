@@ -1,6 +1,6 @@
 TARGETS	= amd64.so arm.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so sparc.so sparc64.so
 PREFIX	= /usr/local
-DESTDIR	= 
+DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
 CC	= cc
 CPPFLAGSF= -I ../../include

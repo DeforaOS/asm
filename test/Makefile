@@ -1,9 +1,9 @@
 TARGETS	= amd64.o arm.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o java.o sparc.o sparc64.o
 PREFIX	= /usr/local
-DESTDIR	= 
+DESTDIR	=
 BINDIR	= $(PREFIX)/bin
 AS	= ../src/asm-static
-ASFLAGS	= 
+ASFLAGS	=
 RM	= rm -f
 LN	= ln -f
 MKDIR	= mkdir -p

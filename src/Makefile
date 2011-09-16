@@ -9,14 +9,14 @@ CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags cpp`
 CFLAGS	= -Wall -g -O2 -pedantic
 LDFLAGSF= 
-AR	= ar -rc
-RANLIB	= ranlib
-LD	= $(CC) -shared
+AR	?= ar
+RANLIB	?= ranlib
+CCSHARED?= $(CC) -shared
 BINDIR	= $(PREFIX)/bin
-RM	= rm -f
-LN	= ln -f
-MKDIR	= mkdir -p
-INSTALL	= install
+RM	?= rm -f
+LN	?= ln -f
+MKDIR	?= mkdir -p
+INSTALL	?= install
 
 
 all: subdirs $(TARGETS)
@@ -29,11 +29,11 @@ libasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS) -fPIC
 libasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) `pkg-config --libs cpp`
 
 libasm.a: $(libasm_OBJS)
-	$(AR) libasm.a $(libasm_OBJS)
+	$(AR) -rc libasm.a $(libasm_OBJS)
 	$(RANLIB) libasm.a
 
 libasm.so: $(libasm_OBJS)
-	$(LD) -o libasm.so -Wl,-soname,libasm.so.0 $(libasm_OBJS) $(libasm_LDFLAGS)
+	$(CCSHARED) -o libasm.so -Wl,-soname,libasm.so.0 $(libasm_OBJS) $(libasm_LDFLAGS)
 
 asm_OBJS = main.o
 asm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)

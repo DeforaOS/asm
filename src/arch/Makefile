@@ -4,16 +4,16 @@ DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
 CC	= cc
 CPPFLAGSF= -I ../../include
-CPPFLAGS=
+CPPFLAGS?=
 CFLAGSF	= -W `pkg-config --cflags libSystem`
 CFLAGS	= -Wall -g -O2 -fPIC -pedantic
-AR	= ar -rc
-RANLIB	= ranlib
-LD	= $(CC) -shared
-RM	= rm -f
-LN	= ln -f
-MKDIR	= mkdir -p
-INSTALL	= install
+AR	?= ar
+RANLIB	?= ranlib
+CCSHARED?= $(CC) -shared
+RM	?= rm -f
+LN	?= ln -f
+MKDIR	?= mkdir -p
+INSTALL	?= install
 
 
 all: $(TARGETS)
@@ -23,84 +23,84 @@ amd64_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 amd64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 amd64.so: $(amd64_OBJS)
-	$(LD) -o amd64.so $(amd64_OBJS) $(amd64_LDFLAGS)
+	$(CCSHARED) -o amd64.so $(amd64_OBJS) $(amd64_LDFLAGS)
 
 arm_OBJS = arm.o
 arm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 arm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 arm.so: $(arm_OBJS)
-	$(LD) -o arm.so $(arm_OBJS) $(arm_LDFLAGS)
+	$(CCSHARED) -o arm.so $(arm_OBJS) $(arm_LDFLAGS)
 
 dalvik_OBJS = dalvik.o
 dalvik_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 dalvik_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 dalvik.so: $(dalvik_OBJS)
-	$(LD) -o dalvik.so $(dalvik_OBJS) $(dalvik_LDFLAGS)
+	$(CCSHARED) -o dalvik.so $(dalvik_OBJS) $(dalvik_LDFLAGS)
 
 i386_OBJS = i386.o
 i386_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 i386_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 i386.so: $(i386_OBJS)
-	$(LD) -o i386.so $(i386_OBJS) $(i386_LDFLAGS)
+	$(CCSHARED) -o i386.so $(i386_OBJS) $(i386_LDFLAGS)
 
 i386_real_OBJS = i386_real.o
 i386_real_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 i386_real_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 i386_real.so: $(i386_real_OBJS)
-	$(LD) -o i386_real.so $(i386_real_OBJS) $(i386_real_LDFLAGS)
+	$(CCSHARED) -o i386_real.so $(i386_real_OBJS) $(i386_real_LDFLAGS)
 
 i486_OBJS = i486.o
 i486_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 i486_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 i486.so: $(i486_OBJS)
-	$(LD) -o i486.so $(i486_OBJS) $(i486_LDFLAGS)
+	$(CCSHARED) -o i486.so $(i486_OBJS) $(i486_LDFLAGS)
 
 i586_OBJS = i586.o
 i586_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 i586_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 i586.so: $(i586_OBJS)
-	$(LD) -o i586.so $(i586_OBJS) $(i586_LDFLAGS)
+	$(CCSHARED) -o i586.so $(i586_OBJS) $(i586_LDFLAGS)
 
 i686_OBJS = i686.o
 i686_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 i686_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 i686.so: $(i686_OBJS)
-	$(LD) -o i686.so $(i686_OBJS) $(i686_LDFLAGS)
+	$(CCSHARED) -o i686.so $(i686_OBJS) $(i686_LDFLAGS)
 
 java_OBJS = java.o
 java_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 java_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 java.so: $(java_OBJS)
-	$(LD) -o java.so $(java_OBJS) $(java_LDFLAGS)
+	$(CCSHARED) -o java.so $(java_OBJS) $(java_LDFLAGS)
 
 mips_OBJS = mips.o
 mips_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 mips_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 mips.so: $(mips_OBJS)
-	$(LD) -o mips.so $(mips_OBJS) $(mips_LDFLAGS)
+	$(CCSHARED) -o mips.so $(mips_OBJS) $(mips_LDFLAGS)
 
 sparc_OBJS = sparc.o
 sparc_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 sparc_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 sparc.so: $(sparc_OBJS)
-	$(LD) -o sparc.so $(sparc_OBJS) $(sparc_LDFLAGS)
+	$(CCSHARED) -o sparc.so $(sparc_OBJS) $(sparc_LDFLAGS)
 
 sparc64_OBJS = sparc64.o
 sparc64_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 sparc64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 sparc64.so: $(sparc64_OBJS)
-	$(LD) -o sparc64.so $(sparc64_OBJS) $(sparc64_LDFLAGS)
+	$(CCSHARED) -o sparc64.so $(sparc64_OBJS) $(sparc64_LDFLAGS)
 
 amd64.o: amd64.c amd64.ins amd64.reg common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(amd64_CFLAGS) -c amd64.c

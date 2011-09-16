@@ -4,16 +4,16 @@ DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
 CC	= cc
 CPPFLAGSF= -I ../../include
-CPPFLAGS=
+CPPFLAGS?=
 CFLAGSF	= -W `pkg-config --cflags libSystem`
 CFLAGS	= -Wall -g -O2 -fPIC -pedantic
-AR	= ar -rc
-RANLIB	= ranlib
-LD	= $(CC) -shared
-RM	= rm -f
-LN	= ln -f
-MKDIR	= mkdir -p
-INSTALL	= install
+AR	?= ar
+RANLIB	?= ranlib
+CCSHARED?= $(CC) -shared
+RM	?= rm -f
+LN	?= ln -f
+MKDIR	?= mkdir -p
+INSTALL	?= install
 
 
 all: $(TARGETS)
@@ -23,35 +23,35 @@ dex_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 dex_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 dex.so: $(dex_OBJS)
-	$(LD) -o dex.so $(dex_OBJS) $(dex_LDFLAGS)
+	$(CCSHARED) -o dex.so $(dex_OBJS) $(dex_LDFLAGS)
 
 elf_OBJS = elf.o
 elf_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 elf_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 elf.so: $(elf_OBJS)
-	$(LD) -o elf.so $(elf_OBJS) $(elf_LDFLAGS)
+	$(CCSHARED) -o elf.so $(elf_OBJS) $(elf_LDFLAGS)
 
 flat_OBJS = flat.o
 flat_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 flat_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 flat.so: $(flat_OBJS)
-	$(LD) -o flat.so $(flat_OBJS) $(flat_LDFLAGS)
+	$(CCSHARED) -o flat.so $(flat_OBJS) $(flat_LDFLAGS)
 
 java_OBJS = java.o
 java_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 java_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 java.so: $(java_OBJS)
-	$(LD) -o java.so $(java_OBJS) $(java_LDFLAGS)
+	$(CCSHARED) -o java.so $(java_OBJS) $(java_LDFLAGS)
 
 pe_OBJS = pe.o
 pe_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 pe_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 pe.so: $(pe_OBJS)
-	$(LD) -o pe.so $(pe_OBJS) $(pe_LDFLAGS)
+	$(CCSHARED) -o pe.so $(pe_OBJS) $(pe_LDFLAGS)
 
 dex.o: dex.c
 	$(CC) $(dex_CFLAGS) -c dex.c

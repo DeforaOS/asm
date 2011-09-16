@@ -1,9 +1,9 @@
 PACKAGE	= asm
 VERSION	= 0.2.0
 SUBDIRS	= data include src test
-RM	= rm -f
-LN	= ln -f
-TAR	= tar -czvf
+RM	?= rm -f
+LN	?= ln -f
+TAR	?= tar -czvf
 
 
 all: subdirs

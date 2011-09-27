@@ -729,13 +729,23 @@ static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
 {
 	if(whence == SEEK_SET)
 	{
-		if(offset < 0 || (size_t)offset > arch->buffer_cnt)
+		if(offset < 0 || (size_t)offset >= arch->buffer_cnt)
 			return -error_set_code(1, "%s", "Invalid seek");
 		arch->buffer_pos = offset;
-		return offset;
 	}
-	/* FIXME implement */
-	return -error_set_code(1, "%s", "Not implemented");
+	else if(whence == SEEK_CUR)
+	{
+		if(arch->buffer_pos + offset < 0)
+			return -error_set_code(1, "%s", "Invalid seek");
+		if(offset > 0 && (size_t)offset + arch->buffer_pos
+				>= arch->buffer_cnt)
+			return -error_set_code(1, "%s", "Invalid seek");
+		arch->buffer_pos += offset;
+	}
+	else
+		/* FIXME implement */
+		return -error_set_code(1, "%s", "Not implemented");
+	return arch->buffer_pos;
 }
 
 

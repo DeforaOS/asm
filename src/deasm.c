@@ -30,8 +30,7 @@
 /* prototypes */
 static int _deasm(char const * arch, char const * format, char const * filename,
 		int raw);
-static int _deasm_buffer(char const * arch, char const * format,
-		char const * buffer, size_t size);
+static int _deasm_buffer(char const * arch, char const * buffer, size_t size);
 static int _deasm_string(char const * arch, char const * format,
 		char const * string);
 static int _deasm_list(void);
@@ -59,15 +58,14 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 
 
 /* deasm_buffer */
-static int _deasm_buffer(char const * arch, char const * format,
-		char const * buffer, size_t size)
+static int _deasm_buffer(char const * arch, char const * buffer, size_t size)
 {
 	Asm * a;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if((a = asm_new(arch, format)) == NULL)
+	if((a = asm_new(arch, NULL)) == NULL)
 		return -1;
 	if(asm_deassemble(a, buffer, size) != 0)
 		error_print("deasm");
@@ -111,7 +109,7 @@ static int _deasm_string(char const * arch, char const * format,
 		}
 	}
 	s[j] = '\0'; /* not really necessary */
-	ret = _deasm_buffer(arch, format, s, j);
+	ret = _deasm_buffer(arch, s, j);
 	free(s);
 	return ret;
 }
@@ -150,7 +148,7 @@ static int _deasm_list(void)
 static int _usage(void)
 {
 	fputs("Usage: deasm [-a arch][-f format] filename\n"
-"       deasm [-a arch][-f format] -s string\n"
+"       deasm [-a arch] -s string\n"
 "       deasm -l\n", stderr);
 	return 1;
 }

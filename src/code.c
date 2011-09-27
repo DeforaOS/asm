@@ -94,14 +94,16 @@ Code * code_new(char const * arch, char const * format)
 {
 	Code * code;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", \"%s\")\n", __func__, arch, format);
+#endif
 	if((code = object_new(sizeof(*code))) == NULL)
 		return NULL;
 	memset(code, 0, sizeof(*code));
-	if((code->arch = arch_new(arch)) != NULL && format == NULL)
-		format = arch_get_format(code->arch);
+	code->arch = arch_new(arch);
 	if(format != NULL)
 		code->format = format_new(format);
-	if(code->arch == NULL || code->format == NULL)
+	if(code->arch == NULL)
 	{
 		code_delete(code);
 		return NULL;
@@ -212,6 +214,9 @@ int code_delete(Code * code)
 {
 	int ret = 0;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(code->format != NULL)
 		format_delete(code->format);
 	if(code->arch != NULL)
@@ -303,8 +308,12 @@ int code_close(Code * code)
 {
 	int ret = 0;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	ret |= arch_exit(code->arch);
-	ret |= format_exit(code->format);
+	if(code->format != NULL)
+		ret |= format_exit(code->format);
 	if(code->fp != NULL && fclose(code->fp) != 0 && ret == 0)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
@@ -402,7 +411,10 @@ int code_open(Code * code, char const * filename)
 		return -error_set_code(1, "%s: %s", filename, strerror(errno));
 	if(arch_init(code->arch, code->filename, code->fp) == 0)
 	{
-		if(format_init(code->format, arch_get_name(code->arch),
+		if(code->format == NULL)
+			code->format = format_new(arch_get_format(code->arch));
+		if(code->format != NULL && format_init(code->format,
+					arch_get_name(code->arch),
 					code->filename, code->fp) == 0)
 			return 0;
 		arch_exit(code->arch);

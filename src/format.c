@@ -105,6 +105,10 @@ Format * format_new(char const * format)
 /* format_delete */
 void format_delete(Format * format)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	format_exit(format);
 	plugin_delete(format->handle);
 	object_delete(format);
 }
@@ -190,6 +194,8 @@ int format_init(Format * format, char const * arch, char const * filename,
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
+	if(format->plugin->helper != NULL)
+		format_exit(format);
 	format->filename = filename;
 	format->fp = fp;
 	format->plugin->helper = &format->helper;

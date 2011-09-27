@@ -60,7 +60,6 @@ static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 
 /* prototypes */
 static char const * _asm_guess_arch(void);
-static char const * _asm_guess_format(void);
 
 static int _asm_open(Asm * a, char const * outfile);
 
@@ -72,6 +71,9 @@ Asm * asm_new(char const * arch, char const * format)
 {
 	Asm * a;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", \"%s\")\n", __func__, arch, format);
+#endif
 	if((a = object_new(sizeof(*a))) == NULL)
 		return NULL;
 	a->arch = (arch != NULL) ? string_new(arch) : NULL;
@@ -90,6 +92,9 @@ Asm * asm_new(char const * arch, char const * format)
 /* asm_delete */
 void asm_delete(Asm * a)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(a->code != NULL)
 		code_delete(a->code);
 	string_delete(a->format);
@@ -215,17 +220,6 @@ int asm_guess_arch(Asm * a)
 }
 
 
-/* asm_guess_format */
-int asm_guess_format(Asm * a)
-{
-	char const * format;
-
-	if((format = _asm_guess_format()) == NULL)
-		return -1;
-	return asm_set_format(a, format);
-}
-
-
 /* asm_instruction */
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 {
@@ -340,14 +334,6 @@ static char const * _asm_guess_arch(void)
 }
 
 
-/* asm_guess_format */
-static char const * _asm_guess_format(void)
-{
-	/* FIXME really guess from known/guessed architecture plug-in */
-	return "elf";
-}
-
-
 /* asm_open */
 static int _asm_open(Asm * a, char const * outfile)
 {
@@ -356,8 +342,6 @@ static int _asm_open(Asm * a, char const * outfile)
 
 	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
 		return -1;
-	if(format == NULL)
-		format = _asm_guess_format();
 	if(a->code != NULL)
 		return -error_set_code(1, "%s: Operation in progress",
 				code_get_filename(a->code));

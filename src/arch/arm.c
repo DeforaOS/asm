@@ -65,6 +65,8 @@ ArchPlugin arch_plugin =
 	&_arm_description,
 	_arm_registers,
 	_arm_instructions,
+	NULL,
+	NULL,
 	_arm_write,
 	NULL
 };

@@ -220,6 +220,8 @@ struct _ArchPlugin
 	ArchRegister * registers;
 	ArchInstruction * instructions;
 
+	int (*init)(ArchPlugin * arch);
+	void (*exit)(ArchPlugin * arch);
 	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
 			ArchInstructionCall * call);
 	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);

@@ -73,6 +73,8 @@ ArchPlugin arch_plugin =
 	NULL,
 	_i386_registers,
 	_i386_instructions,
+	NULL,
+	NULL,
 	_i386_write,
 	_i386_decode
 };

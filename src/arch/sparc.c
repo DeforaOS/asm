@@ -54,6 +54,8 @@ ArchPlugin arch_plugin =
 	&_sparc_description,
 	_sparc_registers,
 	_sparc_instructions,
+	NULL,
+	NULL,
 	_sparc_write,
 	_sparc_decode
 };

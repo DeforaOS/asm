@@ -54,6 +54,8 @@ ArchPlugin arch_plugin =
 	&_mips_description,
 	_mips_registers,
 	_mips_instructions,
+	NULL,
+	NULL,
 	_mips_write,
 	NULL
 };

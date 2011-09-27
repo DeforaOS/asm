@@ -91,6 +91,8 @@ ArchPlugin arch_plugin =
 	&_dalvik_description,
 	_dalvik_registers,
 	_dalvik_instructions,
+	NULL,
+	NULL,
 	_dalvik_write,
 	_dalvik_decode
 };

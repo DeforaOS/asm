@@ -262,6 +262,8 @@ ArchPlugin arch_plugin =
 	&_java_description,
 	_java_registers,
 	_java_instructions,
+	NULL,
+	NULL,
 	_java_write,
 	_java_decode
 };

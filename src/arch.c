@@ -648,7 +648,6 @@ static AsmString * _arch_get_string_by_id(Arch * arch, AsmId id)
 /* arch_peek */
 static ssize_t _arch_peek(Arch * arch, void * buf, size_t size)
 {
-	size_t pos = arch->buffer_pos;
 	ssize_t s;
 
 #ifdef DEBUG

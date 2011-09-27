@@ -85,6 +85,9 @@ Arch * arch_new(char const * name)
 	Plugin * handle;
 	ArchPlugin * plugin;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
 	if((handle = plugin_new(LIBDIR, PACKAGE, "arch", name)) == NULL)
 		return NULL;
 	if((plugin = plugin_lookup(handle, "arch_plugin")) == NULL)
@@ -121,6 +124,9 @@ Arch * arch_new(char const * name)
 /* arch_delete */
 void arch_delete(Arch * arch)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	plugin_delete(arch->handle);
 	object_delete(arch);
 }
@@ -517,6 +523,7 @@ int arch_exit(Arch * arch)
 	arch->buffer_cnt = 0;
 	arch->buffer_pos = 0;
 	memset(&arch->helper, 0, sizeof(arch->helper));
+	arch->plugin->helper = NULL;
 	return 0;
 }
 
@@ -528,6 +535,8 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
+	if(arch->plugin->helper != NULL)
+		arch_exit(arch);
 	arch->base = 0;
 	arch->filename = filename;
 	arch->fp = fp;
@@ -546,6 +555,8 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 	arch->helper.seek = _arch_seek;
 	arch->helper.write = _arch_write;
 	arch->plugin->helper = &arch->helper;
+	if(arch->plugin->init != NULL && arch->plugin->init(arch->plugin) != 0)
+		return -1;
 	return 0;
 }
 
@@ -556,6 +567,8 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	if(arch->plugin->helper != NULL)
+		arch_exit(arch);
 	arch->base = 0;
 	arch->filename = "buffer";
 	arch->fp = NULL;
@@ -574,6 +587,8 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 	arch->helper.read = _arch_read_buffer;
 	arch->helper.seek = _arch_seek_buffer;
 	arch->plugin->helper = &arch->helper;
+	if(arch->plugin->init != NULL && arch->plugin->init(arch->plugin) != 0)
+		return -1;
 	return 0;
 }
 

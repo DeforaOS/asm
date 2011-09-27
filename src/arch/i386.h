@@ -66,24 +66,20 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			== NULL)
 	{
 		u16 = u8;
-		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+		if(helper->peek(helper->arch, &u8, sizeof(u8)) == sizeof(u8))
+		{
+			opcode = (u16 << 8) | u8;
+			ai = helper->get_instruction_by_opcode(helper->arch, 16,
+					opcode);
+			if(ai != NULL)
+				helper->read(helper->arch, &u8, sizeof(u8));
+		}
+		if(ai == NULL)
 		{
 			call->name = "db";
 			call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
 			call->operands[0].value.immediate.name = NULL;
 			call->operands[0].value.immediate.value = u8;
-			call->operands[0].value.immediate.negative = 0;
-			call->operands_cnt = 1;
-			return 0;
-		}
-		opcode = (u16 << 8) | u8;
-		if((ai = helper->get_instruction_by_opcode(helper->arch, 16,
-						opcode)) == NULL)
-		{
-			call->name = "dw";
-			call->operands[0].definition = AO_IMMEDIATE(0, 16, 0);
-			call->operands[0].value.immediate.name = NULL;
-			call->operands[0].value.immediate.value = u16;
 			call->operands[0].value.immediate.negative = 0;
 			call->operands_cnt = 1;
 			return 0;

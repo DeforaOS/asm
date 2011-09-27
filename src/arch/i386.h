@@ -73,6 +73,8 @@ static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 					opcode);
 			if(ai != NULL)
 				helper->read(helper->arch, &u8, sizeof(u8));
+			else
+				opcode >>= 8;
 		}
 		if(ai == NULL)
 		{

@@ -43,6 +43,11 @@ enum
 
 
 /* variables */
+static ArchDescription _i586_description =
+{
+	"elf", ARCH_ENDIAN_LITTLE, 32, 8, 0
+};
+
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _i586_registers[] =
 {
@@ -72,7 +77,7 @@ ArchPlugin arch_plugin =
 {
 	NULL,
 	"i586",
-	NULL,
+	&_i586_description,
 	_i586_registers,
 	_i586_instructions,
 	NULL,

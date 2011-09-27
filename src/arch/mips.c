@@ -22,7 +22,10 @@
 /* mips */
 /* private */
 /* variables */
-static ArchDescription _mips_description = { "elf", ARCH_ENDIAN_BIG, 32, 32 };
+static ArchDescription _mips_description =
+{
+	"elf", ARCH_ENDIAN_BOTH, 32, 32, 32
+};
 
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _mips_registers[] =

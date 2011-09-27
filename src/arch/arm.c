@@ -33,7 +33,10 @@ enum
 
 
 /* variables */
-static ArchDescription _arm_description = { "elf", ARCH_ENDIAN_BIG, 32, 32 };
+static ArchDescription _arm_description =
+{
+	"elf", ARCH_ENDIAN_BOTH, 32, 32, 32
+};
 
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _arm_registers[] =

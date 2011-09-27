@@ -56,7 +56,9 @@ enum
 /* variables */
 /* plug-in */
 static ArchDescription _dalvik_description =
-{ "dex", ARCH_ENDIAN_LITTLE, 2, 0 };
+{
+	"dex", ARCH_ENDIAN_LITTLE, 32, 16, 0
+};
 
 
 #define REG(name, size, id) { "" # name, size, id },

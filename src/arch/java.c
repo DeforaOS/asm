@@ -25,7 +25,10 @@
 /* Java */
 /* private */
 /* variables */
-static ArchDescription _java_description = { "java", ARCH_ENDIAN_BIG, 1, 0 };
+static ArchDescription _java_description =
+{
+	"java", ARCH_ENDIAN_BIG, 32, 8, 0
+};
 
 static ArchRegister _java_registers[] =
 {

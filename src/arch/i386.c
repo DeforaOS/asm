@@ -43,6 +43,11 @@ enum
 
 
 /* variables */
+static ArchDescription _i386_description =
+{
+	"elf", ARCH_ENDIAN_LITTLE, 32, 8, 0
+};
+
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _i386_registers[] =
 {
@@ -70,7 +75,7 @@ ArchPlugin arch_plugin =
 {
 	NULL,
 	"i386",
-	NULL,
+	&_i386_description,
 	_i386_registers,
 	_i386_instructions,
 	NULL,

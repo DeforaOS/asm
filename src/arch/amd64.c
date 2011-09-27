@@ -46,6 +46,11 @@ enum
 
 
 /* variables */
+static ArchDescription _amd64_description =
+{
+	"elf", ARCH_ENDIAN_LITTLE, 64, 8, 0
+};
+
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _amd64_registers[] =
 {
@@ -78,7 +83,7 @@ ArchPlugin arch_plugin =
 {
 	NULL,
 	"amd64",
-	NULL,
+	&_amd64_description,
 	_amd64_registers,
 	_amd64_instructions,
 	NULL,

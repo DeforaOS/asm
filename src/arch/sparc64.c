@@ -23,7 +23,9 @@
 /* private */
 /* variables */
 static ArchDescription _sparc64_description =
-{ "elf", ARCH_ENDIAN_BIG, 32, 32 };
+{
+	"elf", ARCH_ENDIAN_BIG, 64, 32, 32
+};
 
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _sparc64_registers[] =

@@ -29,15 +29,16 @@ typedef struct _Arch Arch;
 
 typedef enum _ArchEndian
 {
-	ARCH_ENDIAN_BIG = 0,
-	ARCH_ENDIAN_LITTLE,
-	ARCH_ENDIAN_BOTH
+	ARCH_ENDIAN_BIG		= 0x1,
+	ARCH_ENDIAN_LITTLE	= 0x2,
+	ARCH_ENDIAN_BOTH	= 0x3
 } ArchEndian;
 
 typedef struct _ArchDescription
 {
-	char const * format;		/* default format */
+	char const * format;		/* default format plug-in */
 	ArchEndian endian;
+	uint32_t address_size;
 	uint32_t alignment;
 	uint32_t instruction_size;	/* 0 if not constant */
 } ArchDescription;

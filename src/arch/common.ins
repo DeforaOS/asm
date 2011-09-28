@@ -1,5 +1,5 @@
 /* $Id$ */
-	{ "db",	AOT_NONE, 0x0,	AO_IMMEDIATE(0, 8, 0),	AOT_NONE, AOT_NONE },
-	{ "dw",	AOT_NONE, 0x0,	AO_IMMEDIATE(0, 16, 0),	AOT_NONE, AOT_NONE },
-	{ "dl",	AOT_NONE, 0x0,	AO_IMMEDIATE(0, 32, 0),	AOT_NONE, AOT_NONE },
-	{ "dq",	AOT_NONE, 0x0,	AO_IMMEDIATE(0, 64, 0),	AOT_NONE, AOT_NONE },
+	{ "db",	AOT_NONE, 0x0,	AO_1(AO_IMMEDIATE(0, 8, 0))	},
+	{ "dw",	AOT_NONE, 0x0,	AO_1(AO_IMMEDIATE(0, 16, 0))	},
+	{ "dl",	AOT_NONE, 0x0,	AO_1(AO_IMMEDIATE(0, 32, 0))	},
+	{ "dq",	AOT_NONE, 0x0,	AO_1(AO_IMMEDIATE(0, 64, 0))	},

@@ -86,6 +86,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/yasep.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/project.conf \
 		$(PACKAGE)-$(VERSION)/src/format/dex.c \
 		$(PACKAGE)-$(VERSION)/src/format/elf.c \

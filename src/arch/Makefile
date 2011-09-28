@@ -145,7 +145,7 @@ sparc.o: sparc.c common.ins null.ins sparc.h sparc.ins sparc.reg
 sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
-yasep.o: yasep.c common.ins null.ins yasep.ins
+yasep.o: yasep.c common.ins null.ins yasep.ins yasep.reg
 	$(CC) $(yasep_CFLAGS) -c yasep.c
 
 clean:

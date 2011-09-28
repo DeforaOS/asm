@@ -36,6 +36,7 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	uint32_t u32;
 	uint32_t opcode;
 	ArchInstruction * ai;
+	size_t i;
 
 	if(helper->read(helper->arch, &u32, sizeof(u32)) != sizeof(u32))
 		return -1;
@@ -64,6 +65,8 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	call->operands[0].definition = ai->op1;
 	call->operands[1].definition = ai->op2;
 	call->operands[2].definition = ai->op3;
+	for(i = 0; i < 3 && call->operands[i].definition != AOT_NONE; i++);
+	call->operands_cnt = i;
 	return 0;
 }
 

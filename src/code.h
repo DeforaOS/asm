@@ -60,6 +60,7 @@ int code_decode(Code * code, int raw);
 int code_decode_at(Code * code, char const * section, off_t offset,
 		size_t size, off_t base);
 int code_decode_buffer(Code * code, char const * buffer, size_t size);
-int code_print(Code * code, ArchInstructionCall * call);
+int code_print(Code * code, ArchDescription * description,
+		ArchInstructionCall * call);
 
 #endif /* !ASM_CODE_H */

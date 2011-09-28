@@ -1,0 +1,21 @@
+program:	{ newline } section_list { newline }
+
+newline:	[ space ] NEWLINE
+
+space:		SPACE { SPACE }
+
+section_list:	{ section instruction_list }
+
+section:	"." WORD newline
+
+instruction_list:	{ function | space (instruction | newline) | newline }
+
+function:	WORD ":" newline
+
+instruction:	operator [ space ] [ operand_list ] newline
+
+operator:	WORD
+
+operand_list:	operand [ space ] { "," [ space ] operand [ space ] }
+
+operand:	WORD | NUMBER | ( "[" WORD "]" )

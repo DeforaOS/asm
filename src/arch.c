@@ -737,7 +737,7 @@ static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
 	}
 	else if(whence == SEEK_CUR)
 	{
-		if(arch->buffer_pos + offset < 0)
+		if(offset < 0 && -offset > arch->buffer_pos)
 			return -error_set_code(1, "%s", "Invalid seek");
 		if(offset > 0 && (size_t)offset + arch->buffer_pos
 				>= arch->buffer_cnt)

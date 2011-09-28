@@ -107,8 +107,6 @@ static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
 static int _java_decode(FormatPlugin * format, int raw);
 
-static int _java_error(FormatPlugin * format);
-
 
 /* public */
 /* variables */
@@ -138,12 +136,7 @@ static int _java_init(FormatPlugin * format, char const * arch)
 	JavaHeader jh;
 	JavaPlugin * java;
 
-	if(arch == NULL)
-	{
-		format->priv = NULL;
-		return 0;
-	}
-	if(strcmp(arch, "java") != 0)
+	if(arch != NULL && strcmp(arch, "java") != 0)
 		return error_set_code(1, "%s: %s", arch,
 				"Unsupported architecture for java");
 	memcpy(&jh.magic, format->signature, format->signature_len);
@@ -152,8 +145,8 @@ static int _java_init(FormatPlugin * format, char const * arch)
 	jh.cp_cnt = _htob16(0);
 	if(helper->write(helper->format, &jh, sizeof(jh)) != sizeof(jh))
 		return -1;
-	if((java = malloc(sizeof(*java))) == NULL)
-		return -_java_error(format);
+	if((java = object_new(sizeof(*java))) == NULL)
+		return -1;
 	memset(java, 0, sizeof(*java));
 	format->priv = java;
 	return 0;
@@ -454,12 +447,4 @@ static int _decode_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 				!= sizeof(u16))
 			return -1;
 	return 0;
-}
-
-
-/* java_error */
-static int _java_error(FormatPlugin * format)
-{
-	return -error_set_code(1, "%s: %s", format->helper->get_filename(
-				format->helper->format), strerror(errno));
 }

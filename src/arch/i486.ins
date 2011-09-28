@@ -17,13 +17,13 @@
 
 /* instructions */
 /* BSWAP	0x0fc8 +rd	2					*/
-{ "bswap",	0x0fc8,		OP2F, OP_eax,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fc9,		OP2F, OP_ecx,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fca,		OP2F, OP_edx,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fcb,		OP2F, OP_ebx,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fcc,		OP2F, OP_esp,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fcd,		OP2F, OP_ebp,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fce,		OP2F, OP_esi,     AOT_NONE,   AOT_NONE	},
-{ "bswap",	0x0fcf,		OP2F, OP_edi,     AOT_NONE,   AOT_NONE	},
+{ "bswap",	0x0fc8,		OP2F, AO_1(OP_eax)			},
+{ "bswap",	0x0fc9,		OP2F, AO_1(OP_ecx)			},
+{ "bswap",	0x0fca,		OP2F, AO_1(OP_edx)			},
+{ "bswap",	0x0fcb,		OP2F, AO_1(OP_ebx)			},
+{ "bswap",	0x0fcc,		OP2F, AO_1(OP_esp)			},
+{ "bswap",	0x0fcd,		OP2F, AO_1(OP_ebp)			},
+{ "bswap",	0x0fce,		OP2F, AO_1(OP_esi)			},
+{ "bswap",	0x0fcf,		OP2F, AO_1(OP_edi)			},
 /* CPUID	0x0fa2		2					*/
-{ "cpuid",	0x0fa2,		OP2F, AOT_NONE,   AOT_NONE,  AOT_NONE	},
+{ "cpuid",	0x0fa2,		OP2F, AO_0()				},

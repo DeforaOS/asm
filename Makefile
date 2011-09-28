@@ -1,5 +1,5 @@
 PACKAGE	= asm
-VERSION	= 0.2.0
+VERSION	= 0.2.1
 SUBDIRS	= data include src test
 RM	?= rm -f
 LN	?= ln -f

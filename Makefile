@@ -61,6 +61,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/mips.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
+		$(PACKAGE)-$(VERSION)/src/arch/yasep.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.reg \
@@ -84,6 +85,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.h \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
+		$(PACKAGE)-$(VERSION)/src/arch/yasep.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/project.conf \
 		$(PACKAGE)-$(VERSION)/src/format/dex.c \
 		$(PACKAGE)-$(VERSION)/src/format/elf.c \

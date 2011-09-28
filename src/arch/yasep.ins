@@ -1,0 +1,40 @@
+/* $Id$ */
+/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel asm */
+/* This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+
+
+/* generic */
+/* opcode */
+#define OPIR(opcode)	(opcode << 2)
+#define OPRR(opcode)	((opcode << 2) | 0x2)
+#define OPIRL(opcode)	((opcode << 2) | 0x1)
+#define OPRRL(opcode)	((opcode << 2) | 0x3)
+/* flags */
+#define OPIRF		(16 << AOD_SIZE)
+#define OPRRF		(16 << AOD_SIZE)
+#define OPIRLF		(32 << AOD_SIZE)
+#define OPRRLF		(32 << AOD_SIZE)
+/* operands */
+#define OP_DST3		AO_REGISTER(0, 32, 0)
+#define OP_IMM4		AO_IMMEDIATE(0, 4, 0)
+#define OP_IMM16	AO_IMMEDIATE(0, 16, 0)
+#define OP_SI4		AO_REGISTER(0, 32, 0)
+#define OP_SND		AO_REGISTER(0, 32, 0)
+
+/* instructions */
+{ "add",	OPIR(0x0c), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
+{ "add",	OPRR(0x0c), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+{ "add",	OPIRL(0x0c),OPIRLF, AO_2(OP_SI4, OP_IMM16)		},
+{ "add",	OPRRL(0x0c),OPRRLF, AO_3(OP_SND, OP_SI4, OP_DST3)	},

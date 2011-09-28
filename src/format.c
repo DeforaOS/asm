@@ -168,7 +168,7 @@ int format_exit(Format * format)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if(format->plugin->exit != NULL)
+	if(format->plugin->helper != NULL && format->plugin->exit != NULL)
 		ret = format->plugin->exit(format->plugin);
 	format->plugin->helper = NULL;
 	format->fp = NULL;
@@ -190,6 +190,8 @@ int format_function(Format * format, char const * function)
 int format_init(Format * format, char const * arch, char const * filename,
 		FILE * fp)
 {
+	int ret = 0;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
@@ -199,9 +201,10 @@ int format_init(Format * format, char const * arch, char const * filename,
 	format->filename = filename;
 	format->fp = fp;
 	format->plugin->helper = &format->helper;
-	if(format->plugin->init != NULL)
-		return format->plugin->init(format->plugin, arch);
-	return 0;
+	if(format->plugin->init != NULL && (ret = format->plugin->init(
+					format->plugin, arch)) != 0)
+		format->plugin->helper = NULL;
+	return ret;
 }
 
 

@@ -179,6 +179,8 @@ install: $(TARGETS)
 	$(INSTALL) -m 0644 -- sparc.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- yasep.so $(DESTDIR)$(LIBDIR)/asm/arch/yasep.so
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
@@ -193,5 +195,6 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/mips.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/yasep.so
 
 .PHONY: all clean distclean install uninstall

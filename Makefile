@@ -106,6 +106,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/java.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/sparc64.S \
+		$(PACKAGE)-$(VERSION)/test/yasep.S \
 		$(PACKAGE)-$(VERSION)/test/Makefile \
 		$(PACKAGE)-$(VERSION)/test/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \

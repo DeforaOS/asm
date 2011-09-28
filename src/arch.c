@@ -56,12 +56,6 @@ struct _Arch
 };
 
 
-/* macros */
-#define AI_GET_OPERAND_COUNT(ai) (((ai->op1 & AOM_TYPE) ? 1 : 0) + \
-		((ai->op2 & AOM_TYPE) ? 1 : 0) + \
-		((ai->op3 & AOM_TYPE) ? 1 : 0))
-
-
 /* prototypes */
 /* callbacks */
 static char const * _arch_get_filename(Arch * arch);
@@ -244,8 +238,16 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 		return -1;
 	for(i = 0; i < call->operands_cnt; i++)
 	{
-		definition = (i == 0) ? instruction->op1 : ((i == 1)
-				? instruction->op2 : instruction->op3);
+		switch(i)
+		{
+			case 0:	definition = instruction->op1; break;
+			case 1:	definition = instruction->op2; break;
+			case 2:	definition = instruction->op3; break;
+			case 3:	definition = instruction->op4; break;
+			case 4:	definition = instruction->op5; break;
+			default:
+				return -1;
+		}
 		operand = &call->operands[i];
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s() operand %lu, type %u, type %u\n",

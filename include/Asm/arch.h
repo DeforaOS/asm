@@ -81,6 +81,11 @@ typedef enum _ArchOperandType
 # define AOI_REFERS_FUNCTION	0x2
 
 /* macros */
+# define AO_0()		AOT_NONE, AOT_NONE, AOT_NONE
+# define AO_1(op1)	op1, AOT_NONE, AOT_NONE
+# define AO_2(op1, op2)	op1, op2, AOT_NONE
+# define AO_3(op1, op2, op3) \
+			op1, op2, op3
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
 # define AO_GET_OFFSET(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)
 # define AO_GET_DSIZE(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)

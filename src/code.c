@@ -334,9 +334,13 @@ int code_decode(Code * code, int raw)
 
 
 /* code_decode_at */
+static void _decode_at_print_address(ArchDescription * description,
+		unsigned long address);
+
 int code_decode_at(Code * code, char const * section, off_t offset,
 		size_t size, off_t base)
 {
+	ArchDescription * description;
 	ArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;
 	size_t i;
@@ -346,14 +350,35 @@ int code_decode_at(Code * code, char const * section, off_t offset,
 	if(arch_decode_at(code->arch, code, &calls, &calls_cnt, offset, size,
 				base) != 0)
 		return -1;
+	description = arch_get_description(code->arch);
 	if(size != 0)
-		printf("\n%08lx:\n", (long)base);
+		_decode_at_print_address(description, base);
 	for(i = 0; i < calls_cnt; i++)
-		code_print(code, &calls[i]);
+		code_print(code, description, &calls[i]);
 	free(calls);
 	if(arch_seek(code->arch, offset + size, SEEK_SET) < 0)
 		return -1;
 	return 0;
+}
+
+static void _decode_at_print_address(ArchDescription * description,
+		unsigned long address)
+{
+	uint32_t size = (description != NULL) ? description->address_size : 32;
+	char const * format = "\n%08lx:\n";
+
+	switch(size)
+	{
+		case 64:
+			format = "\n%016lx:\n";
+			break;
+		case 20:
+			format = "\n%05lx:\n";
+			break;
+		default:
+			break;
+	}
+	printf(format, address);
 }
 
 
@@ -361,15 +386,17 @@ int code_decode_at(Code * code, char const * section, off_t offset,
 int code_decode_buffer(Code * code, char const * buffer, size_t size)
 {
 	int ret;
+	ArchDescription * description;
 	ArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;
 	size_t i;
 
 	arch_init_buffer(code->arch, buffer, size);
+	description = arch_get_description(code->arch);
 	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt, 0)) == 0)
 	{
 		for(i = 0; i < calls_cnt; i++)
-			code_print(code, &calls[i]);
+			code_print(code, description, &calls[i]);
 		free(calls);
 	}
 	arch_exit(code->arch);
@@ -429,9 +456,12 @@ int code_open(Code * code, char const * filename)
 
 
 /* code_print */
+static void _print_address(ArchDescription * description,
+		unsigned long address);
 static void _print_immediate(ArchOperand * ao);
 
-int code_print(Code * code, ArchInstructionCall * call)
+int code_print(Code * code, ArchDescription * description,
+		ArchInstructionCall * call)
 {
 	char const * sep = " ";
 	size_t i;
@@ -439,9 +469,11 @@ int code_print(Code * code, ArchInstructionCall * call)
 	ArchOperand * ao;
 	char const * name;
 
+	if(description == NULL)
+		description = arch_get_description(code->arch);
 	if(arch_seek(code->arch, call->offset, SEEK_SET) < 0)
 		return -1;
-	printf("%8lx:", (long)call->base);
+	_print_address(description, call->base);
 	for(i = 0; i < call->size; i++)
 	{
 		if(arch_read(code->arch, &u8, sizeof(u8)) != sizeof(u8))
@@ -484,6 +516,25 @@ int code_print(Code * code, ArchInstructionCall * call)
 	}
 	putchar('\n');
 	return 0;
+}
+
+static void _print_address(ArchDescription * description, unsigned long address)
+{
+	uint32_t size = (description != NULL) ? description->address_size : 32;
+	char const * format = "%8lx:";
+
+	switch(size)
+	{
+		case 64:
+			format = "%16lx:";
+			break;
+		case 20:
+			format = "%5lx:";
+			break;
+		default:
+			break;
+	}
+	printf(format, address);
 }
 
 static void _print_immediate(ArchOperand * ao)

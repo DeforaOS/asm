@@ -27,6 +27,7 @@
 #  define _LITTLE_ENDIAN __LITTLE_ENDIAN
 # endif
 
+# include "Asm/common.h"
 # include "Asm/arch.h"
 # include "Asm/asm.h"
 # include "Asm/format.h"

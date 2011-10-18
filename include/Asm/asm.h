@@ -18,7 +18,7 @@
 #ifndef DEVEL_ASM_ASM_H
 # define DEVEL_ASM_ASM_H
 
-# include <sys/types.h>
+# include "common.h"
 
 
 /* Asm */
@@ -30,30 +30,6 @@ typedef struct _AsmPrefs
 	char ** defines;
 	size_t defines_cnt;
 } AsmPrefs;
-
-typedef unsigned int AsmId;
-
-typedef struct _AsmFunction
-{
-	AsmId id;
-	char const * name;
-	off_t offset;
-	ssize_t size;
-} AsmFunction;
-
-typedef struct _AsmLabel
-{
-	char const * name;
-	off_t offset;
-} AsmLabel;
-
-typedef struct _AsmString
-{
-	int id;
-	char const * name;
-	off_t offset;
-	ssize_t length;
-} AsmString;
 
 typedef enum _AsmPluginType { APT_ARCH = 0, APT_FORMAT } AsmPluginType;
 

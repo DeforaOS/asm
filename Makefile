@@ -33,6 +33,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/include/project.conf \
 		$(PACKAGE)-$(VERSION)/include/Asm/arch.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/asm.h \
+		$(PACKAGE)-$(VERSION)/include/Asm/common.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/format.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/Makefile \
 		$(PACKAGE)-$(VERSION)/include/Asm/project.conf \

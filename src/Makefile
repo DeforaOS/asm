@@ -1,5 +1,5 @@
 SUBDIRS	= arch format
-TARGETS	= libasm.a libasm.so asm asm-static deasm
+TARGETS	= libasm.a libasm.so.0.0 libasm.so.0 libasm.so asm asm-static deasm
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -32,8 +32,10 @@ libasm.a: $(libasm_OBJS)
 	$(AR) -rc libasm.a $(libasm_OBJS)
 	$(RANLIB) libasm.a
 
-libasm.so: $(libasm_OBJS)
-	$(CCSHARED) -o libasm.so -Wl,-soname,libasm.so.0 $(libasm_OBJS) $(libasm_LDFLAGS)
+libasm.so.0.0 libasm.so.0 libasm.so: $(libasm_OBJS)
+	$(CCSHARED) -o libasm.so.0.0 -Wl,-soname,libasm.so.0 $(libasm_OBJS) $(libasm_LDFLAGS)
+	$(LN) -s -- libasm.so.0.0 libasm.so.0
+	$(LN) -s -- libasm.so.0.0 libasm.so
 
 asm_OBJS = main.o
 asm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
@@ -91,7 +93,7 @@ install: $(TARGETS)
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) install) || exit; done
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
 	$(INSTALL) -m 0644 -- libasm.a $(DESTDIR)$(LIBDIR)/libasm.a
-	$(INSTALL) -m 0755 -- libasm.so $(DESTDIR)$(LIBDIR)/libasm.so.0.0
+	$(INSTALL) -m 0755 -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0
 	$(LN) -s -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so
 	$(MKDIR) $(DESTDIR)$(BINDIR)

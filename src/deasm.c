@@ -40,20 +40,69 @@ static int _usage(void);
 
 /* functions */
 /* deasm */
+static int _deasm_section(AsmCode * code, AsmSection * section);
+
 static int _deasm(char const * arch, char const * format, char const * filename,
 		int raw)
 {
 	int ret;
 	Asm * a;
+	AsmCode * code;
+	AsmSection * sections;
+	size_t sections_cnt;
+	size_t i;
 
 	if((a = asm_new(arch, format)) == NULL)
 		return -error_print("deasm");
-	if((ret = asm_open_deassemble(a, filename, raw)) != 0)
+	if((code = asm_open_deassemble(a, filename, raw)) == NULL)
 		error_print("deasm");
 	else
+	{
+		printf("%s: %s-%s\n", filename, asm_get_format(a),
+				asm_get_arch(a));
+		asmcode_get_sections(code, &sections, &sections_cnt);
+		for(i = 0; i < sections_cnt; i++)
+			if((ret = _deasm_section(code, &sections[i])) != 0)
+				break;
 		asm_close(a);
+	}
 	asm_delete(a);
 	return ret;
+}
+
+static int _deasm_section(AsmCode * code, AsmSection * section)
+{
+	ArchDescription * description;
+	size_t size;
+	ArchInstructionCall * calls = NULL;
+	size_t calls_cnt = 0;
+	size_t i;
+
+	printf("\nDisassembly of section %s:\n", section->name);
+	if(asmcode_decode_section(code, section, &calls, &calls_cnt) != 0)
+	{
+		error_print("deasm");
+		return -1;
+	}
+	description = asmcode_get_arch_description(code);
+	size = (description != NULL) ? description->address_size : 32;
+	switch(size)
+	{
+		case 64:
+			printf("\n%016lx:\n", section->base);
+			break;
+		case 20:
+			printf("\n%05lx:\n", section->base);
+			break;
+		case 32:
+		default:
+			printf("\n%08lx:\n", section->base);
+			break;
+	}
+	for(i = 0; i < calls_cnt; i++)
+		asmcode_print(code, &calls[i]);
+	free(calls);
+	return 0;
 }
 
 
@@ -61,14 +110,19 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 static int _deasm_buffer(char const * arch, char const * buffer, size_t size)
 {
 	Asm * a;
+	AsmCode * code;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if((a = asm_new(arch, NULL)) == NULL)
 		return -1;
-	if(asm_deassemble(a, buffer, size) != 0)
+	if((code = asm_deassemble(a, buffer, size, NULL, NULL)) == NULL)
 		error_print("deasm");
+	else
+	{
+		/* FIXME implement */
+	}
 	asm_delete(a);
 	return 0;
 }
@@ -138,8 +192,8 @@ static int _deasm_list(void)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	asm_plugin_list(APT_ARCH);
-	asm_plugin_list(APT_FORMAT);
+	asm_plugin_list(APT_ARCH, 1);
+	asm_plugin_list(APT_FORMAT, 1);
 	return 0;
 }
 
@@ -147,9 +201,13 @@ static int _deasm_list(void)
 /* usage */
 static int _usage(void)
 {
-	fputs("Usage: deasm [-a arch][-f format] filename\n"
+	fputs("Usage: deasm [-a arch][-f format][-D] filename\n"
 "       deasm [-a arch] -s string\n"
-"       deasm -l\n", stderr);
+"       deasm -l\n"
+"  -a	Force the given architecture\n"
+"  -f	Force the given file format\n"
+"  -D	Deassemble all sections\n"
+"  -l	List all the architectures and file formats available\n", stderr);
 	return 1;
 }
 

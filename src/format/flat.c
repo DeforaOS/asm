@@ -25,6 +25,8 @@
 /* prototypes */
 /* plug-in */
 static int _flat_decode(FormatPlugin * format, int raw);
+static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -41,6 +43,7 @@ FormatPlugin format_plugin =
 	NULL,
 	NULL,
 	_flat_decode,
+	_flat_decode_section,
 	NULL
 };
 
@@ -54,7 +57,21 @@ static int _flat_decode(FormatPlugin * format, int raw)
 	FormatPluginHelper * helper = format->helper;
 	off_t offset;
 
-	if((offset = helper->seek(helper->format, 0, SEEK_END)) < 0)
+	if((offset = helper->seek(helper->format, 0, SEEK_END)) >= 0)
+		return helper->set_section(helper->format, 0, ".text", 0,
+				offset, 0);
+	return -1;
+}
+
+
+/* flat_decode_section */
+static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	FormatPluginHelper * helper = format->helper;
+
+	if(section->id != 0)
 		return -1;
-	return helper->decode(helper->format, ".data", 0, offset, 0);
+	return helper->decode(helper->format, section->offset, section->size,
+			section->base, calls, calls_cnt);
 }

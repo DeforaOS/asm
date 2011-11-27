@@ -79,7 +79,7 @@ static ArchInstruction _dalvik_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _dalvik_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
@@ -95,15 +95,15 @@ ArchPlugin arch_plugin =
 	_dalvik_instructions,
 	NULL,
 	NULL,
-	_dalvik_write,
+	_dalvik_encode,
 	_dalvik_decode
 };
 
 
 /* private */
 /* functions */
-/* dalvik_write */
-static int _dalvik_write(ArchPlugin * plugin, ArchInstruction * instruction,
+/* dalvik_encode */
+static int _dalvik_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;

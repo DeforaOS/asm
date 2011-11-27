@@ -106,6 +106,8 @@ static int _java_init(FormatPlugin * format, char const * arch);
 static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
 static int _java_decode(FormatPlugin * format, int raw);
+static int _java_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -123,6 +125,7 @@ FormatPlugin format_plugin =
 	NULL,
 	_java_detect,
 	_java_decode,
+	_java_decode_section,
 	NULL
 };
 
@@ -325,7 +328,8 @@ static int _java_decode(FormatPlugin * format, int raw)
 			|| (end = helper->seek(helper->format, 0, SEEK_END))
 			< 0)
 		return -1;
-	return helper->decode(helper->format, NULL, offset, end - offset, 0);
+	return helper->set_section(helper->format, 0, ".text", offset,
+			end - offset, 0);
 }
 
 static int _decode_skip_attributes(FormatPlugin * format, uint16_t cnt)
@@ -447,4 +451,15 @@ static int _decode_skip_interfaces(FormatPlugin * format, uint16_t cnt)
 				!= sizeof(u16))
 			return -1;
 	return 0;
+}
+
+
+/* java_decode_section */
+static int _java_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	FormatPluginHelper * helper = format->helper;
+
+	return helper->decode(helper->format, section->offset, section->size,
+			section->base, calls, calls_cnt);
 }

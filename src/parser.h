@@ -18,9 +18,11 @@
 #ifndef ASM_PARSER_H
 # define ASM_PARSER_H
 
+# include "Asm/asm.h"
 # include "code.h"
 
 
-int parser(AsmPrefs * prefs, Code * code, char const * infile);
+int parser(AsmPrefs * prefs, AsmCode * code, char const * infile);
+int parser_string(AsmPrefs * prefs, AsmCode * code, char const * string);
 
 #endif /* !ASM_PARSER_H */

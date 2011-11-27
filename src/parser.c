@@ -34,7 +34,7 @@ typedef struct _State
 	Token * token;
 	unsigned int error_cnt;
 	unsigned int warning_cnt;
-	Code * code;
+	AsmCode * code;
 	ArchInstructionCall call;
 } State;
 
@@ -157,6 +157,7 @@ static int _parser_error(State * state, char const * format, ...)
 
 	fputs("asm: ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
+		/* FIXME will be wrong when string-based input is supported */
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),
 				", line ", token_get_line(state->token));
 	va_start(ap, format);
@@ -174,6 +175,7 @@ static int _parser_warning(State * state, char const * format, ...)
 
 	fputs("asm: ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
+		/* FIXME will be wrong when string-based input is supported */
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),
 				", line ", token_get_line(state->token));
 	va_start(ap, format);
@@ -187,7 +189,7 @@ static int _parser_warning(State * state, char const * format, ...)
 /* protected */
 /* functions */
 /* parser */
-int parser(AsmPrefs * ap, Code * code, char const * infile)
+int parser(AsmPrefs * ap, AsmCode * code, char const * infile)
 {
 	CppPrefs prefs;
 	State state;
@@ -211,6 +213,38 @@ int parser(AsmPrefs * ap, Code * code, char const * infile)
 				": Compilation failed with ", state.error_cnt,
 				" error(s) and ", state.warning_cnt,
 				" warning(s)");
+	if(state.token != NULL)
+		token_delete(state.token);
+	return state.error_cnt;
+}
+
+
+/* parser_string */
+int parser_string(AsmPrefs * ap, AsmCode * code, char const * string)
+{
+	CppPrefs prefs;
+	State state;
+	size_t i;
+
+	memset(&prefs, 0, sizeof(prefs));
+#if 0
+	prefs.filename = infile;
+#endif
+	prefs.filters = CPP_FILTER_COMMENT;
+	memset(&state, 0, sizeof(state));
+	state.code = code;
+	if((state.cpp = cpp_new(&prefs)) == NULL)
+		return -1;
+	if(ap != NULL)
+		for(i = 0; i < ap->defines_cnt; i++)
+			/* FIXME check errors */
+			cpp_define_add(state.cpp, ap->defines[i], NULL);
+	if(_parser_scan(&state) != 0)
+		return _parser_error(&state, "%s", error_get());
+	if(_program(&state) != 0)
+		error_set_code(1, "%s%u%s%u%s", "Compilation failed with ",
+				state.error_cnt, " error(s) and ",
+				state.warning_cnt, " warning(s)");
 	if(state.token != NULL)
 		token_delete(state.token);
 	return state.error_cnt;
@@ -318,7 +352,7 @@ static int _section(State * state)
 #ifdef DEBUG
 		fprintf(stderr, "%s\"%s\"\n", "DEBUG: section ", section);
 #endif
-		if(code_section(state->code, section) != 0)
+		if(asmcode_section(state->code, section) != 0)
 			ret |= _parser_error(state, "%s", error_get());
 		free(section);
 	}
@@ -376,7 +410,7 @@ static int _function(State * state)
 #ifdef DEBUG
 		fprintf(stderr, "DEBUG: %s \"%s\"\n", "function", function);
 #endif
-		if(code_function(state->code, function) != 0)
+		if(asmcode_function(state->code, function) != 0)
 			ret |= _parser_error(state, "%s", error_get());
 		free(function);
 	}
@@ -403,7 +437,7 @@ static int _instruction(State * state)
 	}
 	if(state->call.name != NULL)
 	{
-		if(code_instruction(state->code, &state->call) != 0)
+		if(asmcode_instruction(state->code, &state->call) != 0)
 			ret |= _parser_error(state, "%s", error_get());
 		free(state->call.name);
 	}

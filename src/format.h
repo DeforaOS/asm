@@ -18,6 +18,7 @@
 #ifndef ASM_FORMAT_H
 # define ASM_FORMAT_H
 
+# include "Asm/common.h"
 # include "Asm/format.h"
 # include "code.h"
 
@@ -27,17 +28,19 @@
 /* types */
 typedef int (*FormatDecodeCallback)(void * priv, char const * section,
 		off_t offset, size_t size, off_t base);
-typedef AsmString * (*FormatGetStringByIdCallback)(void * priv, AsmId id);
-typedef int (*FormatSetFunctionCallback)(void * priv, int id, char const * name,
-		off_t offset, ssize_t length);
-typedef int (*FormatSetStringCallback)(void * priv, int id, char const * name,
-		off_t offset, ssize_t length);
+typedef AsmString * (*FormatGetStringByIdCallback)(void * priv, AsmStringId id);
+typedef int (*FormatSetFunctionCallback)(void * priv, AsmFunctionId id,
+		char const * name, off_t offset, ssize_t length);
+typedef int (*FormatSetStringCallback)(void * priv, AsmStringId id,
+		char const * name, off_t offset, ssize_t length);
 
 /* functions */
 Format * format_new(char const * format);
 void format_delete(Format * format);
 
 /* accessors */
+int format_can_decode(Format * format);
+
 char const * format_get_name(Format * format);
 
 /* useful */
@@ -50,7 +53,9 @@ int format_function(Format * format, char const * function);
 int format_section(Format * format, char const * section);
 
 /* disassembly */
-int format_decode(Format * format, Code * code, int raw);
+int format_decode(Format * format, AsmCode * code, int raw);
+int format_decode_section(Format * format, AsmCode * code, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 char const * format_detect_arch(Format * format);
 int format_match(Format * format);
 

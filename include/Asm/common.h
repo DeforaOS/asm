@@ -23,28 +23,37 @@
 
 /* common */
 /* types */
-typedef unsigned int AsmId;
+typedef int AsmElementId;
 
-typedef struct _AsmFunction
+typedef struct _AsmElement
 {
-	AsmId id;
-	char const * name;
+	AsmElementId id;
+	char * name;
 	off_t offset;
 	ssize_t size;
-} AsmFunction;
+	off_t base;
+} AsmElement;
 
-typedef struct _AsmLabel
+typedef enum _AsmElementType
 {
-	char const * name;
-	off_t offset;
-} AsmLabel;
+	AET_FUNCTION,
+	AET_LABEL,
+	AET_SECTION,
+	AET_STRING
+} AsmElementType;
+# define AET_LAST AET_STRING
+# define AET_COUNT (AET_LAST + 1)
 
-typedef struct _AsmString
-{
-	int id;
-	char const * name;
-	off_t offset;
-	ssize_t length;
-} AsmString;
+typedef AsmElementId AsmFunctionId;
+typedef struct _AsmElement AsmFunction;
 
-#endif /* !DEVEL_ASM_AS_H */
+typedef AsmElementId AsmLabelId;
+typedef struct _AsmElement AsmLabel;
+
+typedef AsmElementId AsmSectionId;
+typedef struct _AsmElement AsmSection;
+
+typedef AsmElementId AsmStringId;
+typedef struct _AsmElement AsmString;
+
+#endif /* !DEVEL_ASM_COMMON_H */

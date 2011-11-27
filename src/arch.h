@@ -32,6 +32,8 @@ void arch_delete(Arch * arch);
 
 
 /* accessors */
+int arch_can_decode(Arch * arch);
+
 ArchDescription * arch_get_description(Arch * arch);
 char const * arch_get_format(Arch * arch);
 char const * arch_get_name(Arch * arch);
@@ -56,14 +58,14 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size);
 int arch_exit(Arch * arch);
 
 /* assembly */
-int arch_write(Arch * arch, ArchInstruction * instruction,
+int arch_encode(Arch * arch, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
-/* disassembly */
-int arch_decode(Arch * arch, Code * code, ArchInstructionCall ** calls,
-		size_t * calls_cnt, off_t base);
-int arch_decode_at(Arch * arch, Code * code, ArchInstructionCall ** calls,
-		size_t * calls_cnt, off_t offset, size_t size, off_t base);
+/* deassembly */
+int arch_decode(Arch * arch, AsmCode * code, off_t base,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
+int arch_decode_at(Arch * arch, AsmCode * code, off_t offset, size_t size,
+	off_t base, ArchInstructionCall ** calls, size_t * calls_cnt);
 ssize_t arch_read(Arch * arch, void * buf, size_t cnt);
 off_t arch_seek(Arch * arch, off_t offset, int whence);
 

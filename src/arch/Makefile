@@ -1,4 +1,4 @@
-TARGETS	= amd64.so arm.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so sparc.so sparc64.so yasep.so
+TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so mipseb.so mipsel.so sparc.so sparc64.so yasep.so
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -31,6 +31,20 @@ arm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 arm.so: $(arm_OBJS)
 	$(CCSHARED) -o arm.so $(arm_OBJS) $(arm_LDFLAGS)
+
+armeb_OBJS = armeb.o
+armeb_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+armeb_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+armeb.so: $(armeb_OBJS)
+	$(CCSHARED) -o armeb.so $(armeb_OBJS) $(armeb_LDFLAGS)
+
+armel_OBJS = armel.o
+armel_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+armel_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+armel.so: $(armel_OBJS)
+	$(CCSHARED) -o armel.so $(armel_OBJS) $(armel_LDFLAGS)
 
 dalvik_OBJS = dalvik.o
 dalvik_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
@@ -88,6 +102,20 @@ mips_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 mips.so: $(mips_OBJS)
 	$(CCSHARED) -o mips.so $(mips_OBJS) $(mips_LDFLAGS)
 
+mipseb_OBJS = mipseb.o
+mipseb_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+mipseb_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+mipseb.so: $(mipseb_OBJS)
+	$(CCSHARED) -o mipseb.so $(mipseb_OBJS) $(mipseb_LDFLAGS)
+
+mipsel_OBJS = mipsel.o
+mipsel_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+mipsel_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+mipsel.so: $(mipsel_OBJS)
+	$(CCSHARED) -o mipsel.so $(mipsel_OBJS) $(mipsel_LDFLAGS)
+
 sparc_OBJS = sparc.o
 sparc_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 sparc_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
@@ -115,6 +143,12 @@ amd64.o: amd64.c amd64.ins amd64.reg common.ins null.ins i386.h i386.ins i386.re
 arm.o: arm.c arm.h arm.ins arm.reg common.ins null.ins
 	$(CC) $(arm_CFLAGS) -c arm.c
 
+armeb.o: armeb.c arm.o
+	$(CC) $(armeb_CFLAGS) -c armeb.c
+
+armel.o: armel.c arm.o
+	$(CC) $(armel_CFLAGS) -c armel.c
+
 dalvik.o: dalvik.c common.ins null.ins dalvik.ins dalvik.reg
 	$(CC) $(dalvik_CFLAGS) -c dalvik.c
 
@@ -139,6 +173,12 @@ java.o: java.c common.ins null.ins
 mips.o: mips.c common.ins null.ins mips.h mips.ins mips.reg
 	$(CC) $(mips_CFLAGS) -c mips.c
 
+mipseb.o: mipseb.c mips.o
+	$(CC) $(mipseb_CFLAGS) -c mipseb.c
+
+mipsel.o: mipsel.c mips.o
+	$(CC) $(mipsel_CFLAGS) -c mipsel.c
+
 sparc.o: sparc.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc_CFLAGS) -c sparc.c
 
@@ -149,7 +189,7 @@ yasep.o: yasep.c common.ins null.ins yasep.ins yasep.reg
 	$(CC) $(yasep_CFLAGS) -c yasep.c
 
 clean:
-	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(yasep_OBJS)
+	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(armeb_OBJS) $(armel_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(mipseb_OBJS) $(mipsel_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(yasep_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -159,6 +199,10 @@ install: $(TARGETS)
 	$(INSTALL) -m 0644 -- amd64.so $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- arm.so $(DESTDIR)$(LIBDIR)/asm/arch/arm.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- armeb.so $(DESTDIR)$(LIBDIR)/asm/arch/armeb.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- armel.so $(DESTDIR)$(LIBDIR)/asm/arch/armel.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- dalvik.so $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
@@ -176,6 +220,10 @@ install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- mips.so $(DESTDIR)$(LIBDIR)/asm/arch/mips.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- mipseb.so $(DESTDIR)$(LIBDIR)/asm/arch/mipseb.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- mipsel.so $(DESTDIR)$(LIBDIR)/asm/arch/mipsel.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- sparc.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
@@ -185,6 +233,8 @@ install: $(TARGETS)
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/arm.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/armeb.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/armel.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/dalvik.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i386_real.so
@@ -193,6 +243,8 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/i686.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/java.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/mips.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/mipseb.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/mipsel.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/yasep.so

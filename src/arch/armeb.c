@@ -15,50 +15,5 @@
 
 
 
-#include <stddef.h>
-#include "Asm.h"
-
-
-/* sparc */
-/* private */
-/* variables */
-static ArchDescription _sparc_description =
-{
-	"elf", ARCH_ENDIAN_BIG, 32, 32, 32
-};
-
-#define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _sparc_registers[] =
-{
-#include "sparc.reg"
-	{ NULL,		0, 0 }
-};
-#undef REG
-
-static ArchInstruction _sparc_instructions[] =
-{
-#include "sparc.ins"
-#include "common.ins"
-#include "null.ins"
-};
-
-
-/* functions */
-/* plug-in */
-#include "sparc.h"
-
-
-/* protected */
-/* variables */
-ArchPlugin arch_plugin =
-{
-	NULL,
-	"sparc",
-	&_sparc_description,
-	_sparc_registers,
-	_sparc_instructions,
-	NULL,
-	NULL,
-	_sparc_encode,
-	_sparc_decode
-};
+#define ARCH_ENDIAN	ARCH_ENDIAN_BIG
+#include "arm.c"

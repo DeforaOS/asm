@@ -31,6 +31,13 @@
 # define ASM_FILENAME_DEFAULT "a.out"
 
 
+/* prototypes */
+static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
+		char const * infile, char const * outfile);
+static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
+		char const * outfile, char const * string);
+
+
 /* functions */
 /* asm */
 static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
@@ -48,10 +55,27 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 }
 
 
+/* asm_string */
+static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
+		char const * outfile, char const * string)
+{
+	int ret = 0;
+	Asm * a;
+
+	if((a = asm_new(arch, format)) == NULL)
+		return error_print(PACKAGE);
+	if(asm_assemble_string(a, prefs, outfile, string) != 0)
+		ret = error_print(PACKAGE);
+	asm_delete(a);
+	return ret;
+}
+
+
 /* usage */
 static unsigned int _usage(void)
 {
 	fputs("Usage: asm [-D name][-a arch][-f format][-o file] file\n"
+"       asm [-D name][-a arch][-f format][-o file] -s string\n"
 "       asm -l\n"
 "  -D	Set a variable in the pre-processor\n"
 "  -a	Target architecture\n"
@@ -74,9 +98,10 @@ int main(int argc, char * argv[])
 	char * outfile = ASM_FILENAME_DEFAULT;
 	char const * arch = NULL;
 	char const * format = NULL;
+	char const * string = NULL;
 
 	memset(&prefs, 0, sizeof(prefs));
-	while((o = getopt(argc, argv, "a:D:f:o:l")) != -1)
+	while((o = getopt(argc, argv, "a:D:f:o:ls:")) != -1)
 		switch(o)
 		{
 			case 'a':
@@ -94,21 +119,35 @@ int main(int argc, char * argv[])
 				break;
 			case 'l':
 				o = 0;
-				if(asm_plugin_list(APT_ARCH) != 0)
+				if(asm_plugin_list(APT_ARCH, 0) != 0)
 					o = error_print(PACKAGE);
 				else
 					putchar('\n');
-				if(asm_plugin_list(APT_FORMAT) != 0)
+				if(asm_plugin_list(APT_FORMAT, 0) != 0)
 					o = error_print(PACKAGE);
 				return (o == 0) ? 0 : 2;
+			case 's':
+				string = optarg;
+				break;
 			default:
+				free(prefs.defines);
 				return _usage();
 		}
-	if(optind + 1 != argc)
-		return _usage();
-	ret = _asm(&prefs, arch, format, argv[optind], outfile);
+	if(string != NULL)
+	{
+		if(optind != argc)
+			ret = _usage();
+		else
+			ret = (_asm_string(&prefs, arch, format, outfile,
+						string) == 0) ? 0 : 2;
+	}
+	else if(optind == argc - 1)
+		ret = (_asm(&prefs, arch, format, argv[optind], outfile) == 0)
+			? 0 : 2;
+	else
+		ret = _usage();
 	free(prefs.defines);
-	return (ret == 0) ? 0 : 2;
+	return ret;
 }
 
 static int _main_add_define(AsmPrefs * prefs, char * define)

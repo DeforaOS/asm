@@ -22,14 +22,14 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _mips_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _mips_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
 /* functions */
 /* plug-in */
-/* mips_write */
-static int _mips_write(ArchPlugin * plugin, ArchInstruction * instruction,
+/* mips_encode */
+static int _mips_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;

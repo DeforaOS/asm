@@ -27,9 +27,9 @@
 #  define _LITTLE_ENDIAN __LITTLE_ENDIAN
 # endif
 
-# include "Asm/common.h"
 # include "Asm/arch.h"
 # include "Asm/asm.h"
+# include "Asm/code.h"
 # include "Asm/format.h"
 
 
@@ -69,6 +69,5 @@
 # else
 #  warning "Could not determine endian on your system"
 # endif
-
 
 #endif /* !DEVEL_ASM_H */

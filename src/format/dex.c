@@ -126,6 +126,8 @@ static int _dex_init(FormatPlugin * format, char const * arch);
 static int _dex_exit(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
 static int _dex_decode(FormatPlugin * format, int raw);
+static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -142,6 +144,7 @@ FormatPlugin format_plugin =
 	NULL,
 	_dex_detect,
 	_dex_decode,
+	_dex_decode_section,
 	NULL
 };
 
@@ -183,14 +186,15 @@ static int _dex_exit(FormatPlugin * format)
 /* dex_detect */
 static char const * _dex_detect(FormatPlugin * format)
 {
-	/* FIXME some sections might contain native code */
+	/* XXX some sections might contain native code */
 	return "dalvik";
 }
 
 
 /* dex_decode */
-static int _decode_map(FormatPlugin * format, DexHeader * dh);
-static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size);
+static int _decode_map(FormatPlugin * format, DexHeader * dh, int raw);
+static int _decode_map_code(FormatPlugin * format, size_t id, off_t offset,
+		size_t size);
 static int _decode_map_method_id(FormatPlugin * format, off_t offset,
 		size_t size);
 static int _decode_map_string_id(FormatPlugin * format, off_t offset,
@@ -201,17 +205,20 @@ static int _dex_decode(FormatPlugin * format, int raw)
 	FormatPluginHelper * helper = format->helper;
 	DexHeader dh;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%d)\n", __func__, raw);
+#endif
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
 	if(helper->read(helper->format, &dh, sizeof(dh)) != sizeof(dh))
 		return -1;
 	dh.map_off = _htol32(dh.map_off);
-	if(_decode_map(format, &dh) != 0)
+	if(_decode_map(format, &dh, raw) != 0)
 		return -1;
 	return 0;
 }
 
-static int _decode_map(FormatPlugin * format, DexHeader * dh)
+static int _decode_map(FormatPlugin * format, DexHeader * dh, int raw)
 {
 	int ret = 0;
 	FormatPluginHelper * helper = format->helper;
@@ -247,7 +254,7 @@ static int _decode_map(FormatPlugin * format, DexHeader * dh)
 		switch(dmi.type)
 		{
 			case TYPE_CODE_ITEM:
-				ret |= _decode_map_code(format, dmi.offset,
+				ret |= _decode_map_code(format, i, dmi.offset,
 						dmi.size);
 				break;
 			case TYPE_METHOD_ID_ITEM:
@@ -267,64 +274,17 @@ static int _decode_map(FormatPlugin * format, DexHeader * dh)
 	return ret;
 }
 
-static int _decode_map_code(FormatPlugin * format, off_t offset, size_t size)
+static int _decode_map_code(FormatPlugin * format, size_t id, off_t offset,
+		size_t size)
 {
 	FormatPluginHelper * helper = format->helper;
-	DexMapCodeItem dmci;
-	size_t i;
-	off_t seek;
-	size_t j;
-	DexMapTryItem dmti;
-	ssize_t s;
 
-	if(helper->decode(helper->format, ".text", offset, 0, offset) != 0)
-		return -1;
-	for(i = 0; i < size; i++)
-	{
-		s = sizeof(dmci);
-		if(helper->read(helper->format, &dmci, s) != s)
-			return -1;
-		dmci.registers_size = _htol16(dmci.registers_size);
-		dmci.ins_size = _htol16(dmci.ins_size);
-		dmci.outs_size = _htol16(dmci.outs_size);
-		dmci.tries_size = _htol16(dmci.tries_size);
-		dmci.debug_info_off = _htol32(dmci.debug_info_off);
-		dmci.insns_size = _htol32(dmci.insns_size);
-		seek = helper->seek(helper->format, 0, SEEK_CUR);
-		if(helper->decode(helper->format, NULL, seek,
-					dmci.insns_size * 2, seek) != 0)
-			return -1;
-		/* skip padding and try_items */
-		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
 #ifdef DEBUG
-		fprintf(stderr, "DEBUG: code item %lu, offset 0x%lx"
-				", registers 0x%x, size 0x%x, debug @0x%x"
-				", tries 0x%x, seek 0x%lx\n", i,
-				helper->seek(helper->format, 0, SEEK_CUR),
-				dmci.registers_size, dmci.insns_size * 2,
-				dmci.debug_info_off, dmci.tries_size, seek);
+	fprintf(stderr, "DEBUG: %s(%lu, %ld, %lu)\n", __func__, id, offset,
+			size);
 #endif
-		if(seek != 0 && helper->seek(helper->format, seek, SEEK_CUR)
-				< 0)
-			return -1;
-		if(dmci.tries_size > 0)
-		{
-			for(j = 0; j < dmci.tries_size; j++)
-			{
-				s = sizeof(dmti);
-				if(helper->read(helper->format, &dmti, s) != s)
-					return -1;
-				dmti.start_addr = _htol32(dmti.start_addr);
-				dmti.insn_count = _htol16(dmti.insn_count);
-				dmti.handler_off = _htol16(dmti.handler_off);
-			}
-			seek = helper->seek(helper->format, 0, SEEK_CUR);
-			if(helper->decode(helper->format, NULL, seek, 8, seek)
-					!= 0)
-				return -1;
-		}
-	}
-	return 0;
+	return (helper->set_section(helper->format, id, ".text", offset, size,
+				0) == id) ? 0 : -1;
 }
 
 static int _decode_map_method_id(FormatPlugin * format, off_t offset,
@@ -337,6 +297,9 @@ static int _decode_map_method_id(FormatPlugin * format, off_t offset,
 	AsmString * string;
 	char const * name;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%ld, %lu)\n", __func__, offset, size);
+#endif
 	if(dex->dmii != NULL)
 		return 0; /* already parsed */
 	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
@@ -372,6 +335,9 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 	size_t i;
 	uint8_t u8;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%ld, %lu)\n", __func__, offset, size);
+#endif
 	if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 		return -1;
 	s = sizeof(*dsii) * size;
@@ -395,4 +361,71 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 	}
 	free(dsii);
 	return (i == size) ? 0 : -1;
+}
+
+
+/* dex_decode_section */
+static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	FormatPluginHelper * helper = format->helper;
+	DexMapCodeItem dmci;
+	size_t i;
+	off_t seek;
+	size_t j;
+	DexMapTryItem dmti;
+	ssize_t s;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	if(helper->seek(helper->format, section->offset, SEEK_SET)
+			!= section->offset)
+		return -1;
+	for(i = 0; i < section->size; i++)
+	{
+		s = sizeof(dmci);
+		if(helper->read(helper->format, &dmci, s) != s)
+			return -1;
+		dmci.registers_size = _htol16(dmci.registers_size);
+		dmci.ins_size = _htol16(dmci.ins_size);
+		dmci.outs_size = _htol16(dmci.outs_size);
+		dmci.tries_size = _htol16(dmci.tries_size);
+		dmci.debug_info_off = _htol32(dmci.debug_info_off);
+		dmci.insns_size = _htol32(dmci.insns_size);
+		seek = helper->seek(helper->format, 0, SEEK_CUR);
+		if(helper->decode(helper->format, seek, dmci.insns_size * 2,
+					seek, calls, calls_cnt) != 0)
+			return -1;
+		/* skip padding and try_items */
+		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
+#ifdef DEBUG
+		fprintf(stderr, "DEBUG: code item %lu, offset 0x%lx"
+				", registers 0x%x, size 0x%x, debug @0x%x"
+				", tries 0x%x, seek 0x%lx\n", i,
+				helper->seek(helper->format, 0, SEEK_CUR),
+				dmci.registers_size, dmci.insns_size * 2,
+				dmci.debug_info_off, dmci.tries_size, seek);
+#endif
+		if(seek != 0 && helper->seek(helper->format, seek, SEEK_CUR)
+				< 0)
+			return -1;
+		if(dmci.tries_size > 0)
+		{
+			for(j = 0; j < dmci.tries_size; j++)
+			{
+				s = sizeof(dmti);
+				if(helper->read(helper->format, &dmti, s) != s)
+					return -1;
+				dmti.start_addr = _htol32(dmti.start_addr);
+				dmti.insn_count = _htol16(dmti.insn_count);
+				dmti.handler_off = _htol16(dmti.handler_off);
+			}
+			seek = helper->seek(helper->format, 0, SEEK_CUR);
+			if(helper->decode(helper->format, seek, 8, seek, calls,
+						calls_cnt) != 0)
+				return -1;
+		}
+	}
+	return 0;
 }

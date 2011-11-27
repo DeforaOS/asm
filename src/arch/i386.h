@@ -24,7 +24,7 @@
 /* private */
 /* prototypes */
 static int _i386_decode(ArchPlugin * plugin, ArchInstructionCall * call);
-static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _i386_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
@@ -442,23 +442,23 @@ static int _decode_register(ArchPlugin * plugin, ArchInstructionCall * call,
 }
 
 
-/* i386_write */
-static int _write_constant(ArchPlugin * plugin,
+/* i386_encode */
+static int _encode_constant(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand);
-static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
+static int _encode_dregister(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands);
-static int _write_immediate(ArchPlugin * plugin, ArchOperand * operand);
-static int _write_immediate8(ArchPlugin * plugin, uint8_t value);
-static int _write_immediate16(ArchPlugin * plugin, uint16_t value);
-static int _write_immediate24(ArchPlugin * plugin, uint32_t value);
-static int _write_immediate32(ArchPlugin * plugin, uint32_t value);
-static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction);
-static int _write_operand(ArchPlugin * plugin, uint32_t * i,
+static int _encode_immediate(ArchPlugin * plugin, ArchOperand * operand);
+static int _encode_immediate8(ArchPlugin * plugin, uint8_t value);
+static int _encode_immediate16(ArchPlugin * plugin, uint16_t value);
+static int _encode_immediate24(ArchPlugin * plugin, uint32_t value);
+static int _encode_immediate32(ArchPlugin * plugin, uint32_t value);
+static int _encode_opcode(ArchPlugin * plugin, ArchInstruction * instruction);
+static int _encode_operand(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands);
-static int _write_register(ArchPlugin * plugin, uint32_t * i,
+static int _encode_register(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands);
 
-static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _i386_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	uint32_t i;
@@ -467,18 +467,18 @@ static int _i386_write(ArchPlugin * plugin, ArchInstruction * instruction,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	if(_write_opcode(plugin, instruction) != 0)
+	if(_encode_opcode(plugin, instruction) != 0)
 		return -1;
 	definitions[0] = instruction->op1;
 	definitions[1] = instruction->op2;
 	definitions[2] = instruction->op3;
 	for(i = 0; i < call->operands_cnt; i++)
-		if(_write_operand(plugin, &i, definitions, call->operands) != 0)
+		if(_encode_operand(plugin, &i, definitions, call->operands) != 0)
 			return -1;
 	return 0;
 }
 
-static int _write_constant(ArchPlugin * plugin,
+static int _encode_constant(ArchPlugin * plugin,
 		ArchOperandDefinition definition, ArchOperand * operand)
 {
 	ArchOperand ao;
@@ -487,10 +487,10 @@ static int _write_constant(ArchPlugin * plugin,
 		return 0;
 	ao = *operand;
 	ao.definition &= ~(AOM_FLAGS);
-	return _write_immediate(plugin, &ao);
+	return _encode_immediate(plugin, &ao);
 }
 
-static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
+static int _encode_dregister(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -526,7 +526,7 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 				<< 3);
 	if(operand->value.dregister.offset == 0)
 		/* there is no offset */
-		return _write_immediate(plugin, &ioperand);
+		return _encode_immediate(plugin, &ioperand);
 	/* declare offset */
 	switch(AO_GET_OFFSET(definition) >> 3)
 	{
@@ -539,15 +539,15 @@ static int _write_dregister(ArchPlugin * plugin, uint32_t * i,
 		default:
 			return -error_set_code(1, "%s", "Invalid offset");
 	}
-	if(_write_immediate(plugin, &ioperand) != 0)
+	if(_encode_immediate(plugin, &ioperand) != 0)
 		return -1;
 	/* write offset */
 	ioperand.definition = AO_IMMEDIATE(0, AO_GET_OFFSET(definition), 0);
 	ioperand.value.immediate.value = operand->value.dregister.offset;
-	return _write_immediate(plugin, &ioperand);
+	return _encode_immediate(plugin, &ioperand);
 }
 
-static int _write_immediate(ArchPlugin * plugin, ArchOperand * operand)
+static int _encode_immediate(ArchPlugin * plugin, ArchOperand * operand)
 {
 	uint64_t value = operand->value.immediate.value;
 
@@ -559,18 +559,18 @@ static int _write_immediate(ArchPlugin * plugin, ArchOperand * operand)
 		case 0:
 			return 0;
 		case sizeof(uint8_t):
-			return _write_immediate8(plugin, value);
+			return _encode_immediate8(plugin, value);
 		case sizeof(uint16_t):
-			return _write_immediate16(plugin, value);
+			return _encode_immediate16(plugin, value);
 		case 3:
-			return _write_immediate24(plugin, value);
+			return _encode_immediate24(plugin, value);
 		case sizeof(uint32_t):
-			return _write_immediate32(plugin, value);
+			return _encode_immediate32(plugin, value);
 	}
 	return -error_set_code(1, "%s", "Invalid size");
 }
 
-static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
+static int _encode_immediate8(ArchPlugin * plugin, uint8_t value)
 {
 	ArchPluginHelper * helper = plugin->helper;
 
@@ -579,7 +579,7 @@ static int _write_immediate8(ArchPlugin * plugin, uint8_t value)
 	return 0;
 }
 
-static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
+static int _encode_immediate16(ArchPlugin * plugin, uint16_t value)
 {
 	ArchPluginHelper * helper = plugin->helper;
 
@@ -589,7 +589,7 @@ static int _write_immediate16(ArchPlugin * plugin, uint16_t value)
 	return 0;
 }
 
-static int _write_immediate24(ArchPlugin * plugin, uint32_t value)
+static int _encode_immediate24(ArchPlugin * plugin, uint32_t value)
 {
 	ArchPluginHelper * helper = plugin->helper;
 
@@ -599,7 +599,7 @@ static int _write_immediate24(ArchPlugin * plugin, uint32_t value)
 	return 0;
 }
 
-static int _write_immediate32(ArchPlugin * plugin, uint32_t value)
+static int _encode_immediate32(ArchPlugin * plugin, uint32_t value)
 {
 	ArchPluginHelper * helper = plugin->helper;
 
@@ -609,7 +609,7 @@ static int _write_immediate32(ArchPlugin * plugin, uint32_t value)
 	return 0;
 }
 
-static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
+static int _encode_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 {
 	ArchOperand operand;
 
@@ -639,24 +639,24 @@ static int _write_opcode(ArchPlugin * plugin, ArchInstruction * instruction)
 		default:
 			return -error_set_code(1, "%s", "Invalid size");
 	}
-	return _write_immediate(plugin, &operand);
+	return _encode_immediate(plugin, &operand);
 }
 
-static int _write_operand(ArchPlugin * plugin, uint32_t * i,
+static int _encode_operand(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
 	switch(operands[*i].definition)
 	{
 		case AOT_CONSTANT:
-			return _write_constant(plugin, definitions[*i],
+			return _encode_constant(plugin, definitions[*i],
 					&operands[*i]);
 		case AOT_DREGISTER:
-			return _write_dregister(plugin, i, definitions,
+			return _encode_dregister(plugin, i, definitions,
 					operands);
 		case AOT_IMMEDIATE:
-			return _write_immediate(plugin, &operands[*i]);
+			return _encode_immediate(plugin, &operands[*i]);
 		case AOT_REGISTER:
-			return _write_register(plugin, i, definitions,
+			return _encode_register(plugin, i, definitions,
 					operands);
 		case AOT_NONE:
 		case AOT_DREGISTER2:
@@ -666,7 +666,7 @@ static int _write_operand(ArchPlugin * plugin, uint32_t * i,
 	return 0;
 }
 
-static int _write_register(ArchPlugin * plugin, uint32_t * i,
+static int _encode_register(ArchPlugin * plugin, uint32_t * i,
 		ArchOperandDefinition * definitions, ArchOperand * operands)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -703,5 +703,5 @@ static int _write_register(ArchPlugin * plugin, uint32_t * i,
 			| (AO_GET_VALUE(definition) << 3);
 	else
 		ioperand.value.immediate.value = ar->id;
-	return _write_immediate(plugin, &ioperand);
+	return _encode_immediate(plugin, &ioperand);
 }

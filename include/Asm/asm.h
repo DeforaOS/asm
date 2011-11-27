@@ -18,7 +18,7 @@
 #ifndef DEVEL_ASM_ASM_H
 # define DEVEL_ASM_ASM_H
 
-# include "common.h"
+# include "code.h"
 
 
 /* Asm */
@@ -47,24 +47,6 @@ int asm_set_arch(Asm * a, char const * arch);
 char const * asm_get_format(Asm * a);
 int asm_set_format(Asm * a, char const * format);
 
-/* functions */
-AsmFunction * asm_get_function_by_name(Asm * a, char const * name);
-int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size);
-
-/* labels */
-AsmLabel * asm_get_label_by_name(Asm * a, char const * label);
-AsmLabel * asm_get_label_by_offset(Asm * a, off_t offset);
-int asm_set_label(Asm * a, char const * label, off_t offset);
-
-/* sections */
-int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size);
-
-/* strings */
-AsmString * asm_get_string_by_id(Asm * a, AsmId id);
-AsmString * asm_get_string_by_name(Asm * a, char const * name);
-int asm_set_string(Asm * a, int id, char const * name, off_t offset,
-		ssize_t length);
-
 
 /* useful */
 /* detection */
@@ -84,10 +66,11 @@ int asm_open_assemble(Asm * a, char const * outfile);
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 
 /* deassemble */
-int asm_deassemble(Asm * a, char const * buffer, size_t size);
-int asm_open_deassemble(Asm * a, char const * filename, int raw);
+AsmCode * asm_deassemble(Asm * a, char const * buffer, size_t size,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
+AsmCode * asm_open_deassemble(Asm * a, char const * filename, int raw);
 
 /* plug-in helpers */
-int asm_plugin_list(AsmPluginType type);
+int asm_plugin_list(AsmPluginType type, int decode);
 
-#endif /* !DEVEL_ASM_AS_H */
+#endif /* !DEVEL_ASM_COMMON_H */

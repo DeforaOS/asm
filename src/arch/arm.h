@@ -22,14 +22,14 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _arm_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
 /* functions */
 /* plug-in */
-/* arm_write */
-static int _arm_write(ArchPlugin * plugin, ArchInstruction * instruction,
+/* arm_encode */
+static int _arm_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;

@@ -213,6 +213,8 @@ static char const _pe_header_signature[4] = "PE\0\0";
 static int _pe_init(FormatPlugin * format, char const * arch);
 static char const * _pe_detect(FormatPlugin * format);
 static int _pe_decode(FormatPlugin * format, int raw);
+static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* useful */
 static char const * _pe_get_arch(uint16_t machine);
@@ -233,6 +235,7 @@ FormatPlugin format_plugin =
 	NULL,
 	_pe_detect,
 	_pe_decode,
+	_pe_decode_section,
 	NULL
 };
 
@@ -385,7 +388,7 @@ static int _pe_decode(FormatPlugin * format, int raw)
 						i) != 0)
 				break; /* XXX report error */
 	}
-	/* read and decode each section */
+	/* read and record each section */
 	offset = pm.offset + sizeof(_pe_header_signature) + sizeof(ph)
 		+ ph.opthdr_size;
 	if(ph.opthdr_size != 0 && helper->seek(helper->format, offset, SEEK_SET)
@@ -409,8 +412,9 @@ static int _pe_decode(FormatPlugin * format, int raw)
 		/* the $ sign has a special meaning for the linker */
 		if((q = strchr(psh.name, '$')) != NULL)
 			*q = '\0';
-		if(helper->decode(helper->format, psh.name, psh.raw_offset,
-					psh.raw_size, psh.vaddr + base) != 0)
+		if(helper->set_section(helper->format, i, psh.name,
+					psh.raw_offset, psh.raw_size,
+					psh.vaddr + base) != 0)
 			break;
 		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 			break;
@@ -551,6 +555,17 @@ static char * _decode_string(FormatPlugin * format, off_t offset)
 		len += s;
 	}
 	return ret;
+}
+
+
+/* pe_decode_section */
+static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	FormatPluginHelper * helper = format->helper;
+
+	return helper->decode(helper->format, section->offset, section->size,
+			section->base, calls, calls_cnt);
 }
 
 

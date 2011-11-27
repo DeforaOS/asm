@@ -33,6 +33,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/include/project.conf \
 		$(PACKAGE)-$(VERSION)/include/Asm/arch.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/asm.h \
+		$(PACKAGE)-$(VERSION)/include/Asm/code.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/common.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/format.h \
 		$(PACKAGE)-$(VERSION)/include/Asm/Makefile \
@@ -55,6 +56,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/project.conf \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/arm.c \
+		$(PACKAGE)-$(VERSION)/src/arch/armeb.c \
+		$(PACKAGE)-$(VERSION)/src/arch/armel.c \
 		$(PACKAGE)-$(VERSION)/src/arch/dalvik.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386.c \
 		$(PACKAGE)-$(VERSION)/src/arch/i386_real.c \
@@ -63,6 +66,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/i686.c \
 		$(PACKAGE)-$(VERSION)/src/arch/java.c \
 		$(PACKAGE)-$(VERSION)/src/arch/mips.c \
+		$(PACKAGE)-$(VERSION)/src/arch/mipseb.c \
+		$(PACKAGE)-$(VERSION)/src/arch/mipsel.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.c \
@@ -101,6 +106,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
 		$(PACKAGE)-$(VERSION)/test/amd64.S \
 		$(PACKAGE)-$(VERSION)/test/arm.S \
+		$(PACKAGE)-$(VERSION)/test/armeb.S \
+		$(PACKAGE)-$(VERSION)/test/armel.S \
 		$(PACKAGE)-$(VERSION)/test/dalvik.S \
 		$(PACKAGE)-$(VERSION)/test/i386.S \
 		$(PACKAGE)-$(VERSION)/test/i386_real.S \
@@ -108,6 +115,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/i586.S \
 		$(PACKAGE)-$(VERSION)/test/i686.S \
 		$(PACKAGE)-$(VERSION)/test/mips.S \
+		$(PACKAGE)-$(VERSION)/test/mipseb.S \
+		$(PACKAGE)-$(VERSION)/test/mipsel.S \
 		$(PACKAGE)-$(VERSION)/test/java.S \
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/sparc64.S \

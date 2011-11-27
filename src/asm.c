@@ -24,7 +24,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include "Asm/asm.h"
+#include "arch.h"
 #include "code.h"
+#include "format.h"
 #include "parser.h"
 #include "../config.h"
 
@@ -34,10 +37,12 @@
 /* types */
 struct _Asm
 {
+#if 1 /* FIXME probably useless now */
 	char * arch;
 	char * format;
+#endif
 
-	Code * code;
+	AsmCode * code;
 };
 
 typedef struct _AsmPluginDescription
@@ -96,7 +101,7 @@ void asm_delete(Asm * a)
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(a->code != NULL)
-		code_delete(a->code);
+		asmcode_delete(a->code);
 	string_delete(a->format);
 	string_delete(a->arch);
 	object_delete(a);
@@ -107,6 +112,8 @@ void asm_delete(Asm * a)
 /* asm_get_arch */
 char const * asm_get_arch(Asm * a)
 {
+	if(a->code != NULL)
+		return asmcode_get_arch(a->code);
 	return a->arch;
 }
 
@@ -114,6 +121,8 @@ char const * asm_get_arch(Asm * a)
 /* asm_get_format */
 char const * asm_get_format(Asm * a)
 {
+	if(a->code != NULL)
+		return asmcode_get_format(a->code);
 	return a->format;
 }
 
@@ -147,15 +156,7 @@ int asm_set_format(Asm * a, char const * format)
 /* asm_set_function */
 int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size)
 {
-	return code_set_function(a->code, -1, name, offset, size);
-}
-
-
-/* asm_set_section */
-int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size)
-{
-	/* FIXME fully implement */
-	return code_section(a->code, name);
+	return asmcode_set_function(a->code, -1, name, offset, size);
 }
 
 
@@ -176,6 +177,21 @@ int asm_assemble(Asm * a, AsmPrefs * prefs, char const * infile,
 }
 
 
+/* asm_assemble_string */
+int asm_assemble_string(Asm * a, AsmPrefs * prefs, char const * outfile,
+		char const * string)
+{
+	int ret;
+
+	/* FIXME should also allow standard output, or return a buffer */
+	if(_asm_open(a, outfile) != 0)
+		return -1;
+	ret = parser_string(prefs, a->code, string);
+	ret |= asm_close(a);
+	return ret;
+}
+
+
 /* asm_close */
 int asm_close(Asm * a)
 {
@@ -183,29 +199,28 @@ int asm_close(Asm * a)
 
 	if(a->code == NULL)
 		return -error_set_code(1, "%s", "No file opened");
-	ret = code_close(a->code);
+	ret = asmcode_close(a->code);
 	a->code = NULL;
 	return ret;
 }
 
 
 /* asm_deassemble */
-int asm_deassemble(Asm * a, char const * buffer, size_t size)
+AsmCode * asm_deassemble(Asm * a, char const * buffer, size_t size,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	int ret;
-
 	if(_asm_open(a, NULL) != 0)
-		return -1;
-	ret = code_decode_buffer(a->code, buffer, size);
-	asm_close(a);
-	return ret;
+		return NULL;
+	if(asmcode_decode_buffer(a->code, buffer, size, calls, calls_cnt) != 0)
+		return NULL;
+	return a->code;
 }
 
 
 /* asm_function */
 int asm_function(Asm * a, char const * name)
 {
-	return code_function(a->code, name);
+	return asmcode_function(a->code, name);
 }
 
 
@@ -240,7 +255,7 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 		}
 		va_end(ap);
 	}
-	return code_instruction(a->code, &call);
+	return asmcode_instruction(a->code, &call);
 }
 
 
@@ -252,24 +267,26 @@ int asm_open_assemble(Asm * a, char const * outfile)
 
 
 /* asm_open_deassemble */
-int asm_open_deassemble(Asm * a, char const * filename, int raw)
+AsmCode * asm_open_deassemble(Asm * a, char const * filename, int raw)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
 #endif
 	if(a->code != NULL)
-		return -error_set_code(1, "%s: Operation in progress",
-				code_get_filename(a->code));
-	if((a->code = code_new_file(a->arch, a->format, filename)) == NULL)
-		return -1;
-	if(code_decode(a->code, raw) != 0)
-		return -1;
-	return 0;
+	{
+		error_set_code(1, "%s: Operation in progress",
+				asmcode_get_filename(a->code));
+		return NULL;
+	}
+	if((a->code = asmcode_new_file(a->arch, a->format, filename)) == NULL
+			|| asmcode_decode(a->code, raw) != 0)
+		return NULL;
+	return a->code;
 }
 
 
 /* asm_plugin_list */
-int asm_plugin_list(AsmPluginType type)
+int asm_plugin_list(AsmPluginType type, int decode)
 {
 	AsmPluginDescription const * aspd;
 	char * path;
@@ -277,6 +294,8 @@ int asm_plugin_list(AsmPluginType type)
 	struct dirent * de;
 	size_t len;
 	char const * sep = "";
+	Arch * arch;
+	Format * format;
 
 	aspd = &_asm_plugin_description[type];
 	fprintf(stderr, "%s%s%s", "Available ", aspd->description,
@@ -303,7 +322,21 @@ int asm_plugin_list(AsmPluginType type)
 		if(strcmp(".so", &de->d_name[len - 3]) != 0)
 			continue;
 		de->d_name[len - 3] = '\0';
-		fprintf(stderr, "%s%s", sep, de->d_name);
+		if(type == APT_ARCH && (arch = arch_new(de->d_name)) != NULL
+				&& (decode == 0 || arch_can_decode(arch)))
+		{
+			fprintf(stderr, "%s%s", sep, de->d_name);
+			arch_delete(arch);
+		}
+		else if(type == APT_FORMAT && (format = format_new(de->d_name))
+				!= NULL && (decode == 0
+					|| format_can_decode(format)))
+		{
+			fprintf(stderr, "%s%s", sep, de->d_name);
+			format_delete(format);
+		}
+		else
+			continue;
 		sep = ", ";
 	}
 	free(path);
@@ -344,10 +377,10 @@ static int _asm_open(Asm * a, char const * outfile)
 		return -1;
 	if(a->code != NULL)
 		return -error_set_code(1, "%s: Operation in progress",
-				code_get_filename(a->code));
-	if((a->code = code_new(arch, format)) == NULL)
+				asmcode_get_filename(a->code));
+	if((a->code = asmcode_new(arch, format)) == NULL)
 		return -1;
 	if(outfile == NULL)
 		return 0;
-	return code_open(a->code, outfile);
+	return asmcode_open(a->code, outfile);
 }

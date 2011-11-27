@@ -41,7 +41,7 @@ static ArchInstruction _yasep_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _yasep_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
@@ -56,7 +56,7 @@ ArchPlugin arch_plugin =
 	_yasep_instructions,
 	NULL,
 	NULL,
-	_yasep_write,
+	_yasep_encode,
 	NULL
 };
 
@@ -64,21 +64,21 @@ ArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* plug-in */
-/* yasep_write */
-static int _write_16(ArchPlugin * plugin, ArchInstruction * instruction,
+/* yasep_encode */
+static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
-static int _write_32(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
-static int _yasep_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	return (instruction->opcode & 0x1)
-		? _write_32(plugin, instruction, call)
-		: _write_16(plugin, instruction, call);
+		? _encode_32(plugin, instruction, call)
+		: _encode_16(plugin, instruction, call);
 }
 
-static int _write_16(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -91,7 +91,7 @@ static int _write_16(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _write_32(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;

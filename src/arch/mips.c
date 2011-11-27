@@ -18,13 +18,17 @@
 #include <stddef.h>
 #include "Asm.h"
 
+#ifndef ARCH_ENDIAN
+# define ARCH_ENDIAN	ARCH_ENDIAN_BOTH
+#endif
+
 
 /* mips */
 /* private */
 /* variables */
 static ArchDescription _mips_description =
 {
-	"elf", ARCH_ENDIAN_BOTH, 32, 32, 32
+	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id) { "" # name, size, id },
@@ -59,6 +63,6 @@ ArchPlugin arch_plugin =
 	_mips_instructions,
 	NULL,
 	NULL,
-	_mips_write,
+	_mips_encode,
 	NULL
 };

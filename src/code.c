@@ -12,6 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+/* TODO:
+ * - lookup if a symbol is defined for each offset
+ * - derive functions/labels/etc from symbols (type, id, name, union) */
 
 
 
@@ -30,26 +33,10 @@
 #include "../config.h"
 
 
-/* Code */
+/* AsmCode */
 /* private */
 /* types */
-typedef struct _CodeString
-{
-	int id;
-	char * name;
-	off_t offset;
-	ssize_t length;
-} CodeString;
-
-typedef struct _CodeFunction
-{
-	int id;
-	char * name;
-	off_t offset;
-	ssize_t size;
-} CodeFunction;
-
-struct _Code
+struct _AsmCode
 {
 	Arch * arch;
 	ArchDescription * description;
@@ -57,42 +44,53 @@ struct _Code
 	char * filename;
 	FILE * fp;
 
-	/* functions */
-	CodeFunction * functions;
-	size_t functions_cnt;
-
-	/* strings */
-	CodeString * strings;
-	size_t strings_cnt;
+	/* elements */
+	AsmElement * elements[AET_COUNT];
+	size_t elements_cnt[AET_COUNT];
 };
 
 
 /* prototypes */
-/* functions */
-static void _code_function_delete_all(Code * code);
+/* elements */
+static void _asmcode_element_delete_all(AsmCode * code, AsmElementType type);
 
-static CodeFunction * _code_function_get_by_id(Code * code, AsmId id);
-static int _code_function_set(CodeFunction * codefunction, int id,
+static AsmElement * _asmcode_element_get_by_id(AsmCode * code,
+		AsmElementType type, AsmElementId id);
+static int _asmcode_element_set(AsmElement * element, AsmElementId id,
+		char const * name, off_t offset, ssize_t size, off_t base);
+
+/* functions */
+static void _asmcode_function_delete_all(AsmCode * code);
+static AsmFunction * _asmcode_function_get_by_id(AsmCode * code,
+		AsmFunctionId id);
+static int _asmcode_function_set(AsmFunction * codefunction, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size);
 
-static CodeFunction * _code_function_append(Code * code);
+static AsmFunction * _asmcode_function_append(AsmCode * code);
+
+/* sections */
+static AsmSection * _asmcode_section_get_by_id(AsmCode * code, AsmSectionId id);
+static int _asmcode_section_set(AsmSection * section, int id, char const * name,
+		off_t offset, ssize_t size, off_t base);
+
+static AsmSection * _asmcode_section_append(AsmCode * code);
 
 /* strings */
-static void _code_string_delete_all(Code * code);
+static void _asmcode_string_delete_all(AsmCode * code);
 
-static CodeString * _code_string_get_by_id(Code * code, AsmId id);
-static int _code_string_set(CodeString * codestring, int id, char const * name,
-		off_t offset, ssize_t length);
+static AsmString * _asmcode_string_get_by_id(AsmCode * code, AsmStringId id);
+static int _asmcode_string_set(AsmString * codestring,
+		int id, char const * name, off_t offset, ssize_t length);
 
-static CodeString * _code_string_append(Code * code);
-static int _code_string_read(Code * code, CodeString * codestring);
+static AsmString * _asmcode_string_append(AsmCode * code);
+static int _asmcode_string_read(AsmCode * code, AsmString * codestring);
 
 
 /* functions */
-/* code_new */
-Code * code_new(char const * arch, char const * format)
+/* asmcode_new */
+AsmCode * asmcode_new(char const * arch, char const * format)
 {
-	Code * code;
+	AsmCode * code;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", \"%s\")\n", __func__, arch, format);
@@ -105,7 +103,7 @@ Code * code_new(char const * arch, char const * format)
 		code->format = format_new(format);
 	if(code->arch == NULL)
 	{
-		code_delete(code);
+		asmcode_delete(code);
 		return NULL;
 	}
 	code->description = arch_get_description(code->arch);
@@ -113,13 +111,13 @@ Code * code_new(char const * arch, char const * format)
 }
 
 
-/* code_new_file */
+/* asmcode_new_file */
 static Format * _new_file_format(char const * filename, FILE * fp);
 
-Code * code_new_file(char const * arch, char const * format,
+AsmCode * asmcode_new_file(char const * arch, char const * format,
 		char const * filename)
 {
-	Code * code;
+	AsmCode * code;
 	FILE * fp;
 
 #ifdef DEBUG
@@ -155,7 +153,7 @@ Code * code_new_file(char const * arch, char const * format,
 	}
 	if(code->filename == NULL || code->arch == NULL || code->format == NULL)
 	{
-		code_delete(code);
+		asmcode_delete(code);
 		return NULL;
 	}
 	code->description = arch_get_description(code->arch);
@@ -209,8 +207,8 @@ static Format * _new_file_format(char const * filename, FILE * fp)
 }
 
 
-/* code_delete */
-int code_delete(Code * code)
+/* asmcode_delete */
+int asmcode_delete(AsmCode * code)
 {
 	int ret = 0;
 
@@ -231,71 +229,133 @@ int code_delete(Code * code)
 
 
 /* accessors */
-/* code_get_arch */
-char const * code_get_arch(Code * code)
+/* asmcode_get_arch */
+char const * asmcode_get_arch(AsmCode * code)
 {
 	return arch_get_name(code->arch);
 }
 
 
-/* code_get_filename */
-char const * code_get_filename(Code * code)
+/* asmcode_get_arch_description */
+ArchDescription * asmcode_get_arch_description(AsmCode * code)
+{
+	return arch_get_description(code->arch);
+}
+
+
+/* asmcode_get_filename */
+char const * asmcode_get_filename(AsmCode * code)
 {
 	return code->filename;
 }
 
 
-/* code_get_format */
-char const * code_get_format(Code * code)
+/* asmcode_get_format */
+char const * asmcode_get_format(AsmCode * code)
 {
 	return format_get_name(code->format);
 }
 
 
-/* code_get_function_by_id */
-AsmFunction * code_get_function_by_id(Code * code, AsmId id)
+/* asmcode_get_function_by_id */
+AsmFunction * asmcode_get_function_by_id(AsmCode * code, AsmFunctionId id)
 {
-	/* XXX CodeFunction has to be exactly like an AsmFunction */
-	return _code_function_get_by_id(code, id);
+	return _asmcode_element_get_by_id(code, AET_FUNCTION, id);
 }
 
 
-/* code_get_string_by_id */
-AsmString * code_get_string_by_id(Code * code, AsmId id)
+/* asmcode_get_functions */
+void asmcode_get_functions(AsmCode * code, AsmFunction ** functions,
+		size_t * functions_cnt)
 {
-	/* XXX CodeString has to be exactly like an AsmString */
-	return _code_string_get_by_id(code, id);
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	*functions = code->elements[AET_FUNCTION];
+	*functions_cnt = code->elements_cnt[AET_FUNCTION];
 }
 
 
-/* code_set_function */
-int code_set_function(Code * code, int id, char const * name, off_t offset,
-		ssize_t size)
+/* asmcode_get_section_by_id */
+AsmSection * asmcode_get_section_by_id(AsmCode * code, AsmSectionId id)
 {
-	CodeFunction * cf = NULL;
+	return _asmcode_element_get_by_id(code, AET_SECTION, id);
+}
 
+
+/* asmcode_get_sections */
+void asmcode_get_sections(AsmCode * code, AsmSection ** sections,
+		size_t * sections_cnt)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	*sections = code->elements[AET_SECTION];
+	*sections_cnt = code->elements_cnt[AET_SECTION];
+}
+
+
+/* asmcode_get_string_by_id */
+AsmString * asmcode_get_string_by_id(AsmCode * code, AsmStringId id)
+{
+	return _asmcode_element_get_by_id(code, AET_STRING, id);
+}
+
+
+/* asmcode_set_function */
+int asmcode_set_function(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t size)
+{
+	AsmFunction * cf = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%u, \"%s\", %ld, %ld)\n", __func__, id, name,
+			offset, size);
+#endif
 	if(id >= 0)
-		cf = _code_function_get_by_id(code, id);
+		cf = _asmcode_function_get_by_id(code, id);
 	if(cf == NULL)
-		cf = _code_function_append(code);
-	if(cf == NULL || _code_function_set(cf, id, name, offset, size) != 0)
+		cf = _asmcode_function_append(code);
+	if(cf == NULL || _asmcode_function_set(cf, id, name, offset, size) != 0)
 		return -1;
 	/* FIXME isn't it considered an error if no ID is known yet? */
 	return cf->id;
 }
 
 
-/* code_set_string */
-int code_set_string(Code * code, int id, char const * name, off_t offset,
+/* asmcode_set_section */
+int asmcode_set_section(AsmCode * code, int id, char const * name, off_t offset,
+		ssize_t size, off_t base)
+{
+	AsmSection * cs = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%u, \"%s\", %ld, %ld)\n", __func__, id, name,
+			offset, size);
+#endif
+	if(id >= 0)
+		cs = _asmcode_section_get_by_id(code, id);
+	if(cs == NULL)
+		cs = _asmcode_section_append(code);
+	if(cs == NULL || _asmcode_section_set(cs, id, name, offset, size, base)
+			!= 0)
+		return -1;
+	/* FIXME isn't it considered an error if no ID is known yet? */
+	return cs->id;
+}
+
+
+/* asmcode_set_string */
+int asmcode_set_string(AsmCode * code, int id, char const * name, off_t offset,
 		ssize_t length)
 {
-	CodeString * cs = NULL;
+	AsmString * cs = NULL;
 
 	if(id >= 0)
-		cs = _code_string_get_by_id(code, id);
+		cs = _asmcode_string_get_by_id(code, id);
 	if(cs == NULL)
-		cs = _code_string_append(code);
-	if(cs == NULL || _code_string_set(cs, id, name, offset, length) != 0)
+		cs = _asmcode_string_append(code);
+	if(cs == NULL || _asmcode_string_set(cs, id, name, offset, length) != 0)
 		return -1;
 	/* FIXME isn't it considered an error if no ID is known yet? */
 	return cs->id;
@@ -303,8 +363,8 @@ int code_set_string(Code * code, int id, char const * name, off_t offset,
 
 
 /* useful */
-/* code_close */
-int code_close(Code * code)
+/* asmcode_close */
+int asmcode_close(AsmCode * code)
 {
 	int ret = 0;
 
@@ -318,101 +378,67 @@ int code_close(Code * code)
 		ret |= -error_set_code(1, "%s: %s", code->filename,
 				strerror(errno));
 	code->fp = NULL;
-	_code_string_delete_all(code);
-	_code_function_delete_all(code);
+	_asmcode_string_delete_all(code);
+	_asmcode_function_delete_all(code);
 	return ret;
 }
 
 
-/* code_decode */
-int code_decode(Code * code, int raw)
+/* asmcode_decode */
+int asmcode_decode(AsmCode * code, int raw)
 {
-	printf("%s: %s-%s\n", code->filename, format_get_name(code->format),
-			arch_get_name(code->arch));
 	return format_decode(code->format, code, raw);
 }
 
 
-/* code_decode_at */
-static void _decode_at_print_address(ArchDescription * description,
-		unsigned long address);
-
-int code_decode_at(Code * code, char const * section, off_t offset,
-		size_t size, off_t base)
+/* asmcode_decode_at */
+int asmcode_decode_at(AsmCode * code, off_t offset, size_t size, off_t base,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	ArchDescription * description;
-	ArchInstructionCall * calls = NULL;
-	size_t calls_cnt = 0;
-	size_t i;
-
-	if(section != NULL)
-		printf("%s%s:\n", "\nDisassembly of section ", section);
-	if(arch_decode_at(code->arch, code, &calls, &calls_cnt, offset, size,
-				base) != 0)
-		return -1;
-	description = arch_get_description(code->arch);
-	if(size != 0)
-		_decode_at_print_address(description, base);
-	for(i = 0; i < calls_cnt; i++)
-		code_print(code, description, &calls[i]);
-	free(calls);
-	if(arch_seek(code->arch, offset + size, SEEK_SET) < 0)
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%ld, %lu, %ld)\n", __func__, offset, size,
+			base);
+#endif
+	if(arch_decode_at(code->arch, code, offset, size, base, calls,
+				calls_cnt) != 0)
 		return -1;
 	return 0;
 }
 
-static void _decode_at_print_address(ArchDescription * description,
-		unsigned long address)
-{
-	uint32_t size = (description != NULL) ? description->address_size : 32;
-	char const * format = "\n%08lx:\n";
 
-	switch(size)
-	{
-		case 64:
-			format = "\n%016lx:\n";
-			break;
-		case 20:
-			format = "\n%05lx:\n";
-			break;
-		default:
-			break;
-	}
-	printf(format, address);
-}
-
-
-/* code_decode_buffer */
-int code_decode_buffer(Code * code, char const * buffer, size_t size)
+/* asmcode_decode_buffer */
+int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
 	ArchDescription * description;
-	ArchInstructionCall * calls = NULL;
-	size_t calls_cnt = 0;
-	size_t i;
 
 	arch_init_buffer(code->arch, buffer, size);
 	description = arch_get_description(code->arch);
-	if((ret = arch_decode(code->arch, code, &calls, &calls_cnt, 0)) == 0)
-	{
-		for(i = 0; i < calls_cnt; i++)
-			code_print(code, description, &calls[i]);
-		free(calls);
-	}
+	ret = arch_decode(code->arch, code, 0, calls, calls_cnt);
 	arch_exit(code->arch);
 	return ret;
 }
 
 
-/* code_function */
-int code_function(Code * code, char const * function)
+/* asmcode_decode_section */
+int asmcode_decode_section(AsmCode * code, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	return format_decode_section(code->format, code, section, calls,
+			calls_cnt);
+}
+
+
+/* asmcode_function */
+int asmcode_function(AsmCode * code, char const * function)
 {
 	return format_function(code->format, function);
 }
 
 
-/* code_instruction */
-int code_instruction(Code * code, ArchInstructionCall * call)
+/* asmcode_instruction */
+int asmcode_instruction(AsmCode * code, ArchInstructionCall * call)
 {
 	ArchInstruction * ai;
 
@@ -423,12 +449,12 @@ int code_instruction(Code * code, ArchInstructionCall * call)
 			", 3 0x%x\n", call->name, ai->opcode, ai->op1, ai->op2,
 			ai->op3);
 #endif
-	return arch_write(code->arch, ai, call);
+	return arch_encode(code->arch, ai, call);
 }
 
 
-/* code_open */
-int code_open(Code * code, char const * filename)
+/* asmcode_open */
+int asmcode_open(AsmCode * code, char const * filename)
 {
 	if(code->filename != NULL || code->fp != NULL)
 		return -error_set_code(1, "A file is already opened");
@@ -455,22 +481,21 @@ int code_open(Code * code, char const * filename)
 }
 
 
-/* code_print */
+/* asmcode_print */
 static void _print_address(ArchDescription * description,
 		unsigned long address);
 static void _print_immediate(ArchOperand * ao);
 
-int code_print(Code * code, ArchDescription * description,
-		ArchInstructionCall * call)
+int asmcode_print(AsmCode * code, ArchInstructionCall * call)
 {
+	ArchDescription * description;
 	char const * sep = " ";
 	size_t i;
 	uint8_t u8;
 	ArchOperand * ao;
 	char const * name;
 
-	if(description == NULL)
-		description = arch_get_description(code->arch);
+	description = arch_get_description(code->arch);
 	if(arch_seek(code->arch, call->offset, SEEK_SET) < 0)
 		return -1;
 	_print_address(description, call->base);
@@ -558,8 +583,8 @@ static void _print_immediate(ArchOperand * ao)
 }
 
 
-/* code_section */
-int code_section(Code * code, char const * section)
+/* asmcode_section */
+int asmcode_section(AsmCode * code, char const * section)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
@@ -569,38 +594,89 @@ int code_section(Code * code, char const * section)
 
 
 /* private */
-/* functions */
-/* functions */
-/* code_function_delete_all */
-static void _code_function_delete_all(Code * code)
+/* elements */
+/* asmcode_element_set */
+static int _asmcode_element_set(AsmElement * element, AsmElementId id,
+		char const * name, off_t offset, ssize_t size, off_t base)
 {
-	size_t i;
+	char * p = NULL;
 
-	for(i = 0; i < code->functions_cnt; i++)
-		free(code->functions[i].name);
-	code->functions_cnt = 0;
-	free(code->functions);
-	code->functions = NULL;
+	if(name != NULL && (p = string_new(name)) == NULL)
+		return -1;
+	element->id = id;
+	free(element->name);
+	element->name = p;
+	element->offset = offset;
+	element->size = size;
+	element->base = base;
+	return 0;
 }
 
 
-/* code_function_get_by_id */
-static CodeFunction * _code_function_get_by_id(Code * code, AsmId id)
+static AsmElement * _asmcode_element_append(AsmCode * code, AsmElementType type)
 {
-	size_t i;
+	AsmElement * p = code->elements[type];
+	size_t cnt = code->elements_cnt[type];
 
-	for(i = 0; i < code->functions_cnt; i++)
-		if(code->functions[i].id >= 0
-				&& (AsmId)code->functions[i].id == id)
-			break;
-	if(i == code->functions_cnt)
+	if((p = realloc(p, sizeof(*p) * (cnt + 1))) == NULL)
+	{
+		error_set_code(1, "%s", strerror(errno));
 		return NULL;
-	return &code->functions[i];
+	}
+	code->elements[type] = p;
+	p = &code->elements[type][cnt];
+	code->elements_cnt[type]++;
+	p->id = -1;
+	p->name = NULL;
+	p->offset = -1;
+	p->size = -1;
+	return p;
 }
 
 
-/* code_function_set */
-static int _code_function_set(CodeFunction * codefunction, int id,
+static void _asmcode_element_delete_all(AsmCode * code, AsmElementType type)
+{
+	size_t i;
+
+	for(i = 0; i < code->elements_cnt[type]; i++)
+		free(code->elements[type][i].name);
+	code->elements_cnt[type] = 0;
+	free(code->elements[type]);
+	code->elements[type] = NULL;
+}
+
+
+static AsmElement * _asmcode_element_get_by_id(AsmCode * code,
+		AsmElementType type, AsmElementId id)
+{
+	size_t i;
+
+	for(i = 0; i < code->elements_cnt[type]; i++)
+		if(code->elements[type][i].id >= 0
+				&& code->elements[type][i].id == id)
+			return &code->elements[type][i];
+	return NULL;
+}
+
+
+/* functions */
+/* asmcode_function_delete_all */
+static void _asmcode_function_delete_all(AsmCode * code)
+{
+	_asmcode_element_delete_all(code, AET_FUNCTION);
+}
+
+
+/* asmcode_function_get_by_id */
+static AsmFunction * _asmcode_function_get_by_id(AsmCode * code,
+		AsmFunctionId id)
+{
+	return _asmcode_element_get_by_id(code, AET_FUNCTION, id);
+}
+
+
+/* asmcode_function_set */
+static int _asmcode_function_set(AsmFunction * codefunction, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size)
 {
 	char * p = NULL;
@@ -616,118 +692,96 @@ static int _code_function_set(CodeFunction * codefunction, int id,
 }
 
 
-/* code_function_append */
-static CodeFunction * _code_function_append(Code * code)
+/* asmcode_function_append */
+static AsmFunction * _asmcode_function_append(AsmCode * code)
 {
-	CodeFunction * p;
+	return _asmcode_element_append(code, AET_FUNCTION);
+}
 
-	if((p = realloc(code->functions, sizeof(*p) * (code->functions_cnt
-						+ 1))) == NULL)
-	{
-		error_set_code(1, "%s", strerror(errno));
-		return NULL;
-	}
-	code->functions = p;
-	p = &code->functions[code->functions_cnt++];
-	p->id = -1;
-	p->name = NULL;
-	p->offset = -1;
-	p->size = -1;
-	return p;
+
+/* sections */
+/* asmcode_section_get_by_id */
+static AsmSection * _asmcode_section_get_by_id(AsmCode * code, AsmSectionId id)
+{
+	return _asmcode_element_get_by_id(code, AET_SECTION, id);
+}
+
+
+/* asmcode_section_set */
+static int _asmcode_section_set(AsmSection * section, int id, char const * name,
+		off_t offset, ssize_t size, off_t base)
+{
+	return _asmcode_element_set(section, id, name, offset, size, base);
+}
+
+
+/* asmcode_section_append */
+static AsmSection * _asmcode_section_append(AsmCode * code)
+{
+	return _asmcode_element_append(code, AET_SECTION);
 }
 
 
 /* strings */
-/* code_string_delete_all */
-static void _code_string_delete_all(Code * code)
+/* asmcode_string_delete_all */
+static void _asmcode_string_delete_all(AsmCode * code)
 {
-	size_t i;
-
-	for(i = 0; i < code->strings_cnt; i++)
-		free(code->strings[i].name);
-	code->strings_cnt = 0;
-	free(code->strings);
-	code->strings = NULL;
+	_asmcode_element_delete_all(code, AET_STRING);
 }
 
 
-/* code_string_get_by_id */
-static CodeString * _code_string_get_by_id(Code * code, AsmId id)
+/* asmcode_string_get_by_id */
+static AsmString * _asmcode_string_get_by_id(AsmCode * code, AsmStringId id)
 {
-	size_t i;
+	AsmString * ret;
 
-	for(i = 0; i < code->strings_cnt; i++)
-		if(code->strings[i].id >= 0 && (AsmId)code->strings[i].id == id)
-			break;
-	if(i == code->strings_cnt)
+	if((ret = _asmcode_element_get_by_id(code, AET_STRING, id)) == NULL)
 		return NULL;
-	if(code->strings[i].name == NULL)
-		_code_string_read(code, &code->strings[i]);
-	return &code->strings[i];
+	if(ret->name == NULL)
+		_asmcode_string_read(code, ret);
+	return ret;
 }
 
 
-/* code_string_set */
-static int _code_string_set(CodeString * codestring, int id, char const * name,
-		off_t offset, ssize_t length)
+/* asmcode_string_set */
+static int _asmcode_string_set(AsmString * codestring, int id,
+		char const * name, off_t offset, ssize_t length)
 {
-	char * p = NULL;
-
-	if(name != NULL && (p = string_new(name)) == NULL)
-		return -error_set_code(1, "%s", strerror(errno));
-	codestring->id = id;
-	free(codestring->name);
-	codestring->name = p;
-	codestring->offset = offset;
-	codestring->length = length;
-	return 0;
+	return _asmcode_element_set(codestring, id, name, offset, length, 0);
 }
 
 
-/* code_string_append */
-static CodeString * _code_string_append(Code * code)
+/* asmcode_string_append */
+static AsmString * _asmcode_string_append(AsmCode * code)
 {
-	CodeString * p;
-
-	if((p = realloc(code->strings, sizeof(*p) * (code->strings_cnt + 1)))
-			== NULL)
-	{
-		error_set_code(1, "%s", strerror(errno));
-		return NULL;
-	}
-	code->strings = p;
-	p = &code->strings[code->strings_cnt++];
-	p->id = -1;
-	p->name = NULL;
-	p->offset = -1;
-	p->length = -1;
-	return p;
+	return _asmcode_element_append(code, AET_STRING);
 }
 
 
-/* code_string_read */
-static int _code_string_read(Code * code, CodeString * codestring)
+/* asmcode_string_read */
+static int _asmcode_string_read(AsmCode * code, AsmString * codestring)
 {
 	off_t offset; /* XXX should not have to be kept */
 	char * buf;
 
-	if(codestring->offset < 0 || codestring->length < 0)
+	/* FIXME if offset < 0 read until '\0' */
+	if(codestring->offset < 0 || codestring->size < 0)
 		return -error_set_code(1, "%s", "Insufficient information to"
 				" read string");
 	if((offset = arch_seek(code->arch, 0, SEEK_CUR)) < 0)
 		return -1;
-	if((buf = malloc(codestring->length + 1)) == NULL)
+	if((buf = malloc(codestring->size + 1)) == NULL)
 		return -error_set_code(1, "%s", strerror(errno));
 	if(arch_seek(code->arch, codestring->offset, SEEK_SET)
 			!= codestring->offset)
 		return -1;
-	if(arch_read(code->arch, buf, codestring->length) != codestring->length)
+	if(arch_read(code->arch, buf, codestring->size) != codestring->size)
 	{
 		free(buf);
 		arch_seek(code->arch, offset, SEEK_SET);
 		return -1;
 	}
-	buf[codestring->length] = '\0';
+	buf[codestring->size] = '\0';
 	free(codestring->name);
 	codestring->name = buf;
 	arch_seek(code->arch, offset, SEEK_SET);

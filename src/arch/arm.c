@@ -19,6 +19,12 @@
 #include "Asm.h"
 
 
+/* constants */
+#ifndef ARCH_ENDIAN
+# define ARCH_ENDIAN	ARCH_ENDIAN_BOTH
+#endif
+
+
 /* arm */
 /* private */
 /* types */
@@ -35,7 +41,7 @@ enum
 /* variables */
 static ArchDescription _arm_description =
 {
-	"elf", ARCH_ENDIAN_BOTH, 32, 32, 32
+	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id) { "" # name, size, id },
@@ -70,6 +76,6 @@ ArchPlugin arch_plugin =
 	_arm_instructions,
 	NULL,
 	NULL,
-	_arm_write,
+	_arm_encode,
 	NULL
 };

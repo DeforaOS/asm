@@ -40,21 +40,28 @@ struct _Format
 	FILE * fp;
 
 	/* deassembly */
-	Code * code;
+	AsmCode * code;
 };
 
 
 /* prototypes */
 /* helpers */
 static char const * _format_helper_get_filename(Format * format);
-static AsmString * _format_helper_get_string_by_id(Format * format, AsmId id);
-static int _format_helper_set_function(Format * format, int id,
+static void _format_helper_get_functions(Format * format,
+		AsmFunction ** functions, size_t * functions_cnt);
+static AsmSection * _format_helper_get_section_by_id(Format * format,
+		AsmSectionId id);
+static AsmString * _format_helper_get_string_by_id(Format * format,
+		AsmStringId id);
+static int _format_helper_set_function(Format * format, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size);
-static int _format_helper_set_string(Format * format, int id, char const * name,
-		off_t offset, ssize_t size);
+static int _format_helper_set_section(Format * format, AsmSectionId id,
+		char const * name, off_t offset, ssize_t size, off_t base);
+static int _format_helper_set_string(Format * format, AsmStringId id,
+		char const * name, off_t offset, ssize_t size);
 
-static int _format_helper_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base);
+static int _format_helper_decode(Format * format, off_t offset, size_t size,
+		off_t base, ArchInstructionCall ** calls, size_t * calls_cnt);
 static ssize_t _format_helper_read(Format * format, void * buf, size_t size);
 static off_t _format_helper_seek(Format * format, off_t offset, int whence);
 static ssize_t _format_helper_write(Format * format, void const * buf,
@@ -92,8 +99,11 @@ Format * format_new(char const * format)
 	f->helper.format = f;
 	f->helper.decode = _format_helper_decode;
 	f->helper.get_filename = _format_helper_get_filename;
+	f->helper.get_functions = _format_helper_get_functions;
+	f->helper.get_section_by_id = _format_helper_get_section_by_id;
 	f->helper.get_string_by_id = _format_helper_get_string_by_id;
 	f->helper.set_function = _format_helper_set_function;
+	f->helper.set_section = _format_helper_set_section;
 	f->helper.set_string = _format_helper_set_string;
 	f->helper.read = _format_helper_read;
 	f->helper.seek = _format_helper_seek;
@@ -115,6 +125,14 @@ void format_delete(Format * format)
 
 
 /* accessors */
+/* format_can_decode */
+int format_can_decode(Format * format)
+{
+	return format->plugin->decode != NULL
+		/* && format->plugin->decode_section != NULL */;
+}
+
+
 /* format_get_arch */
 char const * format_get_arch(Format * format)
 {
@@ -133,15 +151,35 @@ char const * format_get_name(Format * format)
 
 /* useful */
 /* format_decode */
-int format_decode(Format * format, Code * code, int raw)
+int format_decode(Format * format, AsmCode * code, int raw)
 {
 	int ret;
 
 	if(format->plugin->decode == NULL)
-		return error_set_code(1, "%s: %s", format_get_name(format),
+		return -error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
 	format->code = code;
 	ret = format->plugin->decode(format->plugin, raw);
+	format->code = NULL;
+	return ret;
+}
+
+
+/* format_decode_section */
+int format_decode_section(Format * format, AsmCode * code, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	int ret;
+
+	if(format->plugin->decode_section == NULL)
+		return -error_set_code(1, "%s: %s", format_get_name(format),
+				"Disassembly is not supported");
+	if(section == NULL || section->id < 0)
+		return -error_set_code(1, "%s: %s", format_get_name(format),
+				"Invalid argument");
+	format->code = code;
+	ret = format->plugin->decode_section(format->plugin, section, calls,
+			calls_cnt);
 	format->code = NULL;
 	return ret;
 }
@@ -255,41 +293,66 @@ static char const * _format_helper_get_filename(Format * format)
 }
 
 
-/* format_helper_get_string_by_id */
-static AsmString * _format_helper_get_string_by_id(Format * format, AsmId id)
+/* format_helper_get_functions */
+static void _format_helper_get_functions(Format * format,
+		AsmFunction ** functions, size_t * functions_cnt)
 {
-	return code_get_string_by_id(format->code, id);
+	asmcode_get_functions(format->code, functions, functions_cnt);
+}
+
+
+/* format_helper_get_section_by_id */
+static AsmSection * _format_helper_get_section_by_id(Format * format,
+		AsmSectionId id)
+{
+	return asmcode_get_section_by_id(format->code, id);
+}
+
+
+/* format_helper_get_string_by_id */
+static AsmString * _format_helper_get_string_by_id(Format * format,
+		AsmStringId id)
+{
+	return asmcode_get_string_by_id(format->code, id);
 }
 
 
 /* format_helper_set_function */
-static int _format_helper_set_function(Format * format, int id,
+static int _format_helper_set_function(Format * format, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size)
 {
-	return code_set_function(format->code, id, name, offset, size);
+	return asmcode_set_function(format->code, id, name, offset, size);
+}
+
+
+/* format_helper_set_section */
+static int _format_helper_set_section(Format * format, AsmSectionId id,
+		char const * name, off_t offset, ssize_t size, off_t base)
+{
+	return asmcode_set_section(format->code, id, name, offset, size, base);
 }
 
 
 /* format_helper_set_string */
-static int _format_helper_set_string(Format * format, int id, char const * name,
-		off_t offset, ssize_t size)
+static int _format_helper_set_string(Format * format, AsmStringId id,
+		char const * name, off_t offset, ssize_t size)
 {
-	return code_set_string(format->code, id, name, offset, size);
+	return asmcode_set_string(format->code, id, name, offset, size);
 }
 
 
 /* format_helper_decode */
-static int _format_helper_decode(Format * format, char const * section,
-		off_t offset, size_t size, off_t base)
+static int _format_helper_decode(Format * format, off_t offset, size_t size,
+		off_t base, ArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\", 0x%lx, 0x%lx, 0x%lx)\n", __func__,
-			section, offset, size, base);
+	fprintf(stderr, "DEBUG: %s(0x%lx, 0x%lx, 0x%lx)\n", __func__, offset,
+			size, base);
 #endif
-	if((ret = code_decode_at(format->code, section, offset, size, base))
-			!= 0)
+	if((ret = asmcode_decode_at(format->code, offset, size, base,
+					calls, calls_cnt)) != 0)
 		error_print("deasm");
 	return ret;
 }

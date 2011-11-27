@@ -20,7 +20,7 @@
 
 # include <sys/types.h>
 # include <stdint.h>
-# include "asm.h"
+# include "common.h"
 
 
 /* AsmArch */
@@ -198,14 +198,14 @@ typedef struct _ArchPluginHelper
 	/* callbacks */
 	/* accessors */
 	char const * (*get_filename)(Arch * arch);
-	AsmFunction * (*get_function_by_id)(Arch * arch, AsmId id);
+	AsmFunction * (*get_function_by_id)(Arch * arch, AsmFunctionId id);
 	ArchInstruction * (*get_instruction_by_opcode)(Arch * arch,
 			uint8_t size, uint32_t opcode);
 	ArchRegister * (*get_register_by_id_size)(Arch * arch, uint32_t id,
 			uint32_t size);
 	ArchRegister * (*get_register_by_name_size)(Arch * arch,
 			char const * name, uint32_t size);
-	AsmString * (*get_string_by_id)(Arch * arch, AsmId id);
+	AsmString * (*get_string_by_id)(Arch * arch, AsmStringId id);
 
 	/* assembly */
 	ssize_t (*write)(Arch * arch, void const * buf, size_t size);
@@ -230,7 +230,7 @@ struct _ArchPlugin
 
 	int (*init)(ArchPlugin * arch);
 	void (*exit)(ArchPlugin * arch);
-	int (*write)(ArchPlugin * arch, ArchInstruction * instruction,
+	int (*encode)(ArchPlugin * arch, ArchInstruction * instruction,
 			ArchInstructionCall * call);
 	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);
 };

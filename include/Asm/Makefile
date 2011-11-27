@@ -19,6 +19,8 @@ install:
 	$(MKDIR) $(DESTDIR)$(PREFIX)/include/Devel/Asm
 	$(INSTALL) -m 0644 -- asm.h $(DESTDIR)$(PREFIX)/include/Devel/Asm/asm.h
 	$(MKDIR) $(DESTDIR)$(PREFIX)/include/Devel/Asm
+	$(INSTALL) -m 0644 -- code.h $(DESTDIR)$(PREFIX)/include/Devel/Asm/code.h
+	$(MKDIR) $(DESTDIR)$(PREFIX)/include/Devel/Asm
 	$(INSTALL) -m 0644 -- common.h $(DESTDIR)$(PREFIX)/include/Devel/Asm/common.h
 	$(MKDIR) $(DESTDIR)$(PREFIX)/include/Devel/Asm
 	$(INSTALL) -m 0644 -- format.h $(DESTDIR)$(PREFIX)/include/Devel/Asm/format.h
@@ -26,6 +28,7 @@ install:
 uninstall:
 	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm/arch.h
 	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm/asm.h
+	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm/code.h
 	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm/common.h
 	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm/format.h
 

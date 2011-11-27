@@ -12,6 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+/* FIXME:
+ * - ensure the first section output is of type SHN_UNDEF
+ * - use set_string() to store and remember strings? */
 
 
 
@@ -79,6 +82,8 @@ static char const * _elf_detect(FormatPlugin * format);
 static int _elf_decode(FormatPlugin * format, int raw);
 static int _elf_decode32(FormatPlugin * format, int raw);
 static int _elf_decode64(FormatPlugin * format, int raw);
+static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* ELF32 */
 static int _init_32(FormatPlugin * format);
@@ -106,11 +111,15 @@ static ElfArch elf_arch[] =
 {
 	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
 	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
+	{ "armeb",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "armel",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
 	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
 	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
 	{ "i586",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
 	{ "i686",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
 	{ "mips",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "mipseb",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "mipsel",	EM_MIPS,	ELFCLASS32,	ELFDATA2LSB, 0x0 },
 	{ "sparc",	EM_SPARC,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
 	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB, 0x0 },
 	{ NULL,		'\0',		'\0',		'\0',        0x0 }
@@ -174,6 +183,7 @@ FormatPlugin format_plugin =
 	NULL,
 	_elf_detect,
 	_elf_decode,
+	_elf_decode_section,
 	NULL
 };
 
@@ -202,7 +212,9 @@ static int _elf_init(FormatPlugin * format, char const * arch)
 		return -1;
 	format->priv = elf;
 	elf->es32 = NULL;
+	elf->es32_cnt = 0;
 	elf->es64 = NULL;
+	elf->es64_cnt = 0;
 	if(arch == NULL)
 	{
 		elf->arch = NULL;
@@ -336,6 +348,9 @@ static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 /* elf_decode */
 static int _elf_decode(FormatPlugin * format, int raw)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%d)\n", __func__, raw);
+#endif
 	if(_elf_detect(format) == NULL)
 		return -1;
 	return format->decode(format, raw);
@@ -394,16 +409,17 @@ static int _elf_decode32(FormatPlugin * format, int raw)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
 			continue;
-		if(raw || (shdr[i].sh_type == SHT_PROGBITS
-					&& shdr[i].sh_flags & SHF_EXECINSTR))
-			helper->decode(helper->format,
+		if((raw || (shdr[i].sh_type == SHT_PROGBITS && shdr[i].sh_flags
+						& SHF_EXECINSTR))
+				&& helper->set_section(helper->format, i,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
-					base + shdr[i].sh_offset);
+					base + shdr[i].sh_offset) < 0)
+			break;
 	}
 	free(shstrtab);
 	free(shdr);
-	return 0;
+	return (i == ehdr.e_shnum) ? 0 : -1;
 }
 
 static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
@@ -583,16 +599,17 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 	{
 		if(shdr[i].sh_name >= shstrtab_cnt)
 			continue;
-		if(raw || (shdr[i].sh_type == SHT_PROGBITS
-					&& shdr[i].sh_flags & SHF_EXECINSTR))
-			helper->decode(helper->format,
+		if((raw || (shdr[i].sh_type == SHT_PROGBITS && shdr[i].sh_flags
+						& SHF_EXECINSTR))
+				&& helper->set_section(helper->format, i,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
-					base + shdr[i].sh_offset);
+					base + shdr[i].sh_offset) < 0)
+			break;
 	}
 	free(shstrtab);
 	free(shdr);
-	return 0;
+	return (i == ehdr.e_shnum) ? 0 : -1;
 }
 
 static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
@@ -722,12 +739,26 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
 }
 
 
+/* elf_decode_section */
+static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
+		ArchInstructionCall ** calls, size_t * calls_cnt)
+{
+	FormatPluginHelper * helper = format->helper;
+
+	return helper->decode(helper->format, section->offset, section->size,
+			section->base, calls, calls_cnt);
+}
+
+
 /* section_values */
 static ElfSectionValues * _section_values(char const * name)
 {
 	ElfSectionValues * esv;
 	int cmp;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
 	for(esv = elf_section_values; esv->name != NULL; esv++)
 		if((cmp = strcmp(esv->name, name)) == 0)
 			return esv;
@@ -789,6 +820,9 @@ static int _exit_32(FormatPlugin * format)
 	FormatPluginHelper * helper = format->helper;
 	long offset;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(_section_32(format, ".shstrtab") != 0)
 		ret = -1;
 	else if(helper->write(helper->format, shstrtab.buf, shstrtab.cnt)
@@ -813,6 +847,9 @@ static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(elf->es32_cnt == 0)
 		return 0;
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
@@ -848,6 +885,9 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 	Elf32_Shdr hdr;
 	int i;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)
 		return _elf_error(format);
 	memset(&hdr, 0, sizeof(hdr));
@@ -865,6 +905,9 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 		return -1;
 	for(i = 0; i < elf->es32_cnt; i++)
 	{
+#ifdef DEBUG
+		fprintf(stderr, "DEBUG: %s() %d\n", __func__, i);
+#endif
 		if(i + 1 == elf->es32_cnt)
 			es32[i].sh_size = offset - es32[i].sh_offset;
 		else
@@ -895,6 +938,9 @@ static int _section_32(FormatPlugin * format, char const * name)
 	ElfSectionValues * esv;
 	long offset;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
 	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
 		return -1;
 	if((p = realloc(elf->es32, sizeof(*p) * (elf->es32_cnt + 1))) == NULL)
@@ -906,8 +952,14 @@ static int _section_32(FormatPlugin * format, char const * name)
 	p->sh_name = ss;
 	p->sh_type = esv->type;
 	p->sh_flags = esv->flags;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "before seek()");
+#endif
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		return -1;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "after seek()");
+#endif
 	p->sh_offset = offset;
 	p->sh_link = SHN_UNDEF; /* FIXME */
 	return 0;
@@ -1130,8 +1182,14 @@ static int _section_64(FormatPlugin * format, char const * name)
 	p->sh_name = ss;
 	p->sh_type = esv->type;
 	p->sh_flags = esv->flags;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "before seek()");
+#endif
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		return -1;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "after seek()");
+#endif
 	p->sh_offset = offset;
 	p->sh_link = SHN_UNDEF; /* FIXME */
 	return 0;

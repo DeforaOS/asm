@@ -35,6 +35,8 @@ typedef struct _FormatPluginHelper
 	/* callbacks */
 	/* accessors */
 	char const * (*get_filename)(Format * format);
+	void (*get_functions)(Format * format, AsmFunction ** functions,
+			size_t * functions_cnt);
 
 	/* useful */
 	ssize_t (*read)(Format * format, void * buf, size_t size);
@@ -44,14 +46,17 @@ typedef struct _FormatPluginHelper
 	ssize_t (*write)(Format * format, void const * buf, size_t size);
 
 	/* disassembly */
-	/* FIXME let a different architecture be specified in the callback */
-	AsmString * (*get_string_by_id)(Format * format, AsmId id);
+	/* FIXME let a different architecture be specified in the callback? */
+	AsmSection * (*get_section_by_id)(Format * format, AsmSectionId id);
+	AsmString * (*get_string_by_id)(Format * format, AsmStringId id);
 	int (*set_function)(Format * format, int id, char const * name,
 			off_t offset, ssize_t size);
+	int (*set_section)(Format * format, int id, char const * name,
+			off_t offset, ssize_t size, off_t base);
 	int (*set_string)(Format * format, int id, char const * name,
 			off_t offset, ssize_t size);
-	int (*decode)(Format * format, char const * section,
-			off_t offset, size_t size, off_t base);
+	int (*decode)(Format * format, off_t offset, size_t size, off_t base,
+			ArchInstructionCall ** calls, size_t * calls_cnt);
 } FormatPluginHelper;
 
 struct _FormatPlugin
@@ -70,6 +75,8 @@ struct _FormatPlugin
 
 	char const * (*detect)(FormatPlugin * format);
 	int (*decode)(FormatPlugin * format, int raw);
+	int (*decode_section)(FormatPlugin * format, AsmSection * section,
+			ArchInstructionCall ** calls, size_t * calls_cnt);
 
 	void * priv;
 };

@@ -251,7 +251,7 @@ static ArchInstruction _java_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
@@ -267,7 +267,7 @@ ArchPlugin arch_plugin =
 	_java_instructions,
 	NULL,
 	NULL,
-	_java_write,
+	_java_encode,
 	_java_decode
 };
 
@@ -275,7 +275,7 @@ ArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* plug-in */
-static int _java_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;

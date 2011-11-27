@@ -23,7 +23,7 @@
 /* prototypes */
 /* plug-in */
 static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call);
-static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _sparc_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
 
 
@@ -71,17 +71,17 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 }
 
 
-/* sparc_write */
-static int _write_branch(ArchInstruction * instruction,
+/* sparc_encode */
+static int _encode_branch(ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
-static int _write_integer(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_integer(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
-static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
-static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode);
 
-static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _sparc_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -89,22 +89,22 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 
 	if((opcode & 0xc0000000) == 0xc0000000)
 	{
-		if(_write_loadstore(plugin, instruction, call, &opcode) != 0)
+		if(_encode_loadstore(plugin, instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else if((opcode & 0xc1c00000) == 0x01000000)
 	{
-		if(_write_sethi(plugin, instruction, call, &opcode) != 0)
+		if(_encode_sethi(plugin, instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else if((opcode & 0xc0000000) == 0x80000000)
 	{
-		if(_write_integer(plugin, instruction, call, &opcode) != 0)
+		if(_encode_integer(plugin, instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else if((opcode & 0xc1c00000) == 0x00800000)
 	{
-		if(_write_branch(instruction, call, &opcode) != 0)
+		if(_encode_branch(instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else
@@ -116,7 +116,7 @@ static int _sparc_write(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _write_branch(ArchInstruction * instruction,
+static int _encode_branch(ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode)
 {
 	uint32_t disp;
@@ -131,7 +131,7 @@ static int _write_branch(ArchInstruction * instruction,
 	return 0;
 }
 
-static int _write_integer(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_integer(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -180,7 +180,7 @@ static int _write_integer(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode)
 {
 	ArchPluginHelper * helper = plugin->helper;
@@ -266,7 +266,7 @@ static int _write_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _write_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
+static int _encode_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call, uint32_t * opcode)
 {
 	ArchPluginHelper * helper = plugin->helper;

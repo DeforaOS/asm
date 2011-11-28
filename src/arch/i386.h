@@ -473,7 +473,8 @@ static int _i386_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 	definitions[1] = instruction->op2;
 	definitions[2] = instruction->op3;
 	for(i = 0; i < call->operands_cnt; i++)
-		if(_encode_operand(plugin, &i, definitions, call->operands) != 0)
+		if(_encode_operand(plugin, &i, definitions, call->operands)
+				!= 0)
 			return -1;
 	return 0;
 }

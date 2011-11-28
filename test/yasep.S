@@ -7,20 +7,20 @@
 	andn	$0x0c, %r1
 	andn	%r4, %r5
 	cmps	$0x0b, %r1
-	cmps	%r0, %r1
+	cmps	%r6, %r7
 	cmpu	$0x0a, %r1
-	cmpu	%r0, %r1
+	cmpu	%r8, %r9
 	get	$0x09, %r1
-	get	%r0, %r1
-	lsb	%r0, %r1
-	lsh	%r0, %r1
-	lzb	%r0, %r1
-	lzh	%r0, %r1
-	mov	$0x04, %r1
-	mov	%r0, %r1
-	mul8h	$0x03, %r1
-	mul8h	%r0, %r1
-	mul8l	$0x02, %r1
+	get	%r10, %r11
+	lsb	%r12, %r13
+	lsh	%r14, %r15
+	lzb	%npc, %d5
+	lzh	%a5, %d4
+	mov	$0x04, %a4
+	mov	%d3, %a3
+	mul8h	$0x03, %d2
+	mul8h	%a2, %d1
+	mul8l	$0x02, %a1
 	mul8l	%r0, %r1
 	muli	$0x01, %r1
 	muli	%r0, %r1

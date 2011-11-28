@@ -43,6 +43,7 @@ static ArchInstruction _yasep_instructions[] =
 /* plug-in */
 static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call);
+static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
 
 /* protected */
@@ -57,7 +58,7 @@ ArchPlugin arch_plugin =
 	NULL,
 	NULL,
 	_yasep_encode,
-	NULL
+	_yasep_decode	
 };
 
 
@@ -101,5 +102,25 @@ static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;
+	return 0;
+}
+
+
+/* yasep_decode */
+static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+{
+	ArchPluginHelper * helper = plugin->helper;
+	uint16_t u16;
+	uint16_t opcode;
+	ArchInstruction * ai;
+
+	if(helper->read(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
+		return -1;
+	u16 = _htob16(u16);
+	opcode = u16 & 0x00ff;
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 16, opcode))
+			== NULL)
+		return -1;
+	call->name = ai->name;
 	return 0;
 }

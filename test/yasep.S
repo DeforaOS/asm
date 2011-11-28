@@ -1,3 +1,36 @@
 /* $Id$ */
 .text
 	add	%r0, %r1
+	and	%r0, %r1
+	andn	%r0, %r1
+	cmps	%r0, %r1
+	cmpu	%r0, %r1
+	get	%r0, %r1
+	lsb	%r0, %r1
+	lsh	%r0, %r1
+	lzb	%r0, %r1
+	lzh	%r0, %r1
+	mov	%r0, %r1
+	mul8h	%r0, %r1
+	mul8l	%r0, %r1
+	muli	%r0, %r1
+	nand	%r0, %r1
+	nor	%r0, %r1
+	or	%r0, %r1
+	orn	%r0, %r1
+	put	%r0, %r1
+	rol	%r0, %r1
+	ror	%r0, %r1
+	sar	%r0, %r1
+	sb	%r0, %r1
+	sh	%r0, %r1
+	shh	%r0, %r1
+	shl	%r0, %r1
+	shr	%r0, %r1
+	smax	%r0, %r1
+	smin	%r0, %r1
+	sub	%r0, %r1
+	umax	%r0, %r1
+	umin	%r0, %r1
+	xor	%r0, %r1
+	xorn	%r0, %r1

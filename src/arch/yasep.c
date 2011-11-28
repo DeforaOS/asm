@@ -103,6 +103,16 @@ static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 			return -1;
 		u16 |= ar->id << 8;
 	}
+	else if((instruction->opcode & 0x03) == 0x2) /* IR */
+	{
+		u16 |= call->operands[0].value.immediate.value << 12;
+		name = call->operands[1].value._register.name;
+		size = AO_GET_SIZE(instruction->op2);
+		if((ar = helper->get_register_by_name_size(helper->arch, name,
+						size)) == NULL)
+			return -1;
+		u16 |= ar->id << 8;
+	}
 	u16 = _htob16(u16);
 	if(helper->write(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
@@ -148,6 +158,18 @@ static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 						AO_GET_SIZE(ai->op1))) == NULL)
 			return -1;
 		call->operands[0].value._register.name = ar->name;
+		call->operands[1].definition = ai->op2;
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						((u16 & 0x0f00) >> 8) & 0xf,
+						AO_GET_SIZE(ai->op2))) == NULL)
+			return -1;
+		call->operands[1].value._register.name = ar->name;
+		call->operands_cnt = 2;
+	}
+	else if((opcode & 0x03) == 0x2) /* IR */
+	{
+		call->operands[0].definition = ai->op1;
+		call->operands[0].value.immediate.value = (u16 & 0xf000) >> 12;
 		call->operands[1].definition = ai->op2;
 		if((ar = helper->get_register_by_id_size(helper->arch,
 						((u16 & 0x0f00) >> 8) & 0xf,

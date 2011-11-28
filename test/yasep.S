@@ -1,5 +1,6 @@
 /* $Id$ */
 .text
+	add	$0x0e, %r1
 	add	%r0, %r1
 	and	%r2, %r3
 	andn	%r4, %r5

@@ -83,11 +83,28 @@ static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 		ArchInstructionCall * call)
 {
 	ArchPluginHelper * helper = plugin->helper;
-	uint16_t opcode = instruction->opcode;
+	uint16_t u16 = instruction->opcode;
+	ArchRegister * ar;
+	size_t size;
+	char const * name;
 
-	opcode = _htob16(opcode);
-	if(helper->write(helper->arch, &opcode, sizeof(opcode))
-			!= sizeof(opcode))
+	if((instruction->opcode & 0x03) == 0x0) /* RR */
+	{
+		name = call->operands[0].value._register.name;
+		size = AO_GET_SIZE(instruction->op1);
+		if((ar = helper->get_register_by_name_size(helper->arch, name,
+						size)) == NULL)
+			return -1;
+		u16 |= ar->id << 12;
+		name = call->operands[1].value._register.name;
+		size = AO_GET_SIZE(instruction->op2);
+		if((ar = helper->get_register_by_name_size(helper->arch, name,
+						size)) == NULL)
+			return -1;
+		u16 |= ar->id << 8;
+	}
+	u16 = _htob16(u16);
+	if(helper->write(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
 	return 0;
 }
@@ -113,6 +130,7 @@ static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	uint16_t u16;
 	uint16_t opcode;
 	ArchInstruction * ai;
+	ArchRegister * ar;
 
 	if(helper->read(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
@@ -122,5 +140,21 @@ static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			== NULL)
 		return -1;
 	call->name = ai->name;
+	if((opcode & 0x3) == 0x0) /* RR */
+	{
+		call->operands[0].definition = ai->op1;
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						((u16 & 0xf000) >> 12) & 0xf,
+						AO_GET_SIZE(ai->op1))) == NULL)
+			return -1;
+		call->operands[0].value._register.name = ar->name;
+		call->operands[1].definition = ai->op2;
+		if((ar = helper->get_register_by_id_size(helper->arch,
+						((u16 & 0x0f00) >> 8) & 0xf,
+						AO_GET_SIZE(ai->op2))) == NULL)
+			return -1;
+		call->operands[1].value._register.name = ar->name;
+		call->operands_cnt = 2;
+	}
 	return 0;
 }

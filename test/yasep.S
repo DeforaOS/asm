@@ -1,8 +1,8 @@
 /* $Id$ */
 .text
 	add	%r0, %r1
-	and	%r0, %r1
-	andn	%r0, %r1
+	and	%r2, %r3
+	andn	%r4, %r5
 	cmps	%r0, %r1
 	cmpu	%r0, %r1
 	get	%r0, %r1

@@ -27,11 +27,11 @@
 #define OPIRLF		(32 << AOD_SIZE)
 #define OPRRLF		(32 << AOD_SIZE)
 /* operands */
-#define OP_DST3		AO_REGISTER(0, 32, 0)
+#define OP_DST3		AO_REGISTER(0, 16, 0)
 #define OP_IMM4		AO_IMMEDIATE(0, 4, 0)
 #define OP_IMM16	AO_IMMEDIATE(0, 16, 0)
-#define OP_SI4		AO_REGISTER(0, 32, 0)
-#define OP_SND		AO_REGISTER(0, 32, 0)
+#define OP_SI4		AO_REGISTER(0, 16, 0)
+#define OP_SND		AO_REGISTER(0, 16, 0)
 
 /* instructions */
 { "add",	OPIR(0x03), OPIRF,  AO_2(OP_IMM4, OP_SND)		},

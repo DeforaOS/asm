@@ -15,33 +15,53 @@
 
 
 
+/* platform-specific */
+#if !defined(W)
+# if defined(ARCH_yasep16)
+#  define W	16
+# else
+#  define W	32
+# endif
+#endif
+
 /* generic */
 /* opcode */
+#define OPI(opcode)	((opcode << 2) | 0x2)
 #define OPIR(opcode)	((opcode << 2) | 0x2)
+#define OPR(opcode)	(opcode << 2)
+#define OPRI(opcode)	((opcode << 2) | 0x2)
 #define OPRR(opcode)	(opcode << 2)
-#define OPIRL(opcode)	((opcode << 2) | 0x1)
-#define OPRRL(opcode)	((opcode << 2) | 0x3)
+#define OPLIR(opcode)	((opcode << 2) | 0x1)
+#define OPLIRR(opcode)	((opcode << 2) | 0x3 | (0x1 << 17))
+#define OPLRI(opcode)	((opcode << 2) | 0x1)
+#define OPLRIR(opcode)	((opcode << 2) | 0x1)
+#define OPLRRR(opcode)	((opcode << 2) | 0x3)
 /* flags */
+#define OPIF		(16 << AOD_SIZE)
 #define OPIRF		(16 << AOD_SIZE)
+#define OPRF		(16 << AOD_SIZE)
+#define OPRIF		(16 << AOD_SIZE)
 #define OPRRF		(16 << AOD_SIZE)
-#define OPIRLF		(32 << AOD_SIZE)
-#define OPRRLF		(32 << AOD_SIZE)
+#define OPLIRF		(32 << AOD_SIZE)
+#define OPLIRRF		(32 << AOD_SIZE)
+#define OPLRIF		(32 << AOD_SIZE)
+#define OPLRIRF		(32 << AOD_SIZE)
+#define OPLRRRF		(32 << AOD_SIZE)
 /* operands */
-#define OP_DST3		AO_REGISTER(0, 16, 0)
+#define OP_DST3		AO_REGISTER(0, W, 0)
 #define OP_IMM4		AO_IMMEDIATE(0, 4, 0)
-#define OP_IMM16	AO_IMMEDIATE(0, 16, 0)
-#define OP_SI4		AO_REGISTER(0, 16, 0)
-#define OP_SND		AO_REGISTER(0, 16, 0)
+#define OP_IMM16	AO_IMMEDIATE(0, W, 0)
+#define OP_SI4		AO_REGISTER(0, W, 0)
+#define OP_SND		AO_REGISTER(0, W, 0)
 
 /* instructions */
 { "add",	OPIR(0x03), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "add",	OPRR(0x03), OPRRF,  AO_2(OP_SI4, OP_SND)		},
-{ "add",	OPIRL(0x03),OPIRLF, AO_2(OP_SI4, OP_IMM16)		},
-{ "add",	OPRRL(0x03),OPRRLF, AO_3(OP_SND, OP_SI4, OP_DST3)	},
+{ "add",	OPLIRR(0x03),OPLIRRF, AO_3(OP_IMM16, OP_SND, OP_DST3)	},
+{ "add",	OPLRIR(0x03),OPLRIRF, AO_3(OP_SI4, OP_IMM16, OP_SND)	},
+{ "add",	OPLRRR(0x03),OPLRRRF, AO_3(OP_SND, OP_SI4, OP_DST3)	},
 { "and",	OPIR(0x02), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "and",	OPRR(0x02), OPRRF,  AO_2(OP_SI4, OP_SND)		},
-{ "and",	OPIRL(0x02),OPIRLF, AO_2(OP_SI4, OP_IMM16)		},
-{ "and",	OPRRL(0x02),OPRRLF, AO_3(OP_SND, OP_SI4, OP_DST3)	},
 { "andn",	OPIR(0x0a), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "andn",	OPRR(0x0a), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "cmps",	OPIR(0x1b), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
@@ -50,24 +70,34 @@
 { "cmpu",	OPRR(0x13), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 #if 0 /* XXX aliases */
 { "esb",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# if defined(ARCH_yasep32)
 { "esh",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# endif
 { "ezb",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# if defined(ARCH_yasep32)
 { "ezh",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# endif
 #endif
 { "get",	OPIR(0x05), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "get",	OPRR(0x05), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 #if 0 /* XXX aliases */
 { "ib",		OPIR(0x00), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "ib",		OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# if defined(ARCH_yasep32)
 { "ih",		OPIR(0x00), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "ih",		OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "ihh",	OPIR(0x00), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "ihh",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+# endif
 #endif
 { "lsb",	OPRR(0x18), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#if defined(ARCH_yasep32)
 { "lsh",	OPRR(0x38), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#endif
 { "lzb",	OPRR(0x10), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#if defined(ARCH_yasep32)
 { "lzh",	OPRR(0x30), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#endif
 { "mov",	OPIR(0x00), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "mov",	OPRR(0x00), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "mul8h",	OPIR(0x0c), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
@@ -99,10 +129,12 @@
 { "sar",	OPRR(0x09), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "sb",		OPIR(0x08), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "sb",		OPRR(0x08), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#if defined(ARCH_yasep32)
 { "sh",		OPIR(0x20), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "sh",		OPRR(0x20), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "shh",	OPIR(0x28), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "shh",	OPRR(0x28), OPRRF,  AO_2(OP_SI4, OP_SND)		},
+#endif
 { "shl",	OPIR(0x11), OPIRF,  AO_2(OP_IMM4, OP_SND)		},
 { "shl",	OPRR(0x11), OPRRF,  AO_2(OP_SI4, OP_SND)		},
 { "shr",	OPIR(0x01), OPIRF,  AO_2(OP_IMM4, OP_SND)		},

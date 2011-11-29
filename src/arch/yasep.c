@@ -17,6 +17,7 @@
 
 #include <stddef.h>
 #include "Asm.h"
+#define ARCH_yasep32
 
 
 /* yasep */
@@ -113,7 +114,7 @@ static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 			return -1;
 		u16 |= ar->id << 8;
 	}
-	u16 = _htob16(u16);
+	u16 = _htol16(u16);
 	if(helper->write(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
 	return 0;
@@ -125,7 +126,7 @@ static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
 	ArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
-	opcode = _htob32(opcode);
+	opcode = _htol32(opcode);
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;
@@ -144,7 +145,7 @@ static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 
 	if(helper->read(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
-	u16 = _htob16(u16);
+	u16 = _htol16(u16);
 	opcode = u16 & 0x00ff;
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 16, opcode))
 			== NULL)

@@ -35,10 +35,12 @@ static ArchRegister _java_registers[] =
 	{ NULL,		0, 0 }
 };
 
-#define OP1F	(8 << AOD_SIZE)
-#define OP_U8	AO_IMMEDIATE(0, 8, 0)
-#define OP_U16	AO_IMMEDIATE(0, 16, 0)
-#define OP_U32	AO_IMMEDIATE(0, 32, 0)
+#define OP1F		(8 << AOD_SIZE)
+#define OP_U8		AO_IMMEDIATE(0, 8, 0)
+#define OP_U16		AO_IMMEDIATE(0, 16, 0)
+#define OP_U16_STR	AO_IMMEDIATE(0, 16, AOI_REFERS_STRING)
+#define OP_U16_FUNC	AO_IMMEDIATE(0, 16, AOI_REFERS_FUNCTION)
+#define OP_U32		AO_IMMEDIATE(0, 32, 0)
 static ArchInstruction _java_instructions[] =
 {
 	{ "aaload",	0x32,	OP1F, AO_0()				},
@@ -169,11 +171,11 @@ static ArchInstruction _java_instructions[] =
 	{ "impdep2",	0xff,	OP1F, AO_0()				},
 	{ "imul",	0x68,	OP1F, AO_0()				},
 	{ "ineg",	0x74,	OP1F, AO_0()				},
-	{ "instanceof",	0xc1,	OP1F, AO_1(OP_U16)			},
-	{ "invokeinterface",0xb9,OP1F,AO_2(OP_U16, OP_U8)		},
-	{ "invokespecial",0xb7,	OP1F, AO_1(OP_U16)			},
-	{ "invokestatic",0xb8,	OP1F, AO_1(OP_U16)			},
-	{ "invokevirtual",0xb6,	OP1F, AO_1(OP_U16)			},
+	{ "instanceof",	0xc1,	OP1F, AO_1(OP_U16_FUNC)			},
+	{ "invokeinterface",0xb9,OP1F,AO_2(OP_U16_FUNC, OP_U8)		},
+	{ "invokespecial",0xb7,	OP1F, AO_1(OP_U16_FUNC)			},
+	{ "invokestatic",0xb8,	OP1F, AO_1(OP_U16_FUNC)			},
+	{ "invokevirtual",0xb6,	OP1F, AO_1(OP_U16_FUNC)			},
 	{ "ior",	0x80,	OP1F, AO_0()				},
 	{ "irem",	0x70,	OP1F, AO_0()				},
 	{ "ireturn",	0xac,	OP1F, AO_0()				},
@@ -331,6 +333,7 @@ static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	ArchOperand * ao;
 	uint16_t u16;
 	uint32_t u32;
+	AsmString * as;
 
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
@@ -380,6 +383,17 @@ static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 			return -error_set_code(1, "%s", "Size not implemented");
 		ao->value.immediate.name = NULL;
 		ao->value.immediate.negative = 0;
+		switch(AO_GET_VALUE(ao->definition))
+		{
+			case AOI_REFERS_FUNCTION:
+			case AOI_REFERS_STRING:
+				as = helper->get_string_by_id(helper->arch,
+						ao->value.immediate.value);
+				if(as != NULL)
+					ao->value.immediate.name = as->name;
+				ao->value.immediate.negative = 0;
+				break;
+		}
 	}
 	call->operands_cnt = i;
 	return 0;

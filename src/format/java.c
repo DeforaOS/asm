@@ -54,8 +54,39 @@ typedef enum _JavaCpInfoTag
 
 typedef struct _JavaCpInfo
 {
+	off_t offset;
 	uint8_t tag;
-	char info[0];
+	union {
+		struct {
+			uint16_t name;
+		} _class;
+
+		struct {
+			uint64_t value;
+		} _double, _long;
+
+		struct {
+			uint16_t _class;
+			uint16_t name_type;
+		} field, interface, method;
+
+		struct {
+			uint32_t value;
+		} _float, _integer;
+
+		struct {
+			uint16_t name;
+			uint16_t descriptor;
+		} name_type;
+
+		struct {
+			uint16_t name;
+		} _string;
+
+		struct {
+			uint16_t length;
+		} utf8;
+	} info;
 } JavaCpInfo;
 
 typedef struct _JavaHeader2
@@ -78,7 +109,6 @@ typedef struct _JavaAttributeInfo
 {
 	uint16_t name;
 	uint32_t length;
-	char info[0];
 } JavaAttributeInfo;
 
 typedef struct _JavaMethodInfo
@@ -96,6 +126,7 @@ typedef struct _JavaPlugin
 	char * class_name;
 	char * super_name;
 	uint16_t access_flags;
+	JavaCpInfo * constants;
 	uint16_t constants_cnt;
 	uint16_t interfaces_cnt;
 	uint16_t fields_cnt;
@@ -178,6 +209,7 @@ static int _exit_attribute_table(FormatPlugin * format);
 static int _java_exit(FormatPlugin * format)
 {
 	int ret = 0;
+	JavaPlugin * java = format->priv;
 
 	if(_exit_constant_pool(format) != 0
 			|| _exit_access_flags(format) != 0
@@ -188,7 +220,8 @@ static int _java_exit(FormatPlugin * format)
 			|| _exit_method_table(format) != 0
 			|| _exit_attribute_table(format) != 0)
 		ret = 1;
-	free(format->priv);
+	free(java->constants);
+	free(java);
 	return ret;
 }
 
@@ -336,17 +369,22 @@ static int _java_decode_section(FormatPlugin * format, AsmSection * section,
 		ArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
+	JavaPlugin * java = format->priv;
 	JavaHeader jh;
 	JavaHeader2 jh2;
 	uint16_t u16;
 
+	/* reset the status */
+	free(java->constants);
+	java->constants = NULL;
+	java->constants_cnt = 0;
 	/* read header */
 	if(helper->seek(helper->format, section->offset, SEEK_SET)
 			!= section->offset)
 		return -1;
 	if(helper->read(helper->format, &jh, sizeof(jh)) != sizeof(jh))
 		return -1;
-	/* skip constants */
+	/* decode constants */
 	jh.cp_cnt = _htob16(jh.cp_cnt);
 	if(jh.cp_cnt > 1 && _decode_constants(format, jh.cp_cnt) != 0)
 		return -1;
@@ -362,7 +400,7 @@ static int _java_decode_section(FormatPlugin * format, AsmSection * section,
 	u16 = _htob16(u16);
 	if(_decode_fields(format, u16) != 0)
 		return -1;
-	/* skip methods */
+	/* decode methods */
 	if(helper->read(helper->format, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;
 	u16 = _htob16(u16);
@@ -394,11 +432,10 @@ static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
 #endif
 		if(calls != NULL)
 		{
-			if((offset = helper->seek(helper->format, 0, SEEK_CUR))
-					< 0
-					|| helper->decode(helper->format,
-						offset, jai.length, offset,
-						calls, calls_cnt) != 0)
+			offset = helper->seek(helper->format, 0, SEEK_CUR);
+			if(offset < 0 || helper->decode(helper->format, offset,
+						jai.length, offset, calls,
+						calls_cnt) != 0)
 				return -1;
 		}
 		else if(helper->seek(helper->format, jai.length, SEEK_CUR) < 0)
@@ -410,86 +447,101 @@ static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
 static int _decode_constants(FormatPlugin * format, uint16_t cnt)
 {
 	FormatPluginHelper * helper = format->helper;
+	JavaPlugin * java = format->priv;
 	size_t i;
-	JavaCpInfo jci;
+	JavaCpInfo * jci;
 	size_t size;
-	char buf[8];
-	uint16_t u16;
-	off_t offset;
-	AsmString * as;
+	size_t name;
+	JavaCpInfo * jcin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%u)\n", __func__, cnt);
 #endif
+	if((java->constants = malloc(sizeof(*java->constants) * cnt)) == NULL)
+		return -error_set_code(1, "%s", strerror(errno));
+	java->constants_cnt = cnt;
+	/* zero all the constants out */
+	memset(java->constants, 0, sizeof(*java->constants) * cnt);
 	for(i = 1; i < cnt; i++)
 	{
-		if(helper->read(helper->format, &jci, sizeof(jci))
-				!= sizeof(jci))
+		jci = &java->constants[i];
+		if((jci->offset = helper->seek(helper->format, 0, SEEK_CUR))
+				< 0)
 			return -1;
-		switch(jci.tag)
+		if(helper->read(helper->format, &jci->tag, sizeof(jci->tag))
+				!= sizeof(jci->tag))
+			return -1;
+#ifdef DEBUG
+		fprintf(stderr, "DEBUG: %s() %lu (%u)\n", __func__, i,
+				jci->tag);
+#endif
+		switch(jci->tag)
 		{
+			case CONSTANT_Class:
+			case CONSTANT_String:
+				size = sizeof(jci->info._class);
+				if(helper->read(helper->format,
+							&jci->info._class,
+							size) != (ssize_t)size)
+					return -1;
+				jci->info._class.name = _htob16(
+						jci->info._class.name);
+				break;
 			case CONSTANT_Double:
 			case CONSTANT_Long:
-				size = 8;
+				size = sizeof(jci->info._double);
+				if(helper->read(helper->format,
+							&jci->info._double,
+							size) != (ssize_t)size)
+					return -1;
+				jci->info._double.value = _htob64(
+						jci->info._double.value);
 				break;
 			case CONSTANT_Fieldref:
-			case CONSTANT_Float:
-			case CONSTANT_Integer:
 			case CONSTANT_InterfaceMethodref:
 			case CONSTANT_Methodref:
+				size = sizeof(jci->info.field);
+				if(helper->read(helper->format,
+							&jci->info.field,
+							size) != (ssize_t)size)
+					return -1;
+				jci->info.field._class = _htob16(
+						jci->info.field._class);
+				jci->info.field.name_type = _htob16(
+						jci->info.field.name_type);
+				break;
+			case CONSTANT_Float:
+			case CONSTANT_Integer:
+				size = sizeof(jci->info._float);
+				if(helper->read(helper->format,
+							&jci->info._float,
+							size) != (ssize_t)size)
+					return -1;
+				jci->info._float.value = _htob32(
+						jci->info._float.value);
+				break;
 			case CONSTANT_NameAndType:
-				size = 4;
-				break;
-			case CONSTANT_Class:
-				size = 2;
-				break;
-			case CONSTANT_String:
-				size = sizeof(u16);
-				if(helper->read(helper->format, &u16, size)
-						!= (ssize_t)size)
+				size = sizeof(jci->info.name_type);
+				if(helper->read(helper->format,
+							&jci->info.name_type,
+							size) != (ssize_t)size)
 					return -1;
-				u16 = _htob16(u16);
-				size = 0;
-				as = helper->get_string_by_id(helper->format,
-						u16 << 16);
-				/* set the proper string ID */
-				if(as != NULL && helper->set_string(
-							helper->format, i, NULL,
-							as->offset, as->size)
-						< 0)
-					return -1;
-				/* XXX abuse set_string() to remember string */
-				else if(as == NULL && helper->set_string(
-							helper->format,
-							u16 << 16, NULL, i, 0)
-						< 0)
-					return -1;
+				jci->info.name_type.name = _htob16(
+						jci->info.name_type.name);
+				jci->info.name_type.descriptor = _htob16(
+						jci->info.name_type.descriptor);
 				break;
 			case CONSTANT_Utf8:
-				size = sizeof(u16);
-				if(helper->read(helper->format, &u16, size)
-						!= (ssize_t)size)
+				size = sizeof(jci->info.utf8);
+				if(helper->read(helper->format, &jci->info.utf8,
+							size) != (ssize_t)size)
 					return -1;
-				u16 = _htob16(u16);
-				if((offset = helper->seek(helper->format, 0,
-								SEEK_CUR)) < 0)
-					return -1;
-				size = 0;
-				if(helper->seek(helper->format, u16, SEEK_CUR)
-						< 0)
-					return -1;
-				as = helper->get_string_by_id(helper->format,
-						i << 16);
-				/* we do not know this string yet */
-				if(as == NULL && helper->set_string(
-							helper->format, i << 16,
-							NULL, offset, u16) < 0)
-					return -1;
-				/* we do know this string */
-				else if(as != NULL && helper->set_string(
-							helper->format,
-							as->offset, NULL,
-							offset, u16) < 0)
+				jci->info.utf8.length = _htob16(
+						jci->info.utf8.length);
+				/* skip the string */
+				if(helper->seek(helper->format,
+							jci->info.utf8.length,
+							SEEK_CUR) < 0)
 					return -1;
 				break;
 			default:
@@ -497,11 +549,49 @@ static int _decode_constants(FormatPlugin * format, uint16_t cnt)
 						helper->get_filename(
 							helper->format),
 						"Unknown constant tag",
-						jci.tag);
+						jci->tag);
 		}
-		if(size != 0 && helper->read(helper->format, buf, size)
-				!= (ssize_t)size)
-			return -1;
+	}
+	/* assign all the strings */
+	for(i = 1; i < cnt; i++)
+	{
+		jci = &java->constants[i];
+		switch(jci->tag)
+		{
+			case CONSTANT_Class:
+			case CONSTANT_String:
+				if((name = jci->info._class.name) >= cnt)
+					continue;
+				if(java->constants[name].tag != CONSTANT_Utf8)
+					continue;
+				jcin = &java->constants[name];
+				if(helper->set_string(helper->format, i, NULL,
+							jcin->offset + 3,
+							jcin->info.utf8.length)
+						< 0)
+					return -1;
+				break;
+			case CONSTANT_Fieldref:
+			case CONSTANT_InterfaceMethodref:
+			case CONSTANT_Methodref:
+				if((name = jci->info.field.name_type) >= cnt)
+					continue;
+				jcin = &java->constants[name];
+				if(jcin->tag != CONSTANT_NameAndType)
+					continue;
+				if((name = jcin->info.name_type.descriptor)
+						>= cnt)
+					continue;
+				jcin = &java->constants[name];
+				if(jcin->tag != CONSTANT_Utf8)
+					continue;
+				if(helper->set_string(helper->format, i, NULL,
+							jcin->offset + 3,
+							jcin->info.utf8.length)
+						< 0)
+					return -1;
+				break;
+		}
 	}
 	return 0;
 }

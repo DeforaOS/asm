@@ -79,7 +79,7 @@ static AsmSection * _asmcode_section_append(AsmCode * code);
 static void _asmcode_string_delete_all(AsmCode * code);
 
 static AsmString * _asmcode_string_get_by_id(AsmCode * code, AsmStringId id);
-static int _asmcode_string_set(AsmString * codestring,
+static int _asmcode_string_set(AsmCode * code, AsmString * codestring,
 		int id, char const * name, off_t offset, ssize_t length);
 
 static AsmString * _asmcode_string_append(AsmCode * code);
@@ -351,11 +351,15 @@ int asmcode_set_string(AsmCode * code, int id, char const * name, off_t offset,
 {
 	AsmString * cs = NULL;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(0x%x)\n", __func__, id);
+#endif
 	if(id >= 0)
 		cs = _asmcode_string_get_by_id(code, id);
 	if(cs == NULL)
 		cs = _asmcode_string_append(code);
-	if(cs == NULL || _asmcode_string_set(cs, id, name, offset, length) != 0)
+	if(cs == NULL || _asmcode_string_set(code, cs, id, name, offset,
+				length) != 0)
 		return -1;
 	/* FIXME isn't it considered an error if no ID is known yet? */
 	return cs->id;
@@ -737,17 +741,21 @@ static AsmString * _asmcode_string_get_by_id(AsmCode * code, AsmStringId id)
 
 	if((ret = _asmcode_element_get_by_id(code, AET_STRING, id)) == NULL)
 		return NULL;
-	if(ret->name == NULL)
+	if(ret->name == NULL && ret->size > 0)
 		_asmcode_string_read(code, ret);
 	return ret;
 }
 
 
 /* asmcode_string_set */
-static int _asmcode_string_set(AsmString * codestring, int id,
+static int _asmcode_string_set(AsmCode * code, AsmString * codestring, int id,
 		char const * name, off_t offset, ssize_t length)
 {
-	return _asmcode_element_set(codestring, id, name, offset, length, 0);
+	if(_asmcode_element_set(codestring, id, name, offset, length, 0) != 0)
+		return -1;
+	if(name == NULL && length > 0)
+		_asmcode_string_read(code, codestring);
+	return 0;
 }
 
 
@@ -784,6 +792,5 @@ static int _asmcode_string_read(AsmCode * code, AsmString * codestring)
 	buf[codestring->size] = '\0';
 	free(codestring->name);
 	codestring->name = buf;
-	arch_seek(code->arch, offset, SEEK_SET);
-	return 0;
+	return arch_seek(code->arch, offset, SEEK_SET);
 }

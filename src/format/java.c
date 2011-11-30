@@ -364,6 +364,8 @@ static int _decode_fields(FormatPlugin * format, uint16_t cnt);
 static int _decode_interfaces(FormatPlugin * format, uint16_t cnt);
 static int _decode_methods(FormatPlugin * format, uint16_t cnt,
 		ArchInstructionCall ** calls, size_t * calls_cnt);
+static int _methods_add(FormatPlugin * format, uint16_t id, uint16_t name,
+		off_t offset, size_t size);
 
 static int _java_decode_section(FormatPlugin * format, AsmSection * section,
 		ArchInstructionCall ** calls, size_t * calls_cnt)
@@ -638,6 +640,8 @@ static int _decode_methods(FormatPlugin * format, uint16_t cnt,
 	FormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaMethodInfo jmi;
+	off_t begin;
+	off_t end;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%u)\n", __func__, cnt);
@@ -647,9 +651,40 @@ static int _decode_methods(FormatPlugin * format, uint16_t cnt,
 		if(helper->read(helper->format, &jmi, sizeof(jmi))
 				!= sizeof(jmi))
 			return -1;
+		jmi.access = _htob16(jmi.access);
+		jmi.name = _htob16(jmi.name);
+		jmi.descriptor = _htob16(jmi.descriptor);
 		jmi.attributes_cnt = _htob16(jmi.attributes_cnt);
+		/* decode attributes and code */
+		if((begin = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
+			return -1;
+		if(jmi.attributes_cnt > 0)
+			begin += sizeof(JavaAttributeInfo);
 		_decode_attributes(format, jmi.attributes_cnt, calls,
 				calls_cnt);
+		if((end = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
+			return -1;
+		/* add the method to the function list */
+		_methods_add(format, i, jmi.name, begin, end - begin);
 	}
 	return 0;
+}
+
+static int _methods_add(FormatPlugin * format, uint16_t id, uint16_t name,
+		off_t offset, size_t size)
+{
+	FormatPluginHelper * helper = format->helper;
+	JavaPlugin * java = format->priv;
+	JavaCpInfo * jci;
+	AsmString * as;
+
+	jci = &java->constants[name];
+	if(name >= java->constants_cnt || jci->tag != CONSTANT_Utf8)
+		return 0;
+	if(helper->set_string(helper->format, name, NULL, jci->offset + 3,
+				jci->info.utf8.length) < 0)
+		return -1;
+	if((as = helper->get_string_by_id(helper->format, name)) == NULL)
+		return -1;
+	return helper->set_function(helper->format, id, as->name, offset, size);
 }

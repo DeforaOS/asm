@@ -61,7 +61,7 @@ static ArchInstruction _java_instructions[] =
 	{ "athrow",	0xbf,	OP1F, AO_0()				},
 	{ "baload",	0x33,	OP1F, AO_0()				},
 	{ "bastore",	0x54,	OP1F, AO_0()				},
-	{ "bipush",	0x10,	OP1F, AO_1(OP_U32)			},
+	{ "bipush",	0x10,	OP1F, AO_1(OP_U8)			},
 	{ "caload",	0x34,	OP1F, AO_0()				},
 	{ "castore",	0x55,	OP1F, AO_0()				},
 	{ "checkcast",	0xc0,	OP1F, AO_1(OP_U16)			},
@@ -183,8 +183,8 @@ static ArchInstruction _java_instructions[] =
 	{ "ishr",	0x7a,	OP1F, AO_0()				},
 	{ "istore",	0x36,	OP1F, AO_1(OP_U8)			},
 	{ "istore_0",	0x3b,	OP1F, AO_0()				},
-	{ "istore_0",	0x3c,	OP1F, AO_0()				},
-	{ "istore_0",	0x3d,	OP1F, AO_0()				},
+	{ "istore_1",	0x3c,	OP1F, AO_0()				},
+	{ "istore_2",	0x3d,	OP1F, AO_0()				},
 	{ "istore_3",	0x3e,	OP1F, AO_0()				},
 	{ "isub",	0x64,	OP1F, AO_0()				},
 	{ "iushr",	0x7c,	OP1F, AO_0()				},
@@ -349,6 +349,10 @@ static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		return 0;
 	}
 	call->name = ai->name;
+	/* tableswitch may be followed by padding */
+	if(ai->opcode == 0xaa && (i = call->offset % 4) > 0
+			&& helper->read(helper->arch, &u32, i) != i)
+		return -1;
 	call->operands[0].definition = ai->op1;
 	call->operands[1].definition = ai->op2;
 	call->operands[2].definition = ai->op3;

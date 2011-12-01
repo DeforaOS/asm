@@ -302,6 +302,15 @@ AsmString * asmcode_get_string_by_id(AsmCode * code, AsmStringId id)
 }
 
 
+/* asmcode_get_strings */
+void asmcode_get_strings(AsmCode * code, AsmString ** strings,
+		size_t * strings_cnt)
+{
+	*strings = code->elements[AET_STRING];
+	*strings_cnt = code->elements_cnt[AET_STRING];
+}
+
+
 /* asmcode_set_function */
 int asmcode_set_function(AsmCode * code, int id, char const * name,
 		off_t offset, ssize_t size)
@@ -509,8 +518,14 @@ int asmcode_print(AsmCode * code, ArchInstructionCall * call)
 			return -1;
 		printf(" %02x", u8);
 	}
+	/* FIXME print on the following line if it was too long */
 	for(; i < 8; i++)
 		fputs("   ", stdout);
+	if(call->operands_cnt == 0)
+	{
+		printf(" %s\n", call->name);
+		return 0;
+	}
 	printf(" %-12s", call->name);
 	for(i = 0; i < call->operands_cnt; i++)
 	{

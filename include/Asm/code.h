@@ -55,6 +55,8 @@ void asmcode_get_sections(AsmCode * code, AsmSection ** sections,
 
 /* strings */
 AsmString * asmcode_get_string_by_id(AsmCode * code, AsmStringId id);
+void asmcode_get_strings(AsmCode * code, AsmString ** strings,
+		size_t * strings_cnt);
 
 
 /* useful */

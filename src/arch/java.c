@@ -40,6 +40,7 @@ static ArchRegister _java_registers[] =
 #define OP_U16		AO_IMMEDIATE(0, 16, 0)
 #define OP_U16_STR	AO_IMMEDIATE(0, 16, AOI_REFERS_STRING)
 #define OP_U16_FUNC	AO_IMMEDIATE(0, 16, AOI_REFERS_FUNCTION)
+#define OP_S32		AO_IMMEDIATE(AOF_SIGNED, 32, 0)
 #define OP_U32		AO_IMMEDIATE(0, 32, 0)
 static ArchInstruction _java_instructions[] =
 {
@@ -229,7 +230,7 @@ static ArchInstruction _java_instructions[] =
 	{ "monitorenter",0xc2,	OP1F, AO_0()				},
 	{ "monitorexit",0xc3,	OP1F, AO_0()				},
 	{ "multianewarray",0xc5,OP1F, AO_2(OP_U16, OP_U8)		},
-	{ "new",	0xbb,	OP1F, AO_1(OP_U16)			},
+	{ "new",	0xbb,	OP1F, AO_1(OP_U16_STR)			},
 	{ "newarray",	0xbb,	OP1F, AO_1(OP_U8)			},
 	{ "nop",	0x00,	OP1F, AO_0()				},
 	{ "pop",	0x57,	OP1F, AO_0()				},
@@ -242,7 +243,7 @@ static ArchInstruction _java_instructions[] =
 	{ "sastore",	0x56,	OP1F, AO_0()				},
 	{ "sipush",	0x11,	OP1F, AO_1(OP_U16)			},
 	{ "swap",	0x5f,	OP1F, AO_0()				},
-	{ "tableswitch",0xaa,	OP1F, AO_0()				},
+	{ "tableswitch",0xaa,	OP1F, AO_3(OP_U32, OP_S32, OP_S32)	},
 	{ "wide",	0xc4,	OP1F, AO_2(OP_U8, OP_U16)		},
 	{ "wide",	0xc4,	OP1F, AO_3(OP_U8, OP_U8, OP_U16)	},
 	{ "xxxunusedxxx",0xba,	OP1F, AO_0()				},
@@ -290,6 +291,7 @@ static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 
 	if((helper->write(helper->arch, &instruction->opcode, 1)) != 1)
 		return -1;
+	/* FIXME tableswitch may need some padding */
 	definitions[0] = instruction->op1;
 	definitions[1] = instruction->op2;
 	definitions[2] = instruction->op3;
@@ -334,6 +336,8 @@ static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 	uint16_t u16;
 	uint32_t u32;
 	AsmString * as;
+	uint32_t begin;
+	uint32_t end;
 
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
@@ -400,5 +404,15 @@ static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 		}
 	}
 	call->operands_cnt = i;
+	/* tableswitch may be followed by offsets */
+	if(ai->opcode == 0xaa)
+	{
+		for(begin = call->operands[1].value.immediate.value,
+				end = call->operands[2].value.immediate.value;
+				begin <= end; begin++)
+			if(helper->read(helper->arch, &u32, sizeof(u32))
+					!= (ssize_t)sizeof(u32))
+				return -1;
+	}
 	return 0;
 }

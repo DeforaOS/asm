@@ -1,4 +1,4 @@
-TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so mipseb.so mipsel.so sparc.so sparc64.so yasep.so
+TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so mipseb.so mipsel.so sparc.so sparc64.so yasep.so yasep16.so
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -137,6 +137,13 @@ yasep_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 yasep.so: $(yasep_OBJS)
 	$(CCSHARED) -o yasep.so $(yasep_OBJS) $(yasep_LDFLAGS)
 
+yasep16_OBJS = yasep16.o
+yasep16_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+yasep16_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+yasep16.so: $(yasep16_OBJS)
+	$(CCSHARED) -o yasep16.so $(yasep16_OBJS) $(yasep16_LDFLAGS)
+
 amd64.o: amd64.c amd64.ins amd64.reg common.ins null.ins i386.h i386.ins i386.reg i486.ins i686.ins i686.reg
 	$(CC) $(amd64_CFLAGS) -c amd64.c
 
@@ -188,8 +195,11 @@ sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 yasep.o: yasep.c common.ins null.ins yasep.ins yasep.reg
 	$(CC) $(yasep_CFLAGS) -c yasep.c
 
+yasep16.o: yasep16.c common.ins null.ins yasep.ins yasep.reg
+	$(CC) $(yasep16_CFLAGS) -c yasep16.c
+
 clean:
-	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(armeb_OBJS) $(armel_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(mipseb_OBJS) $(mipsel_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(yasep_OBJS)
+	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(armeb_OBJS) $(armel_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(mipseb_OBJS) $(mipsel_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(yasep_OBJS) $(yasep16_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -229,6 +239,8 @@ install: $(TARGETS)
 	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
 	$(INSTALL) -m 0644 -- yasep.so $(DESTDIR)$(LIBDIR)/asm/arch/yasep.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/asm/arch
+	$(INSTALL) -m 0644 -- yasep16.so $(DESTDIR)$(LIBDIR)/asm/arch/yasep16.so
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/amd64.so
@@ -248,5 +260,6 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/sparc64.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/yasep.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/asm/arch/yasep16.so
 
 .PHONY: all clean distclean install uninstall

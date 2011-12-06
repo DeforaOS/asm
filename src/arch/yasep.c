@@ -17,13 +17,22 @@
 
 #include <stddef.h>
 #include "Asm.h"
-#define ARCH_yasep32
+#ifndef ARCH_yasep
+# define ARCH_yasep	32
+# define ARCH_yasep32
+# define _yasep_name	"yasep"
+#endif
 
 
 /* yasep */
 /* private */
 /* variables */
 /* plug-in */
+static ArchDescription _yasep_description =
+{
+	"flat", ARCH_ENDIAN_LITTLE, 32, 16, 0
+};
+
 #define REG(name, size, id) { "" # name, size, id },
 static ArchRegister _yasep_registers[] =
 {
@@ -47,13 +56,13 @@ static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call);
 
 
-/* protected */
+/* public */
 /* variables */
 ArchPlugin arch_plugin =
 {
 	NULL,
-	"yasep",
-	NULL,
+	_yasep_name,
+	&_yasep_description,
 	_yasep_registers,
 	_yasep_instructions,
 	NULL,

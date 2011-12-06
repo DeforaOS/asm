@@ -13,9 +13,13 @@
 	get	$0x09, %r1
 	get	%r10, %r11
 	lsb	%r12, %r13
+#ifdef __yasep__
 	lsh	%r14, %r15
+#endif
 	lzb	%npc, %d5
+#ifdef __yasep__
 	lzh	%a5, %d4
+#endif
 	mov	$0x04, %a4
 	mov	%d3, %a3
 	mul8h	$0x03, %d2
@@ -41,10 +45,12 @@
 	sar	%r0, %r1
 	sb	$0x08, %r1
 	sb	%r0, %r1
+#ifdef __yasep__
 	sh	$0x09, %r1
 	sh	%r0, %r1
 	shh	$0x0a, %r1
 	shh	%r0, %r1
+#endif
 	shl	$0x0b, %r1
 	shl	%r0, %r1
 	shr	$0x0c, %r1

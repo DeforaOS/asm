@@ -71,6 +71,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.c \
+		$(PACKAGE)-$(VERSION)/src/arch/yasep16.c \
 		$(PACKAGE)-$(VERSION)/src/arch/Makefile \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.reg \
@@ -121,6 +122,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/test/sparc.S \
 		$(PACKAGE)-$(VERSION)/test/sparc64.S \
 		$(PACKAGE)-$(VERSION)/test/yasep.S \
+		$(PACKAGE)-$(VERSION)/test/yasep16.S \
 		$(PACKAGE)-$(VERSION)/test/Makefile \
 		$(PACKAGE)-$(VERSION)/test/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \

@@ -40,12 +40,12 @@ typedef struct _State
 
 
 /* prototypes */
-static int _parser_scan(State * state);
 static int _parser_check(State * state, TokenCode code);
+static int _parser_defines(State * state, AsmPrefs * ap);
+static int _parser_error(State * state, char const * format, ...);
 static int _parser_is_code(State * state, TokenCode code);
 static int _parser_in_set(State * state, TokenSet set);
-
-static int _parser_error(State * state, char const * format, ...);
+static int _parser_scan(State * state);
 static int _parser_warning(State * state, char const * format, ...);
 
 /* grammar */
@@ -132,6 +132,31 @@ static int _parser_check(State * state, TokenCode code)
 }
 
 
+/* parser_defines */
+static int _parser_defines(State * state, AsmPrefs * ap)
+{
+	int ret = 0;
+	char const * p;
+	char * q;
+	size_t len;
+	size_t i;
+
+	if((p = asmcode_get_arch(state->code)) != NULL
+			&& (len = strlen(p)) > 0)
+	{
+		if((q = malloc(len + 5)) == NULL)
+			return -error_set_code(1, "%s", strerror(errno));
+		snprintf(q, len + 5, "__%s__", p);
+		ret |= cpp_define_add(state->cpp, q, NULL);
+		free(q);
+	}
+	if(ret == 0 && ap != NULL)
+		for(i = 0; i < ap->defines_cnt; i++)
+			ret |= cpp_define_add(state->cpp, ap->defines[i], NULL);
+	return ret;
+}
+
+
 /* parser_is_code */
 static int _parser_is_code(State * state, TokenCode code)
 {
@@ -193,7 +218,6 @@ int parser(AsmPrefs * ap, AsmCode * code, char const * infile)
 {
 	CppPrefs prefs;
 	State state;
-	size_t i;
 
 	memset(&prefs, 0, sizeof(prefs));
 	prefs.filename = infile;
@@ -202,12 +226,16 @@ int parser(AsmPrefs * ap, AsmCode * code, char const * infile)
 	state.code = code;
 	if((state.cpp = cpp_new(&prefs)) == NULL)
 		return -1;
-	if(ap != NULL)
-		for(i = 0; i < ap->defines_cnt; i++)
-			/* FIXME check errors */
-			cpp_define_add(state.cpp, ap->defines[i], NULL);
+	if(_parser_defines(&state, ap) != 0)
+	{
+		cpp_delete(state.cpp);
+		return -1;
+	}
 	if(_parser_scan(&state) != 0)
+	{
+		cpp_delete(state.cpp);
 		return _parser_error(&state, "%s", error_get());
+	}
 	if(_program(&state) != 0)
 		error_set_code(1, "%s%s%u%s%u%s", infile,
 				": Compilation failed with ", state.error_cnt,

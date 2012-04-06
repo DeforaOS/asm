@@ -365,8 +365,8 @@ static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
-static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
-		size_t shdr_cnt, uint16_t ndx);
+static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
+		Elf32_Shdr * shdr, size_t shdr_cnt, uint16_t ndx);
 
 static int _elf_decode32(FormatPlugin * format, int raw)
 {
@@ -402,7 +402,7 @@ static int _elf_decode32(FormatPlugin * format, int raw)
 		if(shdr[i].sh_type == SHT_SYMTAB)
 		{
 			/* XXX ignore errors? */
-			_decode32_symtab(format, shdr, ehdr.e_shnum, i);
+			_decode32_symtab(format, &ehdr, shdr, ehdr.e_shnum, i);
 			break;
 		}
 	for(i = 0; i < ehdr.e_shnum; i++)
@@ -505,14 +505,15 @@ static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 	return 0;
 }
 
-static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
-		size_t shdr_cnt, uint16_t ndx)
+static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
+		Elf32_Shdr * shdr, size_t shdr_cnt, uint16_t ndx)
 {
 	FormatPluginHelper * helper = format->helper;
 	char * strtab = NULL;
 	size_t strtab_cnt = 0;
 	Elf32_Sym sym;
 	size_t i;
+	off_t offset;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -523,8 +524,9 @@ static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
 				&strtab_cnt) != 0)
 		return -1;
 	/* read and process symbols */
-	if(helper->seek(helper->format, shdr[ndx].sh_offset, SEEK_SET)
-			!= shdr[ndx].sh_offset)
+	if((offset = helper->seek(helper->format, shdr[ndx].sh_offset,
+					SEEK_SET)) < 0
+			|| (unsigned long)offset != shdr[ndx].sh_offset)
 	{
 		free(strtab);
 		return -1;
@@ -536,9 +538,15 @@ static int _decode32_symtab(FormatPlugin * format, Elf32_Shdr * shdr,
 		else if(sym.st_name >= strtab_cnt)
 			break;
 		else if(ELF32_ST_TYPE(sym.st_info) == STT_FUNC)
+		{
+			offset = -1;
+			if(ehdr->e_type &= ET_REL)
+				offset = sym.st_value;
 			/* record the function */
-			helper->set_function(helper->format, sym.st_value,
-					&strtab[sym.st_name], -1, sym.st_size);
+			helper->set_function(helper->format, i,
+					&strtab[sym.st_name], sym.st_value,
+					sym.st_size);
+		}
 	if(i * sizeof(sym) != shdr[ndx].sh_size)
 	{
 		free(strtab);
@@ -556,8 +564,8 @@ static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
-static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
-		size_t shdr_cnt, uint16_t ndx);
+static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
+		Elf64_Shdr * shdr, size_t shdr_cnt, uint16_t ndx);
 
 static int _elf_decode64(FormatPlugin * format, int raw)
 {
@@ -592,7 +600,7 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 		if(shdr[i].sh_type == SHT_SYMTAB)
 		{
 			/* XXX ignore errors? */
-			_decode64_symtab(format, shdr, ehdr.e_shnum, i);
+			_decode64_symtab(format, &ehdr, shdr, ehdr.e_shnum, i);
 			break;
 		}
 	for(i = 0; i < ehdr.e_shnum; i++)
@@ -696,14 +704,15 @@ static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 	return 0;
 }
 
-static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
-		size_t shdr_cnt, uint16_t ndx)
+static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
+		Elf64_Shdr * shdr, size_t shdr_cnt, uint16_t ndx)
 {
 	FormatPluginHelper * helper = format->helper;
 	char * strtab = NULL;
 	size_t strtab_cnt = 0;
 	Elf64_Sym sym;
 	size_t i;
+	off_t offset;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -714,8 +723,9 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
 				&strtab_cnt) != 0)
 		return -1;
 	/* read and process symbols */
-	if(helper->seek(helper->format, shdr[ndx].sh_offset, SEEK_SET)
-			!= shdr[ndx].sh_offset)
+	if((offset = helper->seek(helper->format, shdr[ndx].sh_offset,
+					SEEK_SET)) < 0
+			|| (unsigned long)offset != shdr[ndx].sh_offset)
 	{
 		free(strtab);
 		return -1;
@@ -727,9 +737,15 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Shdr * shdr,
 		else if(sym.st_name >= strtab_cnt)
 			break;
 		else if(ELF64_ST_TYPE(sym.st_info) == STT_FUNC)
+		{
+			offset = -1;
+			if(ehdr->e_type &= ET_REL)
+				offset = sym.st_value;
 			/* record the function */
-			helper->set_function(helper->format, sym.st_value,
-					&strtab[sym.st_name], -1, sym.st_size);
+			helper->set_function(helper->format, i,
+					&strtab[sym.st_name], offset,
+					sym.st_size);
+		}
 	if(i * sizeof(sym) != shdr[ndx].sh_size)
 	{
 		free(strtab);

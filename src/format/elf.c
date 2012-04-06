@@ -540,7 +540,8 @@ static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
 		else if(ELF32_ST_TYPE(sym.st_info) == STT_FUNC)
 		{
 			offset = -1;
-			if(ehdr->e_type &= ET_REL)
+			if(ehdr->e_type == ET_REL || ehdr->e_type == ET_EXEC
+					|| ehdr->e_type == ET_DYN)
 				offset = sym.st_value;
 			/* record the function */
 			helper->set_function(helper->format, i,
@@ -739,7 +740,8 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
 		else if(ELF64_ST_TYPE(sym.st_info) == STT_FUNC)
 		{
 			offset = -1;
-			if(ehdr->e_type &= ET_REL)
+			if(ehdr->e_type == ET_REL || ehdr->e_type == ET_EXEC
+					|| ehdr->e_type == ET_DYN)
 				offset = sym.st_value;
 			/* record the function */
 			helper->set_function(helper->format, i,

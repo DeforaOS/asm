@@ -95,15 +95,15 @@ while [ $# -gt 0 ]; do
 
 	#create
 	case "$target" in
-		html/index.html)
-			$MKDIR "html" &&
-			(cd "html" &&
+		gtkdoc/html.stamp)
+			$MKDIR "gtkdoc/html" &&
+			(cd "gtkdoc/html" &&
 				$DEBUG $GTKDOC_MKHTML "$MODULE" \
-					"../gtkdoc/$MODULE-docs.xml") &&
+					"../$MODULE-docs.xml") &&
 			(cd "gtkdoc" &&
 				$DEBUG $GTKDOC_FIXXREF \
 					--module="$MODULE" \
-					--module-dir="../html" \
+					--module-dir="html" \
 					--html-dir="$DATADIR/doc/html/$MODULE")
 			;;
 		gtkdoc/sgml.stamp)

@@ -33,6 +33,7 @@ DEBUG="_debug"
 GTKDOC_FIXXREF="gtkdoc-fixxref"
 GTKDOC_MKDB="gtkdoc-mkdb"
 GTKDOC_MKHTML="gtkdoc-mkhtml"
+GTKDOC_MKTMPL="gtkdoc-mktmpl"
 GTKDOC_SCAN="gtkdoc-scan"
 INSTALL="install -m 0644"
 MKDIR="mkdir -p"
@@ -93,11 +94,8 @@ while [ $# -gt 0 ]; do
 	shift
 
 	#create
-	#determine the type
-	ext="${target##*.}"
-	ext="${ext#.}"
-	case "$ext" in
-		html)
+	case "$target" in
+		html/index.html)
 			$MKDIR "html" &&
 			(cd "html" &&
 				$DEBUG $GTKDOC_MKHTML "$MODULE" \
@@ -108,18 +106,25 @@ while [ $# -gt 0 ]; do
 					--module-dir="../html" \
 					--html-dir="$DATADIR/doc/html/$MODULE")
 			;;
-		stamp)
+		gtkdoc/sgml.stamp)
 			(cd "gtkdoc" &&
 				$DEBUG $GTKDOC_MKDB \
 					--module="$MODULE" \
 					--output-dir="xml" \
-					--output-format="xml")
+					--output-format="xml" \
+					--tmpl-dir="tmpl")
 			;;
-		types)
+		gtkdoc/tmpl.stamp)
+			(cd "gtkdoc" &&
+				$DEBUG $GTKDOC_MKTMPL \
+					--module="$MODULE" \
+					--output-dir="tmpl")
+			;;
+		gtkdoc/*.types)
 			(cd ".." &&
 				$DEBUG $GTKDOC_SCAN \
 					--module="$MODULE" \
-					--source-dir="." \
+					--source-dir="include" \
 					--output-dir="doc/gtkdoc")
 			;;
 		*)

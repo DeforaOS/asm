@@ -38,7 +38,6 @@ INSTALL="install -m 0644"
 MKDIR="mkdir -p"
 MODULE="$PACKAGE"
 RM="rm -f"
-XSLTPROC="xsltproc --nonet"
 
 
 #functions

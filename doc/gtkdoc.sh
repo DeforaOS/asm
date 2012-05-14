@@ -106,7 +106,7 @@ while [ $# -gt 0 ]; do
 				$DEBUG $GTKDOC_FIXXREF \
 					--module="$MODULE" \
 					--module-dir="../html" \
-					--html-dir="$DATADIR/doc/$MODULE/html")
+					--html-dir="$DATADIR/doc/html/$MODULE")
 			;;
 		stamp)
 			(cd "gtkdoc" &&

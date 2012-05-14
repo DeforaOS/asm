@@ -38,6 +38,7 @@ INSTALL="install -m 0644"
 MKDIR="mkdir -p"
 MODULE="$PACKAGE"
 RM="rm -f"
+TOUCH="touch"
 
 
 #functions
@@ -115,11 +116,11 @@ while [ $# -gt 0 ]; do
 					--output-format="xml")
 			;;
 		types)
-			$DEBUG $GTKDOC_SCAN \
-				--module="$MODULE" \
-				--source-dir="../include" \
-				--source-dir="../src" \
-				--output-dir="gtkdoc"
+			(cd ".." &&
+				$DEBUG $GTKDOC_SCAN \
+					--module="$MODULE" \
+					--source-dir="." \
+					--output-dir="doc/gtkdoc")
 			;;
 		*)
 			echo "$0: $target: Unknown type" 1>&2
@@ -131,4 +132,5 @@ while [ $# -gt 0 ]; do
 		echo "$0: $target: Could not create documentation" 1>&2
 		install=0
 	fi
+	$TOUCH "$target"
 done

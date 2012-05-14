@@ -1,2 +1,0 @@
-/* $Id$ */
-#include "mips.S"

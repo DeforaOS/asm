@@ -86,7 +86,7 @@ if [ $# -eq 0 ]; then
 fi
 
 [ -z "$DATADIR" ] && DATADIR="$PREFIX/share"
-instdir="$DATADIR/gtk-doc/html/$MODULE"
+instdir="$DATADIR/gtk-doc/html"
 
 while [ $# -gt 0 ]; do
 	target="$1"
@@ -96,7 +96,8 @@ while [ $# -gt 0 ]; do
 	if [ "$uninstall" -eq 1 ]; then
 		for i in gtkdoc/html/*.*; do
 			file="${i##*/}"
-			echo $DEBUG $RM "$instdir/$file"	|| exit 2
+			echo $DEBUG $RM "$instdir/$MODULE/$file" \
+								|| exit 2
 		done
 		continue
 	fi
@@ -112,7 +113,7 @@ while [ $# -gt 0 ]; do
 				$DEBUG $GTKDOC_FIXXREF \
 					--module="$MODULE" \
 					--module-dir="html" \
-					--html-dir="$DATADIR/doc/html/$MODULE")
+					--html-dir="$instdir")
 			;;
 		gtkdoc/sgml.stamp)
 			(cd "gtkdoc" &&
@@ -148,11 +149,12 @@ while [ $# -gt 0 ]; do
 	$TOUCH "$target"
 
 	#install
-	if [ "$install" -eq 1 -a -n "$instdir" ]; then
-		$DEBUG $MKDIR "$instdir"			|| exit 2
+	if [ "$install" -eq 1 ]; then
+		$DEBUG $MKDIR "$instdir/$MODULE"		|| exit 2
 		for i in gtkdoc/html/*.*; do
 			file="${i##*/}"
-			$DEBUG $INSTALL "$i" "$instdir/$file"	|| exit 2
+			$DEBUG $INSTALL "$i" "$instdir/$MODULE/$file" \
+								|| exit 2
 		done
 	fi
 done

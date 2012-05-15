@@ -9,12 +9,10 @@ DeforaOS Devel Asm
 <title>The DeforaOS Assembly framework</title>
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 The DeforaOS Code Pre-Processor (CPP), the DeforaOS Compilation framework (C99)
 </para>
-
 
 <!-- ##### SECTION Stability_Level ##### -->
 

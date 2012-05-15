@@ -1,0 +1,102 @@
+<!-- ##### SECTION Title ##### -->
+common
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AET_COUNT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AET_LAST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### TYPEDEF AsmElementId ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM AsmElementType ##### -->
+<para>
+
+</para>
+
+@AET_FUNCTION: 
+@AET_LABEL: 
+@AET_SECTION: 
+@AET_STRING: 
+
+<!-- ##### TYPEDEF AsmFunction ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmFunctionId ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmLabel ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmLabelId ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmSection ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmSectionId ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmString ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmStringId ##### -->
+<para>
+
+</para>
+
+

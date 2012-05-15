@@ -1,0 +1,265 @@
+<!-- ##### SECTION Title ##### -->
+AsmCode
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AsmCode ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION asmcode_decode ##### -->
+<para>
+
+</para>
+
+@code: 
+@raw: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_decode_at ##### -->
+<para>
+
+</para>
+
+@code: 
+@offset: 
+@size: 
+@base: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_decode_buffer ##### -->
+<para>
+
+</para>
+
+@code: 
+@buffer: 
+@size: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_decode_section ##### -->
+<para>
+
+</para>
+
+@code: 
+@section: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_function ##### -->
+<para>
+
+</para>
+
+@code: 
+@function: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_arch ##### -->
+<para>
+
+</para>
+
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_arch_description ##### -->
+<para>
+
+</para>
+
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_filename ##### -->
+<para>
+
+</para>
+
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_format ##### -->
+<para>
+
+</para>
+
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_function_by_id ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_functions ##### -->
+<para>
+
+</para>
+
+@code: 
+@functions: 
+@functions_cnt: 
+
+
+<!-- ##### FUNCTION asmcode_get_section_by_id ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_section_by_name ##### -->
+<para>
+
+</para>
+
+@code: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_sections ##### -->
+<para>
+
+</para>
+
+@code: 
+@sections: 
+@sections_cnt: 
+
+
+<!-- ##### FUNCTION asmcode_get_string_by_id ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_strings ##### -->
+<para>
+
+</para>
+
+@code: 
+@strings: 
+@strings_cnt: 
+
+
+<!-- ##### FUNCTION asmcode_instruction ##### -->
+<para>
+
+</para>
+
+@code: 
+@call: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_print ##### -->
+<para>
+
+</para>
+
+@code: 
+@call: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_section ##### -->
+<para>
+
+</para>
+
+@code: 
+@section: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_function ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_section ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@base: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_string ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@length: 
+@Returns: 
+
+

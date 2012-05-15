@@ -1,0 +1,174 @@
+<!-- ##### SECTION Title ##### -->
+Format
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT Format ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT FormatPlugin ##### -->
+<para>
+
+</para>
+
+@helper: 
+@name: 
+@signature: 
+@signature_len: 
+@init: 
+@exit: 
+@function: 
+@section: 
+@detect: 
+@decode: 
+@decode_section: 
+@priv: 
+
+<!-- ##### USER_FUNCTION decode ##### -->
+<para>
+
+</para>
+
+@format: 
+@offset: 
+@size: 
+@base: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_filename ##### -->
+<para>
+
+</para>
+
+@format: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_functions ##### -->
+<para>
+
+</para>
+
+@format: 
+@functions: 
+@functions_cnt: 
+
+
+<!-- ##### USER_FUNCTION get_section_by_id ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_string_by_id ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION read ##### -->
+<para>
+
+</para>
+
+@format: 
+@buf: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION seek ##### -->
+<para>
+
+</para>
+
+@format: 
+@offset: 
+@whence: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION set_function ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION set_section ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@base: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION set_string ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION write ##### -->
+<para>
+
+</para>
+
+@format: 
+@buf: 
+@size: 
+@Returns: 
+
+

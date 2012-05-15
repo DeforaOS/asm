@@ -1,0 +1,418 @@
+<!-- ##### SECTION Title ##### -->
+Arch
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AOD_FLAGS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOD_OFFSET ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOD_SIZE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOD_TYPE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOD_VALUE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOF_IMPLICIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOF_SIGNED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOI_REFERS_FUNCTION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOI_REFERS_STRING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOM_FLAGS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOM_OFFSET ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOM_SIZE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOM_TYPE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOM_VALUE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AO_0 ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AO_1 ##### -->
+<para>
+
+</para>
+
+@op1: 
+
+
+<!-- ##### MACRO AO_2 ##### -->
+<para>
+
+</para>
+
+@op1: 
+@op2: 
+
+
+<!-- ##### MACRO AO_3 ##### -->
+<para>
+
+</para>
+
+@op1: 
+@op2: 
+@op3: 
+
+
+<!-- ##### MACRO AO_CONSTANT ##### -->
+<para>
+
+</para>
+
+@flags: 
+@size: 
+@value: 
+
+
+<!-- ##### MACRO AO_DREGISTER ##### -->
+<para>
+
+</para>
+
+@flags: 
+@dsize: 
+@rsize: 
+@id: 
+
+
+<!-- ##### MACRO AO_DREGISTER2 ##### -->
+<para>
+
+</para>
+
+@flags: 
+@did: 
+@dsize: 
+@id: 
+
+
+<!-- ##### MACRO AO_GET_DSIZE ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_FLAGS ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_OFFSET ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_RSIZE ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_SIZE ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_TYPE ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_VALUE ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_IMMEDIATE ##### -->
+<para>
+
+</para>
+
+@flags: 
+@size: 
+@type: 
+
+
+<!-- ##### MACRO AO_REGISTER ##### -->
+<para>
+
+</para>
+
+@flags: 
+@size: 
+@id: 
+
+
+<!-- ##### STRUCT Arch ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM ArchEndian ##### -->
+<para>
+
+</para>
+
+@ARCH_ENDIAN_BIG: 
+@ARCH_ENDIAN_LITTLE: 
+@ARCH_ENDIAN_BOTH: 
+
+<!-- ##### TYPEDEF ArchOperandDefinition ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM ArchOperandType ##### -->
+<para>
+
+</para>
+
+@AOT_NONE: 
+@AOT_CONSTANT: 
+@AOT_IMMEDIATE: 
+@AOT_REGISTER: 
+@AOT_DREGISTER: 
+@AOT_DREGISTER2: 
+
+<!-- ##### STRUCT ArchPlugin ##### -->
+<para>
+
+</para>
+
+@helper: 
+@name: 
+@description: 
+@registers: 
+@instructions: 
+@init: 
+@exit: 
+@encode: 
+@decode: 
+
+<!-- ##### USER_FUNCTION get_filename ##### -->
+<para>
+
+</para>
+
+@format: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_function_by_id ##### -->
+<para>
+
+</para>
+
+@arch: 
+@id: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_instruction_by_opcode ##### -->
+<para>
+
+</para>
+
+@arch: 
+@size: 
+@opcode: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_register_by_id_size ##### -->
+<para>
+
+</para>
+
+@arch: 
+@id: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_register_by_name_size ##### -->
+<para>
+
+</para>
+
+@arch: 
+@name: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_string_by_id ##### -->
+<para>
+
+</para>
+
+@format: 
+@id: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION peek ##### -->
+<para>
+
+</para>
+
+@arch: 
+@buf: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION read ##### -->
+<para>
+
+</para>
+
+@format: 
+@buf: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION seek ##### -->
+<para>
+
+</para>
+
+@format: 
+@offset: 
+@whence: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION write ##### -->
+<para>
+
+</para>
+
+@format: 
+@buf: 
+@size: 
+@Returns: 
+
+

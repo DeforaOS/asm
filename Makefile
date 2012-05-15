@@ -32,6 +32,15 @@ dist:
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc/Makefile \
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc/Asm-docs.xml \
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc/project.conf \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/Makefile \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/Asm-unused.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/Asm.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/arch.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/asm.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/code.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/common.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/format.sgml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/tmpl/project.conf \
 		$(PACKAGE)-$(VERSION)/include/Asm.h \
 		$(PACKAGE)-$(VERSION)/include/Makefile \
 		$(PACKAGE)-$(VERSION)/include/project.conf \

@@ -1,0 +1,24 @@
+<!-- ##### SECTION Title ##### -->
+Asm
+
+<!-- ##### SECTION Short_Description ##### -->
+DeforaOS Devel Asm
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+<title>The DeforaOS Assembly framework</title>
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+The DeforaOS Code Pre-Processor (CPP), the DeforaOS Compilation framework (C99)
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+

@@ -1,4 +1,4 @@
-PACKAGE	= asm
+PACKAGE	= Asm
 VERSION	= 0.2.1
 SUBDIRS	= data doc include src tests
 RM	?= rm -f

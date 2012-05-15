@@ -1,4 +1,4 @@
-#define PACKAGE "asm"
+#define PACKAGE "Asm"
 #define VERSION "0.2.1"
 
 #ifndef PREFIX

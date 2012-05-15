@@ -21,8 +21,6 @@
 #CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#TODO:
-#- implement installing and uninstalling
 
 
 
@@ -88,10 +86,20 @@ if [ $# -eq 0 ]; then
 fi
 
 [ -z "$DATADIR" ] && DATADIR="$PREFIX/share"
+instdir="$DATADIR/gtk-doc/html/$MODULE"
 
 while [ $# -gt 0 ]; do
 	target="$1"
 	shift
+
+	#uninstall
+	if [ "$uninstall" -eq 1 ]; then
+		for i in gtkdoc/html/*.*; do
+			file="${i##*/}"
+			echo $DEBUG $RM "$instdir/$file"	|| exit 2
+		done
+		continue
+	fi
 
 	#create
 	case "$target" in
@@ -138,4 +146,13 @@ while [ $# -gt 0 ]; do
 		install=0
 	fi
 	$TOUCH "$target"
+
+	#install
+	if [ "$install" -eq 1 -a -n "$instdir" ]; then
+		$DEBUG $MKDIR "$instdir"			|| exit 2
+		for i in gtkdoc/html/*.*; do
+			file="${i##*/}"
+			$DEBUG $INSTALL "$i" "$instdir/$file"	|| exit 2
+		done
+	fi
 done

@@ -1,5 +1,5 @@
 SUBDIRS	= gtkdoc
-TARGETS	= gtkdoc/asm.types gtkdoc/tmpl.stamp gtkdoc/sgml.stamp gtkdoc/html.stamp
+TARGETS	= gtkdoc/Asm.types gtkdoc/tmpl.stamp gtkdoc/sgml.stamp gtkdoc/html.stamp
 PREFIX	= /usr/local
 DESTDIR	=
 RM	?= rm -f
@@ -13,25 +13,25 @@ all: subdirs $(TARGETS)
 subdirs:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit; done
 
-gtkdoc/asm.types:
-	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/asm.types"
+gtkdoc/Asm.types:
+	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/Asm.types"
 
-gtkdoc/tmpl.stamp: gtkdoc/asm.types
+gtkdoc/tmpl.stamp: gtkdoc/Asm.types
 	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/tmpl.stamp"
 
 gtkdoc/sgml.stamp: gtkdoc/tmpl.stamp
 	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/sgml.stamp"
 
-gtkdoc/html.stamp: gtkdoc/asm-docs.xml gtkdoc/sgml.stamp
+gtkdoc/html.stamp: gtkdoc/Asm-docs.xml gtkdoc/sgml.stamp
 	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/html.stamp"
 
 clean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
-	$(RM) -- $(gtkdoc/asm.types_OBJS) $(gtkdoc/tmpl.stamp_OBJS) $(gtkdoc/sgml.stamp_OBJS) $(gtkdoc/html.stamp_OBJS)
+	$(RM) -- $(gtkdoc/Asm.types_OBJS) $(gtkdoc/tmpl.stamp_OBJS) $(gtkdoc/sgml.stamp_OBJS) $(gtkdoc/html.stamp_OBJS)
 
 distclean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
-	$(RM) -- $(gtkdoc/asm.types_OBJS) $(gtkdoc/tmpl.stamp_OBJS) $(gtkdoc/sgml.stamp_OBJS) $(gtkdoc/html.stamp_OBJS)
+	$(RM) -- $(gtkdoc/Asm.types_OBJS) $(gtkdoc/tmpl.stamp_OBJS) $(gtkdoc/sgml.stamp_OBJS) $(gtkdoc/html.stamp_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)

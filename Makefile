@@ -30,7 +30,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc.sh \
 		$(PACKAGE)-$(VERSION)/doc/project.conf \
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc/Makefile \
-		$(PACKAGE)-$(VERSION)/doc/gtkdoc/asm-docs.xml \
+		$(PACKAGE)-$(VERSION)/doc/gtkdoc/Asm-docs.xml \
 		$(PACKAGE)-$(VERSION)/doc/gtkdoc/project.conf \
 		$(PACKAGE)-$(VERSION)/include/Asm.h \
 		$(PACKAGE)-$(VERSION)/include/Makefile \

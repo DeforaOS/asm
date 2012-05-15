@@ -5,15 +5,15 @@
   <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
   <!ENTITY server "www.defora.org/doc/html">
   <!ENTITY version "0.2.1">
-  <!ENTITY title "DeforaOS asm">
+  <!ENTITY title "DeforaOS Asm">
 ]>
 <book id="index">
   <bookinfo>
-    <title>asm Reference Manual</title>
+    <title>Asm Reference Manual</title>
     <releaseinfo>
-      for asm &version;.
+      for Asm &version;.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://&server;/asm/index.html">http://&server;/asm/</ulink>.
+      <ulink role="online-location" url="http://&server;/Asm/index.html">http://&server;/Asm/</ulink>.
     </releaseinfo>
   </bookinfo>
 

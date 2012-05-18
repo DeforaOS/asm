@@ -160,6 +160,14 @@ int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size)
 }
 
 
+/* asm_set_section */
+int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size,
+		off_t base)
+{
+	return asmcode_set_section(a->code, -1, name, offset, size, base);
+}
+
+
 /* useful */
 /* asm_assemble */
 int asm_assemble(Asm * a, AsmPrefs * prefs, char const * infile,

@@ -3,8 +3,8 @@ includedir=${prefix}/include
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 
-Name: cpp
-Description: DeforaOS Development assembler
+Name: Asm
+Description: DeforaOS Development Assembler
 Version: VERSION
 Requires: cpp
 Cflags: -I${includedir}

@@ -22,7 +22,7 @@ dist:
 	$(LN) -s -- . $(PACKAGE)-$(VERSION)
 	@$(TAR) $(PACKAGE)-$(VERSION).tar.gz -- \
 		$(PACKAGE)-$(VERSION)/data/Makefile \
-		$(PACKAGE)-$(VERSION)/data/asm.pc.in \
+		$(PACKAGE)-$(VERSION)/data/Asm.pc.in \
 		$(PACKAGE)-$(VERSION)/data/pkgconfig.sh \
 		$(PACKAGE)-$(VERSION)/data/project.conf \
 		$(PACKAGE)-$(VERSION)/doc/Makefile \

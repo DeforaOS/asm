@@ -1,4 +1,4 @@
-TARGETS	= asm.pc
+TARGETS	= Asm.pc
 PREFIX	= /usr/local
 DESTDIR	=
 RM	?= rm -f
@@ -9,19 +9,19 @@ INSTALL	?= install
 
 all: $(TARGETS)
 
-asm.pc: asm.pc.in ../config.sh
-	./pkgconfig.sh -P "$(PREFIX)" -- "asm.pc"
+Asm.pc: Asm.pc.in ../config.sh
+	./pkgconfig.sh -P "$(PREFIX)" -- "Asm.pc"
 
 clean:
-	$(RM) -- $(asm.pc_OBJS)
+	$(RM) -- $(Asm.pc_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)
-	./pkgconfig.sh -P "$(DESTDIR)$(PREFIX)" -i -- "asm.pc"
+	./pkgconfig.sh -P "$(DESTDIR)$(PREFIX)" -i -- "Asm.pc"
 
 uninstall:
-	./pkgconfig.sh -P "$(DESTDIR)$(PREFIX)" -u -- "asm.pc"
+	./pkgconfig.sh -P "$(DESTDIR)$(PREFIX)" -u -- "Asm.pc"
 
 .PHONY: all clean distclean install uninstall

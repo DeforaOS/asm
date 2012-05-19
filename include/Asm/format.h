@@ -24,58 +24,58 @@
 
 /* AsmFormat */
 /* types */
-typedef struct _Format Format;
+typedef struct _AsmFormat AsmFormat;
 
-typedef struct _FormatPlugin FormatPlugin;
+typedef struct _AsmFormatPlugin AsmFormatPlugin;
 
-typedef struct _FormatPluginHelper
+typedef struct _AsmFormatPluginHelper
 {
-	Format * format;
+	AsmFormat * format;
 
 	/* callbacks */
 	/* accessors */
-	char const * (*get_filename)(Format * format);
-	void (*get_functions)(Format * format, AsmFunction ** functions,
+	char const * (*get_filename)(AsmFormat * format);
+	void (*get_functions)(AsmFormat * format, AsmFunction ** functions,
 			size_t * functions_cnt);
 
 	/* useful */
-	ssize_t (*read)(Format * format, void * buf, size_t size);
-	off_t (*seek)(Format * format, off_t offset, int whence);
+	ssize_t (*read)(AsmFormat * format, void * buf, size_t size);
+	off_t (*seek)(AsmFormat * format, off_t offset, int whence);
 
 	/* assembly */
-	ssize_t (*write)(Format * format, void const * buf, size_t size);
+	ssize_t (*write)(AsmFormat * format, void const * buf, size_t size);
 
 	/* disassembly */
 	/* FIXME let a different architecture be specified in the callback? */
-	AsmSection * (*get_section_by_id)(Format * format, AsmSectionId id);
-	AsmString * (*get_string_by_id)(Format * format, AsmStringId id);
-	int (*set_function)(Format * format, int id, char const * name,
+	AsmSection * (*get_section_by_id)(AsmFormat * format, AsmSectionId id);
+	AsmString * (*get_string_by_id)(AsmFormat * format, AsmStringId id);
+	int (*set_function)(AsmFormat * format, int id, char const * name,
 			off_t offset, ssize_t size);
-	int (*set_section)(Format * format, int id, char const * name,
+	int (*set_section)(AsmFormat * format, int id, char const * name,
 			off_t offset, ssize_t size, off_t base);
-	int (*set_string)(Format * format, int id, char const * name,
+	int (*set_string)(AsmFormat * format, int id, char const * name,
 			off_t offset, ssize_t size);
-	int (*decode)(Format * format, off_t offset, size_t size, off_t base,
+	int (*decode)(AsmFormat * format, off_t offset, size_t size, off_t base,
 			AsmArchInstructionCall ** calls, size_t * calls_cnt);
-} FormatPluginHelper;
+} AsmFormatPluginHelper;
 
-struct _FormatPlugin
+struct _AsmFormatPlugin
 {
-	FormatPluginHelper * helper;
+	AsmFormatPluginHelper * helper;
 
 	char const * name;
 
 	char const * signature;
 	size_t signature_len;
 
-	int (*init)(FormatPlugin * format, char const * arch);
-	int (*exit)(FormatPlugin * format);
-	int (*function)(FormatPlugin * format, char const * function);
-	int (*section)(FormatPlugin * format, char const * section);
+	int (*init)(AsmFormatPlugin * format, char const * arch);
+	int (*exit)(AsmFormatPlugin * format);
+	int (*function)(AsmFormatPlugin * format, char const * function);
+	int (*section)(AsmFormatPlugin * format, char const * section);
 
-	char const * (*detect)(FormatPlugin * format);
-	int (*decode)(FormatPlugin * format, int raw);
-	int (*decode_section)(FormatPlugin * format, AsmSection * section,
+	char const * (*detect)(AsmFormatPlugin * format);
+	int (*decode)(AsmFormatPlugin * format, int raw);
+	int (*decode_section)(AsmFormatPlugin * format, AsmSection * section,
 			AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 	void * priv;

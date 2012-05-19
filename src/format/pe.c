@@ -210,10 +210,10 @@ static char const _pe_header_signature[4] = "PE\0\0";
 
 /* prototypes */
 /* plug-in */
-static int _pe_init(FormatPlugin * format, char const * arch);
-static char const * _pe_detect(FormatPlugin * format);
-static int _pe_decode(FormatPlugin * format, int raw);
-static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
+static int _pe_init(AsmFormatPlugin * format, char const * arch);
+static char const * _pe_detect(AsmFormatPlugin * format);
+static int _pe_decode(AsmFormatPlugin * format, int raw);
+static int _pe_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* useful */
@@ -223,7 +223,7 @@ static int _pe_get_machine(char const * arch);
 
 /* public */
 /* variables */
-FormatPlugin format_plugin =
+AsmFormatPlugin format_plugin =
 {
 	NULL,
 	"pe",
@@ -243,9 +243,9 @@ FormatPlugin format_plugin =
 /* private */
 /* functions */
 /* pe_init */
-static int _pe_init(FormatPlugin * format, char const * arch)
+static int _pe_init(AsmFormatPlugin * format, char const * arch)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	int machine;
 	struct pe_msdos pm;
 	struct pe_header ph;
@@ -277,9 +277,9 @@ static int _pe_init(FormatPlugin * format, char const * arch)
 
 
 /* pe_detect */
-static char const * _pe_detect(FormatPlugin * format)
+static char const * _pe_detect(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	struct pe_msdos pm;
 	struct pe_header ph;
 
@@ -298,16 +298,16 @@ static char const * _pe_detect(FormatPlugin * format)
 
 
 /* pe_decode */
-static int _decode_data(FormatPlugin * format, uint32_t vaddr, uint32_t base,
+static int _decode_data(AsmFormatPlugin * format, uint32_t vaddr, uint32_t base,
 		struct pe_image_header_data * pid, size_t i);
-static int _decode_data_export_directory(FormatPlugin * format, uint32_t vaddr,
+static int _decode_data_export_directory(AsmFormatPlugin * format, uint32_t vaddr,
 		uint32_t base, struct pe_image_header_data * pid);
-static int _decode_error(FormatPlugin * format);
-static char * _decode_string(FormatPlugin * format, off_t offset);
+static int _decode_error(AsmFormatPlugin * format);
+static char * _decode_string(AsmFormatPlugin * format, off_t offset);
 
-static int _pe_decode(FormatPlugin * format, int raw)
+static int _pe_decode(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	struct pe_msdos pm;
 	char buf[sizeof(_pe_header_signature)];
 	struct pe_header ph;
@@ -440,7 +440,7 @@ static int _pe_decode(FormatPlugin * format, int raw)
 	return 0;
 }
 
-static int _decode_data(FormatPlugin * format, uint32_t vaddr, uint32_t base,
+static int _decode_data(AsmFormatPlugin * format, uint32_t vaddr, uint32_t base,
 		struct pe_image_header_data * pid, size_t i)
 {
 	pid->vaddr = _htol32(pid->vaddr);
@@ -461,10 +461,10 @@ static int _decode_data(FormatPlugin * format, uint32_t vaddr, uint32_t base,
 	return 0;
 }
 
-static int _decode_data_export_directory(FormatPlugin * format, uint32_t vaddr,
+static int _decode_data_export_directory(AsmFormatPlugin * format, uint32_t vaddr,
 		uint32_t base, struct pe_image_header_data * pid)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	struct pe_export_directory ped;
 	size_t j;
 	uint32_t f;
@@ -518,15 +518,15 @@ static int _decode_data_export_directory(FormatPlugin * format, uint32_t vaddr,
 	return 0;
 }
 
-static int _decode_error(FormatPlugin * format)
+static int _decode_error(AsmFormatPlugin * format)
 {
 	return -error_set_code(1, "%s: %s", format->helper->get_filename(
 				format->helper->format), strerror(errno));
 }
 
-static char * _decode_string(FormatPlugin * format, off_t offset)
+static char * _decode_string(AsmFormatPlugin * format, off_t offset)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	char * ret = NULL;
 	char * p;
 	size_t len = 0;
@@ -559,10 +559,10 @@ static char * _decode_string(FormatPlugin * format, off_t offset)
 
 
 /* pe_decode_section */
-static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
+static int _pe_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 
 	return helper->decode(helper->format, section->offset, section->size,
 			section->base, calls, calls_cnt);

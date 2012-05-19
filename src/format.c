@@ -25,14 +25,14 @@
 #include "../config.h"
 
 
-/* Format */
+/* AsmFormat */
 /* private */
 /* types */
-struct _Format
+struct _AsmFormat
 {
-	FormatPluginHelper helper;
+	AsmFormatPluginHelper helper;
 	Plugin * handle;
-	FormatPlugin * plugin;
+	AsmFormatPlugin * plugin;
 
 	/* internal */
 	/* file */
@@ -46,36 +46,36 @@ struct _Format
 
 /* prototypes */
 /* helpers */
-static char const * _format_helper_get_filename(Format * format);
-static void _format_helper_get_functions(Format * format,
+static char const * _format_helper_get_filename(AsmFormat * format);
+static void _format_helper_get_functions(AsmFormat * format,
 		AsmFunction ** functions, size_t * functions_cnt);
-static AsmSection * _format_helper_get_section_by_id(Format * format,
+static AsmSection * _format_helper_get_section_by_id(AsmFormat * format,
 		AsmSectionId id);
-static AsmString * _format_helper_get_string_by_id(Format * format,
+static AsmString * _format_helper_get_string_by_id(AsmFormat * format,
 		AsmStringId id);
-static int _format_helper_set_function(Format * format, AsmFunctionId id,
+static int _format_helper_set_function(AsmFormat * format, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size);
-static int _format_helper_set_section(Format * format, AsmSectionId id,
+static int _format_helper_set_section(AsmFormat * format, AsmSectionId id,
 		char const * name, off_t offset, ssize_t size, off_t base);
-static int _format_helper_set_string(Format * format, AsmStringId id,
+static int _format_helper_set_string(AsmFormat * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size);
 
-static int _format_helper_decode(Format * format, off_t offset, size_t size,
+static int _format_helper_decode(AsmFormat * format, off_t offset, size_t size,
 		off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt);
-static ssize_t _format_helper_read(Format * format, void * buf, size_t size);
-static off_t _format_helper_seek(Format * format, off_t offset, int whence);
-static ssize_t _format_helper_write(Format * format, void const * buf,
+static ssize_t _format_helper_read(AsmFormat * format, void * buf, size_t size);
+static off_t _format_helper_seek(AsmFormat * format, off_t offset, int whence);
+static ssize_t _format_helper_write(AsmFormat * format, void const * buf,
 		size_t size);
 
 
 /* public */
 /* functions */
 /* format_new */
-Format * format_new(char const * format)
+AsmFormat * format_new(char const * format)
 {
-	Format * f;
+	AsmFormat * f;
 	Plugin * handle;
-	FormatPlugin * plugin;
+	AsmFormatPlugin * plugin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format);
@@ -113,7 +113,7 @@ Format * format_new(char const * format)
 
 
 /* format_delete */
-void format_delete(Format * format)
+void format_delete(AsmFormat * format)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -126,7 +126,7 @@ void format_delete(Format * format)
 
 /* accessors */
 /* format_can_decode */
-int format_can_decode(Format * format)
+int format_can_decode(AsmFormat * format)
 {
 	return format->plugin->decode != NULL
 		/* && format->plugin->decode_section != NULL */;
@@ -134,7 +134,7 @@ int format_can_decode(Format * format)
 
 
 /* format_get_arch */
-char const * format_get_arch(Format * format)
+char const * format_get_arch(AsmFormat * format)
 {
 	if(format->plugin->detect == NULL)
 		return NULL;
@@ -143,7 +143,7 @@ char const * format_get_arch(Format * format)
 
 
 /* format_get_name */
-char const * format_get_name(Format * format)
+char const * format_get_name(AsmFormat * format)
 {
 	return format->plugin->name;
 }
@@ -151,7 +151,7 @@ char const * format_get_name(Format * format)
 
 /* useful */
 /* format_decode */
-int format_decode(Format * format, AsmCode * code, int raw)
+int format_decode(AsmFormat * format, AsmCode * code, int raw)
 {
 	int ret;
 
@@ -166,7 +166,7 @@ int format_decode(Format * format, AsmCode * code, int raw)
 
 
 /* format_decode_section */
-int format_decode_section(Format * format, AsmCode * code, AsmSection * section,
+int format_decode_section(AsmFormat * format, AsmCode * code, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
@@ -186,7 +186,7 @@ int format_decode_section(Format * format, AsmCode * code, AsmSection * section,
 
 
 /* format_detect_arch */
-char const * format_detect_arch(Format * format)
+char const * format_detect_arch(AsmFormat * format)
 {
 	if(format->plugin->detect == NULL)
 	{
@@ -199,7 +199,7 @@ char const * format_detect_arch(Format * format)
 
 
 /* format_exit */
-int format_exit(Format * format)
+int format_exit(AsmFormat * format)
 {
 	int ret = 0;
 
@@ -216,7 +216,7 @@ int format_exit(Format * format)
 
 
 /* format_function */
-int format_function(Format * format, char const * function)
+int format_function(AsmFormat * format, char const * function)
 {
 	if(format->plugin->function == NULL)
 		return 0;
@@ -225,7 +225,7 @@ int format_function(Format * format, char const * function)
 
 
 /* format_init */
-int format_init(Format * format, char const * arch, char const * filename,
+int format_init(AsmFormat * format, char const * arch, char const * filename,
 		FILE * fp)
 {
 	int ret = 0;
@@ -247,7 +247,7 @@ int format_init(Format * format, char const * arch, char const * filename,
 
 
 /* format_match */
-int format_match(Format * format)
+int format_match(AsmFormat * format)
 {
 	int ret = 0;
 	char const * s = format->plugin->signature;
@@ -275,7 +275,7 @@ int format_match(Format * format)
 
 
 /* format_section */
-int format_section(Format * format, char const * section)
+int format_section(AsmFormat * format, char const * section)
 {
 	if(format->plugin->section == NULL)
 		return 0;
@@ -287,14 +287,14 @@ int format_section(Format * format, char const * section)
 /* functions */
 /* helpers */
 /* format_helper_get_filename */
-static char const * _format_helper_get_filename(Format * format)
+static char const * _format_helper_get_filename(AsmFormat * format)
 {
 	return format->filename;
 }
 
 
 /* format_helper_get_functions */
-static void _format_helper_get_functions(Format * format,
+static void _format_helper_get_functions(AsmFormat * format,
 		AsmFunction ** functions, size_t * functions_cnt)
 {
 	asmcode_get_functions(format->code, functions, functions_cnt);
@@ -302,7 +302,7 @@ static void _format_helper_get_functions(Format * format,
 
 
 /* format_helper_get_section_by_id */
-static AsmSection * _format_helper_get_section_by_id(Format * format,
+static AsmSection * _format_helper_get_section_by_id(AsmFormat * format,
 		AsmSectionId id)
 {
 	return asmcode_get_section_by_id(format->code, id);
@@ -310,7 +310,7 @@ static AsmSection * _format_helper_get_section_by_id(Format * format,
 
 
 /* format_helper_get_string_by_id */
-static AsmString * _format_helper_get_string_by_id(Format * format,
+static AsmString * _format_helper_get_string_by_id(AsmFormat * format,
 		AsmStringId id)
 {
 	return asmcode_get_string_by_id(format->code, id);
@@ -318,7 +318,7 @@ static AsmString * _format_helper_get_string_by_id(Format * format,
 
 
 /* format_helper_set_function */
-static int _format_helper_set_function(Format * format, AsmFunctionId id,
+static int _format_helper_set_function(AsmFormat * format, AsmFunctionId id,
 		char const * name, off_t offset, ssize_t size)
 {
 	return asmcode_set_function(format->code, id, name, offset, size);
@@ -326,7 +326,7 @@ static int _format_helper_set_function(Format * format, AsmFunctionId id,
 
 
 /* format_helper_set_section */
-static int _format_helper_set_section(Format * format, AsmSectionId id,
+static int _format_helper_set_section(AsmFormat * format, AsmSectionId id,
 		char const * name, off_t offset, ssize_t size, off_t base)
 {
 	return asmcode_set_section(format->code, id, name, offset, size, base);
@@ -334,7 +334,7 @@ static int _format_helper_set_section(Format * format, AsmSectionId id,
 
 
 /* format_helper_set_string */
-static int _format_helper_set_string(Format * format, AsmStringId id,
+static int _format_helper_set_string(AsmFormat * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size)
 {
 	return asmcode_set_string(format->code, id, name, offset, size);
@@ -342,7 +342,7 @@ static int _format_helper_set_string(Format * format, AsmStringId id,
 
 
 /* format_helper_decode */
-static int _format_helper_decode(Format * format, off_t offset, size_t size,
+static int _format_helper_decode(AsmFormat * format, off_t offset, size_t size,
 		off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
@@ -359,7 +359,7 @@ static int _format_helper_decode(Format * format, off_t offset, size_t size,
 
 
 /* format_helper_read */
-static ssize_t _format_helper_read(Format * format, void * buf, size_t size)
+static ssize_t _format_helper_read(AsmFormat * format, void * buf, size_t size)
 {
 	if(fread(buf, size, 1, format->fp) == 1)
 		return size;
@@ -374,7 +374,7 @@ static ssize_t _format_helper_read(Format * format, void * buf, size_t size)
 
 
 /* format_helper_seek */
-static off_t _format_helper_seek(Format * format, off_t offset, int whence)
+static off_t _format_helper_seek(AsmFormat * format, off_t offset, int whence)
 {
 	if(whence == SEEK_SET)
 	{
@@ -394,7 +394,7 @@ static off_t _format_helper_seek(Format * format, off_t offset, int whence)
 
 
 /* format_helper_write */
-static ssize_t _format_helper_write(Format * format, void const * buf,
+static ssize_t _format_helper_write(AsmFormat * format, void const * buf,
 		size_t size)
 {
 	if(fwrite(buf, size, 1, format->fp) == 1)

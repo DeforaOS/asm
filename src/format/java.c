@@ -142,18 +142,18 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 
 /* prototypes */
 /* plug-in */
-static int _java_init(FormatPlugin * format, char const * arch);
-static int _java_exit(FormatPlugin * format);
-static char const * _java_detect(FormatPlugin * format);
-static int _java_decode(FormatPlugin * format, int raw);
-static int _java_decode_section(FormatPlugin * format, AsmSection * section,
+static int _java_init(AsmFormatPlugin * format, char const * arch);
+static int _java_exit(AsmFormatPlugin * format);
+static char const * _java_detect(AsmFormatPlugin * format);
+static int _java_decode(AsmFormatPlugin * format, int raw);
+static int _java_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
 /* variables */
 /* format_plugin */
-FormatPlugin format_plugin =
+AsmFormatPlugin format_plugin =
 {
 	NULL,
 	"java",
@@ -173,7 +173,7 @@ FormatPlugin format_plugin =
 /* private */
 /* functions */
 /* java_init */
-static int _java_init(FormatPlugin * format, char const * arch)
+static int _java_init(AsmFormatPlugin * format, char const * arch)
 {
 	JavaPlugin * java;
 
@@ -197,16 +197,16 @@ static int _java_init(FormatPlugin * format, char const * arch)
 
 
 /* java_exit */
-static int _exit_constant_pool(FormatPlugin * format);
-static int _exit_access_flags(FormatPlugin * format);
-static int _exit_class_name(FormatPlugin * format);
-static int _exit_super_name(FormatPlugin * format);
-static int _exit_interface_table(FormatPlugin * format);
-static int _exit_field_table(FormatPlugin * format);
-static int _exit_method_table(FormatPlugin * format);
-static int _exit_attribute_table(FormatPlugin * format);
+static int _exit_constant_pool(AsmFormatPlugin * format);
+static int _exit_access_flags(AsmFormatPlugin * format);
+static int _exit_class_name(AsmFormatPlugin * format);
+static int _exit_super_name(AsmFormatPlugin * format);
+static int _exit_interface_table(AsmFormatPlugin * format);
+static int _exit_field_table(AsmFormatPlugin * format);
+static int _exit_method_table(AsmFormatPlugin * format);
+static int _exit_attribute_table(AsmFormatPlugin * format);
 
-static int _java_exit(FormatPlugin * format)
+static int _java_exit(AsmFormatPlugin * format)
 {
 	int ret = 0;
 	JavaPlugin * java = format->priv;
@@ -225,9 +225,9 @@ static int _java_exit(FormatPlugin * format)
 	return ret;
 }
 
-static int _exit_constant_pool(FormatPlugin * format)
+static int _exit_constant_pool(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->constants_cnt + 1);
 
@@ -237,9 +237,9 @@ static int _exit_constant_pool(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_access_flags(FormatPlugin * format)
+static int _exit_access_flags(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t flags = _htob16(java->access_flags);
 
@@ -249,9 +249,9 @@ static int _exit_access_flags(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_class_name(FormatPlugin * format)
+static int _exit_class_name(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	uint16_t index = _htob16(0);
 
 	/* FIXME really implement */
@@ -261,9 +261,9 @@ static int _exit_class_name(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_super_name(FormatPlugin * format)
+static int _exit_super_name(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	uint16_t index = _htob16(0);
 
 	/* FIXME really implement */
@@ -273,9 +273,9 @@ static int _exit_super_name(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_interface_table(FormatPlugin * format)
+static int _exit_interface_table(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->interfaces_cnt);
 
@@ -285,9 +285,9 @@ static int _exit_interface_table(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_field_table(FormatPlugin * format)
+static int _exit_field_table(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->fields_cnt);
 
@@ -297,9 +297,9 @@ static int _exit_field_table(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_method_table(FormatPlugin * format)
+static int _exit_method_table(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->methods_cnt);
 
@@ -309,9 +309,9 @@ static int _exit_method_table(FormatPlugin * format)
 	return 0;
 }
 
-static int _exit_attribute_table(FormatPlugin * format)
+static int _exit_attribute_table(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	uint16_t cnt = _htob16(java->attributes_cnt);
 
@@ -323,9 +323,9 @@ static int _exit_attribute_table(FormatPlugin * format)
 
 
 /* java_detect */
-static char const * _java_detect(FormatPlugin * format)
+static char const * _java_detect(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaHeader jh;
 
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
@@ -344,9 +344,9 @@ static char const * _java_detect(FormatPlugin * format)
 
 
 /* java_decode */
-static int _java_decode(FormatPlugin * format, int raw)
+static int _java_decode(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	off_t end;
 
 	/* XXX consider the whole file as a section */
@@ -357,20 +357,20 @@ static int _java_decode(FormatPlugin * format, int raw)
 
 
 /* java_decode_section */
-static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
+static int _decode_attributes(AsmFormatPlugin * format, uint16_t cnt,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
-static int _decode_constants(FormatPlugin * format, uint16_t cnt);
-static int _decode_fields(FormatPlugin * format, uint16_t cnt);
-static int _decode_interfaces(FormatPlugin * format, uint16_t cnt);
-static int _decode_methods(FormatPlugin * format, uint16_t cnt,
+static int _decode_constants(AsmFormatPlugin * format, uint16_t cnt);
+static int _decode_fields(AsmFormatPlugin * format, uint16_t cnt);
+static int _decode_interfaces(AsmFormatPlugin * format, uint16_t cnt);
+static int _decode_methods(AsmFormatPlugin * format, uint16_t cnt,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
-static int _methods_add(FormatPlugin * format, uint16_t id, uint16_t name,
+static int _methods_add(AsmFormatPlugin * format, uint16_t id, uint16_t name,
 		off_t offset, size_t size);
 
-static int _java_decode_section(FormatPlugin * format, AsmSection * section,
+static int _java_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	JavaHeader jh;
 	JavaHeader2 jh2;
@@ -411,10 +411,10 @@ static int _java_decode_section(FormatPlugin * format, AsmSection * section,
 	return 0;
 }
 
-static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
+static int _decode_attributes(AsmFormatPlugin * format, uint16_t cnt,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaAttributeInfo jai;
 	off_t offset;
@@ -446,9 +446,9 @@ static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
 	return 0;
 }
 
-static int _decode_constants(FormatPlugin * format, uint16_t cnt)
+static int _decode_constants(AsmFormatPlugin * format, uint16_t cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	size_t i;
 	JavaCpInfo * jci;
@@ -598,9 +598,9 @@ static int _decode_constants(FormatPlugin * format, uint16_t cnt)
 	return 0;
 }
 
-static int _decode_fields(FormatPlugin * format, uint16_t cnt)
+static int _decode_fields(AsmFormatPlugin * format, uint16_t cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaFieldInfo jfi;
 
@@ -618,9 +618,9 @@ static int _decode_fields(FormatPlugin * format, uint16_t cnt)
 	return 0;
 }
 
-static int _decode_interfaces(FormatPlugin * format, uint16_t cnt)
+static int _decode_interfaces(AsmFormatPlugin * format, uint16_t cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	size_t i;
 	uint16_t u16;
 
@@ -634,10 +634,10 @@ static int _decode_interfaces(FormatPlugin * format, uint16_t cnt)
 	return 0;
 }
 
-static int _decode_methods(FormatPlugin * format, uint16_t cnt,
+static int _decode_methods(AsmFormatPlugin * format, uint16_t cnt,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	size_t i;
 	JavaMethodInfo jmi;
 	off_t begin;
@@ -670,10 +670,10 @@ static int _decode_methods(FormatPlugin * format, uint16_t cnt,
 	return 0;
 }
 
-static int _methods_add(FormatPlugin * format, uint16_t id, uint16_t name,
+static int _methods_add(AsmFormatPlugin * format, uint16_t id, uint16_t name,
 		off_t offset, size_t size)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
 	JavaCpInfo * jci;
 	AsmString * as;

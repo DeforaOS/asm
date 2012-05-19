@@ -122,17 +122,17 @@ static char _dex_signature[4] = "dex\n";
 
 /* prototypes */
 /* plug-in */
-static int _dex_init(FormatPlugin * format, char const * arch);
-static int _dex_exit(FormatPlugin * format);
-static char const * _dex_detect(FormatPlugin * format);
-static int _dex_decode(FormatPlugin * format, int raw);
-static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
+static int _dex_init(AsmFormatPlugin * format, char const * arch);
+static int _dex_exit(AsmFormatPlugin * format);
+static char const * _dex_detect(AsmFormatPlugin * format);
+static int _dex_decode(AsmFormatPlugin * format, int raw);
+static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
 /* variables */
-FormatPlugin format_plugin =
+AsmFormatPlugin format_plugin =
 {
 	NULL,
 	"dex",
@@ -153,7 +153,7 @@ FormatPlugin format_plugin =
 /* functions */
 /* plug-in */
 /* dex_init */
-static int _dex_init(FormatPlugin * format, char const * arch)
+static int _dex_init(AsmFormatPlugin * format, char const * arch)
 {
 	Dex * dex;
 
@@ -173,7 +173,7 @@ static int _dex_init(FormatPlugin * format, char const * arch)
 
 
 /* dex_exit */
-static int _dex_exit(FormatPlugin * format)
+static int _dex_exit(AsmFormatPlugin * format)
 {
 	Dex * dex = format->priv;
 
@@ -184,7 +184,7 @@ static int _dex_exit(FormatPlugin * format)
 
 
 /* dex_detect */
-static char const * _dex_detect(FormatPlugin * format)
+static char const * _dex_detect(AsmFormatPlugin * format)
 {
 	/* XXX some sections might contain native code */
 	return "dalvik";
@@ -192,17 +192,17 @@ static char const * _dex_detect(FormatPlugin * format)
 
 
 /* dex_decode */
-static int _decode_map(FormatPlugin * format, DexHeader * dh, int raw);
-static int _decode_map_code(FormatPlugin * format, size_t id, off_t offset,
+static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw);
+static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
 		size_t size);
-static int _decode_map_method_id(FormatPlugin * format, off_t offset,
+static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
 		size_t size);
-static int _decode_map_string_id(FormatPlugin * format, off_t offset,
+static int _decode_map_string_id(AsmFormatPlugin * format, off_t offset,
 		size_t size);
 
-static int _dex_decode(FormatPlugin * format, int raw)
+static int _dex_decode(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	DexHeader dh;
 
 #ifdef DEBUG
@@ -218,10 +218,10 @@ static int _dex_decode(FormatPlugin * format, int raw)
 	return 0;
 }
 
-static int _decode_map(FormatPlugin * format, DexHeader * dh, int raw)
+static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw)
 {
 	int ret = 0;
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	uint32_t size;
 	uint32_t i;
 	off_t offset;
@@ -274,10 +274,10 @@ static int _decode_map(FormatPlugin * format, DexHeader * dh, int raw)
 	return ret;
 }
 
-static int _decode_map_code(FormatPlugin * format, size_t id, off_t offset,
+static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
 		size_t size)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%lu, %ld, %lu)\n", __func__, id, offset,
@@ -287,10 +287,10 @@ static int _decode_map_code(FormatPlugin * format, size_t id, off_t offset,
 				0) == id) ? 0 : -1;
 }
 
-static int _decode_map_method_id(FormatPlugin * format, off_t offset,
+static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
 		size_t size)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Dex * dex = format->priv;
 	ssize_t s;
 	size_t i;
@@ -326,10 +326,10 @@ static int _decode_map_method_id(FormatPlugin * format, off_t offset,
 	return 0;
 }
 
-static int _decode_map_string_id(FormatPlugin * format, off_t offset,
+static int _decode_map_string_id(AsmFormatPlugin * format, off_t offset,
 		size_t size)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	DexStringIdItem * dsii;
 	ssize_t s;
 	size_t i;
@@ -365,10 +365,10 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 
 
 /* dex_decode_section */
-static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
+static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	DexMapCodeItem dmci;
 	size_t i;
 	off_t seek;

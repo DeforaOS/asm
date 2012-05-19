@@ -40,7 +40,7 @@ struct _AsmCode
 {
 	AsmArch * arch;
 	AsmArchDescription * description;
-	Format * format;
+	AsmFormat * format;
 	char * filename;
 	FILE * fp;
 
@@ -112,7 +112,7 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 
 
 /* asmcode_new_file */
-static Format * _new_file_format(char const * filename, FILE * fp);
+static AsmFormat * _new_file_format(char const * filename, FILE * fp);
 
 AsmCode * asmcode_new_file(char const * arch, char const * format,
 		char const * filename)
@@ -160,7 +160,7 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 	return code;
 }
 
-static Format * _new_file_format(char const * filename, FILE * fp)
+static AsmFormat * _new_file_format(char const * filename, FILE * fp)
 {
 	char const path[] = LIBDIR "/" PACKAGE "/format";
 	DIR * dir;
@@ -168,7 +168,7 @@ static Format * _new_file_format(char const * filename, FILE * fp)
 	size_t len;
 	char const ext[] = ".so";
 	int hasflat = 0;
-	Format * format = NULL;
+	AsmFormat * format = NULL;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);

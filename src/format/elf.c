@@ -73,36 +73,36 @@ typedef struct _Elf
 
 
 /* prototypes */
-static int _elf_error(FormatPlugin * format);
+static int _elf_error(AsmFormatPlugin * format);
 
 /* plug-in */
-static int _elf_init(FormatPlugin * format, char const * arch);
-static int _elf_exit(FormatPlugin * format);
-static char const * _elf_detect(FormatPlugin * format);
-static int _elf_decode(FormatPlugin * format, int raw);
-static int _elf_decode32(FormatPlugin * format, int raw);
-static int _elf_decode64(FormatPlugin * format, int raw);
-static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
+static int _elf_init(AsmFormatPlugin * format, char const * arch);
+static int _elf_exit(AsmFormatPlugin * format);
+static char const * _elf_detect(AsmFormatPlugin * format);
+static int _elf_decode(AsmFormatPlugin * format, int raw);
+static int _elf_decode32(AsmFormatPlugin * format, int raw);
+static int _elf_decode64(AsmFormatPlugin * format, int raw);
+static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* ELF32 */
-static int _init_32(FormatPlugin * format);
-static int _exit_32(FormatPlugin * format);
-static int _section_32(FormatPlugin * format, char const * name);
+static int _init_32(AsmFormatPlugin * format);
+static int _exit_32(AsmFormatPlugin * format);
+static int _section_32(AsmFormatPlugin * format, char const * name);
 static void _swap_32_ehdr(Elf32_Ehdr * ehdr);
 static void _swap_32_phdr(Elf32_Phdr * phdr);
 static void _swap_32_shdr(Elf32_Shdr * shdr);
 
 /* ELF64 */
-static int _init_64(FormatPlugin * format);
-static int _exit_64(FormatPlugin * format);
-static int _section_64(FormatPlugin * format, char const * name);
+static int _init_64(AsmFormatPlugin * format);
+static int _exit_64(AsmFormatPlugin * format);
+static int _section_64(AsmFormatPlugin * format, char const * name);
 static void _swap_64_ehdr(Elf64_Ehdr * ehdr);
 static void _swap_64_phdr(Elf64_Phdr * phdr);
 static void _swap_64_shdr(Elf64_Shdr * shdr);
 
 /* ElfStrtab */
-static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
+static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
 		char const * name);
 
 
@@ -171,7 +171,7 @@ static ElfStrtab shstrtab = { NULL, 0 };	/* section string table */
 /* public */
 /* variables */
 /* format_plugin */
-FormatPlugin format_plugin =
+AsmFormatPlugin format_plugin =
 {
 	NULL,
 	"elf",
@@ -191,7 +191,7 @@ FormatPlugin format_plugin =
 /* private */
 /* functions */
 /* elf_error */
-static int _elf_error(FormatPlugin * format)
+static int _elf_error(AsmFormatPlugin * format)
 {
 	return -error_set_code(1, "%s: %s", format->helper->get_filename(
 				format->helper->format), strerror(errno));
@@ -201,7 +201,7 @@ static int _elf_error(FormatPlugin * format)
 /* elf_init */
 static ElfArch * _init_arch(char const * arch);
 
-static int _elf_init(FormatPlugin * format, char const * arch)
+static int _elf_init(AsmFormatPlugin * format, char const * arch)
 {
 	Elf * elf;
 
@@ -257,7 +257,7 @@ static ElfArch * _init_arch(char const * arch)
 
 
 /* elf_exit */
-static int _elf_exit(FormatPlugin * format)
+static int _elf_exit(AsmFormatPlugin * format)
 {
 	Elf * elf = format->priv;
 
@@ -272,12 +272,12 @@ static int _elf_exit(FormatPlugin * format)
 
 
 /* elf_detect */
-static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr);
-static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr);
+static char const * _detect_32(AsmFormatPlugin * format, Elf32_Ehdr * ehdr);
+static char const * _detect_64(AsmFormatPlugin * format, Elf64_Ehdr * ehdr);
 
-static char const * _elf_detect(FormatPlugin * format)
+static char const * _elf_detect(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	union
 	{
 		Elf32_Ehdr ehdr32;
@@ -300,7 +300,7 @@ static char const * _elf_detect(FormatPlugin * format)
 	return NULL;
 }
 
-static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
+static char const * _detect_32(AsmFormatPlugin * format, Elf32_Ehdr * ehdr)
 {
 	format->decode = _elf_decode32;
 	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
@@ -325,7 +325,7 @@ static char const * _detect_32(FormatPlugin * format, Elf32_Ehdr * ehdr)
 	return NULL;
 }
 
-static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
+static char const * _detect_64(AsmFormatPlugin * format, Elf64_Ehdr * ehdr)
 {
 	format->decode = _elf_decode64;
 	if(ehdr->e_ident[EI_DATA] != elf_arch_native->endian)
@@ -346,7 +346,7 @@ static char const * _detect_64(FormatPlugin * format, Elf64_Ehdr * ehdr)
 
 
 /* elf_decode */
-static int _elf_decode(FormatPlugin * format, int raw)
+static int _elf_decode(AsmFormatPlugin * format, int raw)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%d)\n", __func__, raw);
@@ -358,19 +358,19 @@ static int _elf_decode(FormatPlugin * format, int raw)
 
 
 /* elf_decode32 */
-static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_shdr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr ** shdr);
-static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_addr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Addr * addr);
-static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
+static int _decode32_strtab(AsmFormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
-static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_symtab(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr * shdr, size_t shdr_cnt, uint16_t ndx);
 
-static int _elf_decode32(FormatPlugin * format, int raw)
+static int _elf_decode32(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf32_Ehdr ehdr;
 	Elf32_Shdr * shdr = NULL;
 	Elf32_Addr base = 0x0;
@@ -422,10 +422,10 @@ static int _elf_decode32(FormatPlugin * format, int raw)
 	return (i == ehdr.e_shnum) ? 0 : -1;
 }
 
-static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_shdr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr ** shdr)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	ssize_t size;
 	size_t i;
 
@@ -454,10 +454,10 @@ static int _decode32_shdr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 	return 0;
 }
 
-static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_addr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Addr * addr)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf32_Half i;
 	Elf32_Phdr phdr;
 
@@ -480,11 +480,11 @@ static int _decode32_addr(FormatPlugin * format, Elf32_Ehdr * ehdr,
 	return 0;
 }
 
-static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
+static int _decode32_strtab(AsmFormatPlugin * format, Elf32_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 
 	if(ndx >= shdr_cnt)
 		return -error_set_code(1, "%s: %s",
@@ -505,10 +505,10 @@ static int _decode32_strtab(FormatPlugin * format, Elf32_Shdr * shdr,
 	return 0;
 }
 
-static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
+static int _decode32_symtab(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		Elf32_Shdr * shdr, size_t shdr_cnt, uint16_t ndx)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	char * strtab = NULL;
 	size_t strtab_cnt = 0;
 	Elf32_Sym sym;
@@ -558,19 +558,19 @@ static int _decode32_symtab(FormatPlugin * format, Elf32_Ehdr * ehdr,
 
 
 /* elf_decode64 */
-static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_shdr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr ** shdr);
-static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_addr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Addr * addr);
-static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
+static int _decode64_strtab(AsmFormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt);
-static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_symtab(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr * shdr, size_t shdr_cnt, uint16_t ndx);
 
-static int _elf_decode64(FormatPlugin * format, int raw)
+static int _elf_decode64(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf64_Ehdr ehdr;
 	Elf64_Shdr * shdr = NULL;
 	Elf64_Addr base = 0x0;
@@ -621,10 +621,10 @@ static int _elf_decode64(FormatPlugin * format, int raw)
 	return (i == ehdr.e_shnum) ? 0 : -1;
 }
 
-static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_shdr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr ** shdr)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	ssize_t size;
 	size_t i;
 
@@ -653,10 +653,10 @@ static int _decode64_shdr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 	return 0;
 }
 
-static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_addr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Addr * addr)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf64_Quarter i;
 	Elf64_Phdr phdr;
 
@@ -679,11 +679,11 @@ static int _decode64_addr(FormatPlugin * format, Elf64_Ehdr * ehdr,
 	return 0;
 }
 
-static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
+static int _decode64_strtab(AsmFormatPlugin * format, Elf64_Shdr * shdr,
 		size_t shdr_cnt, uint16_t ndx, char ** strtab,
 		size_t * strtab_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	ssize_t size;
 
 	if(ndx >= shdr_cnt)
@@ -705,10 +705,10 @@ static int _decode64_strtab(FormatPlugin * format, Elf64_Shdr * shdr,
 	return 0;
 }
 
-static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
+static int _decode64_symtab(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		Elf64_Shdr * shdr, size_t shdr_cnt, uint16_t ndx)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	char * strtab = NULL;
 	size_t strtab_cnt = 0;
 	Elf64_Sym sym;
@@ -758,10 +758,10 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
 
 
 /* elf_decode_section */
-static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
+static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 
 	return helper->decode(helper->format, section->offset, section->size,
 			section->base, calls, calls_cnt);
@@ -789,9 +789,9 @@ static ElfSectionValues * _section_values(char const * name)
 
 /* ELF32 */
 /* init_32 */
-static int _init_32(FormatPlugin * format)
+static int _init_32(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
@@ -829,13 +829,13 @@ static int _init_32(FormatPlugin * format)
 
 
 /* exit_32 */
-static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset);
-static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset);
+static int _exit_32_phdr(AsmFormatPlugin * format, Elf32_Off offset);
+static int _exit_32_shdr(AsmFormatPlugin * format, Elf32_Off offset);
 
-static int _exit_32(FormatPlugin * format)
+static int _exit_32(AsmFormatPlugin * format)
 {
 	int ret = 0;
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	long offset;
 
 #ifdef DEBUG
@@ -858,9 +858,9 @@ static int _exit_32(FormatPlugin * format)
 	return ret;
 }
 
-static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
+static int _exit_32_phdr(AsmFormatPlugin * format, Elf32_Off offset)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf32_Ehdr hdr;
@@ -893,9 +893,9 @@ static int _exit_32_phdr(FormatPlugin * format, Elf32_Off offset)
 	return 0;
 }
 
-static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
+static int _exit_32_shdr(AsmFormatPlugin * format, Elf32_Off offset)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf32_Word addralign = ea->addralign;
@@ -947,9 +947,9 @@ static int _exit_32_shdr(FormatPlugin * format, Elf32_Off offset)
 
 
 /* section_32 */
-static int _section_32(FormatPlugin * format, char const * name)
+static int _section_32(AsmFormatPlugin * format, char const * name)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	int ss;
 	Elf32_Shdr * p;
@@ -1035,9 +1035,9 @@ static void _swap_32_shdr(Elf32_Shdr * shdr)
 
 /* ELF64 */
 /* init_64 */
-static int _init_64(FormatPlugin * format)
+static int _init_64(AsmFormatPlugin * format)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf64_Ehdr hdr;
@@ -1074,13 +1074,13 @@ static int _init_64(FormatPlugin * format)
 
 
 /* exit_64 */
-static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset);
-static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset);
+static int _exit_64_phdr(AsmFormatPlugin * format, Elf64_Off offset);
+static int _exit_64_shdr(AsmFormatPlugin * format, Elf64_Off offset);
 
-static int _exit_64(FormatPlugin * format)
+static int _exit_64(AsmFormatPlugin * format)
 {
 	int ret = 0;
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	long offset;
 
 	if(_section_64(format, ".shstrtab") != 0)
@@ -1100,9 +1100,9 @@ static int _exit_64(FormatPlugin * format)
 	return ret;
 }
 
-static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
+static int _exit_64_phdr(AsmFormatPlugin * format, Elf64_Off offset)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf64_Ehdr hdr;
@@ -1132,9 +1132,9 @@ static int _exit_64_phdr(FormatPlugin * format, Elf64_Off offset)
 	return 0;
 }
 
-static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
+static int _exit_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	ElfArch * ea = elf->arch;
 	Elf64_Xword addralign = ea->addralign;
@@ -1180,9 +1180,9 @@ static int _exit_64_shdr(FormatPlugin * format, Elf64_Off offset)
 
 
 /* section_64 */
-static int _section_64(FormatPlugin * format, char const * name)
+static int _section_64(AsmFormatPlugin * format, char const * name)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format->priv;
 	int ss;
 	Elf64_Shdr * p;
@@ -1267,7 +1267,7 @@ static void _swap_64_shdr(Elf64_Shdr * shdr)
 /* private */
 /* functions */
 /* elfstrtab_get */
-static int _elfstrtab_set(FormatPlugin * format, ElfStrtab * strtab,
+static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
 		char const * name)
 {
 	size_t len;

@@ -24,14 +24,14 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _flat_decode(FormatPlugin * format, int raw);
-static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
+static int _flat_decode(AsmFormatPlugin * format, int raw);
+static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
 /* variables */
-FormatPlugin format_plugin =
+AsmFormatPlugin format_plugin =
 {
 	NULL,
 	"flat",
@@ -52,9 +52,9 @@ FormatPlugin format_plugin =
 /* functions */
 /* plug-in */
 /* flat_decode */
-static int _flat_decode(FormatPlugin * format, int raw)
+static int _flat_decode(AsmFormatPlugin * format, int raw)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 	off_t offset;
 
 	if((offset = helper->seek(helper->format, 0, SEEK_END)) >= 0)
@@ -65,10 +65,10 @@ static int _flat_decode(FormatPlugin * format, int raw)
 
 
 /* flat_decode_section */
-static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
+static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	FormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = format->helper;
 
 	if(section->id != 0)
 		return -1;

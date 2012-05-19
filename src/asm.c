@@ -303,7 +303,7 @@ int asm_plugin_list(AsmPluginType type, int decode)
 	size_t len;
 	char const * sep = "";
 	AsmArch * arch;
-	Format * format;
+	AsmFormat * format;
 
 	aspd = &_asm_plugin_description[type];
 	fprintf(stderr, "%s%s%s", "Available ", aspd->description,

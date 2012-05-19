@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -28,20 +28,20 @@
 /* private */
 /* variables */
 /* plug-in */
-static ArchDescription _yasep_description =
+static AsmArchDescription _yasep_description =
 {
-	"flat", ARCH_ENDIAN_LITTLE, 32, 16, 0
+	"flat", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _yasep_registers[] =
+static AsmArchRegister _yasep_registers[] =
 {
 #include "yasep.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _yasep_instructions[] =
+static AsmArchInstruction _yasep_instructions[] =
 {
 #include "yasep.ins"
 #include "common.ins"
@@ -51,14 +51,14 @@ static ArchInstruction _yasep_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
-static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call);
+static int _yasep_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
+static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
 /* public */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	_yasep_name,
@@ -76,25 +76,25 @@ ArchPlugin arch_plugin =
 /* functions */
 /* plug-in */
 /* yasep_encode */
-static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
-static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
+static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
+static int _encode_32(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
 
-static int _yasep_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _yasep_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
 	return (instruction->opcode & 0x1)
 		? _encode_32(plugin, instruction, call)
 		: _encode_16(plugin, instruction, call);
 }
 
-static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint16_t u16 = instruction->opcode;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 	size_t size;
 	char const * name;
 
@@ -129,10 +129,10 @@ static int _encode_16(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _encode_32(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
 	opcode = _htol32(opcode);
@@ -144,13 +144,13 @@ static int _encode_32(ArchPlugin * plugin, ArchInstruction * instruction,
 
 
 /* yasep_decode */
-static int _yasep_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint16_t u16;
 	uint16_t opcode;
-	ArchInstruction * ai;
-	ArchRegister * ar;
+	AsmArchInstruction * ai;
+	AsmArchRegister * ar;
 
 	if(helper->read(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;

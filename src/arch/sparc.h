@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel as */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,21 @@
 /* private */
 /* prototypes */
 /* plug-in */
-static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call);
-static int _sparc_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
+static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
+static int _sparc_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
 
 
 /* functions */
 /* plug-in */
 /* sparc_decode */
-static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t u32;
 	uint32_t opcode;
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 	size_t i;
 
 	if(helper->read(helper->arch, &u32, sizeof(u32)) != sizeof(u32))
@@ -72,19 +73,20 @@ static int _sparc_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 
 
 /* sparc_encode */
-static int _encode_branch(ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode);
-static int _encode_integer(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode);
-static int _encode_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode);
-static int _encode_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode);
+static int _encode_branch(AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
+static int _encode_integer(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
+static int _encode_loadstore(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
+static int _encode_sethi(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
 
-static int _sparc_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _sparc_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
 	if((opcode & 0xc0000000) == 0xc0000000)
@@ -116,8 +118,8 @@ static int _sparc_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_branch(ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode)
+static int _encode_branch(AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
 	uint32_t disp;
 
@@ -131,15 +133,15 @@ static int _encode_branch(ArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_integer(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode)
+static int _encode_integer(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t rs1;
 	uint32_t rs2;
 	char const * name;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 
 	/* rs1 */
 	if(AO_GET_TYPE(instruction->op1) != AOT_REGISTER)
@@ -180,15 +182,15 @@ static int _encode_integer(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode)
+static int _encode_loadstore(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t rs1;
 	uint32_t rs2;
 	char const * name;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 
 	if(instruction->opcode & (1 << 21)) /* store instruction */
 	{
@@ -266,14 +268,14 @@ static int _encode_loadstore(ArchPlugin * plugin, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_sethi(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call, uint32_t * opcode)
+static int _encode_sethi(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t value;
 	char const * name;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 
 	/* nop */
 	if(AO_GET_TYPE(instruction->op1) == AOT_NONE)

@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -25,26 +25,26 @@
 
 /* AsmArch */
 /* types */
-typedef struct _Arch Arch;
+typedef struct _AsmArch AsmArch;
 
-typedef enum _ArchEndian
+typedef enum _AsmArchEndian
 {
-	ARCH_ENDIAN_BIG		= 0x1,
-	ARCH_ENDIAN_LITTLE	= 0x2,
-	ARCH_ENDIAN_BOTH	= 0x3
-} ArchEndian;
+	ASM_ARCH_ENDIAN_BIG	= 0x1,
+	ASM_ARCH_ENDIAN_LITTLE	= 0x2,
+	ASM_ARCH_ENDIAN_BOTH	= 0x3
+} AsmArchEndian;
 
-typedef struct _ArchDescription
+typedef struct _AsmArchDescription
 {
 	char const * format;		/* default format plug-in */
-	ArchEndian endian;
+	AsmArchEndian endian;
 	uint32_t address_size;
 	uint32_t alignment;
 	uint32_t instruction_size;	/* 0 if not constant */
-} ArchDescription;
+} AsmArchDescription;
 
 /* operands */
-typedef enum _ArchOperandType
+typedef enum _AsmArchOperandType
 {
 	AOT_NONE	= 0x0,
 	AOT_CONSTANT	= 0x1,		/* flags |      0 |   size |  value */
@@ -52,7 +52,7 @@ typedef enum _ArchOperandType
 	AOT_REGISTER	= 0x3,		/* flags |      0 |   size |     id */
 	AOT_DREGISTER	= 0x4,		/* flags |  dsize |  rsize |     id */
 	AOT_DREGISTER2	= 0x5		/* flags |    did |  rsize |     id */
-} ArchOperandType;
+} AsmArchOperandType;
 
 /* displacement */
 # define AOD_FLAGS	24
@@ -122,11 +122,11 @@ typedef enum _ArchOperandType
 		 | ((dsize) << AOD_SIZE) \
 		 | ((id) << AOD_VALUE))
 
-typedef uint32_t ArchOperandDefinition;
+typedef uint32_t AsmArchOperandDefinition;
 
-typedef struct _ArchOperand
+typedef struct _AsmArchOperand
 {
-	ArchOperandDefinition definition;
+	AsmArchOperandDefinition definition;
 	union
 	{
 		/* AOT_DREGISTER */
@@ -158,81 +158,81 @@ typedef struct _ArchOperand
 		} _register;
 		/* FIXME complete */
 	} value;
-} ArchOperand;
+} AsmArchOperand;
 
-typedef struct _ArchInstruction
+typedef struct _AsmArchInstruction
 {
 	char const * name;
 	uint32_t opcode;
-	ArchOperandDefinition flags;
-	ArchOperandDefinition op1;
-	ArchOperandDefinition op2;
-	ArchOperandDefinition op3;
-	ArchOperandDefinition op4;
-	ArchOperandDefinition op5;
-} ArchInstruction;
+	AsmArchOperandDefinition flags;
+	AsmArchOperandDefinition op1;
+	AsmArchOperandDefinition op2;
+	AsmArchOperandDefinition op3;
+	AsmArchOperandDefinition op4;
+	AsmArchOperandDefinition op5;
+} AsmArchInstruction;
 
-typedef struct _ArchInstructionCall
+typedef struct _AsmArchInstructionCall
 {
 	char const * name;
-	ArchOperand operands[5];
+	AsmArchOperand operands[5];
 	uint32_t operands_cnt;
 
 	/* meta information */
 	off_t base;
 	size_t offset;
 	size_t size;
-} ArchInstructionCall;
+} AsmArchInstructionCall;
 
-typedef struct _ArchRegister
+typedef struct _AsmArchRegister
 {
 	char const * name;
 	uint32_t size;
 	uint32_t id;
-} ArchRegister;
+} AsmArchRegister;
 
-typedef struct _ArchPluginHelper
+typedef struct _AsmArchPluginHelper
 {
-	Arch * arch;
+	AsmArch * arch;
 
 	/* callbacks */
 	/* accessors */
-	char const * (*get_filename)(Arch * arch);
-	AsmFunction * (*get_function_by_id)(Arch * arch, AsmFunctionId id);
-	ArchInstruction * (*get_instruction_by_opcode)(Arch * arch,
+	char const * (*get_filename)(AsmArch * arch);
+	AsmFunction * (*get_function_by_id)(AsmArch * arch, AsmFunctionId id);
+	AsmArchInstruction * (*get_instruction_by_opcode)(AsmArch * arch,
 			uint8_t size, uint32_t opcode);
-	ArchRegister * (*get_register_by_id_size)(Arch * arch, uint32_t id,
+	AsmArchRegister * (*get_register_by_id_size)(AsmArch * arch, uint32_t id,
 			uint32_t size);
-	ArchRegister * (*get_register_by_name_size)(Arch * arch,
+	AsmArchRegister * (*get_register_by_name_size)(AsmArch * arch,
 			char const * name, uint32_t size);
-	AsmString * (*get_string_by_id)(Arch * arch, AsmStringId id);
+	AsmString * (*get_string_by_id)(AsmArch * arch, AsmStringId id);
 
 	/* assembly */
-	ssize_t (*write)(Arch * arch, void const * buf, size_t size);
+	ssize_t (*write)(AsmArch * arch, void const * buf, size_t size);
 
 	/* disassembly */
-	ssize_t (*peek)(Arch * arch, void * buf, size_t size);
-	ssize_t (*read)(Arch * arch, void * buf, size_t size);
-	off_t (*seek)(Arch * arch, off_t offset, int whence);
-} ArchPluginHelper;
+	ssize_t (*peek)(AsmArch * arch, void * buf, size_t size);
+	ssize_t (*read)(AsmArch * arch, void * buf, size_t size);
+	off_t (*seek)(AsmArch * arch, off_t offset, int whence);
+} AsmArchPluginHelper;
 
-typedef struct _ArchPlugin ArchPlugin;
+typedef struct _AsmArchPlugin AsmArchPlugin;
 
-struct _ArchPlugin
+struct _AsmArchPlugin
 {
-	ArchPluginHelper * helper;
+	AsmArchPluginHelper * helper;
 
 	char const * name;
 
-	ArchDescription * description;
-	ArchRegister * registers;
-	ArchInstruction * instructions;
+	AsmArchDescription * description;
+	AsmArchRegister * registers;
+	AsmArchInstruction * instructions;
 
-	int (*init)(ArchPlugin * arch);
-	void (*exit)(ArchPlugin * arch);
-	int (*encode)(ArchPlugin * arch, ArchInstruction * instruction,
-			ArchInstructionCall * call);
-	int (*decode)(ArchPlugin * arch, ArchInstructionCall * call);
+	int (*init)(AsmArchPlugin * arch);
+	void (*exit)(AsmArchPlugin * arch);
+	int (*encode)(AsmArchPlugin * arch, AsmArchInstruction * instruction,
+			AsmArchInstructionCall * call);
+	int (*decode)(AsmArchPlugin * arch, AsmArchInstructionCall * call);
 };
 
 #endif /* !DEVEL_ASM_ARCH_H */

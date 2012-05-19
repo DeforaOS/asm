@@ -127,7 +127,7 @@ static int _dex_exit(FormatPlugin * format);
 static char const * _dex_detect(FormatPlugin * format);
 static int _dex_decode(FormatPlugin * format, int raw);
 static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -366,7 +366,7 @@ static int _decode_map_string_id(FormatPlugin * format, off_t offset,
 
 /* dex_decode_section */
 static int _dex_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	DexMapCodeItem dmci;

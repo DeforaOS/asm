@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -24,49 +24,49 @@
 # include "code.h"
 
 
-/* Arch */
+/* AsmArch */
 /* public */
 /* functions */
-Arch * arch_new(char const * name);
-void arch_delete(Arch * arch);
+AsmArch * arch_new(char const * name);
+void arch_delete(AsmArch * arch);
 
 
 /* accessors */
-int arch_can_decode(Arch * arch);
+int arch_can_decode(AsmArch * arch);
 
-ArchDescription * arch_get_description(Arch * arch);
-char const * arch_get_format(Arch * arch);
-char const * arch_get_name(Arch * arch);
+AsmArchDescription * arch_get_description(AsmArch * arch);
+char const * arch_get_format(AsmArch * arch);
+char const * arch_get_name(AsmArch * arch);
 
-ArchInstruction * arch_get_instruction(Arch * arch, size_t index);
-ArchInstruction * arch_get_instruction_by_name(Arch * arch, char const * name);
-ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
+AsmArchInstruction * arch_get_instruction(AsmArch * arch, size_t index);
+AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch, char const * name);
+AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch, uint8_t size,
 		uint32_t opcode);
-ArchInstruction * arch_get_instruction_by_call(Arch * arch,
-		ArchInstructionCall * call);
+AsmArchInstruction * arch_get_instruction_by_call(AsmArch * arch,
+		AsmArchInstructionCall * call);
 
-ArchRegister * arch_get_register(Arch * arch, size_t index);
-ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
+AsmArchRegister * arch_get_register(AsmArch * arch, size_t index);
+AsmArchRegister * arch_get_register_by_id_size(AsmArch * arch, uint32_t id,
 		uint32_t size);
-ArchRegister * arch_get_register_by_name(Arch * arch, char const * name);
-ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
+AsmArchRegister * arch_get_register_by_name(AsmArch * arch, char const * name);
+AsmArchRegister * arch_get_register_by_name_size(AsmArch * arch, char const * name,
 		uint32_t size);
 
 /* useful */
-int arch_init(Arch * arch, char const * filename, FILE * fp);
-int arch_init_buffer(Arch * arch, char const * buffer, size_t size);
-int arch_exit(Arch * arch);
+int arch_init(AsmArch * arch, char const * filename, FILE * fp);
+int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size);
+int arch_exit(AsmArch * arch);
 
 /* assembly */
-int arch_encode(Arch * arch, ArchInstruction * instruction,
-		ArchInstructionCall * call);
+int arch_encode(AsmArch * arch, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
 
 /* deassembly */
-int arch_decode(Arch * arch, AsmCode * code, off_t base,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
-int arch_decode_at(Arch * arch, AsmCode * code, off_t offset, size_t size,
-	off_t base, ArchInstructionCall ** calls, size_t * calls_cnt);
-ssize_t arch_read(Arch * arch, void * buf, size_t cnt);
-off_t arch_seek(Arch * arch, off_t offset, int whence);
+int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
+int arch_decode_at(AsmArch * arch, AsmCode * code, off_t offset, size_t size,
+	off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt);
+ssize_t arch_read(AsmArch * arch, void * buf, size_t cnt);
+off_t arch_seek(AsmArch * arch, off_t offset, int whence);
 
 #endif /* !ASM_ARCH_H */

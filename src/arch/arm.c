@@ -21,7 +21,7 @@
 
 /* constants */
 #ifndef ARCH_ENDIAN
-# define ARCH_ENDIAN	ARCH_ENDIAN_BOTH
+# define ARCH_ENDIAN	ASM_ARCH_ENDIAN_BOTH
 #endif
 
 
@@ -39,20 +39,20 @@ enum
 
 
 /* variables */
-static ArchDescription _arm_description =
+static AsmArchDescription _arm_description =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _arm_registers[] =
+static AsmArchRegister _arm_registers[] =
 {
 #include "arm.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _arm_instructions[] =
+static AsmArchInstruction _arm_instructions[] =
 {
 #include "arm.ins"
 #include "common.ins"
@@ -67,7 +67,7 @@ static ArchInstruction _arm_instructions[] =
 
 /* protected */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"arm",

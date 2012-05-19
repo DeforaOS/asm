@@ -1,6 +1,6 @@
 /* $Id$ */
 /* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -71,7 +71,7 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...);
 
 /* deassemble */
 AsmCode * asm_deassemble(Asm * a, char const * buffer, size_t size,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 AsmCode * asm_open_deassemble(Asm * a, char const * filename, int raw);
 
 /* plug-in helpers */

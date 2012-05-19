@@ -214,7 +214,7 @@ static int _pe_init(FormatPlugin * format, char const * arch);
 static char const * _pe_detect(FormatPlugin * format);
 static int _pe_decode(FormatPlugin * format, int raw);
 static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* useful */
 static char const * _pe_get_arch(uint16_t machine);
@@ -560,7 +560,7 @@ static char * _decode_string(FormatPlugin * format, off_t offset)
 
 /* pe_decode_section */
 static int _pe_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 

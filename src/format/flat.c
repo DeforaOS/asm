@@ -26,7 +26,7 @@
 /* plug-in */
 static int _flat_decode(FormatPlugin * format, int raw);
 static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -66,7 +66,7 @@ static int _flat_decode(FormatPlugin * format, int raw)
 
 /* flat_decode_section */
 static int _flat_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 

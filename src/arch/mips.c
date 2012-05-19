@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -19,27 +19,27 @@
 #include "Asm.h"
 
 #ifndef ARCH_ENDIAN
-# define ARCH_ENDIAN	ARCH_ENDIAN_BOTH
+# define ARCH_ENDIAN	ASM_ARCH_ENDIAN_BOTH
 #endif
 
 
 /* mips */
 /* private */
 /* variables */
-static ArchDescription _mips_description =
+static AsmArchDescription _mips_description =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _mips_registers[] =
+static AsmArchRegister _mips_registers[] =
 {
 #include "mips.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _mips_instructions[] =
+static AsmArchInstruction _mips_instructions[] =
 {
 #include "mips.ins"
 #include "common.ins"
@@ -54,7 +54,7 @@ static ArchInstruction _mips_instructions[] =
 
 /* protected */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"mips",

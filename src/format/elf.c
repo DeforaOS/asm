@@ -83,7 +83,7 @@ static int _elf_decode(FormatPlugin * format, int raw);
 static int _elf_decode32(FormatPlugin * format, int raw);
 static int _elf_decode64(FormatPlugin * format, int raw);
 static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* ELF32 */
 static int _init_32(FormatPlugin * format);
@@ -759,7 +759,7 @@ static int _decode64_symtab(FormatPlugin * format, Elf64_Ehdr * ehdr,
 
 /* elf_decode_section */
 static int _elf_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 

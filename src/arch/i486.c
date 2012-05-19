@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -43,20 +43,20 @@ enum
 
 
 /* variables */
-static ArchDescription _i486_description =
+static AsmArchDescription _i486_description =
 {
-	"elf", ARCH_ENDIAN_LITTLE, 32, 8, 0
+	"elf", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _i486_registers[] =
+static AsmArchRegister _i486_registers[] =
 {
 #include "i386.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _i486_instructions[] =
+static AsmArchInstruction _i486_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"
@@ -72,7 +72,7 @@ static ArchInstruction _i486_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"i486",

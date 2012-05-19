@@ -46,13 +46,13 @@ enum
 
 
 /* variables */
-static ArchDescription _amd64_description =
+static AsmArchDescription _amd64_description =
 {
-	"elf", ARCH_ENDIAN_LITTLE, 64, 8, 0
+	"elf", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _amd64_registers[] =
+static AsmArchRegister _amd64_registers[] =
 {
 #include "i386.reg"
 #include "i686.reg"
@@ -61,7 +61,7 @@ static ArchRegister _amd64_registers[] =
 };
 #undef REG
 
-static ArchInstruction _amd64_instructions[] =
+static AsmArchInstruction _amd64_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"
@@ -79,7 +79,7 @@ static ArchInstruction _amd64_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"amd64",

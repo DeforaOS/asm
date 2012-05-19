@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -61,7 +61,7 @@ static int _format_helper_set_string(Format * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size);
 
 static int _format_helper_decode(Format * format, off_t offset, size_t size,
-		off_t base, ArchInstructionCall ** calls, size_t * calls_cnt);
+		off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt);
 static ssize_t _format_helper_read(Format * format, void * buf, size_t size);
 static off_t _format_helper_seek(Format * format, off_t offset, int whence);
 static ssize_t _format_helper_write(Format * format, void const * buf,
@@ -167,7 +167,7 @@ int format_decode(Format * format, AsmCode * code, int raw)
 
 /* format_decode_section */
 int format_decode_section(Format * format, AsmCode * code, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
 
@@ -343,7 +343,7 @@ static int _format_helper_set_string(Format * format, AsmStringId id,
 
 /* format_helper_decode */
 static int _format_helper_decode(Format * format, off_t offset, size_t size,
-		off_t base, ArchInstructionCall ** calls, size_t * calls_cnt)
+		off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
 

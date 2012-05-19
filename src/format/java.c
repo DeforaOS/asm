@@ -147,7 +147,7 @@ static int _java_exit(FormatPlugin * format);
 static char const * _java_detect(FormatPlugin * format);
 static int _java_decode(FormatPlugin * format, int raw);
 static int _java_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 
 /* public */
@@ -358,17 +358,17 @@ static int _java_decode(FormatPlugin * format, int raw)
 
 /* java_decode_section */
 static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 static int _decode_constants(FormatPlugin * format, uint16_t cnt);
 static int _decode_fields(FormatPlugin * format, uint16_t cnt);
 static int _decode_interfaces(FormatPlugin * format, uint16_t cnt);
 static int _decode_methods(FormatPlugin * format, uint16_t cnt,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 static int _methods_add(FormatPlugin * format, uint16_t id, uint16_t name,
 		off_t offset, size_t size);
 
 static int _java_decode_section(FormatPlugin * format, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	JavaPlugin * java = format->priv;
@@ -412,7 +412,7 @@ static int _java_decode_section(FormatPlugin * format, AsmSection * section,
 }
 
 static int _decode_attributes(FormatPlugin * format, uint16_t cnt,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;
@@ -635,7 +635,7 @@ static int _decode_interfaces(FormatPlugin * format, uint16_t cnt)
 }
 
 static int _decode_methods(FormatPlugin * format, uint16_t cnt,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	FormatPluginHelper * helper = format->helper;
 	size_t i;

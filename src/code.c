@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -38,8 +38,8 @@
 /* types */
 struct _AsmCode
 {
-	Arch * arch;
-	ArchDescription * description;
+	AsmArch * arch;
+	AsmArchDescription * description;
 	Format * format;
 	char * filename;
 	FILE * fp;
@@ -237,7 +237,7 @@ char const * asmcode_get_arch(AsmCode * code)
 
 
 /* asmcode_get_arch_description */
-ArchDescription * asmcode_get_arch_description(AsmCode * code)
+AsmArchDescription * asmcode_get_arch_description(AsmCode * code)
 {
 	return arch_get_description(code->arch);
 }
@@ -406,7 +406,7 @@ int asmcode_decode(AsmCode * code, int raw)
 
 /* asmcode_decode_at */
 int asmcode_decode_at(AsmCode * code, off_t offset, size_t size, off_t base,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%ld, %lu, %ld)\n", __func__, offset, size,
@@ -421,10 +421,10 @@ int asmcode_decode_at(AsmCode * code, off_t offset, size_t size, off_t base,
 
 /* asmcode_decode_buffer */
 int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
-	ArchDescription * description;
+	AsmArchDescription * description;
 
 	arch_init_buffer(code->arch, buffer, size);
 	description = arch_get_description(code->arch);
@@ -436,7 +436,7 @@ int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
 
 /* asmcode_decode_section */
 int asmcode_decode_section(AsmCode * code, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	return format_decode_section(code->format, code, section, calls,
 			calls_cnt);
@@ -451,9 +451,9 @@ int asmcode_function(AsmCode * code, char const * function)
 
 
 /* asmcode_instruction */
-int asmcode_instruction(AsmCode * code, ArchInstructionCall * call)
+int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call)
 {
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 
 	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
 		return -1;
@@ -495,17 +495,17 @@ int asmcode_open(AsmCode * code, char const * filename)
 
 
 /* asmcode_print */
-static void _print_address(ArchDescription * description,
+static void _print_address(AsmArchDescription * description,
 		unsigned long address);
-static void _print_immediate(ArchOperand * ao);
+static void _print_immediate(AsmArchOperand * ao);
 
-int asmcode_print(AsmCode * code, ArchInstructionCall * call)
+int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 {
-	ArchDescription * description;
+	AsmArchDescription * description;
 	char const * sep = " ";
 	size_t i;
 	uint8_t u8;
-	ArchOperand * ao;
+	AsmArchOperand * ao;
 	char const * name;
 
 	description = arch_get_description(code->arch);
@@ -562,7 +562,7 @@ int asmcode_print(AsmCode * code, ArchInstructionCall * call)
 	return 0;
 }
 
-static void _print_address(ArchDescription * description, unsigned long address)
+static void _print_address(AsmArchDescription * description, unsigned long address)
 {
 	uint32_t size = (description != NULL) ? description->address_size : 32;
 	char const * format = "%8lx:";
@@ -581,7 +581,7 @@ static void _print_address(ArchDescription * description, unsigned long address)
 	printf(format, address);
 }
 
-static void _print_immediate(ArchOperand * ao)
+static void _print_immediate(AsmArchOperand * ao)
 {
 	printf("%s$0x%lx", ao->value.immediate.negative ? "-" : "",
 			(unsigned long)ao->value.immediate.value);

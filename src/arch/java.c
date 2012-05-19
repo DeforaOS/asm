@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -25,12 +25,12 @@
 /* Java */
 /* private */
 /* variables */
-static ArchDescription _java_description =
+static AsmArchDescription _java_description =
 {
-	"java", ARCH_ENDIAN_BIG, 32, 8, 0
+	"java", ASM_ARCH_ENDIAN_BIG, 32, 8, 0
 };
 
-static ArchRegister _java_registers[] =
+static AsmArchRegister _java_registers[] =
 {
 	{ NULL,		0, 0 }
 };
@@ -42,7 +42,7 @@ static ArchRegister _java_registers[] =
 #define OP_U16_FUNC	AO_IMMEDIATE(0, 16, AOI_REFERS_FUNCTION)
 #define OP_S32		AO_IMMEDIATE(AOF_SIGNED, 32, 0)
 #define OP_U32		AO_IMMEDIATE(0, 32, 0)
-static ArchInstruction _java_instructions[] =
+static AsmArchInstruction _java_instructions[] =
 {
 	{ "aaload",	0x32,	OP1F, AO_0()				},
 	{ "aastore",	0x53,	OP1F, AO_0()				},
@@ -254,14 +254,14 @@ static ArchInstruction _java_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
-static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call);
+static int _java_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
+static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
 /* public */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"java",
@@ -278,13 +278,13 @@ ArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* plug-in */
-static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _java_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	size_t i;
-	ArchOperandDefinition definitions[3];
-	ArchOperand * ao;
+	AsmArchOperandDefinition definitions[3];
+	AsmArchOperand * ao;
 	uint8_t u8;
 	uint16_t u16;
 	uint32_t u32;
@@ -326,13 +326,13 @@ static int _java_encode(ArchPlugin * plugin, ArchInstruction * instruction,
 
 
 /* java_decode */
-static int _java_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 	size_t i;
-	ArchOperand * ao;
+	AsmArchOperand * ao;
 	uint16_t u16;
 	uint32_t u32;
 	AsmString * as;

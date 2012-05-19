@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License a published by
  * the Free Software Foundation, version 3 of the License.
@@ -215,7 +215,7 @@ int asm_close(Asm * a)
 
 /* asm_deassemble */
 AsmCode * asm_deassemble(Asm * a, char const * buffer, size_t size,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	if(_asm_open(a, NULL) != 0)
 		return NULL;
@@ -246,10 +246,10 @@ int asm_guess_arch(Asm * a)
 /* asm_instruction */
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 {
-	ArchInstructionCall call;
+	AsmArchInstructionCall call;
 	va_list ap;
 	size_t i;
-	ArchOperand * operand;
+	AsmArchOperand * operand;
 
 	memset(&call, 0, sizeof(call));
 	call.name = name;
@@ -258,7 +258,7 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 		va_start(ap, operands_cnt);
 		for(i = 0; i < 3 && i < operands_cnt; i++)
 		{
-			operand = va_arg(ap, ArchOperand *);
+			operand = va_arg(ap, AsmArchOperand *);
 			memcpy(&call.operands[i], operand, sizeof(*operand));
 		}
 		va_end(ap);
@@ -302,7 +302,7 @@ int asm_plugin_list(AsmPluginType type, int decode)
 	struct dirent * de;
 	size_t len;
 	char const * sep = "";
-	Arch * arch;
+	AsmArch * arch;
 	Format * format;
 
 	aspd = &_asm_plugin_description[type];

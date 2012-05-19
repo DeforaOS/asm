@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -26,8 +26,8 @@
 /* types */
 typedef struct _DalvikDecode
 {
-	ArchPlugin * plugin;
-	ArchInstructionCall * call;
+	AsmArchPlugin * plugin;
+	AsmArchInstructionCall * call;
 
 	int u8;
 } DalvikDecode;
@@ -55,21 +55,21 @@ enum
 
 /* variables */
 /* plug-in */
-static ArchDescription _dalvik_description =
+static AsmArchDescription _dalvik_description =
 {
-	"dex", ARCH_ENDIAN_LITTLE, 32, 16, 0
+	"dex", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
 
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _dalvik_registers[] =
+static AsmArchRegister _dalvik_registers[] =
 {
 #include "dalvik.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _dalvik_instructions[] =
+static AsmArchInstruction _dalvik_instructions[] =
 {
 #include "dalvik.ins"
 #include "common.ins"
@@ -79,14 +79,14 @@ static ArchInstruction _dalvik_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _dalvik_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call);
-static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call);
+static int _dalvik_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
+static int _dalvik_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
 /* public */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"dalvik",
@@ -103,10 +103,10 @@ ArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* dalvik_encode */
-static int _dalvik_encode(ArchPlugin * plugin, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _dalvik_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	uint16_t u16;
 	void const * buf;
@@ -142,13 +142,13 @@ static int _decode_immediate(DalvikDecode * dd, size_t i);
 static int _decode_operand(DalvikDecode * dd, size_t i);
 static int _decode_register(DalvikDecode * dd, size_t i);
 
-static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
+static int _dalvik_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
 	DalvikDecode dd;
-	ArchPluginHelper * helper = plugin->helper;
+	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	uint16_t u16;
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 	size_t i;
 
 	dd.plugin = plugin;
@@ -198,8 +198,8 @@ static int _dalvik_decode(ArchPlugin * plugin, ArchInstructionCall * call)
 
 static int _decode_immediate(DalvikDecode * dd, size_t i)
 {
-	ArchPluginHelper * helper = dd->plugin->helper;
-	ArchOperand * ao = &dd->call->operands[i];
+	AsmArchPluginHelper * helper = dd->plugin->helper;
+	AsmArchOperand * ao = &dd->call->operands[i];
 	uint8_t u8;
 	uint16_t u16;
 	uint32_t u32;
@@ -279,12 +279,12 @@ static int _decode_operand(DalvikDecode * dd, size_t i)
 
 static int _decode_register(DalvikDecode * dd, size_t i)
 {
-	ArchPluginHelper * helper = dd->plugin->helper;
-	ArchOperandDefinition aod = dd->call->operands[i].definition;
+	AsmArchPluginHelper * helper = dd->plugin->helper;
+	AsmArchOperandDefinition aod = dd->call->operands[i].definition;
 	uint32_t id;
 	uint8_t u8;
 	uint16_t u16;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 
 	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
 		id = AO_GET_VALUE(aod);

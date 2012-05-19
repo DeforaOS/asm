@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -34,14 +34,14 @@
 #endif
 
 
-/* Arch */
+/* AsmArch */
 /* private */
 /* types */
-struct _Arch
+struct _AsmArch
 {
-	ArchPluginHelper helper;
+	AsmArchPluginHelper helper;
 	Plugin * handle;
-	ArchPlugin * plugin;
+	AsmArchPlugin * plugin;
 	size_t instructions_cnt;
 	size_t registers_cnt;
 
@@ -58,26 +58,26 @@ struct _Arch
 
 /* prototypes */
 /* callbacks */
-static char const * _arch_get_filename(Arch * arch);
-static AsmFunction * _arch_get_function_by_id(Arch * arch, AsmFunctionId id);
-static AsmString * _arch_get_string_by_id(Arch * arch, AsmStringId id);
-static ssize_t _arch_peek(Arch * arch, void * buf, size_t size);
-static ssize_t _arch_read(Arch * arch, void * buf, size_t size);
-static ssize_t _arch_peek_buffer(Arch * arch, void * buf, size_t size);
-static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size);
-static off_t _arch_seek(Arch * arch, off_t offset, int whence);
-static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence);
-static ssize_t _arch_write(Arch * arch, void const * buf, size_t size);
+static char const * _arch_get_filename(AsmArch * arch);
+static AsmFunction * _arch_get_function_by_id(AsmArch * arch, AsmFunctionId id);
+static AsmString * _arch_get_string_by_id(AsmArch * arch, AsmStringId id);
+static ssize_t _arch_peek(AsmArch * arch, void * buf, size_t size);
+static ssize_t _arch_read(AsmArch * arch, void * buf, size_t size);
+static ssize_t _arch_peek_buffer(AsmArch * arch, void * buf, size_t size);
+static ssize_t _arch_read_buffer(AsmArch * arch, void * buf, size_t size);
+static off_t _arch_seek(AsmArch * arch, off_t offset, int whence);
+static off_t _arch_seek_buffer(AsmArch * arch, off_t offset, int whence);
+static ssize_t _arch_write(AsmArch * arch, void const * buf, size_t size);
 
 
 /* public */
 /* functions */
 /* arch_new */
-Arch * arch_new(char const * name)
+AsmArch * arch_new(char const * name)
 {
-	Arch * a;
+	AsmArch * a;
 	Plugin * handle;
-	ArchPlugin * plugin;
+	AsmArchPlugin * plugin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
@@ -116,7 +116,7 @@ Arch * arch_new(char const * name)
 
 
 /* arch_delete */
-void arch_delete(Arch * arch)
+void arch_delete(AsmArch * arch)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -128,21 +128,21 @@ void arch_delete(Arch * arch)
 
 /* accessors */
 /* arch_can_decode */
-int arch_can_decode(Arch * arch)
+int arch_can_decode(AsmArch * arch)
 {
 	return arch->plugin->decode != NULL;
 }
 
 
 /* arch_get_description */
-ArchDescription * arch_get_description(Arch * arch)
+AsmArchDescription * arch_get_description(AsmArch * arch)
 {
 	return arch->plugin->description;
 }
 
 
 /* arch_get_format */
-char const * arch_get_format(Arch * arch)
+char const * arch_get_format(AsmArch * arch)
 {
 	if(arch->plugin->description != NULL
 			&& arch->plugin->description->format != NULL)
@@ -152,7 +152,7 @@ char const * arch_get_format(Arch * arch)
 
 
 /* arch_get_instruction */
-ArchInstruction * arch_get_instruction(Arch * arch, size_t index)
+AsmArchInstruction * arch_get_instruction(AsmArch * arch, size_t index)
 {
 	if(index >= arch->instructions_cnt)
 		return NULL;
@@ -161,7 +161,7 @@ ArchInstruction * arch_get_instruction(Arch * arch, size_t index)
 
 
 /* arch_get_instruction_by_name */
-ArchInstruction * arch_get_instruction_by_name(Arch * arch, char const * name)
+AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch, char const * name)
 {
 	size_t i;
 
@@ -176,11 +176,11 @@ ArchInstruction * arch_get_instruction_by_name(Arch * arch, char const * name)
 
 
 /* arch_get_instruction_by_opcode */
-ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
+AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch, uint8_t size,
 		uint32_t opcode)
 {
 	size_t i;
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(arch, %u, 0x%x)\n", __func__, size, opcode);
@@ -198,22 +198,22 @@ ArchInstruction * arch_get_instruction_by_opcode(Arch * arch, uint8_t size,
 
 
 /* arch_get_instruction_by_call */
-static int _call_operands(Arch * arch, ArchInstruction * instruction,
-		ArchInstructionCall * call);
-static int _call_operands_constant(ArchOperandDefinition definition,
-		ArchOperand * operand);
-static int _call_operands_dregister(Arch * arch,
-		ArchOperandDefinition definition, ArchOperand * operand);
-static int _call_operands_immediate(ArchOperandDefinition definition,
-		ArchOperand * operand);
-static int _call_operands_register(Arch * arch,
-		ArchOperandDefinition definition, ArchOperand * operand);
+static int _call_operands(AsmArch * arch, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call);
+static int _call_operands_constant(AsmArchOperandDefinition definition,
+		AsmArchOperand * operand);
+static int _call_operands_dregister(AsmArch * arch,
+		AsmArchOperandDefinition definition, AsmArchOperand * operand);
+static int _call_operands_immediate(AsmArchOperandDefinition definition,
+		AsmArchOperand * operand);
+static int _call_operands_register(AsmArch * arch,
+		AsmArchOperandDefinition definition, AsmArchOperand * operand);
 
-ArchInstruction * arch_get_instruction_by_call(Arch * arch,
-		ArchInstructionCall * call)
+AsmArchInstruction * arch_get_instruction_by_call(AsmArch * arch,
+		AsmArchInstructionCall * call)
 {
 	size_t i;
-	ArchInstruction * ai;
+	AsmArchInstruction * ai;
 	int found = 0;
 
 #ifdef DEBUG
@@ -234,12 +234,12 @@ ArchInstruction * arch_get_instruction_by_call(Arch * arch,
 	return NULL;
 }
 
-static int _call_operands(Arch * arch, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+static int _call_operands(AsmArch * arch, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
 	size_t i;
-	ArchOperandDefinition definition;
-	ArchOperand * operand;
+	AsmArchOperandDefinition definition;
+	AsmArchOperand * operand;
 
 	if(call->operands_cnt == 0 && AO_GET_TYPE(instruction->op1) != AOT_NONE)
 		return -1;
@@ -296,8 +296,8 @@ static int _call_operands(Arch * arch, ArchInstruction * instruction,
 	return 0;
 }
 
-static int _call_operands_constant(ArchOperandDefinition definition,
-		ArchOperand * operand)
+static int _call_operands_constant(AsmArchOperandDefinition definition,
+		AsmArchOperand * operand)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() %u %lu\n", __func__,
@@ -312,8 +312,8 @@ static int _call_operands_constant(ArchOperandDefinition definition,
 	return 0;
 }
 
-static int _call_operands_dregister(Arch * arch,
-		ArchOperandDefinition definition, ArchOperand * operand)
+static int _call_operands_dregister(AsmArch * arch,
+		AsmArchOperandDefinition definition, AsmArchOperand * operand)
 {
 	uint64_t offset;
 
@@ -334,8 +334,8 @@ static int _call_operands_dregister(Arch * arch,
 	return 0;
 }
 
-static int _call_operands_immediate(ArchOperandDefinition definition,
-		ArchOperand * operand)
+static int _call_operands_immediate(AsmArchOperandDefinition definition,
+		AsmArchOperand * operand)
 {
 	uint64_t value;
 	uint32_t size;
@@ -359,13 +359,13 @@ static int _call_operands_immediate(ArchOperandDefinition definition,
 	return 0;
 }
 
-static int _call_operands_register(Arch * arch,
-		ArchOperandDefinition definition, ArchOperand * operand)
+static int _call_operands_register(AsmArch * arch,
+		AsmArchOperandDefinition definition, AsmArchOperand * operand)
 {
 	char const * name = operand->value._register.name;
-	ArchDescription * desc;
+	AsmArchDescription * desc;
 	uint32_t size;
-	ArchRegister * ar;
+	AsmArchRegister * ar;
 
 	/* obtain the size */
 	if((desc = arch->plugin->description) != NULL
@@ -385,14 +385,14 @@ static int _call_operands_register(Arch * arch,
 
 
 /* arch_get_name */
-char const * arch_get_name(Arch * arch)
+char const * arch_get_name(AsmArch * arch)
 {
 	return arch->plugin->name;
 }
 
 
 /* arch_get_register */
-ArchRegister * arch_get_register(Arch * arch, size_t index)
+AsmArchRegister * arch_get_register(AsmArch * arch, size_t index)
 {
 	if(index >= arch->registers_cnt)
 		return NULL;
@@ -401,7 +401,7 @@ ArchRegister * arch_get_register(Arch * arch, size_t index)
 
 
 /* arch_get_register_by_id_size */
-ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
+AsmArchRegister * arch_get_register_by_id_size(AsmArch * arch, uint32_t id,
 		uint32_t size)
 {
 	size_t i;
@@ -418,7 +418,7 @@ ArchRegister * arch_get_register_by_id_size(Arch * arch, uint32_t id,
 
 
 /* arch_get_register_by_name */
-ArchRegister * arch_get_register_by_name(Arch * arch, char const * name)
+AsmArchRegister * arch_get_register_by_name(AsmArch * arch, char const * name)
 {
 	size_t i;
 
@@ -433,7 +433,7 @@ ArchRegister * arch_get_register_by_name(Arch * arch, char const * name)
 
 
 /* arch_get_register_by_name_size */
-ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
+AsmArchRegister * arch_get_register_by_name_size(AsmArch * arch, char const * name,
 		uint32_t size)
 {
 	size_t i;
@@ -452,13 +452,13 @@ ArchRegister * arch_get_register_by_name_size(Arch * arch, char const * name,
 
 /* useful */
 /* arch_decode */
-int arch_decode(Arch * arch, AsmCode * code, off_t base,
-		ArchInstructionCall ** calls, size_t * calls_cnt)
+int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
+		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret = 0;
-	ArchInstructionCall * c = *calls;
+	AsmArchInstructionCall * c = *calls;
 	size_t c_cnt = *calls_cnt;
-	ArchInstructionCall * p;
+	AsmArchInstructionCall * p;
 	size_t offset = 0;
 
 #ifdef DEBUG
@@ -495,8 +495,8 @@ int arch_decode(Arch * arch, AsmCode * code, off_t base,
 
 
 /* arch_decode_at */
-int arch_decode_at(Arch * arch, AsmCode * code, off_t offset, size_t size,
-		off_t base, ArchInstructionCall ** calls, size_t * calls_cnt)
+int arch_decode_at(AsmArch * arch, AsmCode * code, off_t offset, size_t size,
+		off_t base, AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
 
@@ -525,8 +525,8 @@ int arch_decode_at(Arch * arch, AsmCode * code, off_t offset, size_t size,
 
 
 /* arch_encode */
-int arch_encode(Arch * arch, ArchInstruction * instruction,
-		ArchInstructionCall * call)
+int arch_encode(AsmArch * arch, AsmArchInstruction * instruction,
+		AsmArchInstructionCall * call)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
@@ -536,7 +536,7 @@ int arch_encode(Arch * arch, ArchInstruction * instruction,
 
 
 /* arch_exit */
-int arch_exit(Arch * arch)
+int arch_exit(AsmArch * arch)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -553,7 +553,7 @@ int arch_exit(Arch * arch)
 
 
 /* arch_init */
-int arch_init(Arch * arch, char const * filename, FILE * fp)
+int arch_init(AsmArch * arch, char const * filename, FILE * fp)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
@@ -586,7 +586,7 @@ int arch_init(Arch * arch, char const * filename, FILE * fp)
 
 
 /* arch_init */
-int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
+int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -618,7 +618,7 @@ int arch_init_buffer(Arch * arch, char const * buffer, size_t size)
 
 
 /* arch_read */
-ssize_t arch_read(Arch * arch, void * buf, size_t size)
+ssize_t arch_read(AsmArch * arch, void * buf, size_t size)
 {
 	if(arch->helper.read == NULL)
 		return -error_set_code(1, "%s", "read: No helper defined");
@@ -627,7 +627,7 @@ ssize_t arch_read(Arch * arch, void * buf, size_t size)
 
 
 /* arch_seek */
-off_t arch_seek(Arch * arch, off_t offset, int whence)
+off_t arch_seek(AsmArch * arch, off_t offset, int whence)
 {
 	if(arch->helper.seek == NULL)
 		return -error_set_code(1, "%s", "seek: No helper defined");
@@ -638,28 +638,28 @@ off_t arch_seek(Arch * arch, off_t offset, int whence)
 /* private */
 /* callbacks */
 /* arch_get_filename */
-static char const * _arch_get_filename(Arch * arch)
+static char const * _arch_get_filename(AsmArch * arch)
 {
 	return arch->filename;
 }
 
 
 /* arch_get_function_by_id */
-static AsmFunction * _arch_get_function_by_id(Arch * arch, AsmFunctionId id)
+static AsmFunction * _arch_get_function_by_id(AsmArch * arch, AsmFunctionId id)
 {
 	return asmcode_get_function_by_id(arch->code, id);
 }
 
 
 /* arch_get_string_by_id */
-static AsmString * _arch_get_string_by_id(Arch * arch, AsmStringId id)
+static AsmString * _arch_get_string_by_id(AsmArch * arch, AsmStringId id)
 {
 	return asmcode_get_string_by_id(arch->code, id);
 }
 
 
 /* arch_peek */
-static ssize_t _arch_peek(Arch * arch, void * buf, size_t size)
+static ssize_t _arch_peek(AsmArch * arch, void * buf, size_t size)
 {
 	ssize_t s;
 
@@ -675,7 +675,7 @@ static ssize_t _arch_peek(Arch * arch, void * buf, size_t size)
 
 
 /* arch_peek_buffer */
-static ssize_t _arch_peek_buffer(Arch * arch, void * buf, size_t size)
+static ssize_t _arch_peek_buffer(AsmArch * arch, void * buf, size_t size)
 {
 	ssize_t s;
 
@@ -688,7 +688,7 @@ static ssize_t _arch_peek_buffer(Arch * arch, void * buf, size_t size)
 
 
 /* arch_read */
-static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
+static ssize_t _arch_read(AsmArch * arch, void * buf, size_t size)
 {
 	size_t s = min(arch->buffer_cnt - arch->buffer_pos, size);
 
@@ -708,7 +708,7 @@ static ssize_t _arch_read(Arch * arch, void * buf, size_t size)
 
 
 /* arch_read_buffer */
-static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
+static ssize_t _arch_read_buffer(AsmArch * arch, void * buf, size_t size)
 {
 	ssize_t s = min(arch->buffer_cnt - arch->buffer_pos, size);
 
@@ -724,7 +724,7 @@ static ssize_t _arch_read_buffer(Arch * arch, void * buf, size_t size)
 
 
 /* arch_seek */
-static off_t _arch_seek(Arch * arch, off_t offset, int whence)
+static off_t _arch_seek(AsmArch * arch, off_t offset, int whence)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(arch, %ld, %d)\n", __func__, offset, whence);
@@ -738,7 +738,7 @@ static off_t _arch_seek(Arch * arch, off_t offset, int whence)
 
 
 /* arch_seek_buffer */
-static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
+static off_t _arch_seek_buffer(AsmArch * arch, off_t offset, int whence)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(arch, %ld, %d)\n", __func__, offset, whence);
@@ -766,7 +766,7 @@ static off_t _arch_seek_buffer(Arch * arch, off_t offset, int whence)
 
 
 /* arch_write */
-static ssize_t _arch_write(Arch * arch, void const * buf, size_t size)
+static ssize_t _arch_write(AsmArch * arch, void const * buf, size_t size)
 {
 	if(fwrite(buf, size, 1, arch->fp) == 1)
 		return size;

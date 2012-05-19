@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -72,9 +72,9 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 
 static int _deasm_section(AsmCode * code, AsmSection * section)
 {
-	ArchDescription * description;
+	AsmArchDescription * description;
 	size_t size;
-	ArchInstructionCall * calls = NULL;
+	AsmArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;
 	size_t i;
 

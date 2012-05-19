@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -56,7 +56,7 @@ typedef struct _FormatPluginHelper
 	int (*set_string)(Format * format, int id, char const * name,
 			off_t offset, ssize_t size);
 	int (*decode)(Format * format, off_t offset, size_t size, off_t base,
-			ArchInstructionCall ** calls, size_t * calls_cnt);
+			AsmArchInstructionCall ** calls, size_t * calls_cnt);
 } FormatPluginHelper;
 
 struct _FormatPlugin
@@ -76,7 +76,7 @@ struct _FormatPlugin
 	char const * (*detect)(FormatPlugin * format);
 	int (*decode)(FormatPlugin * format, int raw);
 	int (*decode_section)(FormatPlugin * format, AsmSection * section,
-			ArchInstructionCall ** calls, size_t * calls_cnt);
+			AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 	void * priv;
 };

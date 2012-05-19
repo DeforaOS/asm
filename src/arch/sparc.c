@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -22,20 +22,20 @@
 /* sparc */
 /* private */
 /* variables */
-static ArchDescription _sparc_description =
+static AsmArchDescription _sparc_description =
 {
-	"elf", ARCH_ENDIAN_BIG, 32, 32, 32
+	"elf", ASM_ARCH_ENDIAN_BIG, 32, 32, 32
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _sparc_registers[] =
+static AsmArchRegister _sparc_registers[] =
 {
 #include "sparc.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _sparc_instructions[] =
+static AsmArchInstruction _sparc_instructions[] =
 {
 #include "sparc.ins"
 #include "common.ins"
@@ -50,7 +50,7 @@ static ArchInstruction _sparc_instructions[] =
 
 /* protected */
 /* variables */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"sparc",

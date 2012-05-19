@@ -44,20 +44,20 @@ enum
 
 
 /* variables */
-static ArchDescription _i386_real_description =
+static AsmArchDescription _i386_real_description =
 {
-	"elf", ARCH_ENDIAN_LITTLE, 20, 8, 0
+	"elf", ASM_ARCH_ENDIAN_LITTLE, 20, 8, 0
 };
 
 #define REG(name, size, id) { "" # name, size, id },
-static ArchRegister _i386_real_registers[] =
+static AsmArchRegister _i386_real_registers[] =
 {
 #include "i386.reg"
 	{ NULL,		0, 0 }
 };
 #undef REG
 
-static ArchInstruction _i386_real_instructions[] =
+static AsmArchInstruction _i386_real_instructions[] =
 {
 #include "i386.ins"
 #include "common.ins"
@@ -72,7 +72,7 @@ static ArchInstruction _i386_real_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-ArchPlugin arch_plugin =
+AsmArchPlugin arch_plugin =
 {
 	NULL,
 	"i386_real",

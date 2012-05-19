@@ -1,6 +1,6 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
-/* This file is part of DeforaOS Devel asm */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3 of the License.
@@ -31,7 +31,7 @@ typedef struct _AsmCode AsmCode;
 /* functions */
 /* accessors */
 char const * asmcode_get_arch(AsmCode * code);
-ArchDescription * asmcode_get_arch_description(AsmCode * code);
+AsmArchDescription * asmcode_get_arch_description(AsmCode * code);
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);
 
@@ -62,17 +62,17 @@ void asmcode_get_strings(AsmCode * code, AsmString ** strings,
 /* useful */
 /* assembly */
 int asmcode_function(AsmCode * code, char const * function);
-int asmcode_instruction(AsmCode * code, ArchInstructionCall * call);
+int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call);
 int asmcode_section(AsmCode * code, char const * section);
 
 /* deassembly */
 int asmcode_decode(AsmCode * code, int raw);
 int asmcode_decode_at(AsmCode * code, off_t offset, size_t size, off_t base,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 int asmcode_decode_section(AsmCode * code, AsmSection * section,
-		ArchInstructionCall ** calls, size_t * calls_cnt);
-int asmcode_print(AsmCode * code, ArchInstructionCall * call);
+		AsmArchInstructionCall ** calls, size_t * calls_cnt);
+int asmcode_print(AsmCode * code, AsmArchInstructionCall * call);
 
 #endif /* !DEVEL_ASM_CODE_H */

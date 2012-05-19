@@ -6,12 +6,13 @@ DeforaOS Development Assembler
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-<title>The DeforaOS Assembly framework</title>
+DeforaOS assembly and de-assembly framework.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-The DeforaOS Code Pre-Processor (CPP), the DeforaOS Compilation framework (C99)
+DeforaOS Development Code Pre-Processor (CPP), DeforaOS Development C99 C
+compiler (C99)
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->

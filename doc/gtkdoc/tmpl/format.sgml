@@ -1,5 +1,5 @@
 <!-- ##### SECTION Title ##### -->
-Format
+AsmFormat
 
 <!-- ##### SECTION Short_Description ##### -->
 
@@ -20,30 +20,6 @@ Format
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### STRUCT Format ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### STRUCT FormatPlugin ##### -->
-<para>
-
-</para>
-
-@helper: 
-@name: 
-@signature: 
-@signature_len: 
-@init: 
-@exit: 
-@function: 
-@section: 
-@detect: 
-@decode: 
-@decode_section: 
-@priv: 
-
 <!-- ##### USER_FUNCTION decode ##### -->
 <para>
 
@@ -63,7 +39,7 @@ Format
 
 </para>
 
-@format: 
+@arch: 
 @Returns: 
 
 
@@ -92,7 +68,7 @@ Format
 
 </para>
 
-@format: 
+@arch: 
 @id: 
 @Returns: 
 
@@ -102,7 +78,7 @@ Format
 
 </para>
 
-@format: 
+@arch: 
 @buf: 
 @size: 
 @Returns: 
@@ -113,7 +89,7 @@ Format
 
 </para>
 
-@format: 
+@arch: 
 @offset: 
 @whence: 
 @Returns: 
@@ -164,7 +140,7 @@ Format
 
 </para>
 
-@format: 
+@arch: 
 @buf: 
 @size: 
 @Returns: 

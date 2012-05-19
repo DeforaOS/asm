@@ -1,5 +1,5 @@
 <!-- ##### SECTION Title ##### -->
-Arch
+AsmArch
 
 <!-- ##### SECTION Short_Description ##### -->
 
@@ -260,60 +260,12 @@ Arch
 @id: 
 
 
-<!-- ##### STRUCT Arch ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ENUM ArchEndian ##### -->
-<para>
-
-</para>
-
-@ARCH_ENDIAN_BIG: 
-@ARCH_ENDIAN_LITTLE: 
-@ARCH_ENDIAN_BOTH: 
-
-<!-- ##### TYPEDEF ArchOperandDefinition ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ENUM ArchOperandType ##### -->
-<para>
-
-</para>
-
-@AOT_NONE: 
-@AOT_CONSTANT: 
-@AOT_IMMEDIATE: 
-@AOT_REGISTER: 
-@AOT_DREGISTER: 
-@AOT_DREGISTER2: 
-
-<!-- ##### STRUCT ArchPlugin ##### -->
-<para>
-
-</para>
-
-@helper: 
-@name: 
-@description: 
-@registers: 
-@instructions: 
-@init: 
-@exit: 
-@encode: 
-@decode: 
-
 <!-- ##### USER_FUNCTION get_filename ##### -->
 <para>
 
 </para>
 
-@format: 
+@arch: 
 @Returns: 
 
 
@@ -365,7 +317,7 @@ Arch
 
 </para>
 
-@format: 
+@arch: 
 @id: 
 @Returns: 
 
@@ -386,7 +338,7 @@ Arch
 
 </para>
 
-@format: 
+@arch: 
 @buf: 
 @size: 
 @Returns: 
@@ -397,7 +349,7 @@ Arch
 
 </para>
 
-@format: 
+@arch: 
 @offset: 
 @whence: 
 @Returns: 
@@ -408,7 +360,7 @@ Arch
 
 </para>
 
-@format: 
+@arch: 
 @buf: 
 @size: 
 @Returns: 

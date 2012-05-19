@@ -197,3 +197,28 @@ Asm
 @Returns: 
 
 
+<!-- ##### FUNCTION asm_set_function ##### -->
+<para>
+
+</para>
+
+@a: 
+@name: 
+@offset: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_set_section ##### -->
+<para>
+
+</para>
+
+@a: 
+@name: 
+@offset: 
+@size: 
+@base: 
+@Returns: 
+
+

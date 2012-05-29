@@ -36,6 +36,7 @@ static void _decode_reg_reg_reg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode);
 static void _decode_reg_reg_u12(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode);
+static void _decode_s24(AsmArchInstructionCall * call, uint32_t opcode);
 static void _decode_u24(AsmArchInstructionCall * call, uint32_t opcode);
 static void _decode_u4_u4_reg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode);
@@ -74,12 +75,18 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	}
 	/* bits 27, 25, 24 are set */
 	else if((op = (opcode & OPBL(0x0))) == OPBL(0x0))
+	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPBL(0xf));
+		_decode_s24(call, opcode);
+	}
 	/* bits 27, 25 are set */
 	else if((op = (opcode & OPB(0x0))) == OPB(0x0))
+	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPB(0xf));
+		_decode_s24(call, opcode);
+	}
 	/* bits 26, 25, 22, 20 */
 	else if((op = (opcode & OPSDTLB(0x0))) == OPSDTLB(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
@@ -232,6 +239,14 @@ static void _decode_reg_reg_u12(AsmArchPlugin * plugin,
 	call->operands[2].value.immediate.value = opcode & 0xfff;
 }
 
+static void _decode_s24(AsmArchInstructionCall * call, uint32_t opcode)
+{
+	call->operands[0].value.immediate.value = opcode & 0x00ffffff;
+	/* FIXME properly restore the sign */
+	if(opcode & 0x00800000)
+		call->operands[0].value.immediate.negative = 1;
+}
+
 static void _decode_u24(AsmArchInstructionCall * call, uint32_t opcode)
 {
 	call->operands[0].value.immediate.value = opcode & 0x00ffffff;
@@ -273,7 +288,9 @@ static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		/* branch, branch with link */
 		case OPB(0):				/* b */
 		case OPBL(0):				/* bl */
-			opcode |= call->operands[0].value.immediate.value;
+			/* FIXME properly keep the sign */
+			opcode |= (call->operands[0].value.immediate.value
+					& 0x00ffffff);
 			break;
 		/* branch and exchange */
 		case OPBX(0):				/* bx */

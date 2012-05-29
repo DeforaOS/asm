@@ -50,10 +50,10 @@
 /* branch, branch with link */
 #define OPB(cond)	((cond << 28) | (0x5 << 25))
 #define OPBF		(32 << AOD_SIZE)
-#define OPB_S26		AO_IMMEDIATE(AOF_SIGNED, 26, 0)
+#define OPB_S24		AO_IMMEDIATE(AOF_SIGNED, 26, 0)
 #define OPBL(cond)	((cond << 28) | (0x5 << 25) | (0x1 << 24))
 #define OPBLF		(32 << AOD_SIZE)
-#define OPBL_S26	AO_IMMEDIATE(AOF_SIGNED, 26, 0)
+#define OPBL_S24	AO_IMMEDIATE(AOF_SIGNED, 26, 0)
 
 /* branch and exchange */
 #define OPBX(cond)	((cond << 28) | (0x12fff1 << 4))
@@ -350,22 +350,22 @@
 { "andles",	OPDPIS(le,and),	OPDPISF,AO_3(OP_R, OP_R, OPDPIS_U12)	},
 { "andals",	OPDPIS(al,and),	OPDPISF,AO_3(OP_R, OP_R, OPDPIS_U12)	},
 /* b */
-{ "b",		OPB(al),	OPBF,	AO_1(OPB_S26)			},
-{ "beq",	OPB(eq),	OPBF,	AO_1(OPB_S26)			},
-{ "bne",	OPB(ne),	OPBF,	AO_1(OPB_S26)			},
-{ "bcs",	OPB(cs),	OPBF,	AO_1(OPB_S26)			},
-{ "bcc",	OPB(cc),	OPBF,	AO_1(OPB_S26)			},
-{ "bmi",	OPB(mi),	OPBF,	AO_1(OPB_S26)			},
-{ "bpl",	OPB(pl),	OPBF,	AO_1(OPB_S26)			},
-{ "bvs",	OPB(vs),	OPBF,	AO_1(OPB_S26)			},
-{ "bvc",	OPB(vc),	OPBF,	AO_1(OPB_S26)			},
-{ "bhi",	OPB(hi),	OPBF,	AO_1(OPB_S26)			},
-{ "bls",	OPB(ls),	OPBF,	AO_1(OPB_S26)			},
-{ "bge",	OPB(ge),	OPBF,	AO_1(OPB_S26)			},
-{ "blt",	OPB(lt),	OPBF,	AO_1(OPB_S26)			},
-{ "bgt",	OPB(gt),	OPBF,	AO_1(OPB_S26)			},
-{ "ble",	OPB(le),	OPBF,	AO_1(OPB_S26)			},
-{ "bal",	OPB(al),	OPBF,	AO_1(OPB_S26)			},
+{ "b",		OPB(al),	OPBF,	AO_1(OPB_S24)			},
+{ "beq",	OPB(eq),	OPBF,	AO_1(OPB_S24)			},
+{ "bne",	OPB(ne),	OPBF,	AO_1(OPB_S24)			},
+{ "bcs",	OPB(cs),	OPBF,	AO_1(OPB_S24)			},
+{ "bcc",	OPB(cc),	OPBF,	AO_1(OPB_S24)			},
+{ "bmi",	OPB(mi),	OPBF,	AO_1(OPB_S24)			},
+{ "bpl",	OPB(pl),	OPBF,	AO_1(OPB_S24)			},
+{ "bvs",	OPB(vs),	OPBF,	AO_1(OPB_S24)			},
+{ "bvc",	OPB(vc),	OPBF,	AO_1(OPB_S24)			},
+{ "bhi",	OPB(hi),	OPBF,	AO_1(OPB_S24)			},
+{ "bls",	OPB(ls),	OPBF,	AO_1(OPB_S24)			},
+{ "bge",	OPB(ge),	OPBF,	AO_1(OPB_S24)			},
+{ "blt",	OPB(lt),	OPBF,	AO_1(OPB_S24)			},
+{ "bgt",	OPB(gt),	OPBF,	AO_1(OPB_S24)			},
+{ "ble",	OPB(le),	OPBF,	AO_1(OPB_S24)			},
+{ "bal",	OPB(al),	OPBF,	AO_1(OPB_S24)			},
 /* bic */
 { "bic",	OPDP(al,bic),	OPDPF,  AO_3(OP_R, OP_R, OP_R)		},
 { "biceq",	OPDP(eq,bic),	OPDPF,  AO_3(OP_R, OP_R, OP_R)		},
@@ -432,22 +432,22 @@
 { "bicles",	OPDPIS(le,bic),	OPDPISF,AO_3(OP_R, OP_R, OPDPIS_U12)	},
 { "bicals",	OPDPIS(al,bic),	OPDPISF,AO_3(OP_R, OP_R, OPDPIS_U12)	},
 /* bl */
-{ "bl",		OPBL(al),	OPBLF,	AO_1(OPBL_S26)			},
-{ "bleq",	OPBL(eq),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blne",	OPBL(ne),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blcs",	OPBL(cs),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blcc",	OPBL(cc),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blmi",	OPBL(mi),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blpl",	OPBL(pl),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blvs",	OPBL(vs),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blvc",	OPBL(vc),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blhi",	OPBL(hi),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blls",	OPBL(ls),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blge",	OPBL(ge),	OPBLF,	AO_1(OPBL_S26)			},
-{ "bllt",	OPBL(lt),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blgt",	OPBL(gt),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blle",	OPBL(le),	OPBLF,	AO_1(OPBL_S26)			},
-{ "blal",	OPBL(al),	OPBLF,	AO_1(OPBL_S26)			},
+{ "bl",		OPBL(al),	OPBLF,	AO_1(OPBL_S24)			},
+{ "bleq",	OPBL(eq),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blne",	OPBL(ne),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blcs",	OPBL(cs),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blcc",	OPBL(cc),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blmi",	OPBL(mi),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blpl",	OPBL(pl),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blvs",	OPBL(vs),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blvc",	OPBL(vc),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blhi",	OPBL(hi),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blls",	OPBL(ls),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blge",	OPBL(ge),	OPBLF,	AO_1(OPBL_S24)			},
+{ "bllt",	OPBL(lt),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blgt",	OPBL(gt),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blle",	OPBL(le),	OPBLF,	AO_1(OPBL_S24)			},
+{ "blal",	OPBL(al),	OPBLF,	AO_1(OPBL_S24)			},
 /* bx */
 { "bx",		OPBX(al),	OPBXF,	AO_1(OP_R)			},
 { "bxeq",	OPBX(eq),	OPBXF,	AO_1(OP_R)			},

@@ -59,51 +59,51 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 #endif
 	/* lookup the instruction */
 	/* FIXME decode everything in the proper order */
-	/* bits 27, 26, 25 and 24 are set */
+	/* opcode bits 27, 26, 25 and 24 set */
 	if((op = (opcode & OPSI(0x0))) == OPSI(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPSI(0xf));
 		_decode_u24(call, opcode);
 	}
-	/* bits 27, 26, 25 are set */
+	/* opcode bits 27, 26, 25 set */
 	else if((op = (opcode & OPCDO(0x0))) == OPCDO(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPCDO(0xf));
 		_decode_u4_u4_reg(plugin, call, opcode);
 	}
-	/* bits 27, 25, 24 are set */
+	/* opcode bits 27, 25, 24 set */
 	else if((op = (opcode & OPBL(0x0))) == OPBL(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPBL(0xf));
 		_decode_s24(call, opcode);
 	}
-	/* bits 27, 25 are set */
+	/* opcode bits 27, 25 set */
 	else if((op = (opcode & OPB(0x0))) == OPB(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPB(0xf));
 		_decode_s24(call, opcode);
 	}
-	/* bits 26, 25, 22, 20 */
+	/* opcode bits 26, 25, 22, 20 */
 	else if((op = (opcode & OPSDTLB(0x0))) == OPSDTLB(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPSDTLB(0xf));
-	/* bits 26, 25, 22 are set */
+	/* opcode bits 26, 25, 22 set */
 	else if((op = (opcode & OPSDTSB(0x0))) == OPSDTSB(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPSDTSB(0xf));
-	/* bits 26, 25, 20 are set */
+	/* opcode bits 26, 25, 20 set */
 	else if((op = (opcode & OPSDTL(0x0))) == OPSDTL(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPSDTL(0xf));
-	/* bits 26, 25 are set */
+	/* opcode bits 26, 25 set */
 	else if((op = (opcode & OPSDTS(0x0))) == OPSDTS(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPSDTS(0xf));
-	/* bits 25, 20 are set */
+	/* opcode bits 25, 20 set */
 	else if((op = (opcode & OPDPIS(0x0, 0x0))) == OPDPIS(0x0, 0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
@@ -117,7 +117,7 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 				opcode & OPDPI(0xf, 0xf));
 		_decode_reg_reg_u12(plugin, call, opcode);
 	}
-	/* bits 24, 22 are set */
+	/* opcode bits 24, 22 set */
 	else if((op = (opcode & OPSDSB(0x0))) == OPSDSB(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
@@ -139,37 +139,37 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 				opcode & OPSDS(0xf));
 		_decode_reg_reg_dreg(plugin, call, opcode);
 	}
-	/* bits 21, 20, 8 and 4 are set */
+	/* opcode bits 21, 20, 8 and 4 set */
 	else if((op = (opcode & OPMULAS(0x0))) == OPMULAS(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPMULAS(0xf));
-	/* bits 4, 5, 6, 7, 8, 9, 10, 12, 12, 13, 14, 15, 16, 18, 21 are set */
+	/* opcode bits 21, 18, 16-8, 4 set */
 	else if((op = (opcode & OPBX(0x0))) == OPBX(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPBX(0xf));
-	/* bits 21, 8 and 4 are set */
+	/* opcode bits 21, 8 and 4 set */
 	else if((op = (opcode & OPMULA(0x0))) == OPMULA(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPMULA(0xf));
-	/* bits 20, 8 and 4 are set */
+	/* opcode bits 20, 8 and 4 set */
 	else if((op = (opcode & OPMULS(0x0))) == OPMULS(0x0))
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPMULS(0xf));
-	/* bit 20 is set */
+	/* opcode bit 20 set */
 	else if((op = (opcode & OPDPS(0x0, 0x0))) == OPDPS(0x0, 0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPDPS(0xf, 0xf));
 		_decode_reg_reg_reg(plugin, call, opcode);
 	}
-	/* bits 8 and 4 are set */
+	/* opcode bits 8 and 4 set */
 	else if((op = (opcode & OPMUL(0x0))) == OPMUL(0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,
 				opcode & OPMUL(0xf));
 		_decode_reg_reg_reg(plugin, call, opcode);
 	}
-	/* no bits set */
+	/* no opcode bits set */
 	else if((op = (opcode & OPDP(0x0, 0x0))) == OPDP(0x0, 0x0))
 	{
 		ai = helper->get_instruction_by_opcode(helper->arch, 32,

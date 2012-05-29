@@ -201,8 +201,8 @@ typedef struct _AsmArchPluginHelper
 	AsmFunction * (*get_function_by_id)(AsmArch * arch, AsmFunctionId id);
 	AsmArchInstruction * (*get_instruction_by_opcode)(AsmArch * arch,
 			uint8_t size, uint32_t opcode);
-	AsmArchRegister * (*get_register_by_id_size)(AsmArch * arch, uint32_t id,
-			uint32_t size);
+	AsmArchRegister * (*get_register_by_id_size)(AsmArch * arch,
+			uint32_t id, uint32_t size);
 	AsmArchRegister * (*get_register_by_name_size)(AsmArch * arch,
 			char const * name, uint32_t size);
 	AsmString * (*get_string_by_id)(AsmArch * arch, AsmStringId id);

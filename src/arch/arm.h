@@ -22,12 +22,243 @@
 /* private */
 /* prototypes */
 /* plug-in */
+static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
 
 
 /* functions */
 /* plug-in */
+/* arm_decode */
+static void _decode_reg_reg_dreg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode);
+static void _decode_reg_reg_reg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode);
+static void _decode_reg_reg_u12(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode);
+static void _decode_u24(AsmArchInstructionCall * call, uint32_t opcode);
+static void _decode_u4_u4_reg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode);
+static int _decode_unknown(AsmArchInstructionCall * call, uint32_t opcode);
+
+static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+	uint32_t opcode;
+	uint32_t op;
+	AsmArchInstruction * ai;
+
+	/* read 4 bytes in the proper endian */
+	if(helper->read(helper->arch, &opcode, sizeof(opcode))
+			!= sizeof(opcode))
+		return -1;
+#if 1
+	/* FIXME apply as relevant */
+	opcode = _htob32(opcode);
+#endif
+	/* lookup the instruction */
+	/* FIXME decode everything in the proper order */
+	/* bits 27, 26, 25 and 24 are set */
+	if((op = (opcode & OPSI(0x0))) == OPSI(0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSI(0xf));
+		_decode_u24(call, opcode);
+	}
+	/* bits 27, 26, 25 are set */
+	else if((op = (opcode & OPCDO(0x0))) == OPCDO(0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPCDO(0xf));
+		_decode_u4_u4_reg(plugin, call, opcode);
+	}
+	/* bits 27, 25, 24 are set */
+	else if((op = (opcode & OPBL(0x0))) == OPBL(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPBL(0xf));
+	/* bits 27, 25 are set */
+	else if((op = (opcode & OPB(0x0))) == OPB(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPB(0xf));
+	/* bits 26, 25, 22, 20 */
+	else if((op = (opcode & OPSDTLB(0x0))) == OPSDTLB(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDTLB(0xf));
+	/* bits 26, 25, 22 are set */
+	else if((op = (opcode & OPSDTSB(0x0))) == OPSDTSB(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDTSB(0xf));
+	/* bits 26, 25, 20 are set */
+	else if((op = (opcode & OPSDTL(0x0))) == OPSDTL(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDTL(0xf));
+	/* bits 26, 25 are set */
+	else if((op = (opcode & OPSDTS(0x0))) == OPSDTS(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDTS(0xf));
+	/* bits 25, 20 are set */
+	else if((op = (opcode & OPDPIS(0x0, 0x0))) == OPDPIS(0x0, 0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPDPIS(0xf, 0xf));
+		_decode_reg_reg_u12(plugin, call, opcode);
+	}
+	/* bit 25 is set */
+	else if((op = (opcode & OPDPI(0x0, 0x0))) == OPDPI(0x0, 0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPDPI(0xf, 0xf));
+		_decode_reg_reg_u12(plugin, call, opcode);
+	}
+	/* bits 24, 22 are set */
+	else if((op = (opcode & OPSDSB(0x0))) == OPSDSB(0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDSB(0xf));
+		_decode_reg_reg_dreg(plugin, call, opcode);
+	}
+	/* bit 24 is set */
+	else if((op = (opcode & OPPTI(0x0))) == OPPTI(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPPTI(0xf));
+	/* bit 24 is set */
+	else if((op = (opcode & OPPT(0x0))) == OPPT(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPPT(0xf));
+	/* bit 24 is set */
+	else if((op = (opcode & OPSDS(0x0))) == OPSDS(0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPSDS(0xf));
+		_decode_reg_reg_dreg(plugin, call, opcode);
+	}
+	/* bits 21, 20, 8 and 4 are set */
+	else if((op = (opcode & OPMULAS(0x0))) == OPMULAS(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPMULAS(0xf));
+	/* bits 4, 5, 6, 7, 8, 9, 10, 12, 12, 13, 14, 15, 16, 18, 21 are set */
+	else if((op = (opcode & OPBX(0x0))) == OPBX(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPBX(0xf));
+	/* bits 21, 8 and 4 are set */
+	else if((op = (opcode & OPMULA(0x0))) == OPMULA(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPMULA(0xf));
+	/* bits 20, 8 and 4 are set */
+	else if((op = (opcode & OPMULS(0x0))) == OPMULS(0x0))
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPMULS(0xf));
+	/* bit 20 is set */
+	else if((op = (opcode & OPDPS(0x0, 0x0))) == OPDPS(0x0, 0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPDPS(0xf, 0xf));
+		_decode_reg_reg_reg(plugin, call, opcode);
+	}
+	/* bits 8 and 4 are set */
+	else if((op = (opcode & OPMUL(0x0))) == OPMUL(0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPMUL(0xf));
+		_decode_reg_reg_reg(plugin, call, opcode);
+	}
+	/* no bits set */
+	else if((op = (opcode & OPDP(0x0, 0x0))) == OPDP(0x0, 0x0))
+	{
+		ai = helper->get_instruction_by_opcode(helper->arch, 32,
+				opcode & OPDP(0xf, 0xf));
+		_decode_reg_reg_reg(plugin, call, opcode);
+	}
+	else
+		/* unknown instruction */
+		return _decode_unknown(call, opcode);
+	call->name = ai->name;
+	call->operands_cnt = 0;
+	if((call->operands[0].definition = ai->op1) != AOT_NONE)
+		call->operands_cnt++;
+	if((call->operands[1].definition = ai->op2) != AOT_NONE)
+		call->operands_cnt++;
+	if((call->operands[2].definition = ai->op3) != AOT_NONE)
+		call->operands_cnt++;
+	return 0;
+}
+
+static void _decode_reg_reg_dreg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+	AsmArchRegister * ar;
+
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 12) & 0xf, 32)) != NULL)
+		call->operands[0].value._register.name = ar->name;
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 16) & 0xf, 32)) != NULL)
+		call->operands[1].value._register.name = ar->name;
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					opcode & 0xf, 32)) != NULL)
+		call->operands[2].value.dregister.name = ar->name;
+}
+
+static void _decode_reg_reg_reg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+	AsmArchRegister * ar;
+
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 12) & 0xf, 32)) != NULL)
+		call->operands[0].value._register.name = ar->name;
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 16) & 0xf, 32)) != NULL)
+		call->operands[1].value._register.name = ar->name;
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					opcode & 0xf, 32)) != NULL)
+		call->operands[2].value._register.name = ar->name;
+}
+
+static void _decode_reg_reg_u12(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+	AsmArchRegister * ar;
+
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 12) & 0xf, 32)) != NULL)
+		call->operands[0].value._register.name = ar->name;
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 16) & 0xf, 32)) != NULL)
+		call->operands[1].value._register.name = ar->name;
+	call->operands[2].value.immediate.value = opcode & 0xfff;
+}
+
+static void _decode_u24(AsmArchInstructionCall * call, uint32_t opcode)
+{
+	call->operands[0].value.immediate.value = opcode & 0x00ffffff;
+}
+
+static void _decode_u4_u4_reg(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, uint32_t opcode)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+	AsmArchRegister * ar;
+
+	/* FIXME implement u4 and u4 */
+	if((ar = helper->get_register_by_id_size(helper->arch,
+					(opcode >> 12) & 0xf, 32)) != NULL)
+		call->operands[2].value._register.name = ar->name;
+}
+
+static int _decode_unknown(AsmArchInstructionCall * call, uint32_t opcode)
+{
+	call->name = "dw";
+	call->operands[0].definition = AO_IMMEDIATE(0, 32, 0);
+	call->operands[0].value.immediate.value = opcode;
+	call->operands_cnt = 1;
+	return 0;
+}
+
+
 /* arm_encode */
 static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call)
@@ -37,7 +268,7 @@ static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 	AsmArchRegister * ar;
 	char const * p;
 
-	switch(instruction->opcode & 0x0fffffff) /* ignore condition code */
+	switch(opcode & 0x0fffffff) /* ignore condition code */
 	{
 		/* branch, branch with link */
 		case OPB(0):				/* b */
@@ -356,6 +587,10 @@ static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 			break;
 #endif
 	}
+#if 1
+	/* FIXME apply as relevant */
+	opcode = _htob32(opcode);
+#endif
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;

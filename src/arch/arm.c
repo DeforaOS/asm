@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,5 +77,5 @@ AsmArchPlugin arch_plugin =
 	NULL,
 	NULL,
 	_arm_encode,
-	NULL
+	_arm_decode
 };

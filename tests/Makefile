@@ -72,13 +72,13 @@ yasep32.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a yasep32 -f flat
 amd64.o: amd64.asm ../src/asm
 	$(AS) $(amd64.o_ASFLAGS) -o amd64.o amd64.asm
 
-arm.o: arm.asm ../src/asm
+arm.o: arm.asm ../src/arch/arm.so ../src/asm
 	$(AS) $(arm.o_ASFLAGS) -o arm.o arm.asm
 
-armeb.o: armeb.asm arm.asm ../src/asm
+armeb.o: armeb.asm ../src/arch/armeb.so arm.asm ../src/asm
 	$(AS) $(armeb.o_ASFLAGS) -o armeb.o armeb.asm
 
-armel.o: armel.asm arm.asm ../src/asm
+armel.o: armel.asm ../src/arch/armel.so arm.asm ../src/asm
 	$(AS) $(armel.o_ASFLAGS) -o armel.o armel.asm
 
 dalvik.o: dalvik.asm ../src/asm

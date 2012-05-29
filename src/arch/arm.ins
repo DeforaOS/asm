@@ -17,21 +17,21 @@
 
 /* generic */
 /* conditions */
-#define eq		(0x0 << 28)
-#define ne		(0x1 << 28)
-#define cs		(0x2 << 28)
-#define cc		(0x3 << 28)
-#define mi		(0x4 << 28)
-#define pl		(0x5 << 28)
-#define vs		(0x6 << 28)
-#define vc		(0x7 << 28)
-#define hi		(0x8 << 28)
-#define ls		(0x9 << 28)
-#define ge		(0xa << 28)
-#define lt		(0xb << 28)
-#define gt		(0xc << 28)
-#define le		(0xd << 28)
-#define al		(0xe << 28)
+#define eq		0x0
+#define ne		0x1
+#define cs		0x2
+#define cc		0x3
+#define mi		0x4
+#define pl		0x5
+#define vs		0x6
+#define vc		0x7
+#define hi		0x8
+#define ls		0x9
+#define ge		0xa
+#define lt		0xb
+#define gt		0xc
+#define le		0xd
+#define al		0xe
 
 /* opcodes */
 #define OPNOP		AO_IMMEDIATE(0, 32, 0)
@@ -41,114 +41,114 @@
 #define OP_R_SPSR	AO_REGISTER(AOF_IMPLICIT, 32, REG_spsr_id)
 
 /* block data transfer */
-#define OPBDTL(cond)	(cond | (0x4 << 25) | (0x1 << 20))
+#define OPBDTL(cond)	((cond << 28) | (0x4 << 25) | (0x1 << 20))
 #define OPBDTLF		(32 << AOD_SIZE)
 #define OPBDT_U16	AO_IMMEDIATE(0, 16, 0)
-#define OPBDTS(cond)	(cond | (0x4 << 25))
+#define OPBDTS(cond)	((cond << 28) | (0x4 << 25))
 #define OPBDTSF		(32 << AOD_SIZE)
 
 /* branch, branch with link */
-#define OPB(cond)	(cond | (0x5 << 25))
+#define OPB(cond)	((cond << 28) | (0x5 << 25))
 #define OPBF		(32 << AOD_SIZE)
 #define OPB_S26		AO_IMMEDIATE(AOF_SIGNED, 26, 0)
-#define OPBL(cond)	(cond | (0x5 << 25) | (0x1 << 24))
+#define OPBL(cond)	((cond << 28) | (0x5 << 25) | (0x1 << 24))
 #define OPBLF		(32 << AOD_SIZE)
 #define OPBL_S26	AO_IMMEDIATE(AOF_SIGNED, 26, 0)
 
 /* branch and exchange */
-#define OPBX(cond)	(cond | (0x12fff1 << 4))
+#define OPBX(cond)	((cond << 28) | (0x12fff1 << 4))
 #define OPBXF		(32 << AOD_SIZE)
 
 /* coprocessor data operation */
-#define OPCDO(cond)	(cond | (0xe << 24))
+#define OPCDO(cond)	((cond << 28) | (0xe << 24))
 #define OPCDOF		(32 << AOD_SIZE)
 #define OPCDO_U4	AO_IMMEDIATE(0, 4, 0)
 
 /* coprocessor data transfers */
-#define OPCDTL(cond)	(cond | (0x6 << 25) | (0x1 << 20))
+#define OPCDTL(cond)	((cond << 28) | (0x6 << 25) | (0x1 << 20))
 #define OPCDTLF		(32 << AOD_SIZE)
 #define OPCDTL_U4	AO_IMMEDIATE(0, 4, 0)
 #define OPCDTL_U8	AO_IMMEDIATE(0, 8, 0)
-#define OPCDTS(cond)	(cond | (0x6 << 25))
+#define OPCDTS(cond)	((cond << 28) | (0x6 << 25))
 #define OPCDTSF		(32 << AOD_SIZE)
 #define OPCDTS_U4	AO_IMMEDIATE(0, 4, 0)
 #define OPCDTS_U8	AO_IMMEDIATE(0, 8, 0)
 
 /* coprocessor register transfers */
-#define OPCRTL(cond)	(cond | (0xe << 24) | (0x1 << 20) | (0x1 << 4))
+#define OPCRTL(cond)	((cond << 28) | (0xe << 24) | (0x1 << 20) | (0x1 << 4))
 #define OPCRTLF		(32 << AOD_SIZE)
 #define OPCRTL_U3	AO_IMMEDIATE(0, 3, 0)
 #define OPCRTL_U4	AO_IMMEDIATE(0, 4, 0)
-#define OPCRTS(cond)	(cond | (0xe << 24) | (0x1 << 4))
+#define OPCRTS(cond)	((cond << 28) | (0xe << 24) | (0x1 << 4))
 #define OPCRTSF		(32 << AOD_SIZE)
 #define OPCRTS_U3	AO_IMMEDIATE(0, 3, 0)
 #define OPCRTS_U4	AO_IMMEDIATE(0, 4, 0)
 
 /* data processing */
 /* operations */
-#define and		(0x0 << 21)
-#define eor		(0x1 << 21)
-#define sub		(0x2 << 21)
-#define rsb		(0x3 << 21)
-#define add		(0x4 << 21)
-#define adc		(0x5 << 21)
-#define sbc		(0x6 << 21)
-#define rsc		(0x7 << 21)
-#define tst		(0x8 << 21)
-#define teq		(0x9 << 21)
-#define cmp		(0xa << 21)
-#define cmn		(0xb << 21)
-#define orr		(0xc << 21)
-#define mov		(0xd << 21)
-#define bic		(0xe << 21)
-#define mvn		(0xf << 21)
+#define and		0x0
+#define eor		0x1
+#define sub		0x2
+#define rsb		0x3
+#define add		0x4
+#define adc		0x5
+#define sbc		0x6
+#define rsc		0x7
+#define tst		0x8
+#define teq		0x9
+#define cmp		0xa
+#define cmn		0xb
+#define orr		0xc
+#define mov		0xd
+#define bic		0xe
+#define mvn		0xf
 
-#define OPDP(cond, op)	(cond | op)
+#define OPDP(cond, op)	((cond << 28) | (op << 21))
 #define OPDPF		(32 << AOD_SIZE)
-#define OPDPI(cond, op)	(cond | op | (0x1 << 25))
+#define OPDPI(cond, op)	((cond << 28) | (op << 21) | (0x1 << 25))
 #define OPDPIF		(32 << AOD_SIZE)
 #define OPDPI_U12	AO_IMMEDIATE(0, 12, 0)
-#define OPDPS(cond, op)	(cond | op | (0x1 << 20))
+#define OPDPS(cond, op)	((cond << 28) | (op << 21) | (0x1 << 20))
 #define OPDPSF		(32 << AOD_SIZE)
-#define OPDPIS(cond, op)(cond | op | (0x1 << 25) | (0x1 << 20))
+#define OPDPIS(cond, op)((cond << 28) | (op << 21) | (0x1 << 25) | (0x1 << 20))
 #define OPDPISF		(32 << AOD_SIZE)
 #define OPDPIS_U12	OPDPI_U12
 
 /* multiply and multiply-accumulate */
-#define OPMUL(cond)	(cond | (0x9 << 4))
+#define OPMUL(cond)	((cond << 28) | (0x9 << 4))
 #define OPMULF		(32 << AOD_SIZE)
-#define OPMULS(cond)	(cond | (0x1 << 20) | (0x9 << 4))
+#define OPMULS(cond)	((cond << 28) | (0x1 << 20) | (0x9 << 4))
 #define OPMULSF		(32 << AOD_SIZE)
-#define OPMULA(cond)	(cond | (0x1 << 21) | (0x9 << 4))
+#define OPMULA(cond)	((cond << 28) | (0x1 << 21) | (0x9 << 4))
 #define OPMULAF		(32 << AOD_SIZE)
-#define OPMULAS(cond)	(cond | (0x1 << 21) | (0x1 << 20) | (0x9 << 4))
+#define OPMULAS(cond)	((cond << 28) | (0x1 << 21) | (0x1 << 20) | (0x9 << 4))
 #define OPMULASF	(32 << AOD_SIZE)
 
 /* psr transfer */
-#define OPPT(cond)	(cond | (0x2 << 23) | (0xf << 16))
+#define OPPT(cond)	((cond << 28) | (0x2 << 23) | (0xf << 16))
 #define OPPTF		(32 << AOD_SIZE)
-#define OPPTI(cond)	(cond | (0x2 << 23) | (0x29f << 12))
+#define OPPTI(cond)	((cond << 28) | (0x2 << 23) | (0x29f << 12))
 #define OPPTIF		(32 << AOD_SIZE)
 
 /* single data transfer */
-#define OPSDTL(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 20))
+#define OPSDTL(cond)	((cond << 28) | (0x1 << 26) | (0x1 << 25) | (0x1 << 20))
 #define OPSDTLF		(32 << AOD_SIZE)
-#define OPSDTS(cond)	(cond | (0x1 << 26) | (0x1 << 25))
+#define OPSDTS(cond)	((cond << 28) | (0x1 << 26) | (0x1 << 25))
 #define OPSDTSF		(32 << AOD_SIZE)
-#define OPSDTLB(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 22) \
-		| (0x1 << 20))
+#define OPSDTLB(cond)	((cond << 28) | (0x1 << 26) | (0x1 << 25) \
+		| (0x1 << 22) | (0x1 << 20))
 #define OPSDTLBF	(32 << AOD_SIZE)
-#define OPSDTSB(cond)	(cond | (0x1 << 26) | (0x1 << 25) | (0x1 << 22))
+#define OPSDTSB(cond)	((cond << 28) | (0x1 << 26) | (0x1 << 25) | (0x1 << 22))
 #define OPSDTSBF	(32 << AOD_SIZE)
 
 /* single data swap */
-#define OPSDS(cond)	(cond | (0x2 << 23) | (0x9 << 4))
+#define OPSDS(cond)	((cond << 28) | (0x2 << 23) | (0x9 << 4))
 #define OPSDSF		(32 << AOD_SIZE)
-#define OPSDSB(cond)	(cond | (0x2 << 23) | (0x1 << 22) | (0x9 << 4))
+#define OPSDSB(cond)	((cond << 28) | (0x2 << 23) | (0x1 << 22) | (0x9 << 4))
 #define OPSDSBF		(32 << AOD_SIZE)
 
 /* software interrupt */
-#define OPSI(cond)	(cond | (0xf << 24))
+#define OPSI(cond)	((cond << 28) | (0xf << 24))
 #define OPSIF		(32 << AOD_SIZE)
 #define OPSI_U24	AO_IMMEDIATE(0, 24, 0)
 

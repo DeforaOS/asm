@@ -2,8 +2,34 @@
 .text
 	adc	%r3, %r4, %r5
 	adceq	%r3, %r4, %r5
+	adcne	%r3, %r4, %r5
+	adccs	%r3, %r4, %r5
+	adccc	%r3, %r4, %r5
+	adcmi	%r3, %r4, %r5
+	adcpl	%r3, %r4, %r5
+	adcvs	%r3, %r4, %r5
+	adcvc	%r3, %r4, %r5
+	adchi	%r3, %r4, %r5
+	adcls	%r3, %r4, %r5
+	adcge	%r3, %r4, %r5
+	adclt	%r3, %r4, %r5
+	adcgt	%r3, %r4, %r5
+	adcle	%r3, %r4, %r5
+	adcal	%r3, %r4, %r5
 	adc	%r4, %r5, $0x0
 	adceq	%r4, %r5, $0x1
+	adcne	%r4, %r5, $0x2
+	adccc	%r4, %r5, $0x3
+	adcpl	%r4, %r5, $0x4
+	adcvs	%r4, %r5, $0x5
+	adcvc	%r4, %r5, $0x6
+	adchi	%r4, %r5, $0x7
+	adcls	%r4, %r5, $0x8
+	adcge	%r4, %r5, $0x9
+	adclt	%r4, %r5, $0xa
+	adcgt	%r4, %r5, $0xb
+	adcle	%r4, %r5, $0xc
+	adcal	%r4, %r5, $0xd
 	adcs	%r3, %r4, %r5
 	adceqs	%r3, %r4, %r5
 	adcs	%r3, %r4, $0x0
@@ -38,8 +64,8 @@
 	bleq	$0xa0
 	bx	%r1
 	bxeq	%r2
-	cdp	$0x1, $0xf, %r0
-	cdpeq	$0x2, $0xe, %r0
+	cdp	$0x1, $0xf, %r3
+	cdpeq	$0x2, $0xe, %r4
 	cmn	%r5, %r4
 	cmneq	%r5, %r4
 	cmn	%r5, $0x1

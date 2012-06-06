@@ -931,6 +931,9 @@ static int _exit_32_shdr(AsmFormatPlugin * format, Elf32_Off offset)
 		else
 			es32[i].sh_size = es32[i + 1].sh_offset
 				- es32[i].sh_offset;
+		es32[i].sh_offset = (ea->endian == ELFDATA2MSB)
+			? _htob32(es32[i].sh_offset)
+			: _htol32(es32[i].sh_offset);
 		es32[i].sh_size = (ea->endian == ELFDATA2MSB)
 			? _htob32(es32[i].sh_size) : _htol32(es32[i].sh_size);
 		if(es32[i].sh_type == SHT_PROGBITS)
@@ -1164,6 +1167,9 @@ static int _exit_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 		else
 			es64[i].sh_size = es64[i + 1].sh_offset
 				- es64[i].sh_offset;
+		es64[i].sh_offset = (ea->endian == ELFDATA2MSB)
+			? _htob64(es64[i].sh_offset)
+			: _htol64(es64[i].sh_offset);
 		es64[i].sh_size = (ea->endian == ELFDATA2MSB)
 			? _htob64(es64[i].sh_size) : _htol64(es64[i].sh_size);
 		if(es64[i].sh_type == SHT_PROGBITS)

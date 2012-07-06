@@ -1,21 +1,29 @@
-program:	{ newline } section_list { newline }
+program:	{ newline | section | statement }
 
 newline:	[ space ] NEWLINE
 
 space:		SPACE { SPACE }
 
-section_list:	{ section instruction_list }
-
 section:	"." WORD newline
 
-instruction_list:	{ function | space (instruction | newline) | newline }
+statement:	( function | space [ instruction ] ) [ space ] newline
 
-function:	WORD ":" newline
+function:	name [ space ] ":"
 
-instruction:	operator [ space ] [ operand_list ] newline
+name:		WORD
+
+instruction:	operator [ space [ operand_list ] ]
 
 operator:	WORD
 
 operand_list:	operand [ space ] { "," [ space ] operand [ space ] }
 
-operand:	WORD | NUMBER | ( "[" WORD "]" )
+operand:	value | "[" value "]"
+
+value:		symbol | register | immediate
+
+symbol:		WORD
+
+register:	"%" WORD
+
+immediate:	"$" NUMBER

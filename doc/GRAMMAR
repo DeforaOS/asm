@@ -28,6 +28,4 @@ register:	"%" WORD
 
 immediate:	"$" NUMBER
 
-address:	"[" offset [ "+" offset ] "]"
-
-offset:		[ space ] value [ space ]
+address:	"[" [ space ] value [ value ] [ "+" [ space ] offset [ space ] ] "]"

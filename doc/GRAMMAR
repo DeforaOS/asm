@@ -1,24 +1,24 @@
-program:	{ newline | section | statement }
+program:	{ section | statement }
+
+section:	"." WORD newline
 
 newline:	[ space ] NEWLINE
 
 space:		SPACE { SPACE }
 
-section:	"." WORD newline
-
-statement:	( function | space [ instruction ] ) [ space ] newline
+statement:	( function | space [ instruction ] ) newline
 
 function:	name [ space ] ":"
 
 name:		WORD
 
-instruction:	operator [ space [ operand_list ] ]
+instruction:	operator [ operand_list ]
 
 operator:	WORD
 
-operand_list:	operand [ space ] { "," [ space ] operand [ space ] }
+operand_list:	operand { "," operand }
 
-operand:	value | "[" value "]"
+operand:	[ space ] ( value | address ) [ space ]
 
 value:		symbol | register | immediate
 
@@ -27,3 +27,7 @@ symbol:		WORD
 register:	"%" WORD
 
 immediate:	"$" NUMBER
+
+address:	"[" offset [ "+" offset ] "]"
+
+offset:		[ space ] value [ space ]

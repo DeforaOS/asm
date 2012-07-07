@@ -21,15 +21,20 @@
 
 /* protected */
 /* variables */
+extern TokenCode TS_ADDRESS[];
 extern TokenCode TS_FUNCTION[];
+extern TokenCode TS_IMMEDIATE[];
 extern TokenCode TS_INSTRUCTION[];
-extern TokenCode TS_INSTRUCTION_LIST[];
 extern TokenCode TS_NEWLINE[];
-extern TokenCode TS_OPERAND[];
+extern TokenCode TS_OFFSET[];
 extern TokenCode TS_OPERAND_LIST[];
-extern TokenCode TS_OPERATOR[];
+extern TokenCode TS_REGISTER[];
 extern TokenCode TS_SECTION[];
-extern TokenCode TS_SECTION_LIST[];
+extern TokenCode TS_SECTION_NAME[];
+extern TokenCode TS_SIGN[];
 extern TokenCode TS_SPACE[];
+extern TokenCode TS_STATEMENT[];
+extern TokenCode TS_SYMBOL[];
+extern TokenCode TS_VALUE[];
 
 #endif /* !ASM_TOKEN_H */

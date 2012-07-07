@@ -47,9 +47,9 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print(PACKAGE);
+		return error_print("asm");
 	if(asm_assemble(a, prefs, infile, outfile) != 0)
-		ret = error_print(PACKAGE);
+		ret = error_print("asm");
 	asm_delete(a);
 	return ret;
 }
@@ -63,9 +63,9 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print(PACKAGE);
+		return error_print("asm");
 	if(asm_assemble_string(a, prefs, outfile, string) != 0)
-		ret = error_print(PACKAGE);
+		ret = error_print("asm");
 	asm_delete(a);
 	return ret;
 }
@@ -120,11 +120,11 @@ int main(int argc, char * argv[])
 			case 'l':
 				o = 0;
 				if(asm_plugin_list(APT_ARCH, 0) != 0)
-					o = error_print(PACKAGE);
+					o = error_print("asm");
 				else
 					putchar('\n');
 				if(asm_plugin_list(APT_FORMAT, 0) != 0)
-					o = error_print(PACKAGE);
+					o = error_print("asm");
 				return (o == 0) ? 0 : 2;
 			case 's':
 				string = optarg;
@@ -163,7 +163,7 @@ static int _main_add_define(AsmPrefs * prefs, char * define)
 	value = strtok(define, "=");
 	if((p = realloc(prefs->defines, sizeof(*p) * (prefs->defines_cnt + 1)))
 			== NULL)
-		return -error_set_print(PACKAGE, 1, "%s", strerror(errno));
+		return -error_set_print("asm", 1, "%s", strerror(errno));
 	prefs->defines = p;
 	prefs->defines[prefs->defines_cnt++] = define;
 	return 0;

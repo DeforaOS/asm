@@ -28,7 +28,7 @@ symbol:		WORD
 
 register:	"%" WORD
 
-immediate:	"$" [ sign ] NUMBER
+immediate:	[ sign ] "$" NUMBER
 
 address:	"[" [ space ] [ sign [ space ] ] value [ space ] [ offset [ space ] ] "]"
 

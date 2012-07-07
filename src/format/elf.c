@@ -973,13 +973,10 @@ static int _section_32(AsmFormatPlugin * format, char const * name)
 	p->sh_name = ss;
 	p->sh_type = esv->type;
 	p->sh_flags = esv->flags;
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "before seek()");
-#endif
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		return -1;
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "after seek()");
+	fprintf(stderr, "DEBUG: %s() offset %ld\n", __func__, offset);
 #endif
 	p->sh_offset = offset;
 	p->sh_link = SHN_UNDEF; /* FIXME */
@@ -1195,6 +1192,9 @@ static int _section_64(AsmFormatPlugin * format, char const * name)
 	ElfSectionValues * esv;
 	long offset;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
 	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
 		return 1;
 	if((p = realloc(elf->es64, sizeof(*p) * (elf->es64_cnt + 1))) == NULL)
@@ -1206,13 +1206,10 @@ static int _section_64(AsmFormatPlugin * format, char const * name)
 	p->sh_name = ss;
 	p->sh_type = esv->type;
 	p->sh_flags = esv->flags;
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "before seek()");
-#endif
 	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		return -1;
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() %s\n", __func__, "after seek()");
+	fprintf(stderr, "DEBUG: %s() offset %ld\n", __func__, offset);
 #endif
 	p->sh_offset = offset;
 	p->sh_link = SHN_UNDEF; /* FIXME */

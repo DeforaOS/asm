@@ -1,11 +1,11 @@
-prefix=PREFIX
+prefix=@PREFIX@
 includedir=${prefix}/include
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 
 Name: Asm
 Description: DeforaOS Development Assembler
-Version: VERSION
+Version: @VERSION@
 Requires: cpp
 Cflags: -I${includedir}
 Libs: -Wl,-R${libdir} -L${libdir} -lasm

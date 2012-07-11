@@ -29,6 +29,7 @@ PREFIX="/usr/local"
 . "../config.sh"
 DEBUG="_debug"
 DEVNULL="/dev/null"
+#executables
 INSTALL="install -m 0644"
 MKDIR="mkdir -m 0755 -p"
 RM="rm -f"
@@ -39,7 +40,7 @@ SED="sed"
 #debug
 _debug()
 {
-	echo $@
+	echo $@ 1>&2
 	$@
 }
 
@@ -99,10 +100,10 @@ while [ $# -gt 0 ]; do
 	fi
 
 	#create
-	$SED -e "s,PREFIX,$PREFIX," -e "s,VERSION,$VERSION," "$target.in" \
-		> "$target"
+	$DEBUG $SED -e "s,@PREFIX@,$PREFIX," \
+			-e "s,@VERSION@,$VERSION," "$target.in" > "$target"
 	if [ $? -ne 0 ]; then
-		$RM -- "$target" 2> "$DEVNULL"
+		$DEBUG $RM -- "$target"
 		exit 2
 	fi
 done

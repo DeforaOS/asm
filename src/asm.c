@@ -302,6 +302,11 @@ int asm_plugin_list(AsmPluginType type, int decode)
 	struct dirent * de;
 	size_t len;
 	char const * sep = "";
+#ifdef __APPLE__
+	char const ext[] = ".dylib";
+#else
+	char const ext[] = ".so";
+#endif
 	AsmArch * arch;
 	AsmFormat * format;
 
@@ -325,11 +330,11 @@ int asm_plugin_list(AsmPluginType type, int decode)
 	}
 	while((de = readdir(dir)) != NULL)
 	{
-		if((len = strlen(de->d_name)) < 4)
+		if((len = strlen(de->d_name)) < sizeof(ext))
 			continue;
-		if(strcmp(".so", &de->d_name[len - 3]) != 0)
+		if(strcmp(ext, &de->d_name[len - sizeof(ext) + 1]) != 0)
 			continue;
-		de->d_name[len - 3] = '\0';
+		de->d_name[len - sizeof(ext) + 1] = '\0';
 		if(type == APT_ARCH && (arch = arch_new(de->d_name)) != NULL
 				&& (decode == 0 || arch_can_decode(arch)))
 		{

@@ -40,8 +40,8 @@ SED="sed"
 #debug
 _debug()
 {
-	echo $@ 1>&2
-	$@
+	echo "$@" 1>&2
+	"$@"
 }
 
 
@@ -99,9 +99,18 @@ while [ $# -gt 0 ]; do
 		continue
 	fi
 
+	#portability
+	RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
+	case $(uname -s) in
+		Darwin)
+			RPATH=
+			;;
+	esac
+
 	#create
-	$DEBUG $SED -e "s,@PREFIX@,$PREFIX," \
-			-e "s,@VERSION@,$VERSION," "$target.in" > "$target"
+	$DEBUG $SED -e "s:@PREFIX@:$PREFIX:" \
+			-e "s:@VERSION@:$VERSION:" \
+			-e "s:@RPATH@:$RPATH:" -- "$target.in" > "$target"
 	if [ $? -ne 0 ]; then
 		$DEBUG $RM -- "$target"
 		exit 2

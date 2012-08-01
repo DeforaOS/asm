@@ -103,7 +103,7 @@ while [ $# -gt 0 ]; do
 	RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
 	case $(uname -s) in
 		Darwin)
-			RPATH=
+			RPATH="-Wl,-rpath,\${libdir}"
 			;;
 	esac
 

@@ -108,9 +108,9 @@ while [ $# -gt 0 ]; do
 	esac
 
 	#create
-	$DEBUG $SED -e "s:@PREFIX@:$PREFIX:" \
-			-e "s:@VERSION@:$VERSION:" \
-			-e "s:@RPATH@:$RPATH:" -- "$target.in" > "$target"
+	$DEBUG $SED -e "s;@PREFIX@;$PREFIX;" \
+			-e "s;@VERSION@;$VERSION;" \
+			-e "s;@RPATH@;$RPATH;" -- "$target.in" > "$target"
 	if [ $? -ne 0 ]; then
 		$DEBUG $RM -- "$target"
 		exit 2

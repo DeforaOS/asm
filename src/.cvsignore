@@ -1,4 +1,5 @@
 asm
 asm-static
 deasm
+deasm-static
 libasm.so.0.0

@@ -17,9 +17,8 @@
 
 
 #variables
-DEASM="../src/deasm"
+DEASM="../src/deasm-static"
 DEBUG="debug"
-DEVNULL="/dev/null"
 
 
 #functions
@@ -34,7 +33,7 @@ deasm()
 	[ $# -eq 2 ] && format="$2"
 
 	[ -n "$format" ] && cmd="$cmd -a $arch -f $format"
-	$DEBUG $cmd "$file" > $DEVNULL
+	$DEBUG $cmd "$file"
 }
 
 
@@ -46,25 +45,52 @@ debug()
 }
 
 
+#usage
+_usage()
+{
+	echo "Usage: tests.sh" 1>&2
+	return 1
+}
+
+
 #main
+while getopts "P:" "name"; do
+	case "$name" in
+		P)
+			#XXX ignored
+			;;
+		?)
+			_usage
+			exit $?
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+if [ $# -ne 1 ]; then
+	_usage
+	exit $?
+fi
+target="$1"
+
+> "$target"
 FAILED=
-deasm amd64		|| FAILED="$FAILED amd64(error $?)"
-deasm arm		|| FAILED="$FAILED arm(error $?)"
-deasm armeb		|| FAILED="$FAILED armeb(error $?)"
-deasm armel		|| FAILED="$FAILED armel(error $?)"
-deasm dalvik flat	|| FAILED="$FAILED dalvik(error $?)"
-deasm i386		|| FAILED="$FAILED i386(error $?)"
-deasm i386_real flat	|| FAILED="$FAILED i386_flat(error $?)"
-deasm i486		|| FAILED="$FAILED i486(error $?)"
-deasm i586		|| FAILED="$FAILED i586(error $?)"
-deasm i686		|| FAILED="$FAILED i686(error $?)"
-deasm java flat		|| FAILED="$FAILED java(error $?)"
-deasm sparc		|| FAILED="$FAILED sparc(error $?)"
-deasm sparc64		|| FAILED="$FAILED sparc64(error $?)"
-deasm yasep flat	|| FAILED="$FAILED yasep(error $?)"
-deasm yasep16 flat	|| FAILED="$FAILED yasep16(error $?)"
-deasm yasep32 flat	|| FAILED="$FAILED yasep32(error $?)"
-[ -z "$FAILED" ]	&& exit 0
+deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
+deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"
+deasm armeb		>> "$target"	|| FAILED="$FAILED armeb(error $?)"
+deasm armel		>> "$target"	|| FAILED="$FAILED armel(error $?)"
+deasm dalvik flat	>> "$target"	|| FAILED="$FAILED dalvik(error $?)"
+deasm i386		>> "$target"	|| FAILED="$FAILED i386(error $?)"
+deasm i386_real flat	>> "$target"	|| FAILED="$FAILED i386_flat(error $?)"
+deasm i486		>> "$target"	|| FAILED="$FAILED i486(error $?)"
+deasm i586		>> "$target"	|| FAILED="$FAILED i586(error $?)"
+deasm i686		>> "$target"	|| FAILED="$FAILED i686(error $?)"
+deasm java flat		>> "$target"	|| FAILED="$FAILED java(error $?)"
+deasm sparc		>> "$target"	|| FAILED="$FAILED sparc(error $?)"
+deasm sparc64		>> "$target"	|| FAILED="$FAILED sparc64(error $?)"
+deasm yasep flat	>> "$target"	|| FAILED="$FAILED yasep(error $?)"
+deasm yasep16 flat	>> "$target"	|| FAILED="$FAILED yasep16(error $?)"
+deasm yasep32 flat	>> "$target"	|| FAILED="$FAILED yasep32(error $?)"
+[ -z "$FAILED" ]			&& exit 0
 echo "Failed tests:$FAILED" 1>&2
 #XXX ignore errors for now
 #exit 2

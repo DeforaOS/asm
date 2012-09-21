@@ -1,5 +1,5 @@
 SUBDIRS	= arch format
-TARGETS	= libasm.a libasm.so.0.0 libasm.so.0 libasm.so asm asm-static deasm
+TARGETS	= libasm.a libasm.so.0.0 libasm.so.0 libasm.so asm asm-static deasm deasm-static
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -55,6 +55,11 @@ deasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L. -Wl,-rpath,$(LIBDIR) -lasm
 
 deasm: $(deasm_OBJS) libasm.so
 	$(CC) -o deasm $(deasm_OBJS) $(deasm_LDFLAGS)
+deasm-static_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+deasm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) `pkg-config --libs cpp` deasm.o libasm.a
+
+deasm-static: $(deasm-static_OBJS) deasm.o libasm.a
+	$(CC) -o deasm-static $(deasm-static_OBJS) $(deasm-static_LDFLAGS)
 
 arch.o: arch.c ../include/Asm/arch.h ../include/Asm/asm.h arch.h code.h ../config.h
 	$(CC) -D PREFIX=\"$(PREFIX)\" $(libasm_CFLAGS) -c arch.c
@@ -82,11 +87,11 @@ deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../
 
 clean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
-	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS)
+	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 
 distclean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
-	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS)
+	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)

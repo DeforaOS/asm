@@ -456,8 +456,8 @@ int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret = 0;
-	AsmArchInstructionCall * c = *calls;
-	size_t c_cnt = *calls_cnt;
+	AsmArchInstructionCall * c;
+	size_t c_cnt;
 	AsmArchInstructionCall * p;
 	size_t offset = 0;
 
@@ -467,6 +467,12 @@ int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
 	if(arch->plugin->decode == NULL)
 		return -error_set_code(1, "%s: %s", arch->plugin->name,
 				"Disassembly not supported");
+	/* check the arguments */
+	if(calls == NULL || calls_cnt == NULL)
+		return -error_set_code(1, "%s: %s", arch->plugin->name,
+				strerror(EINVAL));
+	c = *calls;
+	c_cnt = *calls_cnt;
 	arch->code = code;
 	for(;;)
 	{

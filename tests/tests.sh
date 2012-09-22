@@ -23,7 +23,7 @@ DEBUG="debug"
 
 #functions
 #deasm
-deasm()
+_deasm()
 {
 	[ $# -lt 1 ] && return 1
 	file="$1.o"
@@ -74,22 +74,22 @@ target="$1"
 
 > "$target"
 FAILED=
-deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
-deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"
-deasm armeb		>> "$target"	|| FAILED="$FAILED armeb(error $?)"
-deasm armel		>> "$target"	|| FAILED="$FAILED armel(error $?)"
-deasm dalvik flat	>> "$target"	|| FAILED="$FAILED dalvik(error $?)"
-deasm i386		>> "$target"	|| FAILED="$FAILED i386(error $?)"
-deasm i386_real flat	>> "$target"	|| FAILED="$FAILED i386_flat(error $?)"
-deasm i486		>> "$target"	|| FAILED="$FAILED i486(error $?)"
-deasm i586		>> "$target"	|| FAILED="$FAILED i586(error $?)"
-deasm i686		>> "$target"	|| FAILED="$FAILED i686(error $?)"
-deasm java flat		>> "$target"	|| FAILED="$FAILED java(error $?)"
-deasm sparc		>> "$target"	|| FAILED="$FAILED sparc(error $?)"
-deasm sparc64		>> "$target"	|| FAILED="$FAILED sparc64(error $?)"
-deasm yasep flat	>> "$target"	|| FAILED="$FAILED yasep(error $?)"
-deasm yasep16 flat	>> "$target"	|| FAILED="$FAILED yasep16(error $?)"
-deasm yasep32 flat	>> "$target"	|| FAILED="$FAILED yasep32(error $?)"
+_deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
+_deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"
+_deasm armeb		>> "$target"	|| FAILED="$FAILED armeb(error $?)"
+_deasm armel		>> "$target"	|| FAILED="$FAILED armel(error $?)"
+_deasm dalvik flat	>> "$target"	|| FAILED="$FAILED dalvik(error $?)"
+_deasm i386		>> "$target"	|| FAILED="$FAILED i386(error $?)"
+_deasm i386_real flat	>> "$target"	|| FAILED="$FAILED i386_flat(error $?)"
+_deasm i486		>> "$target"	|| FAILED="$FAILED i486(error $?)"
+_deasm i586		>> "$target"	|| FAILED="$FAILED i586(error $?)"
+_deasm i686		>> "$target"	|| FAILED="$FAILED i686(error $?)"
+_deasm java flat	>> "$target"	|| FAILED="$FAILED java(error $?)"
+_deasm sparc		>> "$target"	|| FAILED="$FAILED sparc(error $?)"
+_deasm sparc64		>> "$target"	|| FAILED="$FAILED sparc64(error $?)"
+_deasm yasep flat	>> "$target"	|| FAILED="$FAILED yasep(error $?)"
+_deasm yasep16 flat	>> "$target"	|| FAILED="$FAILED yasep16(error $?)"
+_deasm yasep32 flat	>> "$target"	|| FAILED="$FAILED yasep32(error $?)"
 [ -z "$FAILED" ]			&& exit 0
 echo "Failed tests:$FAILED" 1>&2
 #XXX ignore errors for now

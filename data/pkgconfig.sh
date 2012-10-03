@@ -100,12 +100,15 @@ while [ $# -gt 0 ]; do
 	fi
 
 	#portability
-	RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
-	case $(uname -s) in
-		Darwin)
-			RPATH="-Wl,-rpath,\${libdir}"
-			;;
-	esac
+	RPATH=
+	if [ "$PREFIX" != "/usr" ]; then
+		RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
+		case $(uname -s) in
+			Darwin)
+				RPATH="-Wl,-rpath,\${libdir}"
+				;;
+		esac
+	fi
 
 	#create
 	$DEBUG $SED -e "s;@PREFIX@;$PREFIX;" \

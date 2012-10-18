@@ -166,7 +166,11 @@ static AsmFormat * _new_file_format(char const * filename, FILE * fp)
 	DIR * dir;
 	struct dirent * de;
 	size_t len;
+#ifdef __APPLE__
+	char const ext[] = ".dylib";
+#else
 	char const ext[] = ".so";
+#endif
 	int hasflat = 0;
 	AsmFormat * format = NULL;
 
@@ -180,7 +184,7 @@ static AsmFormat * _new_file_format(char const * filename, FILE * fp)
 	}
 	while((de = readdir(dir)) != NULL)
 	{
-		if((len = strlen(de->d_name)) < 4)
+		if((len = strlen(de->d_name)) < sizeof(ext))
 			continue;
 		if(strcmp(&de->d_name[len - sizeof(ext) + 1], ext) != 0)
 			continue;

@@ -2,6 +2,7 @@ TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.
 PREFIX	= /usr/local
 DESTDIR	=
 BINDIR	= $(PREFIX)/bin
+SBINDIR	= $(PREFIX)/sbin
 AS	= ../src/asm-static
 ASFLAGS	?=
 RM	?= rm -f

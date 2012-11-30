@@ -21,11 +21,11 @@ distclean:
 
 install:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) install) || exit; done
-	$(MKDIR) $(DESTDIR)$(PREFIX)/include/Devel
-	$(INSTALL) -m 0644 -- Asm.h $(DESTDIR)$(PREFIX)/include/Devel/Asm.h
+	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel
+	$(INSTALL) -m 0644 -- Asm.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm.h
 
 uninstall:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
-	$(RM) -- $(DESTDIR)$(PREFIX)/include/Devel/Asm.h
+	$(RM) -- $(DESTDIR)$(INCLUDEDIR)/Devel/Asm.h
 
 .PHONY: all subdirs clean distclean install uninstall

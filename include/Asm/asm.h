@@ -47,9 +47,10 @@ int asm_set_arch(Asm * a, char const * arch);
 char const * asm_get_format(Asm * a);
 int asm_set_format(Asm * a, char const * format);
 
-int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size);
-int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size,
-		off_t base);
+AsmFunction * asm_set_function(Asm * a, char const * name, off_t offset,
+		ssize_t size);
+AsmSection * asm_set_section(Asm * a, char const * name, off_t offset,
+		ssize_t size, off_t base);
 
 
 /* useful */

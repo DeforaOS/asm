@@ -414,7 +414,7 @@ static int _pe_decode(AsmFormatPlugin * format, int raw)
 			*q = '\0';
 		if(helper->set_section(helper->format, i, psh.name,
 					psh.raw_offset, psh.raw_size,
-					psh.vaddr + base) != 0)
+					psh.vaddr + base) == NULL)
 			break;
 		if(helper->seek(helper->format, offset, SEEK_SET) != offset)
 			break;

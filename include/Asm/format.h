@@ -49,11 +49,12 @@ typedef struct _AsmFormatPluginHelper
 	/* FIXME let a different architecture be specified in the callback? */
 	AsmSection * (*get_section_by_id)(AsmFormat * format, AsmSectionId id);
 	AsmString * (*get_string_by_id)(AsmFormat * format, AsmStringId id);
-	int (*set_function)(AsmFormat * format, int id, char const * name,
-			off_t offset, ssize_t size);
-	int (*set_section)(AsmFormat * format, int id, char const * name,
-			off_t offset, ssize_t size, off_t base);
-	int (*set_string)(AsmFormat * format, int id, char const * name,
+	AsmSection * (*set_function)(AsmFormat * format, int id,
+			char const * name, off_t offset, ssize_t size);
+	AsmSection * (*set_section)(AsmFormat * format, int id,
+			char const * name, off_t offset, ssize_t size,
+			off_t base);
+	AsmString * (*set_string)(AsmFormat * format, int id, char const * name,
 			off_t offset, ssize_t size);
 	int (*decode)(AsmFormat * format, off_t offset, size_t size, off_t base,
 			AsmArchInstructionCall ** calls, size_t * calls_cnt);

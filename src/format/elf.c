@@ -414,7 +414,7 @@ static int _elf_decode32(AsmFormatPlugin * format, int raw)
 				&& helper->set_section(helper->format, i,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
-					base + shdr[i].sh_offset) < 0)
+					base + shdr[i].sh_offset) == NULL)
 			break;
 	}
 	free(shstrtab);
@@ -613,7 +613,7 @@ static int _elf_decode64(AsmFormatPlugin * format, int raw)
 				&& helper->set_section(helper->format, i,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
-					base + shdr[i].sh_offset) < 0)
+					base + shdr[i].sh_offset) == NULL)
 			break;
 	}
 	free(shstrtab);

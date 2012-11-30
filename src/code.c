@@ -318,66 +318,73 @@ void asmcode_get_strings(AsmCode * code, AsmString ** strings,
 
 
 /* asmcode_set_function */
-int asmcode_set_function(AsmCode * code, int id, char const * name,
+AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
 		off_t offset, ssize_t size)
 {
-	AsmFunction * cf = NULL;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(%u, \"%s\", %ld, %ld)\n", __func__, id, name,
-			offset, size);
-#endif
-	if(id >= 0)
-		cf = _asmcode_function_get_by_id(code, id);
-	if(cf == NULL)
-		cf = _asmcode_function_append(code);
-	if(cf == NULL || _asmcode_function_set(cf, id, name, offset, size) != 0)
-		return -1;
-	/* FIXME isn't it considered an error if no ID is known yet? */
-	return cf->id;
-}
-
-
-/* asmcode_set_section */
-int asmcode_set_section(AsmCode * code, int id, char const * name, off_t offset,
-		ssize_t size, off_t base)
-{
-	AsmSection * cs = NULL;
+	AsmFunction * ret = NULL;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%d, \"%s\", %ld, %ld)\n", __func__, id, name,
 			offset, size);
 #endif
 	if(id >= 0)
-		cs = _asmcode_section_get_by_id(code, id);
-	if(cs == NULL)
-		cs = _asmcode_section_append(code);
-	if(cs == NULL || _asmcode_section_set(cs, id, name, offset, size, base)
+		ret = _asmcode_function_get_by_id(code, id);
+	if(ret == NULL)
+		ret = _asmcode_function_append(code);
+	if(ret == NULL || _asmcode_function_set(ret, id, name, offset, size)
 			!= 0)
-		return -1;
-	/* FIXME isn't it considered an error if no ID is known yet? */
-	return cs->id;
+		return NULL;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() => %d\n", __func__, ret->id);
+#endif
+	return ret;
+}
+
+
+/* asmcode_set_section */
+AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t size, off_t base)
+{
+	AsmSection * ret = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%d, \"%s\", %ld, %ld)\n", __func__, id, name,
+			offset, size);
+#endif
+	if(id >= 0)
+		ret = _asmcode_section_get_by_id(code, id);
+	if(ret == NULL)
+		ret = _asmcode_section_append(code);
+	if(ret == NULL || _asmcode_section_set(ret, id, name, offset, size,
+				base) != 0)
+		return NULL;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() => %d\n", __func__, ret->id);
+#endif
+	return ret;
 }
 
 
 /* asmcode_set_string */
-int asmcode_set_string(AsmCode * code, int id, char const * name, off_t offset,
-		ssize_t length)
+AsmString * asmcode_set_string(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t length)
 {
-	AsmString * cs = NULL;
+	AsmString * ret = NULL;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(0x%x)\n", __func__, id);
 #endif
 	if(id >= 0)
-		cs = _asmcode_string_get_by_id(code, id);
-	if(cs == NULL)
-		cs = _asmcode_string_append(code);
-	if(cs == NULL || _asmcode_string_set(code, cs, id, name, offset,
+		ret = _asmcode_string_get_by_id(code, id);
+	if(ret == NULL)
+		ret = _asmcode_string_append(code);
+	if(ret == NULL || _asmcode_string_set(code, ret, id, name, offset,
 				length) != 0)
-		return -1;
-	/* FIXME isn't it considered an error if no ID is known yet? */
-	return cs->id;
+		return NULL;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() => %d\n", __func__, ret->id);
+#endif
+	return ret;
 }
 
 

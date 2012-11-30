@@ -154,15 +154,16 @@ int asm_set_format(Asm * a, char const * format)
 
 
 /* asm_set_function */
-int asm_set_function(Asm * a, char const * name, off_t offset, ssize_t size)
+AsmFunction * asm_set_function(Asm * a, char const * name, off_t offset,
+		ssize_t size)
 {
 	return asmcode_set_function(a->code, -1, name, offset, size);
 }
 
 
 /* asm_set_section */
-int asm_set_section(Asm * a, char const * name, off_t offset, ssize_t size,
-		off_t base)
+AsmSection * asm_set_section(Asm * a, char const * name, off_t offset,
+		ssize_t size, off_t base)
 {
 	return asmcode_set_section(a->code, -1, name, offset, size, base);
 }

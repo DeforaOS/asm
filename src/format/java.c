@@ -352,7 +352,8 @@ static int _java_decode(AsmFormatPlugin * format, int raw)
 	/* XXX consider the whole file as a section */
 	if((end = helper->seek(helper->format, 0, SEEK_END)) < 0)
 		return -1;
-	return helper->set_section(helper->format, 0, ".text", 0, end, 0);
+	return (helper->set_section(helper->format, 0, ".text", 0, end, 0)
+			!= NULL) ? 0 : -1;
 }
 
 
@@ -570,7 +571,7 @@ static int _decode_constants(AsmFormatPlugin * format, uint16_t cnt)
 				if(helper->set_string(helper->format, i, NULL,
 							jcin->offset + 3,
 							jcin->info.utf8.length)
-						< 0)
+						== NULL)
 					return -1;
 				break;
 			case CONSTANT_Fieldref:
@@ -590,7 +591,7 @@ static int _decode_constants(AsmFormatPlugin * format, uint16_t cnt)
 				if(helper->set_string(helper->format, i, NULL,
 							jcin->offset + 3,
 							jcin->info.utf8.length)
-						< 0)
+						== NULL)
 					return -1;
 				break;
 		}
@@ -682,9 +683,10 @@ static int _methods_add(AsmFormatPlugin * format, uint16_t id, uint16_t name,
 	if(name >= java->constants_cnt || jci->tag != CONSTANT_Utf8)
 		return 0;
 	if(helper->set_string(helper->format, name, NULL, jci->offset + 3,
-				jci->info.utf8.length) < 0)
+				jci->info.utf8.length) == NULL)
 		return -1;
 	if((as = helper->get_string_by_id(helper->format, name)) == NULL)
 		return -1;
-	return helper->set_function(helper->format, id, as->name, offset, size);
+	return (helper->set_function(helper->format, id, as->name, offset,
+				size) != NULL) ? 0 : -1;
 }

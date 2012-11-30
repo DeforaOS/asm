@@ -53,11 +53,13 @@ static AsmSection * _format_helper_get_section_by_id(AsmFormat * format,
 		AsmSectionId id);
 static AsmString * _format_helper_get_string_by_id(AsmFormat * format,
 		AsmStringId id);
-static int _format_helper_set_function(AsmFormat * format, AsmFunctionId id,
-		char const * name, off_t offset, ssize_t size);
-static int _format_helper_set_section(AsmFormat * format, AsmSectionId id,
-		char const * name, off_t offset, ssize_t size, off_t base);
-static int _format_helper_set_string(AsmFormat * format, AsmStringId id,
+static AsmFunction * _format_helper_set_function(AsmFormat * format,
+		AsmFunctionId id, char const * name, off_t offset,
+		ssize_t size);
+static AsmSection * _format_helper_set_section(AsmFormat * format,
+		AsmSectionId id, char const * name, off_t offset, ssize_t size,
+		off_t base);
+static AsmString * _format_helper_set_string(AsmFormat * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size);
 
 static int _format_helper_decode(AsmFormat * format, off_t offset, size_t size,
@@ -318,23 +320,24 @@ static AsmString * _format_helper_get_string_by_id(AsmFormat * format,
 
 
 /* format_helper_set_function */
-static int _format_helper_set_function(AsmFormat * format, AsmFunctionId id,
-		char const * name, off_t offset, ssize_t size)
+static AsmFunction * _format_helper_set_function(AsmFormat * format,
+		AsmFunctionId id, char const * name, off_t offset, ssize_t size)
 {
 	return asmcode_set_function(format->code, id, name, offset, size);
 }
 
 
 /* format_helper_set_section */
-static int _format_helper_set_section(AsmFormat * format, AsmSectionId id,
-		char const * name, off_t offset, ssize_t size, off_t base)
+static AsmSection * _format_helper_set_section(AsmFormat * format,
+		AsmSectionId id, char const * name, off_t offset, ssize_t size,
+		off_t base)
 {
 	return asmcode_set_section(format->code, id, name, offset, size, base);
 }
 
 
 /* format_helper_set_string */
-static int _format_helper_set_string(AsmFormat * format, AsmStringId id,
+static AsmString * _format_helper_set_string(AsmFormat * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size)
 {
 	return asmcode_set_string(format->code, id, name, offset, size);

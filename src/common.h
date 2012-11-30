@@ -18,7 +18,7 @@
 #ifndef ASM_COMMON_H
 # define ASM_COMMON_H
 
-# include <cpp.h>
+# include <Devel/CPP.h>
 
 
 /* protected */

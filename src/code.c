@@ -345,7 +345,7 @@ int asmcode_set_section(AsmCode * code, int id, char const * name, off_t offset,
 	AsmSection * cs = NULL;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(%u, \"%s\", %ld, %ld)\n", __func__, id, name,
+	fprintf(stderr, "DEBUG: %s(%d, \"%s\", %ld, %ld)\n", __func__, id, name,
 			offset, size);
 #endif
 	if(id >= 0)

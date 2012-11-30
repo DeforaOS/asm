@@ -243,6 +243,23 @@ int asm_guess_arch(Asm * a)
 }
 
 
+/* asm_guess_format */
+int asm_guess_format(Asm * a)
+{
+	int ret = -1;
+	AsmCode * code;
+	char const * format;
+
+	if((code = asmcode_new(a->arch, a->format)) == NULL)
+		return -1;
+	if((format = asmcode_get_format(code)) != NULL
+			&& asm_set_format(a, format) == 0)
+		ret = 0;
+	asmcode_delete(code);
+	return ret;
+}
+
+
 /* asm_instruction */
 int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 {

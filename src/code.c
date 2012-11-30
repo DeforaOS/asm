@@ -257,7 +257,9 @@ char const * asmcode_get_filename(AsmCode * code)
 /* asmcode_get_format */
 char const * asmcode_get_format(AsmCode * code)
 {
-	return format_get_name(code->format);
+	if(code->format != NULL)
+		return format_get_name(code->format);
+	return arch_get_format(code->arch);
 }
 
 

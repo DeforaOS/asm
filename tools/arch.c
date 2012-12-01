@@ -31,16 +31,6 @@
 #include "../src/arch/mips.c"
 #undef arch_plugin
 
-#if 0
-#define arch_plugin arch_plugin_mipseb
-#include "../src/arch/mipseb.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_mipsel
-#include "../src/arch/mipsel.c"
-#undef arch_plugin
-#endif
-
 #define arch_plugin arch_plugin_sparc
 #include "../src/arch/sparc.c"
 #undef arch_plugin
@@ -76,6 +66,8 @@ extern AsmArchPlugin arch_plugin_i386;
 extern AsmArchPlugin arch_plugin_i486;
 extern AsmArchPlugin arch_plugin_i586;
 extern AsmArchPlugin arch_plugin_i686;
+extern AsmArchPlugin arch_plugin_mipseb;
+extern AsmArchPlugin arch_plugin_mipsel;
 
 static struct
 {
@@ -94,6 +86,8 @@ static struct
 	{ "i686",	NULL			},
 	{ "java",	&arch_plugin_java	},
 	{ "mips",	&arch_plugin_mips	},
+	{ "mipseb",	NULL			},
+	{ "mipsel",	NULL			},
 	{ "sparc",	&arch_plugin_sparc	},
 	{ "sparc64",	&arch_plugin_sparc64	},
 	{ "yasep",	&arch_plugin_yasep	}
@@ -120,6 +114,8 @@ AsmArch * arch_new(char const * name)
 	_arch[6].plugin = &arch_plugin_i486;
 	_arch[7].plugin = &arch_plugin_i586;
 	_arch[8].plugin = &arch_plugin_i686;
+	_arch[10].plugin = &arch_plugin_mipseb;
+	_arch[11].plugin = &arch_plugin_mipsel;
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)
 		{

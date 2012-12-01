@@ -149,6 +149,8 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/arch/i486.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i586.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i686.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/mipseb.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/mipsel.c \
 		$(PACKAGE)-$(VERSION)/tools/format.c \
 		$(PACKAGE)-$(VERSION)/tools/Makefile \
 		$(PACKAGE)-$(VERSION)/tools/project.conf \

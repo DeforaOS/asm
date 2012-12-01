@@ -76,40 +76,44 @@ static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 
 
 /* sparc_encode */
-static int _encode_branch(AsmArchInstruction * instruction,
+static int _sparc_encode_branch(AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call, uint32_t * opcode);
-static int _encode_integer(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
-static int _encode_loadstore(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
-static int _encode_sethi(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
+static int _sparc_encode_integer(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode);
+static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode);
+static int _sparc_encode_sethi(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode);
 
 static int _sparc_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
 	if((opcode & 0xc0000000) == 0xc0000000)
 	{
-		if(_encode_loadstore(plugin, instruction, call, &opcode) != 0)
+		if(_sparc_encode_loadstore(plugin, instruction, call, &opcode)
+				!= 0)
 			return -1;
 	}
 	else if((opcode & 0xc1c00000) == 0x01000000)
 	{
-		if(_encode_sethi(plugin, instruction, call, &opcode) != 0)
+		if(_sparc_encode_sethi(plugin, instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else if((opcode & 0xc0000000) == 0x80000000)
 	{
-		if(_encode_integer(plugin, instruction, call, &opcode) != 0)
+		if(_sparc_encode_integer(plugin, instruction, call, &opcode)
+				!= 0)
 			return -1;
 	}
 	else if((opcode & 0xc1c00000) == 0x00800000)
 	{
-		if(_encode_branch(instruction, call, &opcode) != 0)
+		if(_sparc_encode_branch(instruction, call, &opcode) != 0)
 			return -1;
 	}
 	else
@@ -121,7 +125,7 @@ static int _sparc_encode(AsmArchPlugin * plugin,
 	return 0;
 }
 
-static int _encode_branch(AsmArchInstruction * instruction,
+static int _sparc_encode_branch(AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call, uint32_t * opcode)
 {
 	uint32_t disp;
@@ -136,8 +140,9 @@ static int _encode_branch(AsmArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_integer(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+static int _sparc_encode_integer(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
@@ -185,8 +190,9 @@ static int _encode_integer(AsmArchPlugin * plugin, AsmArchInstruction * instruct
 	return 0;
 }
 
-static int _encode_loadstore(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
@@ -271,8 +277,9 @@ static int _encode_loadstore(AsmArchPlugin * plugin, AsmArchInstruction * instru
 	return 0;
 }
 
-static int _encode_sethi(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+static int _sparc_encode_sethi(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;

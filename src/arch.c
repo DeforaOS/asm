@@ -72,6 +72,7 @@ static ssize_t _arch_write(AsmArch * arch, void const * buf, size_t size);
 
 /* public */
 /* functions */
+#ifndef STANDALONE
 /* arch_new */
 AsmArch * arch_new(char const * name)
 {
@@ -113,6 +114,7 @@ AsmArch * arch_new(char const * name)
 	a->buffer_pos = 0;
 	return a;
 }
+#endif
 
 
 /* arch_delete */

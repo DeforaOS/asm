@@ -1,6 +1,6 @@
 PACKAGE	= Asm
 VERSION	= 0.2.1
-SUBDIRS	= data doc include src tests
+SUBDIRS	= data doc include src tests tools
 RM	?= rm -f
 LN	?= ln -f
 TAR	?= tar -czvf
@@ -141,6 +141,10 @@ dist:
 		$(PACKAGE)-$(VERSION)/tests/Makefile \
 		$(PACKAGE)-$(VERSION)/tests/tests.sh \
 		$(PACKAGE)-$(VERSION)/tests/project.conf \
+		$(PACKAGE)-$(VERSION)/tools/arch.c \
+		$(PACKAGE)-$(VERSION)/tools/format.c \
+		$(PACKAGE)-$(VERSION)/tools/Makefile \
+		$(PACKAGE)-$(VERSION)/tools/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/COPYING \
 		$(PACKAGE)-$(VERSION)/config.h \

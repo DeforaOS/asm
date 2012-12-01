@@ -72,6 +72,7 @@ static ssize_t _format_helper_write(AsmFormat * format, void const * buf,
 
 /* public */
 /* functions */
+#ifndef STANDALONE
 /* format_new */
 AsmFormat * format_new(char const * format)
 {
@@ -112,6 +113,7 @@ AsmFormat * format_new(char const * format)
 	f->helper.write = _format_helper_write;
 	return f;
 }
+#endif
 
 
 /* format_delete */

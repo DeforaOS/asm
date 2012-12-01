@@ -18,7 +18,7 @@ INSTALL	?= install
 
 all: $(TARGETS)
 
-libasm_OBJS = arch.o arch/arm.o arch/armeb.o arch/armel.o arch/i386.o arch/i486.o arch/i586.o arch/i686.o arch/mipseb.o arch/mipsel.o arch/yasep16.o arch/yasep32.o format.o
+libasm_OBJS = arch.o arch/arm.o arch/armeb.o arch/armel.o arch/i386.o arch/i386_real.o arch/i486.o arch/i586.o arch/i686.o arch/mipseb.o arch/mipsel.o arch/yasep16.o arch/yasep32.o format.o
 libasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 libasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) ../src/asm.o ../src/code.o ../src/parser.o ../src/token.o `pkg-config --libs cpp`
 
@@ -45,6 +45,9 @@ arch/armel.o: arch/armel.c
 
 arch/i386.o: arch/i386.c
 	$(CC) $(libasm_CFLAGS) -o arch/i386.o -c arch/i386.c
+
+arch/i386_real.o: arch/i386_real.c
+	$(CC) $(libasm_CFLAGS) -o arch/i386_real.o -c arch/i386_real.c
 
 arch/i486.o: arch/i486.c
 	$(CC) $(libasm_CFLAGS) -o arch/i486.o -c arch/i486.c

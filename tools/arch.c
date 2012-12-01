@@ -63,6 +63,7 @@ extern AsmArchPlugin arch_plugin_arm;
 extern AsmArchPlugin arch_plugin_armeb;
 extern AsmArchPlugin arch_plugin_armel;
 extern AsmArchPlugin arch_plugin_i386;
+extern AsmArchPlugin arch_plugin_i386_real;
 extern AsmArchPlugin arch_plugin_i486;
 extern AsmArchPlugin arch_plugin_i586;
 extern AsmArchPlugin arch_plugin_i686;
@@ -83,6 +84,7 @@ static struct
 	{ "armel",	NULL			},
 	{ "dalvik",	&arch_plugin_dalvik	},
 	{ "i386",	NULL			},
+	{ "i386_real",	NULL			},
 	{ "i486",	NULL			},
 	{ "i586",	NULL			},
 	{ "i686",	NULL			},
@@ -117,13 +119,14 @@ AsmArch * arch_new(char const * name)
 		_arch[2].plugin = &arch_plugin_armeb;
 		_arch[3].plugin = &arch_plugin_armel;
 		_arch[5].plugin = &arch_plugin_i386;
-		_arch[6].plugin = &arch_plugin_i486;
-		_arch[7].plugin = &arch_plugin_i586;
-		_arch[8].plugin = &arch_plugin_i686;
-		_arch[11].plugin = &arch_plugin_mipseb;
-		_arch[12].plugin = &arch_plugin_mipsel;
-		_arch[16].plugin = &arch_plugin_yasep16;
-		_arch[17].plugin = &arch_plugin_yasep32;
+		_arch[6].plugin = &arch_plugin_i386_real;
+		_arch[7].plugin = &arch_plugin_i486;
+		_arch[8].plugin = &arch_plugin_i586;
+		_arch[9].plugin = &arch_plugin_i686;
+		_arch[12].plugin = &arch_plugin_mipseb;
+		_arch[13].plugin = &arch_plugin_mipsel;
+		_arch[17].plugin = &arch_plugin_yasep16;
+		_arch[18].plugin = &arch_plugin_yasep32;
 	}
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)

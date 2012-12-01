@@ -146,6 +146,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/arch/armeb.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/armel.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i386.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/i386_real.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i486.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i586.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i686.c \

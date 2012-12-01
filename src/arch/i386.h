@@ -15,9 +15,13 @@
 
 
 
-#include <System.h>
-#include <string.h>
-#include <errno.h>
+
+#ifndef ASM_ARCH_I386_H
+# define ASM_ARCH_I386_H
+
+# include <System.h>
+# include <string.h>
+# include <errno.h>
 
 
 /* i386 */
@@ -713,3 +717,5 @@ static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,
 		ioperand.value.immediate.value = ar->id;
 	return _encode_immediate(plugin, &ioperand);
 }
+
+#endif /* !ASM_ARCH_I386_H */

@@ -107,15 +107,18 @@ AsmArch * arch_new(char const * name)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	/* XXX */
-	_arch[1].plugin = &arch_plugin_arm;
-	_arch[2].plugin = &arch_plugin_armeb;
-	_arch[3].plugin = &arch_plugin_armel;
-	_arch[5].plugin = &arch_plugin_i386;
-	_arch[6].plugin = &arch_plugin_i486;
-	_arch[7].plugin = &arch_plugin_i586;
-	_arch[8].plugin = &arch_plugin_i686;
-	_arch[10].plugin = &arch_plugin_mipseb;
-	_arch[11].plugin = &arch_plugin_mipsel;
+	if(_arch[1].plugin == NULL)
+	{
+		_arch[1].plugin = &arch_plugin_arm;
+		_arch[2].plugin = &arch_plugin_armeb;
+		_arch[3].plugin = &arch_plugin_armel;
+		_arch[5].plugin = &arch_plugin_i386;
+		_arch[6].plugin = &arch_plugin_i486;
+		_arch[7].plugin = &arch_plugin_i586;
+		_arch[8].plugin = &arch_plugin_i686;
+		_arch[10].plugin = &arch_plugin_mipseb;
+		_arch[11].plugin = &arch_plugin_mipsel;
+	}
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)
 		{

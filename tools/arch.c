@@ -15,94 +15,92 @@
 
 
 
-#undef arch_plugin
 #define arch_plugin arch_plugin_amd64
 #include "../src/arch/amd64.c"
+#undef arch_plugin
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_arm
 #include "../src/arch/arm.c"
+#undef arch_plugin
 #endif
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_armeb
 #include "../src/arch/armeb.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_armel
 #include "../src/arch/armel.c"
+#undef arch_plugin
 #endif
 
-#if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_dalvik
 #include "../src/arch/dalvik.c"
-#endif
+#undef arch_plugin
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_i386
 #include "../src/arch/i386.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_i386_real
 #include "../src/arch/i386_real.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_i486
 #include "../src/arch/i486.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_i586
 #include "../src/arch/i586.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_i686
 #include "../src/arch/i686.c"
+#undef arch_plugin
 #endif
 
-#undef arch_plugin
 #define arch_plugin arch_plugin_java
 #include "../src/arch/java.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_mips
 #include "../src/arch/mips.c"
+#undef arch_plugin
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_mipseb
 #include "../src/arch/mipseb.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_mipsel
 #include "../src/arch/mipsel.c"
+#undef arch_plugin
 #endif
 
-#undef arch_plugin
 #define arch_plugin arch_plugin_sparc
 #include "../src/arch/sparc.c"
+#undef arch_plugin
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_sparc64
 #include "../src/arch/sparc64.c"
+#undef arch_plugin
 #endif
 
-#undef arch_plugin
 #define arch_plugin arch_plugin_yasep
 #include "../src/arch/yasep.c"
+#undef arch_plugin
 
 #if 0
-#undef arch_plugin
 #define arch_plugin arch_plugin_yasep16
 #include "../src/arch/yasep16.c"
-
 #undef arch_plugin
+
 #define arch_plugin arch_plugin_yasep32
 #include "../src/arch/yasep32.c"
+#undef arch_plugin
 #endif
 
 #include "../src/arch.c"
@@ -118,6 +116,7 @@ static const struct
 } _arch[] =
 {
 	{ "amd64",	&arch_plugin_amd64	},
+	{ "dalvik",	&arch_plugin_dalvik	},
 	{ "java",	&arch_plugin_java	},
 	{ "mips",	&arch_plugin_mips	},
 	{ "sparc",	&arch_plugin_sparc	},

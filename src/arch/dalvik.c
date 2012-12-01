@@ -35,20 +35,20 @@ typedef struct _DalvikDecode
 
 /* constants */
 /* register sizes */
-#define REG(name, size, id) REG_ ## name ## _size = size,
+#define REG(name, size, id) REG_dalvik_ ## name ## _size = size,
 enum
 {
 #include "dalvik.reg"
-	REG_size_count
+	REG_dalvik_size_count
 };
 #undef REG
 
 /* register ids */
-#define REG(name, size, id) REG_ ## name ## _id = id,
+#define REG(name, size, id) REG_dalvik_ ## name ## _id = id,
 enum
 {
 #include "dalvik.reg"
-	REG_id_count
+	REG_dalvik_id_count
 };
 #undef REG
 
@@ -79,9 +79,11 @@ static AsmArchInstruction _dalvik_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _dalvik_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _dalvik_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
-static int _dalvik_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
+static int _dalvik_decode(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call);
 
 
 /* public */
@@ -103,7 +105,8 @@ AsmArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* dalvik_encode */
-static int _dalvik_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _dalvik_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
@@ -138,11 +141,12 @@ static int _dalvik_encode(AsmArchPlugin * plugin, AsmArchInstruction * instructi
 
 
 /* dalvik_decode */
-static int _decode_immediate(DalvikDecode * dd, size_t i);
-static int _decode_operand(DalvikDecode * dd, size_t i);
-static int _decode_register(DalvikDecode * dd, size_t i);
+static int _dalvik_decode_immediate(DalvikDecode * dd, size_t i);
+static int _dalvik_decode_operand(DalvikDecode * dd, size_t i);
+static int _dalvik_decode_register(DalvikDecode * dd, size_t i);
 
-static int _dalvik_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
+static int _dalvik_decode(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call)
 {
 	DalvikDecode dd;
 	AsmArchPluginHelper * helper = plugin->helper;
@@ -190,13 +194,13 @@ static int _dalvik_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	call->operands[2].definition = ai->op3;
 	for(i = 0; i < 3 && AO_GET_TYPE(call->operands[i].definition)
 			!= AOT_NONE; i++)
-		if(_decode_operand(&dd, i) != 0)
+		if(_dalvik_decode_operand(&dd, i) != 0)
 			return -1;
 	call->operands_cnt = i;
 	return 0;
 }
 
-static int _decode_immediate(DalvikDecode * dd, size_t i)
+static int _dalvik_decode_immediate(DalvikDecode * dd, size_t i)
 {
 	AsmArchPluginHelper * helper = dd->plugin->helper;
 	AsmArchOperand * ao = &dd->call->operands[i];
@@ -262,14 +266,14 @@ static int _decode_immediate(DalvikDecode * dd, size_t i)
 	return 0;
 }
 
-static int _decode_operand(DalvikDecode * dd, size_t i)
+static int _dalvik_decode_operand(DalvikDecode * dd, size_t i)
 {
 	switch(AO_GET_TYPE(dd->call->operands[i].definition))
 	{
 		case AOT_IMMEDIATE:
-			return _decode_immediate(dd, i);
+			return _dalvik_decode_immediate(dd, i);
 		case AOT_REGISTER:
-			return _decode_register(dd, i);
+			return _dalvik_decode_register(dd, i);
 		default:
 			return -error_set_code(1, "%s", "Unsupported operand"
 					" type");
@@ -277,7 +281,7 @@ static int _decode_operand(DalvikDecode * dd, size_t i)
 	return 0;
 }
 
-static int _decode_register(DalvikDecode * dd, size_t i)
+static int _dalvik_decode_register(DalvikDecode * dd, size_t i)
 {
 	AsmArchPluginHelper * helper = dd->plugin->helper;
 	AsmArchOperandDefinition aod = dd->call->operands[i].definition;

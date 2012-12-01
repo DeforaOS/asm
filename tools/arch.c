@@ -19,47 +19,9 @@
 #include "../src/arch/amd64.c"
 #undef arch_plugin
 
-#if 0
-#define arch_plugin arch_plugin_arm
-#include "../src/arch/arm.c"
-#undef arch_plugin
-#endif
-
-#if 0
-#define arch_plugin arch_plugin_armeb
-#include "../src/arch/armeb.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_armel
-#include "../src/arch/armel.c"
-#undef arch_plugin
-#endif
-
 #define arch_plugin arch_plugin_dalvik
 #include "../src/arch/dalvik.c"
 #undef arch_plugin
-
-#if 0
-#define arch_plugin arch_plugin_i386
-#include "../src/arch/i386.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_i386_real
-#include "../src/arch/i386_real.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_i486
-#include "../src/arch/i486.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_i586
-#include "../src/arch/i586.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_i686
-#include "../src/arch/i686.c"
-#undef arch_plugin
-#endif
 
 #define arch_plugin arch_plugin_java
 #include "../src/arch/java.c"
@@ -107,14 +69,29 @@
 /* AsmArch */
 /* private */
 /* constants */
-static const struct
+extern AsmArchPlugin arch_plugin_arm;
+extern AsmArchPlugin arch_plugin_armeb;
+extern AsmArchPlugin arch_plugin_armel;
+extern AsmArchPlugin arch_plugin_i386;
+extern AsmArchPlugin arch_plugin_i486;
+extern AsmArchPlugin arch_plugin_i586;
+extern AsmArchPlugin arch_plugin_i686;
+
+static struct
 {
 	char const * name;
 	AsmArchPlugin * plugin;
 } _arch[] =
 {
 	{ "amd64",	&arch_plugin_amd64	},
+	{ "arm",	NULL			},
+	{ "armeb",	NULL			},
+	{ "armel",	NULL			},
 	{ "dalvik",	&arch_plugin_dalvik	},
+	{ "i386",	NULL			},
+	{ "i486",	NULL			},
+	{ "i586",	NULL			},
+	{ "i686",	NULL			},
 	{ "java",	&arch_plugin_java	},
 	{ "mips",	&arch_plugin_mips	},
 	{ "sparc",	&arch_plugin_sparc	},
@@ -135,6 +112,14 @@ AsmArch * arch_new(char const * name)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
+	/* XXX */
+	_arch[1].plugin = &arch_plugin_arm;
+	_arch[2].plugin = &arch_plugin_armeb;
+	_arch[3].plugin = &arch_plugin_armel;
+	_arch[5].plugin = &arch_plugin_i386;
+	_arch[6].plugin = &arch_plugin_i486;
+	_arch[7].plugin = &arch_plugin_i586;
+	_arch[8].plugin = &arch_plugin_i686;
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)
 		{

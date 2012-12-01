@@ -142,6 +142,13 @@ dist:
 		$(PACKAGE)-$(VERSION)/tests/tests.sh \
 		$(PACKAGE)-$(VERSION)/tests/project.conf \
 		$(PACKAGE)-$(VERSION)/tools/arch.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/arm.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/armeb.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/armel.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/i386.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/i486.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/i586.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/i686.c \
 		$(PACKAGE)-$(VERSION)/tools/format.c \
 		$(PACKAGE)-$(VERSION)/tools/Makefile \
 		$(PACKAGE)-$(VERSION)/tools/project.conf \

@@ -15,7 +15,10 @@
 
 
 
-#include <stddef.h>
+#ifndef ASM_ARCH_SPARC_H
+# define ASM_ARCH_SPARC_H
+
+# include <stddef.h>
 
 
 /* sparc */
@@ -295,3 +298,5 @@ static int _encode_sethi(AsmArchPlugin * plugin, AsmArchInstruction * instructio
 	*opcode |= (rd | value);
 	return 0;
 }
+
+#endif /* ASM_ARCH_SPARC_H */

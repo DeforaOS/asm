@@ -83,11 +83,9 @@
 #include "../src/arch/sparc.c"
 #undef arch_plugin
 
-#if 0
 #define arch_plugin arch_plugin_sparc64
 #include "../src/arch/sparc64.c"
 #undef arch_plugin
-#endif
 
 #define arch_plugin arch_plugin_yasep
 #include "../src/arch/yasep.c"
@@ -120,6 +118,7 @@ static const struct
 	{ "java",	&arch_plugin_java	},
 	{ "mips",	&arch_plugin_mips	},
 	{ "sparc",	&arch_plugin_sparc	},
+	{ "sparc64",	&arch_plugin_sparc64	},
 	{ "yasep",	&arch_plugin_yasep	}
 };
 

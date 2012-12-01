@@ -35,24 +35,24 @@ static int _i386_encode(AsmArchPlugin * plugin,
 
 /* functions */
 /* i386_decode */
-static int _decode_constant(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i);
-static int _decode_dregister(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i);
-static int _decode_immediate(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i);
+static int _decode_constant(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i);
+static int _decode_dregister(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i);
+static int _decode_immediate(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i);
 static int _decode_modrm(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
 		size_t * i);
-static int _decode_modrm_do(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i, uint8_t u8);
+static int _decode_modrm_do(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i, uint8_t u8);
 static AsmArchInstruction * _decode_opcode(AsmArchPlugin * plugin,
 		AsmArchInstruction * ai);
-static int _decode_operand(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t * i);
-static int _decode_postproc(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		unsigned int opcode);
-static int _decode_register(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i);
+static int _decode_operand(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t * i);
+static int _decode_postproc(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, unsigned int opcode);
+static int _decode_register(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i);
 
 static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
@@ -106,8 +106,8 @@ static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	return _decode_postproc(plugin, call, opcode);
 }
 
-static int _decode_constant(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i)
+static int _decode_constant(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i)
 {
 	AsmArchOperandDefinition aod = call->operands[i].definition;
 	AsmArchOperand * ao = &call->operands[i];
@@ -126,8 +126,8 @@ static int _decode_constant(AsmArchPlugin * plugin, AsmArchInstructionCall * cal
 	return -error_set_code(1, "%s", "Not implemented");
 }
 
-static int _decode_dregister(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i)
+static int _decode_dregister(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperandDefinition aod = call->operands[i].definition;
@@ -148,8 +148,8 @@ static int _decode_dregister(AsmArchPlugin * plugin, AsmArchInstructionCall * ca
 	return 0;
 }
 
-static int _decode_immediate(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i)
+static int _decode_immediate(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperand * ao = &call->operands[i];
@@ -240,8 +240,8 @@ static int _decode_modrm(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
 	return ret;
 }
 
-static int _decode_modrm_do(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i, uint8_t u8)
+static int _decode_modrm_do(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i, uint8_t u8)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperand * ao = &call->operands[i];
@@ -345,8 +345,8 @@ static AsmArchInstruction * _decode_opcode(AsmArchPlugin * plugin,
 	return ai;
 }
 
-static int _decode_operand(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t * i)
+static int _decode_operand(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t * i)
 {
 	AsmArchOperand * ao = &call->operands[*i];
 
@@ -368,8 +368,8 @@ static int _decode_operand(AsmArchPlugin * plugin, AsmArchInstructionCall * call
 	return -error_set_code(1, "%s", strerror(ENOSYS));
 }
 
-static int _decode_postproc(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		unsigned int opcode)
+static int _decode_postproc(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, unsigned int opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperand * ao;
@@ -416,8 +416,8 @@ static int _decode_postproc(AsmArchPlugin * plugin, AsmArchInstructionCall * cal
 	return 0;
 }
 
-static int _decode_register(AsmArchPlugin * plugin, AsmArchInstructionCall * call,
-		size_t i)
+static int _decode_register(AsmArchPlugin * plugin,
+		AsmArchInstructionCall * call, size_t i)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperandDefinition aod = call->operands[i].definition;
@@ -461,13 +461,14 @@ static int _encode_immediate32(AsmArchPlugin * plugin, uint32_t value);
 static int _encode_opcode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction);
 static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
-		AsmArchOperandDefinition * definitions, AsmArchOperand * operands);
+		AsmArchOperandDefinition * definitions,
+		AsmArchOperand * operands);
 static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,
-		AsmArchOperandDefinition * definitions, AsmArchOperand * operands);
+		AsmArchOperandDefinition * definitions,
+		AsmArchOperand * operands);
 
 static int _i386_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
 {
 	uint32_t i;
 	AsmArchOperandDefinition definitions[3];
@@ -654,7 +655,8 @@ static int _encode_opcode(AsmArchPlugin * plugin,
 }
 
 static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
-		AsmArchOperandDefinition * definitions, AsmArchOperand * operands)
+		AsmArchOperandDefinition * definitions,
+		AsmArchOperand * operands)
 {
 	switch(operands[*i].definition)
 	{

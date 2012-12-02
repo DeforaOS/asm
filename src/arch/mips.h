@@ -15,13 +15,25 @@
 
 
 
-#include <stddef.h>
+#ifndef ASM_ARCH_MIPS_H
+# define ASM_ARCH_MIPS_H
+
+#include <System.h>
 
 
 /* mips */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
 /* prototypes */
 /* plug-in */
+static AsmArchPlugin * _mips_init(AsmArchPluginHelper * helper);
+static void _mips_destroy(AsmArchPlugin * plugin);
 static int _mips_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
@@ -29,6 +41,25 @@ static int _mips_encode(AsmArchPlugin * plugin,
 
 /* functions */
 /* plug-in */
+/* mips_init */
+static AsmArchPlugin * _mips_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* mips_destroy */
+static void _mips_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* mips_encode */
 static int _mips_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,
@@ -44,3 +75,5 @@ static int _mips_encode(AsmArchPlugin * plugin,
 		return -1;
 	return 0;
 }
+
+#endif /* !ASM_ARCH_MIPS_H */

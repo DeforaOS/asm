@@ -41,6 +41,7 @@ struct _AsmArch
 {
 	AsmArchPluginHelper helper;
 	Plugin * handle;
+	AsmArchPluginDefinition * definition;
 	AsmArchPlugin * plugin;
 	size_t instructions_cnt;
 	size_t registers_cnt;
@@ -77,36 +78,33 @@ static ssize_t _arch_write(AsmArch * arch, void const * buf, size_t size);
 AsmArch * arch_new(char const * name)
 {
 	AsmArch * a;
-	Plugin * handle;
-	AsmArchPlugin * plugin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
-	if((handle = plugin_new(LIBDIR, PACKAGE, "arch", name)) == NULL)
-		return NULL;
-	if((plugin = plugin_lookup(handle, "arch_plugin")) == NULL)
-	{
-		plugin_delete(handle);
-		return NULL;
-	}
 	if((a = object_new(sizeof(*a))) == NULL)
+		return NULL;
+	memset(&a->helper, 0, sizeof(a->helper));
+	if((a->handle = plugin_new(LIBDIR, PACKAGE, "arch", name)) == NULL
+			|| (a->definition = plugin_lookup(a->handle,
+					"arch_plugin")) == NULL)
 	{
+		if(a->handle != NULL)
+			plugin_delete(a->handle);
 		object_delete(a);
-		plugin_delete(handle);
 		return NULL;
 	}
-	memset(&a->helper, 0, sizeof(a->helper));
-	a->handle = handle;
-	a->plugin = plugin;
+	a->plugin = NULL;
+#if 1 /* XXX should be done when initializing */
 	a->instructions_cnt = 0;
-	if(a->plugin->instructions != NULL)
-		for(; a->plugin->instructions[a->instructions_cnt].name != NULL;
-				a->instructions_cnt++);
+	if(a->definition->instructions != NULL)
+		for(; a->definition->instructions[a->instructions_cnt].name
+				!= NULL; a->instructions_cnt++);
 	a->registers_cnt = 0;
-	if(a->plugin->registers != NULL)
-		for(; a->plugin->registers[a->registers_cnt].name != NULL;
+	if(a->definition->registers != NULL)
+		for(; a->definition->registers[a->registers_cnt].name != NULL;
 				a->registers_cnt++);
+#endif
 	a->filename = NULL;
 	a->fp = NULL;
 	a->buffer = NULL;
@@ -132,23 +130,23 @@ void arch_delete(AsmArch * arch)
 /* arch_can_decode */
 int arch_can_decode(AsmArch * arch)
 {
-	return arch->plugin->decode != NULL;
+	return (arch->definition->decode != NULL) ? 1 : 0;
 }
 
 
 /* arch_get_description */
 AsmArchDescription * arch_get_description(AsmArch * arch)
 {
-	return arch->plugin->description;
+	return arch->definition->description;
 }
 
 
 /* arch_get_format */
 char const * arch_get_format(AsmArch * arch)
 {
-	if(arch->plugin->description != NULL
-			&& arch->plugin->description->format != NULL)
-		return arch->plugin->description->format;
+	if(arch->definition->description != NULL
+			&& arch->definition->description->format != NULL)
+		return arch->definition->description->format;
 	return "elf";
 }
 
@@ -158,12 +156,13 @@ AsmArchInstruction * arch_get_instruction(AsmArch * arch, size_t index)
 {
 	if(index >= arch->instructions_cnt)
 		return NULL;
-	return &arch->plugin->instructions[index];
+	return &arch->definition->instructions[index];
 }
 
 
 /* arch_get_instruction_by_name */
-AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch, char const * name)
+AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch,
+		char const * name)
 {
 	size_t i;
 
@@ -171,15 +170,15 @@ AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch, char const * n
 	fprintf(stderr, "DEBUG: %s(arch, \"%s\")\n", __func__, name);
 #endif
 	for(i = 0; i < arch->instructions_cnt; i++)
-		if(strcmp(arch->plugin->instructions[i].name, name) == 0)
-			return &arch->plugin->instructions[i];
+		if(strcmp(arch->definition->instructions[i].name, name) == 0)
+			return &arch->definition->instructions[i];
 	return NULL;
 }
 
 
 /* arch_get_instruction_by_opcode */
-AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch, uint8_t size,
-		uint32_t opcode)
+AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch,
+		uint8_t size, uint32_t opcode)
 {
 	size_t i;
 	AsmArchInstruction * ai;
@@ -189,7 +188,7 @@ AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch, uint8_t size
 #endif
 	for(i = 0; i < arch->instructions_cnt; i++)
 	{
-		ai = &arch->plugin->instructions[i];
+		ai = &arch->definition->instructions[i];
 		if(AO_GET_SIZE(ai->flags) != size)
 			continue;
 		if(ai->opcode == opcode)
@@ -223,7 +222,7 @@ AsmArchInstruction * arch_get_instruction_by_call(AsmArch * arch,
 #endif
 	for(i = 0; i < arch->instructions_cnt; i++)
 	{
-		ai = &arch->plugin->instructions[i];
+		ai = &arch->definition->instructions[i];
 		/* FIXME use a (sorted) hash table */
 		if(strcmp(ai->name, call->name) != 0)
 			continue;
@@ -370,7 +369,7 @@ static int _call_operands_register(AsmArch * arch,
 	AsmArchRegister * ar;
 
 	/* obtain the size */
-	if((desc = arch->plugin->description) != NULL
+	if((desc = arch->definition->description) != NULL
 			&& desc->instruction_size != 0)
 		size = desc->instruction_size;
 	else
@@ -389,7 +388,7 @@ static int _call_operands_register(AsmArch * arch,
 /* arch_get_name */
 char const * arch_get_name(AsmArch * arch)
 {
-	return arch->plugin->name;
+	return arch->definition->name;
 }
 
 
@@ -398,7 +397,7 @@ AsmArchRegister * arch_get_register(AsmArch * arch, size_t index)
 {
 	if(index >= arch->registers_cnt)
 		return NULL;
-	return &arch->plugin->registers[index];
+	return &arch->definition->registers[index];
 }
 
 
@@ -412,9 +411,9 @@ AsmArchRegister * arch_get_register_by_id_size(AsmArch * arch, uint32_t id,
 	fprintf(stderr, "DEBUG: %s(%u, %u)\n", __func__, id, size);
 #endif
 	for(i = 0; i < arch->registers_cnt; i++)
-		if(arch->plugin->registers[i].id == id
-				&& arch->plugin->registers[i].size == size)
-			return &arch->plugin->registers[i];
+		if(arch->definition->registers[i].id == id
+				&& arch->definition->registers[i].size == size)
+			return &arch->definition->registers[i];
 	return NULL;
 }
 
@@ -428,8 +427,8 @@ AsmArchRegister * arch_get_register_by_name(AsmArch * arch, char const * name)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	for(i = 0; i < arch->registers_cnt; i++)
-		if(strcmp(arch->plugin->registers[i].name, name) == 0)
-			return &arch->plugin->registers[i];
+		if(strcmp(arch->definition->registers[i].name, name) == 0)
+			return &arch->definition->registers[i];
 	return NULL;
 }
 
@@ -444,10 +443,10 @@ AsmArchRegister * arch_get_register_by_name_size(AsmArch * arch, char const * na
 	fprintf(stderr, "DEBUG: %s(\"%s\", %u)\n", __func__, name, size);
 #endif
 	for(i = 0; i < arch->registers_cnt; i++)
-		if(arch->plugin->registers[i].size != size)
+		if(arch->definition->registers[i].size != size)
 			continue;
-		else if(strcmp(arch->plugin->registers[i].name, name) == 0)
-			return &arch->plugin->registers[i];
+		else if(strcmp(arch->definition->registers[i].name, name) == 0)
+			return &arch->definition->registers[i];
 	return NULL;
 }
 
@@ -466,12 +465,12 @@ int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%ld)\n", __func__, base);
 #endif
-	if(arch->plugin->decode == NULL)
-		return -error_set_code(1, "%s: %s", arch->plugin->name,
+	if(arch->definition->decode == NULL)
+		return -error_set_code(1, "%s: %s", arch->definition->name,
 				"Disassembly not supported");
 	/* check the arguments */
 	if(calls == NULL || calls_cnt == NULL)
-		return -error_set_code(1, "%s: %s", arch->plugin->name,
+		return -error_set_code(1, "%s: %s", arch->definition->name,
 				strerror(EINVAL));
 	c = *calls;
 	c_cnt = *calls_cnt;
@@ -489,7 +488,7 @@ int arch_decode(AsmArch * arch, AsmCode * code, off_t base,
 		memset(p, 0, sizeof(*p));
 		p->base = base + offset;
 		p->offset = arch->buffer_pos;
-		if(arch->plugin->decode(arch->plugin, p) != 0)
+		if(arch->definition->decode(arch->plugin, p) != 0)
 			break;
 		p->size = arch->buffer_pos - p->offset;
 		offset += p->size;
@@ -539,7 +538,7 @@ int arch_encode(AsmArch * arch, AsmArchInstruction * instruction,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	return arch->plugin->encode(arch->plugin, instruction, call);
+	return arch->definition->encode(arch->plugin, instruction, call);
 }
 
 
@@ -549,13 +548,15 @@ int arch_exit(AsmArch * arch)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	if(arch->plugin != NULL)
+		arch->definition->destroy(arch->plugin);
+	arch->plugin = NULL;
 	arch->filename = NULL;
 	arch->fp = NULL;
 	arch->buffer = NULL;
 	arch->buffer_cnt = 0;
 	arch->buffer_pos = 0;
 	memset(&arch->helper, 0, sizeof(arch->helper));
-	arch->plugin->helper = NULL;
 	return 0;
 }
 
@@ -567,7 +568,7 @@ int arch_init(AsmArch * arch, char const * filename, FILE * fp)
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
-	if(arch->plugin->helper != NULL)
+	if(arch->plugin != NULL)
 		arch_exit(arch);
 	arch->base = 0;
 	arch->filename = filename;
@@ -586,8 +587,9 @@ int arch_init(AsmArch * arch, char const * filename, FILE * fp)
 	arch->helper.read = _arch_read;
 	arch->helper.seek = _arch_seek;
 	arch->helper.write = _arch_write;
-	arch->plugin->helper = &arch->helper;
-	if(arch->plugin->init != NULL && arch->plugin->init(arch->plugin) != 0)
+	if(arch->definition->init != NULL
+			&& (arch->plugin = arch->definition->init(
+					&arch->helper)) == NULL)
 		return -1;
 	return 0;
 }
@@ -599,7 +601,7 @@ int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if(arch->plugin->helper != NULL)
+	if(arch->plugin != NULL)
 		arch_exit(arch);
 	arch->base = 0;
 	arch->filename = "buffer";
@@ -618,8 +620,9 @@ int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size)
 	arch->helper.peek = _arch_peek_buffer;
 	arch->helper.read = _arch_read_buffer;
 	arch->helper.seek = _arch_seek_buffer;
-	arch->plugin->helper = &arch->helper;
-	if(arch->plugin->init != NULL && arch->plugin->init(arch->plugin) != 0)
+	if(arch->definition->init != NULL
+			&& (arch->plugin = arch->definition->init(
+					&arch->helper)) == NULL)
 		return -1;
 	return 0;
 }

@@ -75,15 +75,14 @@ static AsmArchInstruction _i686_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"i686",
 	&_i686_description,
 	_i686_registers,
 	_i686_instructions,
-	NULL,
-	NULL,
+	_i386_init,
+	_i386_destroy,
 	_i386_encode,
 	_i386_decode
 };

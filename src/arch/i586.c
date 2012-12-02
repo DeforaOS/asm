@@ -73,15 +73,14 @@ static AsmArchInstruction _i586_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"i586",
 	&_i586_description,
 	_i586_registers,
 	_i586_instructions,
-	NULL,
-	NULL,
+	_i386_init,
+	_i386_destroy,
 	_i386_encode,
 	_i386_decode
 };

@@ -16,6 +16,7 @@
 
 
 #include <stddef.h>
+#include <System.h>
 #include "Asm.h"
 #ifndef ARCH_yasep
 # define ARCH_yasep	32
@@ -26,6 +27,13 @@
 
 /* yasep */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
 /* variables */
 /* plug-in */
 static AsmArchDescription _yasep_description =
@@ -51,22 +59,24 @@ static AsmArchInstruction _yasep_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _yasep_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
+static void _yasep_destroy(AsmArchPlugin * plugin);
+static int _yasep_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
 /* public */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	_yasep_name,
 	&_yasep_description,
 	_yasep_registers,
 	_yasep_instructions,
-	NULL,
-	NULL,
+	_yasep_init,
+	_yasep_destroy,
 	_yasep_encode,
 	_yasep_decode	
 };
@@ -75,14 +85,33 @@ AsmArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* plug-in */
+/* yasep_init */
+static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* yasep_destroy */
+static void _yasep_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* yasep_encode */
 static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
 static int _encode_32(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
 
-static int _yasep_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call)
+static int _yasep_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
 {
 	return (instruction->opcode & 0x1)
 		? _encode_32(plugin, instruction, call)

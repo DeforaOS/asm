@@ -18,13 +18,22 @@
 #ifndef ASM_ARCH_SPARC_H
 # define ASM_ARCH_SPARC_H
 
-# include <stddef.h>
+# include <System.h>
 
 
 /* sparc */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
 /* prototypes */
 /* plug-in */
+static AsmArchPlugin * _sparc_init(AsmArchPluginHelper * helper);
+static void _sparc_destroy(AsmArchPlugin * plugin);
 static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _sparc_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,
@@ -33,6 +42,25 @@ static int _sparc_encode(AsmArchPlugin * plugin,
 
 /* functions */
 /* plug-in */
+/* sparc_init */
+static AsmArchPlugin * _sparc_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* sparc_destroy */
+static void _sparc_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* sparc_decode */
 static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {

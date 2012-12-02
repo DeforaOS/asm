@@ -18,7 +18,7 @@ INSTALL	?= install
 
 all: $(TARGETS)
 
-libasm_OBJS = arch.o arch/arm.o arch/armeb.o arch/armel.o arch/i386.o arch/i386_real.o arch/i486.o arch/i586.o arch/i686.o arch/mipseb.o arch/mipsel.o arch/yasep16.o arch/yasep32.o format.o
+libasm_OBJS = arch.o arch/amd64.o arch/arm.o arch/armeb.o arch/armel.o arch/dalvik.o arch/i386.o arch/i386_real.o arch/i486.o arch/i586.o arch/i686.o arch/java.o arch/mips.o arch/mipseb.o arch/mipsel.o arch/sparc.o arch/sparc64.o arch/yasep.o arch/yasep16.o arch/yasep32.o format.o
 libasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 libasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) ../src/asm.o ../src/code.o ../src/parser.o ../src/token.o `pkg-config --libs cpp`
 
@@ -34,6 +34,9 @@ libasm.so.0.0 libasm.so.0 libasm.so: $(libasm_OBJS)
 arch.o: arch.c ../src/arch.c
 	$(CC) $(libasm_CFLAGS) -c arch.c
 
+arch/amd64.o: arch/amd64.c
+	$(CC) $(libasm_CFLAGS) -o arch/amd64.o -c arch/amd64.c
+
 arch/arm.o: arch/arm.c
 	$(CC) $(libasm_CFLAGS) -o arch/arm.o -c arch/arm.c
 
@@ -42,6 +45,9 @@ arch/armeb.o: arch/armeb.c
 
 arch/armel.o: arch/armel.c
 	$(CC) $(libasm_CFLAGS) -o arch/armel.o -c arch/armel.c
+
+arch/dalvik.o: arch/dalvik.c
+	$(CC) $(libasm_CFLAGS) -o arch/dalvik.o -c arch/dalvik.c
 
 arch/i386.o: arch/i386.c
 	$(CC) $(libasm_CFLAGS) -o arch/i386.o -c arch/i386.c
@@ -58,11 +64,26 @@ arch/i586.o: arch/i586.c
 arch/i686.o: arch/i686.c
 	$(CC) $(libasm_CFLAGS) -o arch/i686.o -c arch/i686.c
 
+arch/java.o: arch/java.c
+	$(CC) $(libasm_CFLAGS) -o arch/java.o -c arch/java.c
+
+arch/mips.o: arch/mips.c
+	$(CC) $(libasm_CFLAGS) -o arch/mips.o -c arch/mips.c
+
 arch/mipseb.o: arch/mipseb.c
 	$(CC) $(libasm_CFLAGS) -o arch/mipseb.o -c arch/mipseb.c
 
 arch/mipsel.o: arch/mipsel.c
 	$(CC) $(libasm_CFLAGS) -o arch/mipsel.o -c arch/mipsel.c
+
+arch/sparc.o: arch/sparc.c
+	$(CC) $(libasm_CFLAGS) -o arch/sparc.o -c arch/sparc.c
+
+arch/sparc64.o: arch/sparc64.c
+	$(CC) $(libasm_CFLAGS) -o arch/sparc64.o -c arch/sparc64.c
+
+arch/yasep.o: arch/yasep.c
+	$(CC) $(libasm_CFLAGS) -o arch/yasep.o -c arch/yasep.c
 
 arch/yasep16.o: arch/yasep16.c
 	$(CC) $(libasm_CFLAGS) -o arch/yasep16.o -c arch/yasep16.c

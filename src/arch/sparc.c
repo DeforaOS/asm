@@ -50,15 +50,14 @@ static AsmArchInstruction _sparc_instructions[] =
 
 /* protected */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"sparc",
 	&_sparc_description,
 	_sparc_registers,
 	_sparc_instructions,
-	NULL,
-	NULL,
+	_sparc_init,
+	_sparc_destroy,
 	_sparc_encode,
 	_sparc_decode
 };

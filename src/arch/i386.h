@@ -26,7 +26,21 @@
 
 /* i386 */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
+/* constants */
+extern AsmArchPluginDefinition arch_plugin;
+
+
 /* prototypes */
+/* plug-in */
+static AsmArchPlugin * _i386_init(AsmArchPluginHelper * helper);
+static void _i386_destroy(AsmArchPlugin * plugin);
 static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _i386_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,
@@ -34,6 +48,25 @@ static int _i386_encode(AsmArchPlugin * plugin,
 
 
 /* functions */
+/* i386_init */
+static AsmArchPlugin * _i386_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* i386_destroy */
+static void _i386_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* i386_decode */
 static int _decode_constant(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, size_t i);
@@ -324,13 +357,13 @@ static AsmArchInstruction * _decode_opcode(AsmArchPlugin * plugin,
 			return NULL;
 		/* XXX this assumes helper->get_instruction_by_opcode() returns
 		 * the first match, and from the plugin->instructions list */
-		for(i = 0; plugin->instructions[i].name != NULL
-				&& &plugin->instructions[i] != ai; i++);
-		if(plugin->instructions[i].name == NULL)
+		for(i = 0; arch_plugin.instructions[i].name != NULL
+				&& &arch_plugin.instructions[i] != ai; i++);
+		if(arch_plugin.instructions[i].name == NULL)
 			return ai;
-		for(i++; plugin->instructions[i].name != NULL; i++)
+		for(i++; arch_plugin.instructions[i].name != NULL; i++)
 		{
-			p = &plugin->instructions[i];
+			p = &arch_plugin.instructions[i];
 			if(p->opcode != ai->opcode || AO_GET_SIZE(ai->flags)
 					!= AO_GET_SIZE(p->flags))
 				continue;

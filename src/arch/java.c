@@ -24,6 +24,13 @@
 
 /* Java */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
 /* variables */
 static AsmArchDescription _java_description =
 {
@@ -254,22 +261,24 @@ static AsmArchInstruction _java_instructions[] =
 
 /* prototypes */
 /* plug-in */
-static int _java_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static AsmArchPlugin * _java_init(AsmArchPluginHelper * helper);
+static void _java_destroy(AsmArchPlugin * plugin);
+static int _java_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
 static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
 /* public */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"java",
 	&_java_description,
 	_java_registers,
 	_java_instructions,
-	NULL,
-	NULL,
+	_java_init,
+	_java_destroy,
 	_java_encode,
 	_java_decode
 };
@@ -278,8 +287,28 @@ AsmArchPlugin arch_plugin =
 /* private */
 /* functions */
 /* plug-in */
-static int _java_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
-		AsmArchInstructionCall * call)
+/* java_init */
+static AsmArchPlugin * _java_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* java_destroy */
+static void _java_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
+/* java_encode */
+static int _java_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	size_t i;

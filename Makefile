@@ -142,16 +142,23 @@ dist:
 		$(PACKAGE)-$(VERSION)/tests/tests.sh \
 		$(PACKAGE)-$(VERSION)/tests/project.conf \
 		$(PACKAGE)-$(VERSION)/tools/arch.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/amd64.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/arm.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/armeb.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/armel.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/dalvik.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i386.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i386_real.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i486.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i586.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/i686.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/java.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/mips.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/mipseb.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/mipsel.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/sparc.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/sparc64.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/yasep.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep16.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep32.c \
 		$(PACKAGE)-$(VERSION)/tools/format.c \

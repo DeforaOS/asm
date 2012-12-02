@@ -15,13 +15,22 @@
 
 
 
-#include <stddef.h>
+#include <System.h>
 
 
 /* arm */
 /* private */
+/* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
+
 /* prototypes */
 /* plug-in */
+static AsmArchPlugin * _arm_init(AsmArchPluginHelper * helper);
+static void _arm_destroy(AsmArchPlugin * plugin);
 static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
@@ -29,6 +38,25 @@ static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 
 /* functions */
 /* plug-in */
+/* arm_init */
+static AsmArchPlugin * _arm_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* arm_destroy */
+static void _arm_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* arm_decode */
 static void _decode_reg_reg_dreg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode);

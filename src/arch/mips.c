@@ -54,15 +54,14 @@ static AsmArchInstruction _mips_instructions[] =
 
 /* protected */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"mips",
 	&_mips_description,
 	_mips_registers,
 	_mips_instructions,
-	NULL,
-	NULL,
+	_mips_init,
+	_mips_destroy,
 	_mips_encode,
 	NULL
 };

@@ -15,88 +15,57 @@
 
 
 
-#define arch_plugin arch_plugin_amd64
-#include "../src/arch/amd64.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_dalvik
-#include "../src/arch/dalvik.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_java
-#include "../src/arch/java.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_mips
-#include "../src/arch/mips.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_sparc
-#include "../src/arch/sparc.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_sparc64
-#include "../src/arch/sparc64.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_yasep
-#include "../src/arch/yasep.c"
-#undef arch_plugin
-
-#if 0
-#define arch_plugin arch_plugin_yasep16
-#include "../src/arch/yasep16.c"
-#undef arch_plugin
-
-#define arch_plugin arch_plugin_yasep32
-#include "../src/arch/yasep32.c"
-#undef arch_plugin
-#endif
-
 #include "../src/arch.c"
 
 
 /* AsmArch */
 /* private */
 /* constants */
-extern AsmArchPlugin arch_plugin_arm;
-extern AsmArchPlugin arch_plugin_armeb;
-extern AsmArchPlugin arch_plugin_armel;
-extern AsmArchPlugin arch_plugin_i386;
-extern AsmArchPlugin arch_plugin_i386_real;
-extern AsmArchPlugin arch_plugin_i486;
-extern AsmArchPlugin arch_plugin_i586;
-extern AsmArchPlugin arch_plugin_i686;
-extern AsmArchPlugin arch_plugin_mipseb;
-extern AsmArchPlugin arch_plugin_mipsel;
-extern AsmArchPlugin arch_plugin_yasep16;
-extern AsmArchPlugin arch_plugin_yasep32;
+extern AsmArchPluginDefinition arch_plugin_amd64;
+extern AsmArchPluginDefinition arch_plugin_arm;
+extern AsmArchPluginDefinition arch_plugin_armeb;
+extern AsmArchPluginDefinition arch_plugin_armel;
+extern AsmArchPluginDefinition arch_plugin_dalvik;
+extern AsmArchPluginDefinition arch_plugin_i386;
+extern AsmArchPluginDefinition arch_plugin_i386_real;
+extern AsmArchPluginDefinition arch_plugin_i486;
+extern AsmArchPluginDefinition arch_plugin_i586;
+extern AsmArchPluginDefinition arch_plugin_i686;
+extern AsmArchPluginDefinition arch_plugin_java;
+extern AsmArchPluginDefinition arch_plugin_mips;
+extern AsmArchPluginDefinition arch_plugin_mipseb;
+extern AsmArchPluginDefinition arch_plugin_mipsel;
+extern AsmArchPluginDefinition arch_plugin_sparc;
+extern AsmArchPluginDefinition arch_plugin_sparc64;
+extern AsmArchPluginDefinition arch_plugin_yasep;
+extern AsmArchPluginDefinition arch_plugin_yasep16;
+extern AsmArchPluginDefinition arch_plugin_yasep32;
 
 static struct
 {
 	char const * name;
-	AsmArchPlugin * plugin;
+	AsmArchPluginDefinition * definition;
 } _arch[] =
 {
-	{ "amd64",	&arch_plugin_amd64	},
-	{ "arm",	NULL			},
-	{ "armeb",	NULL			},
-	{ "armel",	NULL			},
-	{ "dalvik",	&arch_plugin_dalvik	},
-	{ "i386",	NULL			},
-	{ "i386_real",	NULL			},
-	{ "i486",	NULL			},
-	{ "i586",	NULL			},
-	{ "i686",	NULL			},
-	{ "java",	&arch_plugin_java	},
-	{ "mips",	&arch_plugin_mips	},
-	{ "mipseb",	NULL			},
-	{ "mipsel",	NULL			},
-	{ "sparc",	&arch_plugin_sparc	},
-	{ "sparc64",	&arch_plugin_sparc64	},
-	{ "yasep",	&arch_plugin_yasep	},
-	{ "yasep16",	NULL			},
-	{ "yasep32",	NULL			}
+	{ "amd64",	NULL	},
+	{ "arm",	NULL	},
+	{ "armeb",	NULL	},
+	{ "armel",	NULL	},
+	{ "dalvik",	NULL	},
+	{ "i386",	NULL	},
+	{ "i386_real",	NULL	},
+	{ "i486",	NULL	},
+	{ "i586",	NULL	},
+	{ "i686",	NULL	},
+	{ "java",	NULL	},
+	{ "mips",	NULL	},
+	{ "mipseb",	NULL	},
+	{ "mipsel",	NULL	},
+	{ "sparc",	NULL	},
+	{ "sparc64",	NULL	},
+	{ "yasep",	NULL	},
+	{ "yasep16",	NULL	},
+	{ "yasep32",	NULL	}
 };
 
 
@@ -106,35 +75,42 @@ static struct
 AsmArch * arch_new(char const * name)
 {
 	AsmArch * a;
-	AsmArchPlugin * plugin = NULL;
+	AsmArchPluginDefinition * definition = NULL;
 	size_t i;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	/* XXX */
-	if(_arch[1].plugin == NULL)
+	if(_arch[1].definition == NULL)
 	{
-		_arch[1].plugin = &arch_plugin_arm;
-		_arch[2].plugin = &arch_plugin_armeb;
-		_arch[3].plugin = &arch_plugin_armel;
-		_arch[5].plugin = &arch_plugin_i386;
-		_arch[6].plugin = &arch_plugin_i386_real;
-		_arch[7].plugin = &arch_plugin_i486;
-		_arch[8].plugin = &arch_plugin_i586;
-		_arch[9].plugin = &arch_plugin_i686;
-		_arch[12].plugin = &arch_plugin_mipseb;
-		_arch[13].plugin = &arch_plugin_mipsel;
-		_arch[17].plugin = &arch_plugin_yasep16;
-		_arch[18].plugin = &arch_plugin_yasep32;
+		_arch[0].definition = &arch_plugin_amd64;
+		_arch[1].definition = &arch_plugin_arm;
+		_arch[2].definition = &arch_plugin_armeb;
+		_arch[3].definition = &arch_plugin_armel;
+		_arch[4].definition = &arch_plugin_dalvik;
+		_arch[5].definition = &arch_plugin_i386;
+		_arch[6].definition = &arch_plugin_i386_real;
+		_arch[7].definition = &arch_plugin_i486;
+		_arch[8].definition = &arch_plugin_i586;
+		_arch[9].definition = &arch_plugin_i686;
+		_arch[10].definition = &arch_plugin_java;
+		_arch[11].definition = &arch_plugin_mips;
+		_arch[12].definition = &arch_plugin_mipseb;
+		_arch[13].definition = &arch_plugin_mipsel;
+		_arch[14].definition = &arch_plugin_sparc;
+		_arch[15].definition = &arch_plugin_sparc64;
+		_arch[16].definition = &arch_plugin_yasep;
+		_arch[17].definition = &arch_plugin_yasep16;
+		_arch[18].definition = &arch_plugin_yasep32;
 	}
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)
 		{
-			plugin = _arch[i].plugin;
+			definition = _arch[i].definition;
 			break;
 		}
-	if(plugin == NULL)
+	if(definition == NULL)
 	{
 		error_set_code(1, "%s: %s", name, "Unsupported architecture");
 		return NULL;
@@ -146,14 +122,14 @@ AsmArch * arch_new(char const * name)
 	}
 	memset(&a->helper, 0, sizeof(a->helper));
 	a->handle = NULL;
-	a->plugin = plugin;
+	a->definition = definition;
 	a->instructions_cnt = 0;
-	if(a->plugin->instructions != NULL)
-		for(; a->plugin->instructions[a->instructions_cnt].name != NULL;
-				a->instructions_cnt++);
+	if(a->definition->instructions != NULL)
+		for(; a->definition->instructions[a->instructions_cnt].name
+				!= NULL; a->instructions_cnt++);
 	a->registers_cnt = 0;
-	if(a->plugin->registers != NULL)
-		for(; a->plugin->registers[a->registers_cnt].name != NULL;
+	if(a->definition->registers != NULL)
+		for(; a->definition->registers[a->registers_cnt].name != NULL;
 				a->registers_cnt++);
 	a->filename = NULL;
 	a->fp = NULL;

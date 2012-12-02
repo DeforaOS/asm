@@ -15,15 +15,20 @@
 
 
 
-#include <System.h>
 #include <stdio.h>
 #include <string.h>
+#include <System.h>
 #include "Asm.h"
 
 
 /* Dalvik */
 /* private */
 /* types */
+struct _AsmArchPlugin
+{
+	AsmArchPluginHelper * helper;
+};
+
 typedef struct _DalvikDecode
 {
 	AsmArchPlugin * plugin;
@@ -79,6 +84,8 @@ static AsmArchInstruction _dalvik_instructions[] =
 
 /* prototypes */
 /* plug-in */
+static AsmArchPlugin * _dalvik_init(AsmArchPluginHelper * helper);
+static void _dalvik_destroy(AsmArchPlugin * plugin);
 static int _dalvik_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,
 		AsmArchInstructionCall * call);
@@ -88,15 +95,14 @@ static int _dalvik_decode(AsmArchPlugin * plugin,
 
 /* public */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"dalvik",
 	&_dalvik_description,
 	_dalvik_registers,
 	_dalvik_instructions,
-	NULL,
-	NULL,
+	_dalvik_init,
+	_dalvik_destroy,
 	_dalvik_encode,
 	_dalvik_decode
 };
@@ -104,6 +110,25 @@ AsmArchPlugin arch_plugin =
 
 /* private */
 /* functions */
+/* dalvik_init */
+static AsmArchPlugin * _dalvik_init(AsmArchPluginHelper * helper)
+{
+	AsmArchPlugin * plugin;
+
+	if((plugin = object_new(sizeof(*plugin))) == NULL)
+		return NULL;
+	plugin->helper = helper;
+	return plugin;
+}
+
+
+/* dalvik_destroy */
+static void _dalvik_destroy(AsmArchPlugin * plugin)
+{
+	object_delete(plugin);
+}
+
+
 /* dalvik_encode */
 static int _dalvik_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction * instruction,

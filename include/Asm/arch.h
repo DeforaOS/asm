@@ -218,21 +218,19 @@ typedef struct _AsmArchPluginHelper
 
 typedef struct _AsmArchPlugin AsmArchPlugin;
 
-struct _AsmArchPlugin
+typedef const struct _AsmArchPluginDefinition
 {
-	AsmArchPluginHelper * helper;
-
 	char const * name;
 
 	AsmArchDescription * description;
 	AsmArchRegister * registers;
 	AsmArchInstruction * instructions;
 
-	int (*init)(AsmArchPlugin * arch);
-	void (*exit)(AsmArchPlugin * arch);
+	AsmArchPlugin * (*init)(AsmArchPluginHelper * helper);
+	void (*destroy)(AsmArchPlugin * arch);
 	int (*encode)(AsmArchPlugin * arch, AsmArchInstruction * instruction,
 			AsmArchInstructionCall * call);
 	int (*decode)(AsmArchPlugin * arch, AsmArchInstructionCall * call);
-};
+} AsmArchPluginDefinition;
 
 #endif /* !DEVEL_ASM_ARCH_H */

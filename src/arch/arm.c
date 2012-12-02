@@ -67,15 +67,14 @@ static AsmArchInstruction _arm_instructions[] =
 
 /* protected */
 /* variables */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"arm",
 	&_arm_description,
 	_arm_registers,
 	_arm_instructions,
-	NULL,
-	NULL,
+	_arm_init,
+	_arm_destroy,
 	_arm_encode,
 	_arm_decode
 };

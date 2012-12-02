@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -72,15 +72,14 @@ static AsmArchInstruction _i386_real_instructions[] =
 /* public */
 /* variables */
 /* plug-in */
-AsmArchPlugin arch_plugin =
+AsmArchPluginDefinition arch_plugin =
 {
-	NULL,
 	"i386_real",
 	&_i386_real_description,
 	_i386_real_registers,
 	_i386_real_instructions,
-	NULL,
-	NULL,
+	_i386_init,
+	_i386_destroy,
 	_i386_encode,
 	_i386_decode
 };

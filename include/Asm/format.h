@@ -60,17 +60,16 @@ typedef struct _AsmFormatPluginHelper
 			AsmArchInstructionCall ** calls, size_t * calls_cnt);
 } AsmFormatPluginHelper;
 
-struct _AsmFormatPlugin
+typedef struct _AsmFormatPluginDefinition
 {
-	AsmFormatPluginHelper * helper;
-
 	char const * name;
 
 	char const * signature;
 	size_t signature_len;
 
-	int (*init)(AsmFormatPlugin * format, char const * arch);
-	int (*exit)(AsmFormatPlugin * format);
+	AsmFormatPlugin * (*init)(AsmFormatPluginHelper * helper,
+			char const * arch);
+	void (*destroy)(AsmFormatPlugin * format);
 	int (*function)(AsmFormatPlugin * format, char const * function);
 	int (*section)(AsmFormatPlugin * format, char const * section);
 
@@ -78,8 +77,6 @@ struct _AsmFormatPlugin
 	int (*decode)(AsmFormatPlugin * format, int raw);
 	int (*decode_section)(AsmFormatPlugin * format, AsmSection * section,
 			AsmArchInstructionCall ** calls, size_t * calls_cnt);
-
-	void * priv;
-};
+} AsmFormatPluginDefinition;
 
 #endif /* !DEVEL_ASM_FORMAT_H */

@@ -32,6 +32,7 @@ struct _AsmFormat
 {
 	AsmFormatPluginHelper helper;
 	Plugin * handle;
+	AsmFormatPluginDefinition * definition;
 	AsmFormatPlugin * plugin;
 
 	/* internal */
@@ -77,8 +78,6 @@ static ssize_t _format_helper_write(AsmFormat * format, void const * buf,
 AsmFormat * format_new(char const * format)
 {
 	AsmFormat * f;
-	Plugin * handle;
-	AsmFormatPlugin * plugin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format);
@@ -88,16 +87,18 @@ AsmFormat * format_new(char const * format)
 		error_set_code(1, "%s", strerror(EINVAL));
 		return NULL;
 	}
-	if((handle = plugin_new(LIBDIR, PACKAGE, "format", format)) == NULL)
+	if((f = object_new(sizeof(*f))) == NULL)
 		return NULL;
-	if((plugin = plugin_lookup(handle, "format_plugin")) == NULL
-			|| (f = object_new(sizeof(*f))) == NULL)
+	if((f->handle = plugin_new(LIBDIR, PACKAGE, "format", format)) == NULL
+			|| (f->definition = plugin_lookup(f->handle,
+					"format_plugin")) == NULL)
 	{
-		plugin_delete(handle);
+		if(f->handle != NULL)
+			plugin_delete(f->handle);
+		object_delete(f);
 		return NULL;
 	}
-	f->handle = handle;
-	f->plugin = plugin;
+	f->plugin = NULL;
 	memset(&f->helper, 0, sizeof(f->helper));
 	f->helper.format = f;
 	f->helper.decode = _format_helper_decode;
@@ -132,7 +133,7 @@ void format_delete(AsmFormat * format)
 /* format_can_decode */
 int format_can_decode(AsmFormat * format)
 {
-	return format->plugin->decode != NULL
+	return format->definition->decode != NULL
 		/* && format->plugin->decode_section != NULL */;
 }
 
@@ -140,16 +141,16 @@ int format_can_decode(AsmFormat * format)
 /* format_get_arch */
 char const * format_get_arch(AsmFormat * format)
 {
-	if(format->plugin->detect == NULL)
+	if(format->definition->detect == NULL)
 		return NULL;
-	return format->plugin->detect(format->plugin);
+	return format->definition->detect(format->plugin);
 }
 
 
 /* format_get_name */
 char const * format_get_name(AsmFormat * format)
 {
-	return format->plugin->name;
+	return format->definition->name;
 }
 
 
@@ -159,11 +160,11 @@ int format_decode(AsmFormat * format, AsmCode * code, int raw)
 {
 	int ret;
 
-	if(format->plugin->decode == NULL)
+	if(format->definition->decode == NULL)
 		return -error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
 	format->code = code;
-	ret = format->plugin->decode(format->plugin, raw);
+	ret = format->definition->decode(format->plugin, raw);
 	format->code = NULL;
 	return ret;
 }
@@ -175,14 +176,14 @@ int format_decode_section(AsmFormat * format, AsmCode * code, AsmSection * secti
 {
 	int ret;
 
-	if(format->plugin->decode_section == NULL)
+	if(format->definition->decode_section == NULL)
 		return -error_set_code(1, "%s: %s", format_get_name(format),
 				"Disassembly is not supported");
 	if(section == NULL || section->id < 0)
 		return -error_set_code(1, "%s: %s", format_get_name(format),
 				"Invalid argument");
 	format->code = code;
-	ret = format->plugin->decode_section(format->plugin, section, calls,
+	ret = format->definition->decode_section(format->plugin, section, calls,
 			calls_cnt);
 	format->code = NULL;
 	return ret;
@@ -192,39 +193,38 @@ int format_decode_section(AsmFormat * format, AsmCode * code, AsmSection * secti
 /* format_detect_arch */
 char const * format_detect_arch(AsmFormat * format)
 {
-	if(format->plugin->detect == NULL)
+	if(format->definition->detect == NULL)
 	{
-		error_set_code(1, "%s: %s", format->plugin->name,
+		error_set_code(1, "%s: %s", format->definition->name,
 				"Unable to detect the architecture");
 		return NULL;
 	}
-	return format->plugin->detect(format->plugin);
+	return format->definition->detect(format->plugin);
 }
 
 
 /* format_exit */
 int format_exit(AsmFormat * format)
 {
-	int ret = 0;
-
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if(format->plugin->helper != NULL && format->plugin->exit != NULL)
-		ret = format->plugin->exit(format->plugin);
-	format->plugin->helper = NULL;
+	if(format->plugin != NULL && format->definition->destroy != NULL)
+		/* XXX may fail */
+		format->definition->destroy(format->plugin);
+	format->plugin = NULL;
 	format->fp = NULL;
 	format->filename = NULL;
-	return ret;
+	return 0;
 }
 
 
 /* format_function */
 int format_function(AsmFormat * format, char const * function)
 {
-	if(format->plugin->function == NULL)
+	if(format->definition->function == NULL)
 		return 0;
-	return format->plugin->function(format->plugin, function);
+	return format->definition->function(format->plugin, function);
 }
 
 
@@ -232,21 +232,19 @@ int format_function(AsmFormat * format, char const * function)
 int format_init(AsmFormat * format, char const * arch, char const * filename,
 		FILE * fp)
 {
-	int ret = 0;
-
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename,
 			(void *)fp);
 #endif
-	if(format->plugin->helper != NULL)
+	if(format->plugin != NULL)
 		format_exit(format);
 	format->filename = filename;
 	format->fp = fp;
-	format->plugin->helper = &format->helper;
-	if(format->plugin->init != NULL && (ret = format->plugin->init(
-					format->plugin, arch)) != 0)
-		format->plugin->helper = NULL;
-	return ret;
+	if(format->definition->init != NULL
+			&& (format->plugin = format->definition->init(
+					&format->helper, arch)) == NULL)
+		return -1;
+	return 0;
 }
 
 
@@ -254,8 +252,8 @@ int format_init(AsmFormat * format, char const * arch, char const * filename,
 int format_match(AsmFormat * format)
 {
 	int ret = 0;
-	char const * s = format->plugin->signature;
-	ssize_t s_len = format->plugin->signature_len;
+	char const * s = format->definition->signature;
+	ssize_t s_len = format->definition->signature_len;
 	char * buf = NULL;
 
 #ifdef DEBUG
@@ -281,9 +279,9 @@ int format_match(AsmFormat * format)
 /* format_section */
 int format_section(AsmFormat * format, char const * section)
 {
-	if(format->plugin->section == NULL)
+	if(format->definition->section == NULL)
 		return 0;
-	return format->plugin->section(format->plugin, section);
+	return format->definition->section(format->plugin, section);
 }
 
 

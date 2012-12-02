@@ -15,43 +15,29 @@
 
 
 
-#undef format_plugin
-#define format_plugin format_plugin_dex
-#include "../src/format/dex.c"
-
-#undef format_plugin
-#define format_plugin format_plugin_elf
-#include "../src/format/elf.c"
-
-#undef format_plugin
-#define format_plugin format_plugin_flat
-#include "../src/format/flat.c"
-
-#undef format_plugin
-#define format_plugin format_plugin_java
-#include "../src/format/java.c"
-
-#undef format_plugin
-#define format_plugin format_plugin_pe
-#include "../src/format/pe.c"
-
 #include "../src/format.c"
 
 
 /* AsmFormat */
 /* private */
 /* constants */
-static const struct
+extern AsmFormatPluginDefinition format_plugin_dex;
+extern AsmFormatPluginDefinition format_plugin_elf;
+extern AsmFormatPluginDefinition format_plugin_flat;
+extern AsmFormatPluginDefinition format_plugin_java;
+extern AsmFormatPluginDefinition format_plugin_pe;
+
+static struct
 {
 	char const * name;
-	AsmFormatPlugin * plugin;
+	AsmFormatPluginDefinition * definition;
 } _formats[] =
 {
-	{ "dex",	&format_plugin_dex	},
-	{ "elf",	&format_plugin_elf	},
-	{ "flat",	&format_plugin_flat	},
-	{ "java",	&format_plugin_java	},
-	{ "pe",		&format_plugin_pe	}
+	{ "dex",	NULL	},
+	{ "elf",	NULL	},
+	{ "flat",	NULL	},
+	{ "java",	NULL	},
+	{ "pe",		NULL	}
 };
 
 
@@ -61,12 +47,20 @@ static const struct
 AsmFormat * format_new(char const * format)
 {
 	AsmFormat * f;
-	AsmFormatPlugin * plugin = NULL;
+	AsmFormatPluginDefinition * definition = NULL;
 	size_t i;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format);
 #endif
+	if(_formats[0].definition == NULL)
+	{
+		_formats[0].definition = &format_plugin_dex;
+		_formats[1].definition = &format_plugin_elf;
+		_formats[2].definition = &format_plugin_flat;
+		_formats[3].definition = &format_plugin_java;
+		_formats[4].definition = &format_plugin_pe;
+	}
 	if(format == NULL)
 	{
 		error_set_code(1, "%s", strerror(EINVAL));
@@ -75,13 +69,19 @@ AsmFormat * format_new(char const * format)
 	for(i = 0; i < sizeof(_formats) / sizeof(*_formats); i++)
 		if(strcmp(_formats[i].name, format) == 0)
 		{
-			plugin = _formats[i].plugin;
+			definition = _formats[i].definition;
 			break;
 		}
-	if(plugin == NULL || (f = object_new(sizeof(*f))) == NULL)
+	if(definition == NULL)
+	{
+		error_set_code(1, "%s: %s", format, "Unsupported format");
+		return NULL;
+	}
+	if((f = object_new(sizeof(*f))) == NULL)
 		return NULL;
 	f->handle = NULL;
-	f->plugin = plugin;
+	f->definition = definition;
+	f->plugin = NULL;
 	memset(&f->helper, 0, sizeof(f->helper));
 	f->helper.format = f;
 	f->helper.decode = _format_helper_decode;

@@ -18,7 +18,7 @@ INSTALL	?= install
 
 all: $(TARGETS)
 
-libasm_OBJS = arch.o arch/amd64.o arch/arm.o arch/armeb.o arch/armel.o arch/dalvik.o arch/i386.o arch/i386_real.o arch/i486.o arch/i586.o arch/i686.o arch/java.o arch/mips.o arch/mipseb.o arch/mipsel.o arch/sparc.o arch/sparc64.o arch/yasep.o arch/yasep16.o arch/yasep32.o format.o
+libasm_OBJS = arch.o arch/amd64.o arch/arm.o arch/armeb.o arch/armel.o arch/dalvik.o arch/i386.o arch/i386_real.o arch/i486.o arch/i586.o arch/i686.o arch/java.o arch/mips.o arch/mipseb.o arch/mipsel.o arch/sparc.o arch/sparc64.o arch/yasep.o arch/yasep16.o arch/yasep32.o format.o format/dex.o format/elf.o format/flat.o format/java.o format/pe.o
 libasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 libasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) ../src/asm.o ../src/code.o ../src/parser.o ../src/token.o `pkg-config --libs cpp`
 
@@ -93,6 +93,21 @@ arch/yasep32.o: arch/yasep32.c
 
 format.o: format.c ../src/format.c
 	$(CC) $(libasm_CFLAGS) -c format.c
+
+format/dex.o: format/dex.c
+	$(CC) $(libasm_CFLAGS) -o format/dex.o -c format/dex.c
+
+format/elf.o: format/elf.c
+	$(CC) $(libasm_CFLAGS) -o format/elf.o -c format/elf.c
+
+format/flat.o: format/flat.c
+	$(CC) $(libasm_CFLAGS) -o format/flat.o -c format/flat.c
+
+format/java.o: format/java.c
+	$(CC) $(libasm_CFLAGS) -o format/java.o -c format/java.c
+
+format/pe.o: format/pe.c
+	$(CC) $(libasm_CFLAGS) -o format/pe.o -c format/pe.c
 
 clean:
 	$(RM) -- $(libasm_OBJS)

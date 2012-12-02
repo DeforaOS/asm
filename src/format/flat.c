@@ -22,8 +22,18 @@
 
 /* Flat */
 /* private */
+/* types */
+struct _AsmFormatPlugin
+{
+	AsmFormatPluginHelper * helper;
+};
+
+
 /* prototypes */
 /* plug-in */
+static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
+		char const * arch);
+static void _flat_destroy(AsmFormatPlugin * format);
 static int _flat_decode(AsmFormatPlugin * format, int raw);
 static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
@@ -31,26 +41,45 @@ static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 
 /* public */
 /* variables */
-AsmFormatPlugin format_plugin =
+/* plug-in */
+AsmFormatPluginDefinition format_plugin =
 {
-	NULL,
 	"flat",
 	NULL,
 	0,
-	NULL,
-	NULL,
+	_flat_init,
+	_flat_destroy,
 	NULL,
 	NULL,
 	NULL,
 	_flat_decode,
-	_flat_decode_section,
-	NULL
+	_flat_decode_section
 };
 
 
 /* private */
 /* functions */
 /* plug-in */
+/* flat_init */
+static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
+		char const * arch)
+{
+	AsmFormatPlugin * flat;
+
+	if((flat = object_new(sizeof(*flat))) == NULL)
+		return NULL;
+	flat->helper = helper;
+	return flat;
+}
+
+
+/* flat_destroy */
+static void _flat_destroy(AsmFormatPlugin * format)
+{
+	object_delete(format);
+}
+
+
 /* flat_decode */
 static int _flat_decode(AsmFormatPlugin * format, int raw)
 {

@@ -162,6 +162,11 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep16.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep32.c \
 		$(PACKAGE)-$(VERSION)/tools/format.c \
+		$(PACKAGE)-$(VERSION)/tools/format/dex.c \
+		$(PACKAGE)-$(VERSION)/tools/format/elf.c \
+		$(PACKAGE)-$(VERSION)/tools/format/flat.c \
+		$(PACKAGE)-$(VERSION)/tools/format/java.c \
+		$(PACKAGE)-$(VERSION)/tools/format/pe.c \
 		$(PACKAGE)-$(VERSION)/tools/Makefile \
 		$(PACKAGE)-$(VERSION)/tools/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \

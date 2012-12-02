@@ -28,6 +28,12 @@
 /* PE */
 /* private */
 /* types */
+/* plug-in */
+struct _AsmFormatPlugin
+{
+	AsmFormatPluginHelper * helper;
+};
+
 #pragma pack(1)
 struct pe_export_directory
 {
@@ -210,7 +216,8 @@ static char const _pe_header_signature[4] = "PE\0\0";
 
 /* prototypes */
 /* plug-in */
-static int _pe_init(AsmFormatPlugin * format, char const * arch);
+static AsmFormatPlugin * _pe_init(AsmFormatPluginHelper * helper,
+		char const * arch);
 static char const * _pe_detect(AsmFormatPlugin * format);
 static int _pe_decode(AsmFormatPlugin * format, int raw);
 static int _pe_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -223,9 +230,8 @@ static int _pe_get_machine(char const * arch);
 
 /* public */
 /* variables */
-AsmFormatPlugin format_plugin =
+AsmFormatPluginDefinition format_plugin =
 {
-	NULL,
 	"pe",
 	_pe_msdos_signature,
 	sizeof(_pe_msdos_signature),
@@ -235,44 +241,59 @@ AsmFormatPlugin format_plugin =
 	NULL,
 	_pe_detect,
 	_pe_decode,
-	_pe_decode_section,
-	NULL
+	_pe_decode_section
 };
 
 
 /* private */
 /* functions */
 /* pe_init */
-static int _pe_init(AsmFormatPlugin * format, char const * arch)
+static AsmFormatPlugin * _pe_init(AsmFormatPluginHelper * helper,
+		char const * arch)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPlugin * pe;
 	int machine;
 	struct pe_msdos pm;
 	struct pe_header ph;
 
+	if((pe = object_new(sizeof(*pe))) == NULL)
+		return NULL;
+	pe->helper = helper;
 	if(arch == NULL)
-		return 0;
+		return pe;
 	if((machine = _pe_get_machine(arch)) < 0)
-		return -1;
+	{
+		object_delete(pe);
+		return NULL;
+	}
 	/* output the MS-DOS header */
 	memset(&pm, 0, sizeof(pm));
 	memcpy(pm.signature, _pe_msdos_signature, sizeof(pm.signature));
 	pm.offset = sizeof(pm);
 	if(helper->write(helper->format, &pm, sizeof(pm)) != sizeof(pm))
-		return -1;
+	{
+		object_delete(pe);
+		return NULL;
+	}
 	/* output the PE signature */
 	if(helper->write(helper->format, _pe_header_signature,
 				sizeof(_pe_header_signature))
 			!= sizeof(_pe_header_signature))
-		return -1;
+	{
+		object_delete(pe);
+		return NULL;
+	}
 	/* output the PE header */
 	memset(&ph, 0, sizeof(ph));
 	ph.machine = _htol16(machine);
 	ph.timestamp = _htol32(time(NULL));
 	/* FIXME update the section and symbol lists */
 	if(helper->write(helper->format, &ph, sizeof(ph)) != sizeof(ph))
-		return -1;
-	return 0;
+	{
+		object_delete(pe);
+		return NULL;
+	}
+	return pe;
 }
 
 

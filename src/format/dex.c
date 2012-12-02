@@ -26,6 +26,8 @@
 /* DEX */
 /* private */
 /* types */
+typedef struct _AsmFormatPlugin Dex;
+
 #pragma pack(1)
 typedef struct _DexHeader
 {
@@ -109,11 +111,13 @@ typedef struct _DexString
 	char * string;
 } DexString;
 
-typedef struct _Dex
+struct _AsmFormatPlugin
 {
+	AsmFormatPluginHelper * helper;
+
 	DexMethodIdItem * dmii;
 	size_t dmii_cnt;
-} Dex;
+};
 
 
 /* variables */
@@ -122,8 +126,9 @@ static char _dex_signature[4] = "dex\n";
 
 /* prototypes */
 /* plug-in */
-static int _dex_init(AsmFormatPlugin * format, char const * arch);
-static int _dex_exit(AsmFormatPlugin * format);
+static AsmFormatPlugin * _dex_init(AsmFormatPluginHelper * helper,
+		char const * arch);
+static void _dex_destroy(AsmFormatPlugin * format);
 static char const * _dex_detect(AsmFormatPlugin * format);
 static int _dex_decode(AsmFormatPlugin * format, int raw);
 static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -132,20 +137,18 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 
 /* public */
 /* variables */
-AsmFormatPlugin format_plugin =
+AsmFormatPluginDefinition format_plugin =
 {
-	NULL,
 	"dex",
 	_dex_signature,
 	sizeof(_dex_signature),
 	_dex_init,
-	_dex_exit,
+	_dex_destroy,
 	NULL,
 	NULL,
 	_dex_detect,
 	_dex_decode,
-	_dex_decode_section,
-	NULL
+	_dex_decode_section
 };
 
 
@@ -153,7 +156,8 @@ AsmFormatPlugin format_plugin =
 /* functions */
 /* plug-in */
 /* dex_init */
-static int _dex_init(AsmFormatPlugin * format, char const * arch)
+static AsmFormatPlugin * _dex_init(AsmFormatPluginHelper * helper,
+		char const * arch)
 {
 	Dex * dex;
 
@@ -161,25 +165,27 @@ static int _dex_init(AsmFormatPlugin * format, char const * arch)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, arch);
 #endif
 	if(arch != NULL && strcmp(arch, "dalvik") != 0)
-		return -error_set_code(1, "%s: %s", arch,
+	{
+		error_set_code(1, "%s: %s", arch,
 				"Unsupported Dex architecture");
+		return NULL;
+	}
 	if((dex = object_new(sizeof(*dex))) == NULL)
-		return -1;
-	format->priv = dex;
+		return NULL;
+	dex->helper = helper;
 	dex->dmii = NULL;
 	dex->dmii_cnt = 0;
-	return 0;
+	return dex;
 }
 
 
-/* dex_exit */
-static int _dex_exit(AsmFormatPlugin * format)
+/* dex_destroy */
+static void _dex_destroy(AsmFormatPlugin * format)
 {
-	Dex * dex = format->priv;
+	Dex * dex = format;
 
 	free(dex->dmii);
 	object_delete(dex);
-	return 0;
 }
 
 
@@ -291,7 +297,7 @@ static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
 		size_t size)
 {
 	AsmFormatPluginHelper * helper = format->helper;
-	Dex * dex = format->priv;
+	Dex * dex = format;
 	ssize_t s;
 	size_t i;
 	AsmString * string;

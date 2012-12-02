@@ -82,7 +82,7 @@ AsmArch * arch_new(char const * name)
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	/* XXX */
-	if(_arch[1].definition == NULL)
+	if(_arch[0].definition == NULL)
 	{
 		_arch[0].definition = &arch_plugin_amd64;
 		_arch[1].definition = &arch_plugin_arm;

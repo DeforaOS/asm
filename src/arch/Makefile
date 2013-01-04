@@ -199,13 +199,13 @@ sparc.o: sparc.c common.ins null.ins sparc.h sparc.ins sparc.reg
 sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
-yasep.o: yasep.c common.ins null.ins yasep.ins yasep.reg
+yasep.o: yasep.c common.ins null.ins yasep.h yasep.ins yasep.reg
 	$(CC) $(yasep_CFLAGS) -c yasep.c
 
-yasep16.o: yasep16.c common.ins null.ins yasep.ins yasep.reg
+yasep16.o: yasep16.c common.ins null.ins yasep.c yasep.h yasep.ins yasep.reg
 	$(CC) $(yasep16_CFLAGS) -c yasep16.c
 
-yasep32.o: yasep32.c common.ins null.ins yasep.ins yasep.reg
+yasep32.o: yasep32.c common.ins null.ins yasep.c yasep.h yasep.ins yasep.reg
 	$(CC) $(yasep32_CFLAGS) -c yasep32.c
 
 clean:

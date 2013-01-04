@@ -109,6 +109,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.h \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \
+		$(PACKAGE)-$(VERSION)/src/arch/yasep.h \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/project.conf \

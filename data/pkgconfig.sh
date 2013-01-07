@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -48,16 +48,20 @@ _debug()
 #usage
 _usage()
 {
-	echo "Usage: pkgconfig.sh [-i|-u][-P prefix] target" 1>&2
+	echo "Usage: pkgconfig.sh [-c|-i|-u][-P prefix] target" 1>&2
 	return 1
 }
 
 
 #main
+clean=0
 install=0
 uninstall=0
-while getopts iuP: name; do
+while getopts "ciuP:" name; do
 	case $name in
+		c)
+			clean=1
+			;;
 		i)
 			uninstall=0
 			install=1

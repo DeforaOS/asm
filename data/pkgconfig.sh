@@ -48,7 +48,7 @@ _debug()
 #usage
 _usage()
 {
-	echo "Usage: pkgconfig.sh [-c|-i|-u][-P prefix] target" 1>&2
+	echo "Usage: pkgconfig.sh [-c|-i|-u][-P prefix] target..." 1>&2
 	return 1
 }
 
@@ -89,6 +89,9 @@ PKGCONFIG="$PREFIX/lib/pkgconfig"
 while [ $# -gt 0 ]; do
 	target="$1"
 	shift
+
+	#clean
+	[ $clean -ne 0 ] && continue
 
 	#uninstall
 	if [ "$uninstall" -eq 1 ]; then

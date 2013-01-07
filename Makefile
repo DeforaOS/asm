@@ -1,9 +1,9 @@
 PACKAGE	= Asm
 VERSION	= 0.2.1
 SUBDIRS	= data doc include src tests tools
-RM	?= rm -f
-LN	?= ln -f
-TAR	?= tar -czvf
+RM	= rm -f
+LN	= ln -f
+TAR	= tar -czvf
 
 
 all: subdirs

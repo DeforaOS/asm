@@ -2,18 +2,18 @@ TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
-CC	?= cc
+CC	= cc
 CPPFLAGSF= -I ../../include
-CPPFLAGS?=
+CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags libSystem`
 CFLAGS	= -Wall -g -O2 -fPIC -pedantic
-AR	?= ar
-RANLIB	?= ranlib
-CCSHARED?= $(CC) -shared
-RM	?= rm -f
-LN	?= ln -f
-MKDIR	?= mkdir -p
-INSTALL	?= install
+AR	= ar
+RANLIB	= ranlib
+CCSHARED= $(CC) -shared
+RM	= rm -f
+LN	= ln -f
+MKDIR	= mkdir -p
+INSTALL	= install
 
 
 all: $(TARGETS)

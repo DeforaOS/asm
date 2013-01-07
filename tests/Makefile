@@ -4,11 +4,11 @@ DESTDIR	=
 BINDIR	= $(PREFIX)/bin
 SBINDIR	= $(PREFIX)/sbin
 AS	= ../src/asm-static
-ASFLAGS	?=
-RM	?= rm -f
-LN	?= ln -f
-MKDIR	?= mkdir -p
-INSTALL	?= install
+ASFLAGS	=
+RM	= rm -f
+LN	= ln -f
+MKDIR	= mkdir -p
+INSTALL	= install
 
 
 all: $(TARGETS)

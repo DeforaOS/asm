@@ -3,21 +3,21 @@ TARGETS	= libasm.a libasm.so.0.0 libasm.so.0 libasm.so asm asm-static deasm deas
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
-CC	?= cc
+CC	= cc
 CPPFLAGSF= -I ../include
 CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags cpp`
 CFLAGS	= -Wall -g -O2 -pedantic
 LDFLAGS	= 
-AR	?= ar
-RANLIB	?= ranlib
-CCSHARED?= $(CC) -shared
+AR	= ar
+RANLIB	= ranlib
+CCSHARED= $(CC) -shared
 BINDIR	= $(PREFIX)/bin
 SBINDIR	= $(PREFIX)/sbin
-RM	?= rm -f
-LN	?= ln -f
-MKDIR	?= mkdir -p
-INSTALL	?= install
+RM	= rm -f
+LN	= ln -f
+MKDIR	= mkdir -p
+INSTALL	= install
 
 
 all: subdirs $(TARGETS)

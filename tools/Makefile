@@ -2,18 +2,18 @@ TARGETS	= libasm.a libasm.so.0.0 libasm.so.0 libasm.so
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
-CC	?= cc
+CC	= cc
 CPPFLAGSF= -I ../include -DSTANDALONE
-CPPFLAGS?=
+CPPFLAGS=
 CFLAGSF	= -W -fPIC
 CFLAGS	= -Wall -g -O2
-AR	?= ar
-RANLIB	?= ranlib
-CCSHARED?= $(CC) -shared
-RM	?= rm -f
-LN	?= ln -f
-MKDIR	?= mkdir -p
-INSTALL	?= install
+AR	= ar
+RANLIB	= ranlib
+CCSHARED= $(CC) -shared
+RM	= rm -f
+LN	= ln -f
+MKDIR	= mkdir -p
+INSTALL	= install
 
 
 all: $(TARGETS)

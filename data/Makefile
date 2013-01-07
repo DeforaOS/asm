@@ -14,6 +14,7 @@ Asm.pc: Asm.pc.in ../config.sh
 
 clean:
 	$(RM) -- $(Asm.pc_OBJS)
+	./pkgconfig.sh -c -P "$(PREFIX)" -- "Asm.pc"
 
 distclean: clean
 	$(RM) -- $(TARGETS)

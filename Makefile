@@ -66,6 +66,10 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format.h \
 		$(PACKAGE)-$(VERSION)/src/parser.h \
 		$(PACKAGE)-$(VERSION)/src/token.h \
+		$(PACKAGE)-$(VERSION)/src/python/project.conf \
+		$(PACKAGE)-$(VERSION)/src/python/Makefile \
+		$(PACKAGE)-$(VERSION)/src/python/libasm.c \
+		$(PACKAGE)-$(VERSION)/src/python/libasm.py \
 		$(PACKAGE)-$(VERSION)/src/project.conf \
 		$(PACKAGE)-$(VERSION)/src/arch/amd64.c \
 		$(PACKAGE)-$(VERSION)/src/arch/arm.c \

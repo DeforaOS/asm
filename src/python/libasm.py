@@ -50,3 +50,6 @@ class Asm:
 
 	def instruction(self, name):
 		return _libasm.asm_instruction(self.asm, name)
+
+	def open_deassemble(self, filename, raw):
+		return _libasm.asm_open_deassemble(self.asm, filename, raw)

@@ -49,6 +49,9 @@ static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args);
 
 static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args);
 
+/* deassemble */
+static PyObject * _libasm_asm_open_deassemble(PyObject * self, PyObject * args);
+
 
 /* variables */
 static PyMethodDef _libasm_methods[] =
@@ -73,6 +76,8 @@ static PyMethodDef _libasm_methods[] =
 		"Open a file to write instructions." },
 	{ "asm_instruction", _libasm_asm_instruction, METH_VARARGS,
 		"Process an assembly instruction." },
+	{ "asm_open_deassemble", _libasm_asm_open_deassemble, METH_VARARGS,
+		"Open a file to read instructions." },
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -250,5 +255,22 @@ static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args)
 			|| !PyArg_ParseTuple(args, "s", &name))
 		return NULL;
 	ret = asm_instruction(a, name, 0);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* deassemble */
+/* libasm_asm_open_deassemble */
+static PyObject * _libasm_asm_open_deassemble(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * filename;
+	int raw;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "si", &filename, &raw))
+		return NULL;
+	ret = asm_open_deassemble(a, filename, raw);
 	return Py_BuildValue("i", ret);
 }

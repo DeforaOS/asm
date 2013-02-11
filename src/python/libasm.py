@@ -23,3 +23,30 @@ import _libasm
 class Asm:
 	def __init__(self, arch, format):
 		self.asm = _libasm.asm_new(arch, format)
+
+	def get_arch(self):
+		return _libasm.asm_get_arch(self.asm)
+
+	def get_format(self):
+		return _libasm.asm_get_format(self.asm)
+
+	def set_arch(self, arch):
+		return _libasm.asm_set_arch(self.asm, arch)
+
+	def set_format(self, format):
+		return _libasm.asm_set_format(self.asm, format)
+
+	def guess_arch(self):
+		return _libasm.asm_guess_arch(self.asm)
+
+	def guess_format(self):
+		return _libasm.asm_guess_format(self.asm)
+
+	def close(self):
+		return _libasm.asm_close(self.asm)
+
+	def open_assemble(self, outfile):
+		return _libasm.asm_open_assemble(self.asm, outfile)
+
+	def instruction(self, name):
+		return _libasm.asm_instruction(self.asm, name)

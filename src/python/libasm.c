@@ -30,12 +30,49 @@ static char const _libasm_asm_name[] = "libasm::Asm";
 static PyObject * _libasm_asm_new(PyObject * self, PyObject * args);
 static void _libasm_asm_delete(PyObject * self);
 
+/* accessors */
+static PyObject * _libasm_asm_get_arch(PyObject * self, PyObject * args);
+static PyObject * _libasm_asm_get_format(PyObject * self, PyObject * args);
+static PyObject * _libasm_asm_set_arch(PyObject * self, PyObject * args);
+static PyObject * _libasm_asm_set_format(PyObject * self, PyObject * args);
+
+/* useful */
+/* detection */
+static PyObject * _libasm_asm_guess_arch(PyObject * self, PyObject * args);
+static PyObject * _libasm_asm_guess_format(PyObject * self, PyObject * args);
+
+/* common */
+static PyObject * _libasm_asm_close(PyObject * self, PyObject * args);
+
+/* assemble */
+static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args);
+
+static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args);
+
 
 /* variables */
 static PyMethodDef _libasm_methods[] =
 {
 	{ "asm_new", _libasm_asm_new, METH_VARARGS,
 		"Instantiates an Asm object." },
+	{ "asm_get_arch", _libasm_asm_get_arch, METH_VARARGS,
+		"Obtain the current architecture in use." },
+	{ "asm_get_format", _libasm_asm_get_format, METH_VARARGS,
+		"Obtain the current format in use." },
+	{ "asm_set_arch", _libasm_asm_set_arch, METH_VARARGS,
+		"Set the current architecture in use." },
+	{ "asm_set_format", _libasm_asm_set_format, METH_VARARGS,
+		"Set the current format in use." },
+	{ "asm_guess_arch", _libasm_asm_guess_arch, METH_VARARGS,
+		"Guess the current architecture." },
+	{ "asm_guess_format", _libasm_asm_guess_format, METH_VARARGS,
+		"Guess the current format." },
+	{ "asm_close",	_libasm_asm_close, METH_VARARGS,
+		"Close the file currently opened." },
+	{ "asm_open_assemble", _libasm_asm_open_assemble, METH_VARARGS,
+		"Open a file to write instructions." },
+	{ "asm_instruction", _libasm_asm_instruction, METH_VARARGS,
+		"Process an assembly instruction." },
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -78,4 +115,140 @@ static void _libasm_asm_delete(PyObject * self)
 	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return;
 	asm_delete(a);
+}
+
+
+/* accessors */
+/* libasm_asm_get_arch */
+static PyObject * _libasm_asm_get_arch(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "")
+			|| (ret = asm_get_arch(a)) == NULL)
+		return NULL;
+	return Py_BuildValue("s", ret);
+}
+
+
+/* libasm_asm_get_format */
+static PyObject * _libasm_asm_get_format(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "")
+			|| (ret = asm_get_format(a)) == NULL)
+		return NULL;
+	return Py_BuildValue("s", ret);
+}
+
+
+/* libasm_asm_set_arch */
+static PyObject * _libasm_asm_set_arch(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * arch;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "s", &arch))
+		return NULL;
+	ret = asm_set_arch(a, arch);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* libasm_asm_set_format */
+static PyObject * _libasm_asm_set_format(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * format;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "s", &format))
+		return NULL;
+	ret = asm_set_format(a, format);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* useful */
+/* detection */
+/* libasm_asm_guess_arch */
+static PyObject * _libasm_asm_guess_arch(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, ""))
+		return NULL;
+	ret = asm_guess_arch(a);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* libasm_guess_format */
+static PyObject * _libasm_asm_guess_format(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, ""))
+		return NULL;
+	ret = asm_guess_format(a);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* common */
+/* libasm_asm_close */
+static PyObject * _libasm_asm_close(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, ""))
+		return NULL;
+	ret = asm_close(a);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* assemble */
+/* libasm_asm_open_assemble */
+static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * outfile;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "s", &outfile))
+		return NULL;
+	ret = asm_open_assemble(a, outfile);
+	return Py_BuildValue("i", ret);
+}
+
+
+/* libasm_asm_instruction */
+static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * name;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			/* FIXME really parse the arguments */
+			|| !PyArg_ParseTuple(args, "s", &name))
+		return NULL;
+	ret = asm_instruction(a, name, 0);
+	return Py_BuildValue("i", ret);
 }

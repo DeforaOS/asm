@@ -45,6 +45,7 @@ static PyObject * _libasm_asm_guess_format(PyObject * self, PyObject * args);
 static PyObject * _libasm_asm_close(PyObject * self, PyObject * args);
 
 /* assemble */
+static PyObject * _libasm_asm_assemble_string(PyObject * self, PyObject * args);
 static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args);
 
 static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args);
@@ -72,6 +73,8 @@ static PyMethodDef _libasm_methods[] =
 		"Guess the current format." },
 	{ "asm_close",	_libasm_asm_close, METH_VARARGS,
 		"Close the file currently opened." },
+	{ "asm_assemble_string", _libasm_asm_assemble_string, METH_VARARGS,
+		"Write instructions from a string directly to a file." },
 	{ "asm_open_assemble", _libasm_asm_open_assemble, METH_VARARGS,
 		"Open a file to write instructions." },
 	{ "asm_instruction", _libasm_asm_instruction, METH_VARARGS,
@@ -228,6 +231,22 @@ static PyObject * _libasm_asm_close(PyObject * self, PyObject * args)
 
 
 /* assemble */
+/* libasm_asm_assemble_string */
+static PyObject * _libasm_asm_assemble_string(PyObject * self, PyObject * args)
+{
+	Asm * a;
+	char const * outfile;
+	char const * string;
+	int ret;
+
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
+			|| !PyArg_ParseTuple(args, "ss", &outfile, &string))
+		return NULL;
+	ret = asm_assemble_string(a, NULL, outfile, string);
+	return Py_BuildValue("i", ret);
+}
+
+
 /* libasm_asm_open_assemble */
 static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args)
 {
@@ -266,11 +285,12 @@ static PyObject * _libasm_asm_open_deassemble(PyObject * self, PyObject * args)
 	Asm * a;
 	char const * filename;
 	int raw;
-	int ret;
+	AsmCode * ret;
 
 	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
 			|| !PyArg_ParseTuple(args, "si", &filename, &raw))
 		return NULL;
 	ret = asm_open_deassemble(a, filename, raw);
-	return Py_BuildValue("i", ret);
+	/* FIXME really return an AsmCode Python object */
+	return Py_BuildValue("p", ret);
 }

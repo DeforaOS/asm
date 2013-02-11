@@ -45,6 +45,9 @@ class Asm:
 	def close(self):
 		return _libasm.asm_close(self.asm)
 
+	def assemble_string(self, outfile, string):
+		return _libasm.asm_assemble_string(self.asm, outfile, string)
+
 	def open_assemble(self, outfile):
 		return _libasm.asm_open_assemble(self.asm, outfile)
 

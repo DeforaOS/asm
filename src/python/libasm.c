@@ -133,8 +133,9 @@ static PyObject * _libasm_asm_get_arch(PyObject * self, PyObject * args)
 	Asm * a;
 	char const * ret;
 
+	if(!PyArg_ParseTuple(args, "O", &self))
+		return NULL;
 	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "")
 			|| (ret = asm_get_arch(a)) == NULL)
 		return NULL;
 	return Py_BuildValue("s", ret);
@@ -147,8 +148,9 @@ static PyObject * _libasm_asm_get_format(PyObject * self, PyObject * args)
 	Asm * a;
 	char const * ret;
 
+	if(!PyArg_ParseTuple(args, "O", &self))
+		return NULL;
 	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "")
 			|| (ret = asm_get_format(a)) == NULL)
 		return NULL;
 	return Py_BuildValue("s", ret);
@@ -162,8 +164,9 @@ static PyObject * _libasm_asm_set_arch(PyObject * self, PyObject * args)
 	char const * arch;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "s", &arch))
+	if(!PyArg_ParseTuple(args, "Os", &self, &arch))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_set_arch(a, arch);
 	return Py_BuildValue("i", ret);
@@ -177,8 +180,9 @@ static PyObject * _libasm_asm_set_format(PyObject * self, PyObject * args)
 	char const * format;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "s", &format))
+	if(!PyArg_ParseTuple(args, "Os", &self, &format))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_set_format(a, format);
 	return Py_BuildValue("i", ret);
@@ -193,8 +197,9 @@ static PyObject * _libasm_asm_guess_arch(PyObject * self, PyObject * args)
 	Asm * a;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, ""))
+	if(!PyArg_ParseTuple(args, "O", self))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_guess_arch(a);
 	return Py_BuildValue("i", ret);
@@ -207,8 +212,9 @@ static PyObject * _libasm_asm_guess_format(PyObject * self, PyObject * args)
 	Asm * a;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, ""))
+	if(!PyArg_ParseTuple(args, "O", &self))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_guess_format(a);
 	return Py_BuildValue("i", ret);
@@ -222,8 +228,9 @@ static PyObject * _libasm_asm_close(PyObject * self, PyObject * args)
 	Asm * a;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, ""))
+	if(!PyArg_ParseTuple(args, "O", &self))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_close(a);
 	return Py_BuildValue("i", ret);
@@ -239,8 +246,9 @@ static PyObject * _libasm_asm_assemble_string(PyObject * self, PyObject * args)
 	char const * string;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "ss", &outfile, &string))
+	if(!PyArg_ParseTuple(args, "Oss", &self, &outfile, &string))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_assemble_string(a, NULL, outfile, string);
 	return Py_BuildValue("i", ret);
@@ -254,8 +262,9 @@ static PyObject * _libasm_asm_open_assemble(PyObject * self, PyObject * args)
 	char const * outfile;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "s", &outfile))
+	if(!PyArg_ParseTuple(args, "Os", &self, &outfile))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_open_assemble(a, outfile);
 	return Py_BuildValue("i", ret);
@@ -269,9 +278,10 @@ static PyObject * _libasm_asm_instruction(PyObject * self, PyObject * args)
 	char const * name;
 	int ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			/* FIXME really parse the arguments */
-			|| !PyArg_ParseTuple(args, "s", &name))
+	/* FIXME really parse the arguments */
+	if(!PyArg_ParseTuple(args, "Os", &self, &name))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_instruction(a, name, 0);
 	return Py_BuildValue("i", ret);
@@ -287,8 +297,9 @@ static PyObject * _libasm_asm_open_deassemble(PyObject * self, PyObject * args)
 	int raw;
 	AsmCode * ret;
 
-	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL
-			|| !PyArg_ParseTuple(args, "si", &filename, &raw))
+	if(!PyArg_ParseTuple(args, "Osi", &self, &filename, &raw))
+		return NULL;
+	if((a = PyCapsule_GetPointer(self, _libasm_asm_name)) == NULL)
 		return NULL;
 	ret = asm_open_deassemble(a, filename, raw);
 	/* FIXME really return an AsmCode Python object */

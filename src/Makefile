@@ -23,7 +23,7 @@ INSTALL	= install
 all: subdirs $(TARGETS)
 
 subdirs:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE)) || exit; done
 
 libasm_OBJS = arch.o asm.o code.o format.o parser.o token.o
 libasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS) -fPIC
@@ -87,16 +87,16 @@ deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/asm.h ../
 	$(CC) $(deasm_CFLAGS) -c deasm.c
 
 clean:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) clean) || exit; done
 	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 
 distclean:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) distclean) || exit; done
 	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) install) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) install) || exit; done
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
 	$(INSTALL) -m 0644 -- libasm.a $(DESTDIR)$(LIBDIR)/libasm.a
 	$(INSTALL) -m 0755 -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0.0
@@ -108,7 +108,7 @@ install: $(TARGETS)
 	$(INSTALL) -m 0755 -- deasm $(DESTDIR)$(BINDIR)/deasm
 
 uninstall:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) uninstall) || exit; done
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.a
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so.0.0
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so.0

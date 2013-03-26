@@ -23,7 +23,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <elf.h>
+#ifdef __OpenBSD__
+# include <elf_abi.h>
+#else
+# include <elf.h>
+#endif
 #include "Asm.h"
 
 /* portability */
@@ -118,7 +122,9 @@ static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
 /* variables */
 static ElfArch elf_arch[] =
 {
+#ifdef EM_X86_64
 	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
+#endif
 	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
 	{ "armeb",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB, 0x0 },
 	{ "armel",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
@@ -357,8 +363,10 @@ static char const * _detect_64(AsmFormatPlugin * format, Elf64_Ehdr * ehdr)
 		case EM_SPARC:
 		case EM_SPARCV9:
 			return "sparc64";
+#ifdef EM_X86_64
 		case EM_X86_64:
 			return "amd64";
+#endif
 	}
 	format->decode = _elf_decode;
 	error_set_code(1, "%s: %s 0x%x", "elf", "Unsupported ELF architecture",

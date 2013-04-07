@@ -98,14 +98,14 @@ distclean:
 install: $(TARGETS)
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) install) || exit; done
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
-	$(INSTALL) -m 0644 -- libasm.a $(DESTDIR)$(LIBDIR)/libasm.a
-	$(INSTALL) -m 0755 -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0.0
+	$(INSTALL) -m 0644 libasm.a $(DESTDIR)$(LIBDIR)/libasm.a
+	$(INSTALL) -m 0755 libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0
 	$(LN) -s -- libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so
 	$(MKDIR) $(DESTDIR)$(BINDIR)
-	$(INSTALL) -m 0755 -- asm $(DESTDIR)$(BINDIR)/asm
+	$(INSTALL) -m 0755 asm $(DESTDIR)$(BINDIR)/asm
 	$(MKDIR) $(DESTDIR)$(BINDIR)
-	$(INSTALL) -m 0755 -- deasm $(DESTDIR)$(BINDIR)/deasm
+	$(INSTALL) -m 0755 deasm $(DESTDIR)$(BINDIR)/deasm
 
 uninstall:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) uninstall) || exit; done

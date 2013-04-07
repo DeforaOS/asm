@@ -216,43 +216,43 @@ distclean: clean
 
 install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- amd64.so $(DESTDIR)$(LIBDIR)/Asm/arch/amd64.so
+	$(INSTALL) -m 0644 amd64.so $(DESTDIR)$(LIBDIR)/Asm/arch/amd64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- arm.so $(DESTDIR)$(LIBDIR)/Asm/arch/arm.so
+	$(INSTALL) -m 0644 arm.so $(DESTDIR)$(LIBDIR)/Asm/arch/arm.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- armeb.so $(DESTDIR)$(LIBDIR)/Asm/arch/armeb.so
+	$(INSTALL) -m 0644 armeb.so $(DESTDIR)$(LIBDIR)/Asm/arch/armeb.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- armel.so $(DESTDIR)$(LIBDIR)/Asm/arch/armel.so
+	$(INSTALL) -m 0644 armel.so $(DESTDIR)$(LIBDIR)/Asm/arch/armel.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- dalvik.so $(DESTDIR)$(LIBDIR)/Asm/arch/dalvik.so
+	$(INSTALL) -m 0644 dalvik.so $(DESTDIR)$(LIBDIR)/Asm/arch/dalvik.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- i386.so $(DESTDIR)$(LIBDIR)/Asm/arch/i386.so
+	$(INSTALL) -m 0644 i386.so $(DESTDIR)$(LIBDIR)/Asm/arch/i386.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- i386_real.so $(DESTDIR)$(LIBDIR)/Asm/arch/i386_real.so
+	$(INSTALL) -m 0644 i386_real.so $(DESTDIR)$(LIBDIR)/Asm/arch/i386_real.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- i486.so $(DESTDIR)$(LIBDIR)/Asm/arch/i486.so
+	$(INSTALL) -m 0644 i486.so $(DESTDIR)$(LIBDIR)/Asm/arch/i486.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- i586.so $(DESTDIR)$(LIBDIR)/Asm/arch/i586.so
+	$(INSTALL) -m 0644 i586.so $(DESTDIR)$(LIBDIR)/Asm/arch/i586.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- i686.so $(DESTDIR)$(LIBDIR)/Asm/arch/i686.so
+	$(INSTALL) -m 0644 i686.so $(DESTDIR)$(LIBDIR)/Asm/arch/i686.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- java.so $(DESTDIR)$(LIBDIR)/Asm/arch/java.so
+	$(INSTALL) -m 0644 java.so $(DESTDIR)$(LIBDIR)/Asm/arch/java.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- mips.so $(DESTDIR)$(LIBDIR)/Asm/arch/mips.so
+	$(INSTALL) -m 0644 mips.so $(DESTDIR)$(LIBDIR)/Asm/arch/mips.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- mipseb.so $(DESTDIR)$(LIBDIR)/Asm/arch/mipseb.so
+	$(INSTALL) -m 0644 mipseb.so $(DESTDIR)$(LIBDIR)/Asm/arch/mipseb.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- mipsel.so $(DESTDIR)$(LIBDIR)/Asm/arch/mipsel.so
+	$(INSTALL) -m 0644 mipsel.so $(DESTDIR)$(LIBDIR)/Asm/arch/mipsel.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- sparc.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc.so
+	$(INSTALL) -m 0644 sparc.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- sparc64.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
+	$(INSTALL) -m 0644 sparc64.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- yasep.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
+	$(INSTALL) -m 0644 yasep.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- yasep16.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
+	$(INSTALL) -m 0644 yasep16.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0644 -- yasep32.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep32.so
+	$(INSTALL) -m 0644 yasep32.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep32.so
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/amd64.so

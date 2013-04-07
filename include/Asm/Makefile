@@ -15,15 +15,15 @@ distclean: clean
 
 install:
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel/Asm
-	$(INSTALL) -m 0644 -- arch.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/arch.h
+	$(INSTALL) -m 0644 arch.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/arch.h
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel/Asm
-	$(INSTALL) -m 0644 -- asm.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/asm.h
+	$(INSTALL) -m 0644 asm.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/asm.h
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel/Asm
-	$(INSTALL) -m 0644 -- code.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/code.h
+	$(INSTALL) -m 0644 code.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/code.h
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel/Asm
-	$(INSTALL) -m 0644 -- common.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/common.h
+	$(INSTALL) -m 0644 common.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/common.h
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel/Asm
-	$(INSTALL) -m 0644 -- format.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/format.h
+	$(INSTALL) -m 0644 format.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/format.h
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(INCLUDEDIR)/Devel/Asm/arch.h

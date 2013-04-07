@@ -22,7 +22,7 @@ distclean:
 install:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) install) || exit; done
 	$(MKDIR) $(DESTDIR)$(INCLUDEDIR)/Devel
-	$(INSTALL) -m 0644 -- Asm.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm.h
+	$(INSTALL) -m 0644 Asm.h $(DESTDIR)$(INCLUDEDIR)/Devel/Asm.h
 
 uninstall:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) uninstall) || exit; done

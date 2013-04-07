@@ -76,15 +76,15 @@ distclean: clean
 
 install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 -- dex.so $(DESTDIR)$(LIBDIR)/Asm/format/dex.so
+	$(INSTALL) -m 0644 dex.so $(DESTDIR)$(LIBDIR)/Asm/format/dex.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 -- elf.so $(DESTDIR)$(LIBDIR)/Asm/format/elf.so
+	$(INSTALL) -m 0644 elf.so $(DESTDIR)$(LIBDIR)/Asm/format/elf.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 -- flat.so $(DESTDIR)$(LIBDIR)/Asm/format/flat.so
+	$(INSTALL) -m 0644 flat.so $(DESTDIR)$(LIBDIR)/Asm/format/flat.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 -- java.so $(DESTDIR)$(LIBDIR)/Asm/format/java.so
+	$(INSTALL) -m 0644 java.so $(DESTDIR)$(LIBDIR)/Asm/format/java.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 -- pe.so $(DESTDIR)$(LIBDIR)/Asm/format/pe.so
+	$(INSTALL) -m 0644 pe.so $(DESTDIR)$(LIBDIR)/Asm/format/pe.so
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/format/dex.so

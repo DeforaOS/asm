@@ -75,7 +75,7 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode;
 	uint32_t op;
-	AsmArchInstruction * ai;
+	AsmArchInstruction * ai = NULL;
 
 	/* read 4 bytes in the proper endian */
 	if(helper->read(helper->arch, &opcode, sizeof(opcode))
@@ -204,7 +204,7 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 				opcode & OPDP(0xf, 0xf));
 		_decode_reg_reg_reg(plugin, call, opcode);
 	}
-	else
+	if(ai == NULL)
 		/* unknown instruction */
 		return _decode_unknown(call, opcode);
 	call->name = ai->name;

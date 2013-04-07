@@ -1,4 +1,4 @@
-TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o mipseb.o mipsel.o java.o sparc.o sparc64.o tests.txt yasep.o yasep16.o yasep32.o
+TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o mipseb.o mipsel.o java.o sparc.o sparc64.o tests.log yasep.o yasep16.o yasep32.o
 PREFIX	= /usr/local
 DESTDIR	=
 BINDIR	= $(PREFIX)/bin
@@ -61,8 +61,8 @@ sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
 sparc64.o_OBJS = sparc64.o
 sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 
-tests.txt: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o yasep.o yasep16.o yasep32.o
-	./tests.sh -P "$(PREFIX)" -- "tests.txt"
+tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o yasep.o yasep16.o yasep32.o
+	./tests.sh -P "$(PREFIX)" -- "tests.log"
 
 yasep.o_OBJS = yasep.o
 yasep.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a yasep -f flat
@@ -131,7 +131,7 @@ yasep32.o: yasep32.asm ../src/asm yasep.asm
 	$(AS) $(yasep32.o_ASFLAGS) -o yasep32.o yasep32.asm
 
 clean:
-	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(tests.txt_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
+	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

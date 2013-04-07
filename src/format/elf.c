@@ -466,6 +466,9 @@ static int _decode32_shdr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 	ssize_t size;
 	size_t i;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(ehdr->e_shentsize == 0)
 	{
 		*shdr = NULL;
@@ -498,6 +501,9 @@ static int _decode32_addr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 	Elf32_Half i;
 	Elf32_Phdr phdr;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(helper->seek(helper->format, ehdr->e_phoff, SEEK_SET) < 0)
 		return -1;
 	for(i = 0; i < ehdr->e_phnum; i++)
@@ -523,11 +529,20 @@ static int _decode32_strtab(AsmFormatPlugin * format, Elf32_Shdr * shdr,
 {
 	AsmFormatPluginHelper * helper = format->helper;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(ndx >= shdr_cnt)
 		return -error_set_code(1, "%s: %s",
 				helper->get_filename(helper->format),
 				"Unable to read the string table");
 	shdr = &shdr[ndx];
+	if(shdr->sh_size == 0)
+	{
+		*strtab = NULL;
+		*strtab_cnt = 0;
+		return 0;
+	}
 	if(helper->seek(helper->format, shdr->sh_offset, SEEK_SET) < 0)
 		return -1;
 	if((*strtab = malloc(shdr->sh_size)) == NULL)
@@ -665,6 +680,9 @@ static int _decode64_shdr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 	ssize_t size;
 	size_t i;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(ehdr->e_shentsize == 0)
 	{
 		*shdr = NULL;
@@ -697,6 +715,9 @@ static int _decode64_addr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 	Elf64_Quarter i;
 	Elf64_Phdr phdr;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	if(helper->seek(helper->format, ehdr->e_phoff, SEEK_SET) < 0)
 		return -1;
 	for(i = 0; i < ehdr->e_phnum; i++)
@@ -723,11 +744,20 @@ static int _decode64_strtab(AsmFormatPlugin * format, Elf64_Shdr * shdr,
 	AsmFormatPluginHelper * helper = format->helper;
 	ssize_t size;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%u)\n", __func__, ndx);
+#endif
 	if(ndx >= shdr_cnt)
 		return -error_set_code(1, "%s: %s",
 				helper->get_filename(helper->format),
 				"Unable to read the string table");
 	shdr = &shdr[ndx];
+	if(shdr->sh_size == 0)
+	{
+		*strtab = NULL;
+		*strtab_cnt = 0;
+		return 0;
+	}
 	if(helper->seek(helper->format, shdr->sh_offset, SEEK_SET) < 0)
 		return -1;
 	size = sizeof(**strtab) * shdr->sh_size;
@@ -800,6 +830,9 @@ static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 {
 	AsmFormatPluginHelper * helper = format->helper;
 
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
 	return helper->decode(helper->format, section->offset, section->size,
 			section->base, calls, calls_cnt);
 }

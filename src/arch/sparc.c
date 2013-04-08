@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,11 +27,11 @@ static AsmArchDescription _sparc_description =
 	"elf", ASM_ARCH_ENDIAN_BIG, 32, 32, 32
 };
 
-#define REG(name, size, id) { "" # name, size, id },
+#define REG(name, size, id, description) { "" # name, size, id, description },
 static AsmArchRegister _sparc_registers[] =
 {
 #include "sparc.reg"
-	{ NULL,		0, 0 }
+	{ NULL, 0, 0, NULL }
 };
 #undef REG
 

@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -40,7 +40,7 @@ typedef struct _DalvikDecode
 
 /* constants */
 /* register sizes */
-#define REG(name, size, id) REG_dalvik_ ## name ## _size = size,
+#define REG(name, size, id, description) REG_dalvik_ ## name ## _size = size,
 enum
 {
 #include "dalvik.reg"
@@ -49,7 +49,7 @@ enum
 #undef REG
 
 /* register ids */
-#define REG(name, size, id) REG_dalvik_ ## name ## _id = id,
+#define REG(name, size, id, description) REG_dalvik_ ## name ## _id = id,
 enum
 {
 #include "dalvik.reg"
@@ -66,11 +66,11 @@ static AsmArchDescription _dalvik_description =
 };
 
 
-#define REG(name, size, id) { "" # name, size, id },
+#define REG(name, size, id, description) { "" # name, size, id, description },
 static AsmArchRegister _dalvik_registers[] =
 {
 #include "dalvik.reg"
-	{ NULL,		0, 0 }
+	{ NULL, 0, 0, NULL }
 };
 #undef REG
 

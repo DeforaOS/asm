@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,7 +39,7 @@ static AsmArchDescription _java_description =
 
 static AsmArchRegister _java_registers[] =
 {
-	{ NULL,		0, 0 }
+	{ NULL, 0, 0, NULL }
 };
 
 #define OP1F		(8 << AOD_SIZE)

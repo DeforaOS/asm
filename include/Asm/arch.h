@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -189,6 +189,7 @@ typedef struct _AsmArchRegister
 	char const * name;
 	uint32_t size;
 	uint32_t id;
+	char const * description;
 } AsmArchRegister;
 
 typedef struct _AsmArchPluginHelper

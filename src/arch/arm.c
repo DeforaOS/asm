@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@
 /* private */
 /* types */
 /* register ids */
-#define REG(name, size, id) REG_ ## name ## _id = id,
+#define REG(name, size, id, description) REG_ ## name ## _id = id,
 enum
 {
 #include "arm.reg"
@@ -44,11 +44,11 @@ static AsmArchDescription _arm_description =
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
-#define REG(name, size, id) { "" # name, size, id },
+#define REG(name, size, id, description) { "" # name, size, id, description },
 static AsmArchRegister _arm_registers[] =
 {
 #include "arm.reg"
-	{ NULL,		0, 0 }
+	{ NULL, 0, 0, NULL }
 };
 #undef REG
 

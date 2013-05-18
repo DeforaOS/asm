@@ -79,3 +79,4 @@
 	pxor	%mm3, [%edx + $0x789abc]
 	pxor	%mm4, %mm5
 #endif
+	syscall					/* 0f 05		*/

@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -126,3 +126,4 @@
 { "pxor",	0x0fef,		OP2F, AO_2(OP_R64_R, OP_RM64_DW_R)	},
 { "pxor",	0x0fef,		OP2F, AO_2(OP_R64_R, OP_RM64_R64_R)	},
 #endif
+{ "syscall",	0x0f05,		OP2F, AO_0()				},

@@ -122,10 +122,9 @@ static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
 /* variables */
 static ElfArch elf_arch[] =
 {
-#ifdef EM_AMD64
+#if defined(EM_AMD64)
 	{ "amd64",	EM_AMD64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
-#endif
-#ifdef EM_X86_64
+#elif defined(EM_X86_64)
 	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
 #endif
 	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
@@ -363,17 +362,16 @@ static char const * _detect_64(AsmFormatPlugin * format, Elf64_Ehdr * ehdr)
 		_swap_64_ehdr(ehdr);
 	switch(ehdr->e_machine)
 	{
-#ifdef EM_AMD64
+#if defined(EM_AMD64)
 		case EM_AMD64:
+			return "amd64";
+#elif defined(EM_X86_64)
+		case EM_X86_64:
 			return "amd64";
 #endif
 		case EM_SPARC:
 		case EM_SPARCV9:
 			return "sparc64";
-#ifdef EM_X86_64
-		case EM_X86_64:
-			return "amd64";
-#endif
 	}
 	format->decode = _elf_decode;
 	error_set_code(1, "%s: %s 0x%x", "elf", "Unsupported ELF architecture",

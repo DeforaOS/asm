@@ -381,6 +381,7 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 	DexMapCodeItem dmci;
 	size_t i;
 	off_t seek;
+	AsmFunction * f;
 	size_t j;
 	DexMapTryItem dmti;
 	ssize_t s;
@@ -409,6 +410,11 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		if(helper->decode(helper->format, seek, dmci.insns_size * 2,
 					seek, calls, calls_cnt) != 0)
 			return -1;
+		/* update the corresponding function offset */
+		if((f = helper->get_function_by_id(helper->format, i)) != NULL)
+			/* XXX not very optimal */
+			helper->set_function(helper->format, i, f->name, seek,
+					dmci.insns_size * 2);
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
 #ifdef DEBUG

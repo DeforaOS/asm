@@ -134,6 +134,9 @@ static int _dex_decode(AsmFormatPlugin * format, int raw);
 static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
+static int _dex_decode_sleb128(AsmFormatPlugin * format, int32_t * s32);
+static int _dex_decode_uleb128(AsmFormatPlugin * format, uint32_t * u32);
+
 
 /* public */
 /* variables */
@@ -381,6 +384,9 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 	size_t j;
 	DexMapTryItem dmti;
 	ssize_t s;
+	uint32_t u32;
+	int32_t s32;
+	uint32_t v32;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -406,11 +412,11 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		/* skip padding and try_items */
 		seek = (dmci.insns_size & 0x1) == 0x1 ? 2 : 0;
 #ifdef DEBUG
-		fprintf(stderr, "DEBUG: code item %lu, offset 0x%lx"
+		fprintf(stderr, "DEBUG: code item %lu/%lu, offset 0x%lx"
 				", registers 0x%x, size 0x%x, debug @0x%x"
-				", tries 0x%x, seek 0x%lx\n", i,
+				", tries 0x%x, seek 0x%lx\n", i, section->size,
 				helper->seek(helper->format, 0, SEEK_CUR),
-				dmci.registers_size, dmci.insns_size * 2,
+				dmci.registers_size, dmci.insns_size,
 				dmci.debug_info_off, dmci.tries_size, seek);
 #endif
 		if(seek != 0 && helper->seek(helper->format, seek, SEEK_CUR)
@@ -426,12 +432,85 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 				dmti.start_addr = _htol32(dmti.start_addr);
 				dmti.insn_count = _htol16(dmti.insn_count);
 				dmti.handler_off = _htol16(dmti.handler_off);
+#ifdef DEBUG
+				fprintf(stderr, "DEBUG: start 0x%x,"
+						" insn_count 0x%x,"
+						" handler_off 0x%x\n",
+						dmti.start_addr,
+						dmti.insn_count,
+						dmti.handler_off);
+#endif
 			}
-			seek = helper->seek(helper->format, 0, SEEK_CUR);
-			if(helper->decode(helper->format, seek, 8, seek, calls,
-						calls_cnt) != 0)
+			/* encoded catch handler */
+			/* list size */
+			if(_dex_decode_uleb128(format, &u32) != 0)
 				return -1;
+			for(; u32 > 0; u32--)
+			{
+				/* handler size */
+				if(_dex_decode_sleb128(format, &s32) != 0)
+					return -1;
+				/* address pairs */
+				for(j = abs(s32); j > 0; j--)
+				{
+					if(_dex_decode_uleb128(format, &v32)
+							!= 0)
+						return -1;
+					if(_dex_decode_uleb128(format, &v32)
+							!= 0)
+						return -1;
+				}
+				if(s32 <= 0)
+					_dex_decode_uleb128(format, &v32);
+			}
+			/* ensure alignment on 4 bytes */
+			seek = helper->seek(helper->format, 0, SEEK_CUR);
+			if((seek = (4 - (seek & 0x3)) & 0x3) != 0)
+				helper->seek(helper->format, seek, SEEK_CUR);
 		}
 	}
+	return 0;
+}
+
+
+/* dex_decode_sleb128 */
+static int _dex_decode_sleb128(AsmFormatPlugin * format, int32_t * s32)
+{
+	AsmFormatPluginHelper * helper = format->helper;
+	uint32_t ret = 0;
+	size_t i;
+	unsigned char c;
+
+	for(i = 0; i < 5; i++)
+	{
+		if(helper->read(helper->format, &c, sizeof(c)) != sizeof(c))
+			return -1;
+		ret |= ((c & 0x7f) << (7 * i));
+		if((c & 0x80) != 0x80)
+			/* FIXME properly sign-extend */
+			break;
+	}
+	*s32 = ret;
+	return 0;
+}
+
+
+/* dex_decode_uleb128 */
+static int _dex_decode_uleb128(AsmFormatPlugin * format, uint32_t * u32)
+{
+	AsmFormatPluginHelper * helper = format->helper;
+	uint32_t ret = 0;
+	size_t i;
+	unsigned char c;
+
+	for(i = 0; i < 5; i++)
+	{
+		if(helper->read(helper->format, &c, sizeof(c)) != sizeof(c))
+			return -1;
+		ret |= ((c & 0x7f) << (7 * i));
+		if((c & 0x80) != 0x80)
+			break;
+	}
+	*u32 = ret;
 	return 0;
 }

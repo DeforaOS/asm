@@ -86,6 +86,7 @@ AsmFormat * format_new(char const * format)
 	f->helper.format = f;
 	f->helper.decode = _format_helper_decode;
 	f->helper.get_filename = _format_helper_get_filename;
+	f->helper.get_function_by_id = _format_helper_get_function_by_id;
 	f->helper.get_functions = _format_helper_get_functions;
 	f->helper.get_section_by_id = _format_helper_get_section_by_id;
 	f->helper.get_string_by_id = _format_helper_get_string_by_id;

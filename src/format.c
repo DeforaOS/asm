@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -48,6 +48,8 @@ struct _AsmFormat
 /* prototypes */
 /* helpers */
 static char const * _format_helper_get_filename(AsmFormat * format);
+static AsmFunction * _format_helper_get_function_by_id(AsmFormat * format,
+		AsmFunctionId id);
 static void _format_helper_get_functions(AsmFormat * format,
 		AsmFunction ** functions, size_t * functions_cnt);
 static AsmSection * _format_helper_get_section_by_id(AsmFormat * format,
@@ -103,6 +105,7 @@ AsmFormat * format_new(char const * format)
 	f->helper.format = f;
 	f->helper.decode = _format_helper_decode;
 	f->helper.get_filename = _format_helper_get_filename;
+	f->helper.get_function_by_id = _format_helper_get_function_by_id;
 	f->helper.get_functions = _format_helper_get_functions;
 	f->helper.get_section_by_id = _format_helper_get_section_by_id;
 	f->helper.get_string_by_id = _format_helper_get_string_by_id;
@@ -292,6 +295,14 @@ int format_section(AsmFormat * format, char const * section)
 static char const * _format_helper_get_filename(AsmFormat * format)
 {
 	return format->filename;
+}
+
+
+/* format_helper_get_function_by_id */
+static AsmFunction * _format_helper_get_function_by_id(AsmFormat * format,
+		AsmFunctionId id)
+{
+	return asmcode_get_function_by_id(format->code, id);
 }
 
 

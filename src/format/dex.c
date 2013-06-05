@@ -460,8 +460,10 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 							!= 0)
 						return -1;
 				}
-				if(s32 <= 0)
-					_dex_decode_uleb128(format, &v32);
+				/* catch-all address */
+				if(s32 <= 0 && _dex_decode_uleb128(format, &v32)
+						!= 0)
+					return -1;
 			}
 			/* ensure alignment on 4 bytes */
 			seek = helper->seek(helper->format, 0, SEEK_CUR);

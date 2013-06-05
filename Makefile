@@ -1,6 +1,6 @@
 PACKAGE	= Asm
 VERSION	= 0.2.1
-SUBDIRS	= data doc include src tests tools
+SUBDIRS	= data doc include src tools tests
 RM	= rm -f
 LN	= ln -f
 TAR	= tar -czvf
@@ -124,28 +124,6 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/pe.c \
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
-		$(PACKAGE)-$(VERSION)/tests/amd64.asm \
-		$(PACKAGE)-$(VERSION)/tests/arm.asm \
-		$(PACKAGE)-$(VERSION)/tests/armeb.asm \
-		$(PACKAGE)-$(VERSION)/tests/armel.asm \
-		$(PACKAGE)-$(VERSION)/tests/dalvik.asm \
-		$(PACKAGE)-$(VERSION)/tests/i386.asm \
-		$(PACKAGE)-$(VERSION)/tests/i386_real.asm \
-		$(PACKAGE)-$(VERSION)/tests/i486.asm \
-		$(PACKAGE)-$(VERSION)/tests/i586.asm \
-		$(PACKAGE)-$(VERSION)/tests/i686.asm \
-		$(PACKAGE)-$(VERSION)/tests/mips.asm \
-		$(PACKAGE)-$(VERSION)/tests/mipseb.asm \
-		$(PACKAGE)-$(VERSION)/tests/mipsel.asm \
-		$(PACKAGE)-$(VERSION)/tests/java.asm \
-		$(PACKAGE)-$(VERSION)/tests/sparc.asm \
-		$(PACKAGE)-$(VERSION)/tests/sparc64.asm \
-		$(PACKAGE)-$(VERSION)/tests/yasep.asm \
-		$(PACKAGE)-$(VERSION)/tests/yasep16.asm \
-		$(PACKAGE)-$(VERSION)/tests/yasep32.asm \
-		$(PACKAGE)-$(VERSION)/tests/Makefile \
-		$(PACKAGE)-$(VERSION)/tests/tests.sh \
-		$(PACKAGE)-$(VERSION)/tests/project.conf \
 		$(PACKAGE)-$(VERSION)/tools/arch.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/amd64.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/arm.c \
@@ -174,6 +152,28 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/format/pe.c \
 		$(PACKAGE)-$(VERSION)/tools/Makefile \
 		$(PACKAGE)-$(VERSION)/tools/project.conf \
+		$(PACKAGE)-$(VERSION)/tests/amd64.asm \
+		$(PACKAGE)-$(VERSION)/tests/arm.asm \
+		$(PACKAGE)-$(VERSION)/tests/armeb.asm \
+		$(PACKAGE)-$(VERSION)/tests/armel.asm \
+		$(PACKAGE)-$(VERSION)/tests/dalvik.asm \
+		$(PACKAGE)-$(VERSION)/tests/i386.asm \
+		$(PACKAGE)-$(VERSION)/tests/i386_real.asm \
+		$(PACKAGE)-$(VERSION)/tests/i486.asm \
+		$(PACKAGE)-$(VERSION)/tests/i586.asm \
+		$(PACKAGE)-$(VERSION)/tests/i686.asm \
+		$(PACKAGE)-$(VERSION)/tests/mips.asm \
+		$(PACKAGE)-$(VERSION)/tests/mipseb.asm \
+		$(PACKAGE)-$(VERSION)/tests/mipsel.asm \
+		$(PACKAGE)-$(VERSION)/tests/java.asm \
+		$(PACKAGE)-$(VERSION)/tests/sparc.asm \
+		$(PACKAGE)-$(VERSION)/tests/sparc64.asm \
+		$(PACKAGE)-$(VERSION)/tests/yasep.asm \
+		$(PACKAGE)-$(VERSION)/tests/yasep16.asm \
+		$(PACKAGE)-$(VERSION)/tests/yasep32.asm \
+		$(PACKAGE)-$(VERSION)/tests/Makefile \
+		$(PACKAGE)-$(VERSION)/tests/tests.sh \
+		$(PACKAGE)-$(VERSION)/tests/project.conf \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/COPYING \
 		$(PACKAGE)-$(VERSION)/config.h \

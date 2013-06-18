@@ -32,12 +32,12 @@ struct _AsmArchPlugin
 
 
 /* variables */
-static AsmArchDescription _java_description =
+static AsmArchDescription const _java_description =
 {
 	"java", ASM_ARCH_ENDIAN_BIG, 32, 8, 0
 };
 
-static AsmArchRegister _java_registers[] =
+static AsmArchRegister const _java_registers[] =
 {
 	{ NULL, 0, 0, NULL }
 };
@@ -49,7 +49,7 @@ static AsmArchRegister _java_registers[] =
 #define OP_U16_FUNC	AO_IMMEDIATE(0, 16, AOI_REFERS_FUNCTION)
 #define OP_S32		AO_IMMEDIATE(AOF_SIGNED, 32, 0)
 #define OP_U32		AO_IMMEDIATE(0, 32, 0)
-static AsmArchInstruction _java_instructions[] =
+static AsmArchInstruction const _java_instructions[] =
 {
 	{ "aaload",	0x32,	OP1F, AO_0()				},
 	{ "aastore",	0x53,	OP1F, AO_0()				},
@@ -264,7 +264,7 @@ static AsmArchInstruction _java_instructions[] =
 static AsmArchPlugin * _java_init(AsmArchPluginHelper * helper);
 static void _java_destroy(AsmArchPlugin * plugin);
 static int _java_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
@@ -308,7 +308,8 @@ static void _java_destroy(AsmArchPlugin * plugin)
 
 /* java_encode */
 static int _java_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	size_t i;

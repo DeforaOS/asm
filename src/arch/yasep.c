@@ -29,20 +29,20 @@
 /* private */
 /* variables */
 /* plug-in */
-static AsmArchDescription _yasep_description =
+static AsmArchDescription const _yasep_description =
 {
 	"flat", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _yasep_registers[] =
+static AsmArchRegister const _yasep_registers[] =
 {
 #include "yasep.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _yasep_instructions[] =
+static AsmArchInstruction const _yasep_instructions[] =
 {
 #include "yasep.ins"
 #include "common.ins"
@@ -55,7 +55,7 @@ static AsmArchInstruction _yasep_instructions[] =
 static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
 static void _yasep_destroy(AsmArchPlugin * plugin);
 static int _yasep_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 

@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,8 @@ struct _AsmArchPlugin
 static AsmArchPlugin * _arm_init(AsmArchPluginHelper * helper);
 static void _arm_destroy(AsmArchPlugin * plugin);
 static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
-static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _arm_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 
 
@@ -75,7 +76,7 @@ static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode;
 	uint32_t op;
-	AsmArchInstruction * ai = NULL;
+	AsmArchInstruction const * ai = NULL;
 
 	/* read 4 bytes in the proper endian */
 	if(helper->read(helper->arch, &opcode, sizeof(opcode))
@@ -222,7 +223,7 @@ static void _decode_reg_reg_dreg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	if((ar = helper->get_register_by_id_size(helper->arch,
 					(opcode >> 12) & 0xf, 32)) != NULL)
@@ -239,7 +240,7 @@ static void _decode_reg_reg_reg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	if((ar = helper->get_register_by_id_size(helper->arch,
 					(opcode >> 12) & 0xf, 32)) != NULL)
@@ -256,7 +257,7 @@ static void _decode_reg_reg_u12(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	if((ar = helper->get_register_by_id_size(helper->arch,
 					(opcode >> 12) & 0xf, 32)) != NULL)
@@ -284,7 +285,7 @@ static void _decode_u4_u4_reg(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call, uint32_t opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	/* FIXME implement u4 and u4 */
 	if((ar = helper->get_register_by_id_size(helper->arch,
@@ -303,12 +304,13 @@ static int _decode_unknown(AsmArchInstructionCall * call, uint32_t opcode)
 
 
 /* arm_encode */
-static int _arm_encode(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _arm_encode(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 	char const * p;
 
 	switch(opcode & 0x0fffffff) /* ignore condition code */

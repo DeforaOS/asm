@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -47,8 +47,11 @@ int asm_set_arch(Asm * a, char const * arch);
 char const * asm_get_format(Asm * a);
 int asm_set_format(Asm * a, char const * format);
 
+/* functions */
 AsmFunction * asm_set_function(Asm * a, char const * name, off_t offset,
 		ssize_t size);
+
+/* sections */
 AsmSection * asm_set_section(Asm * a, char const * name, off_t offset,
 		ssize_t size, off_t base);
 

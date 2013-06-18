@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,7 +36,7 @@ static AsmArchPlugin * _sparc_init(AsmArchPluginHelper * helper);
 static void _sparc_destroy(AsmArchPlugin * plugin);
 static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _sparc_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 
 
@@ -67,7 +67,7 @@ static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t u32;
 	uint32_t opcode;
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 	size_t i;
 
 	if(helper->read(helper->arch, &u32, sizeof(u32)) != sizeof(u32))
@@ -104,20 +104,22 @@ static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 
 
 /* sparc_encode */
-static int _sparc_encode_branch(AsmArchInstruction * instruction,
+static int _sparc_encode_branch(AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call, uint32_t * opcode);
 static int _sparc_encode_integer(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call,
 		uint32_t * opcode);
 static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
-		uint32_t * opcode);
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
 static int _sparc_encode_sethi(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
-		uint32_t * opcode);
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode);
 
 static int _sparc_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
@@ -153,7 +155,7 @@ static int _sparc_encode(AsmArchPlugin * plugin,
 	return 0;
 }
 
-static int _sparc_encode_branch(AsmArchInstruction * instruction,
+static int _sparc_encode_branch(AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call, uint32_t * opcode)
 {
 	uint32_t disp;
@@ -169,15 +171,15 @@ static int _sparc_encode_branch(AsmArchInstruction * instruction,
 }
 
 static int _sparc_encode_integer(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
-		uint32_t * opcode)
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t rs1;
 	uint32_t rs2;
 	char const * name;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	/* rs1 */
 	if(AO_GET_TYPE(instruction->op1) != AOT_REGISTER)
@@ -219,15 +221,15 @@ static int _sparc_encode_integer(AsmArchPlugin * plugin,
 }
 
 static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
-		uint32_t * opcode)
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call, uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t rs1;
 	uint32_t rs2;
 	char const * name;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	if(instruction->opcode & (1 << 21)) /* store instruction */
 	{
@@ -306,14 +308,15 @@ static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
 }
 
 static int _sparc_encode_sethi(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call,
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call,
 		uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
 	uint32_t value;
 	char const * name;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	/* nop */
 	if(AO_GET_TYPE(instruction->op1) == AOT_NONE)

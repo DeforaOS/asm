@@ -60,21 +60,21 @@ enum
 
 /* variables */
 /* plug-in */
-static AsmArchDescription _dalvik_description =
+static AsmArchDescription const _dalvik_description =
 {
 	"dex", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
 
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _dalvik_registers[] =
+static AsmArchRegister const _dalvik_registers[] =
 {
 #include "dalvik.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _dalvik_instructions[] =
+static AsmArchInstruction const _dalvik_instructions[] =
 {
 #include "dalvik.ins"
 #include "common.ins"
@@ -87,7 +87,7 @@ static AsmArchInstruction _dalvik_instructions[] =
 static AsmArchPlugin * _dalvik_init(AsmArchPluginHelper * helper);
 static void _dalvik_destroy(AsmArchPlugin * plugin);
 static int _dalvik_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 static int _dalvik_decode(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call);
@@ -131,7 +131,7 @@ static void _dalvik_destroy(AsmArchPlugin * plugin)
 
 /* dalvik_encode */
 static int _dalvik_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
@@ -177,7 +177,7 @@ static int _dalvik_decode(AsmArchPlugin * plugin,
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	uint16_t u16;
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 	size_t i;
 
 	dd.plugin = plugin;
@@ -313,7 +313,7 @@ static int _dalvik_decode_register(DalvikDecode * dd, size_t i)
 	uint32_t id;
 	uint8_t u8;
 	uint16_t u16;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	if(AO_GET_FLAGS(aod) & AOF_IMPLICIT)
 		id = AO_GET_VALUE(aod);

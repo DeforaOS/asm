@@ -44,13 +44,13 @@ enum
 
 
 /* variables */
-static AsmArchDescription _i686_description =
+static AsmArchDescription const _i686_description =
 {
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _i686_registers[] =
+static AsmArchRegister const _i686_registers[] =
 {
 #include "i386.reg"
 #include "i686.reg"
@@ -58,7 +58,7 @@ static AsmArchRegister _i686_registers[] =
 };
 #undef REG
 
-static AsmArchInstruction _i686_instructions[] =
+static AsmArchInstruction const _i686_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"

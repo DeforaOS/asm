@@ -35,7 +35,7 @@ struct _AsmArchPlugin
 static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
 static void _yasep_destroy(AsmArchPlugin * plugin);
 static int _yasep_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
@@ -62,25 +62,29 @@ static void _yasep_destroy(AsmArchPlugin * plugin)
 
 
 /* yasep_encode */
-static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _encode_16(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
-static int _encode_32(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _encode_32(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 
 static int _yasep_encode(AsmArchPlugin * plugin,
-		AsmArchInstruction * instruction, AsmArchInstructionCall * call)
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call)
 {
 	return (instruction->opcode & 0x1)
 		? _encode_32(plugin, instruction, call)
 		: _encode_16(plugin, instruction, call);
 }
 
-static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _encode_16(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint16_t u16 = instruction->opcode;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 	size_t size;
 	char const * name;
 
@@ -115,7 +119,8 @@ static int _encode_16(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
 	return 0;
 }
 
-static int _encode_32(AsmArchPlugin * plugin, AsmArchInstruction * instruction,
+static int _encode_32(AsmArchPlugin * plugin,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
@@ -135,8 +140,8 @@ static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint16_t u16;
 	uint16_t opcode;
-	AsmArchInstruction * ai;
-	AsmArchRegister * ar;
+	AsmArchInstruction const * ai;
+	AsmArchRegister const * ar;
 
 	if(helper->read(helper->arch, &u16, sizeof(u16)) != sizeof(u16))
 		return -1;

@@ -49,14 +49,14 @@ static AsmArchDescription _i386_description =
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _i386_registers[] =
+static AsmArchRegister const _i386_registers[] =
 {
 #include "i386.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _i386_instructions[] =
+static AsmArchInstruction const _i386_instructions[] =
 {
 #include "i386.ins"
 #include "common.ins"

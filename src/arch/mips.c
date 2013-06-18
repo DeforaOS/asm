@@ -26,20 +26,20 @@
 /* mips */
 /* private */
 /* variables */
-static AsmArchDescription _mips_description =
+static AsmArchDescription const _mips_description =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _mips_registers[] =
+static AsmArchRegister const _mips_registers[] =
 {
 #include "mips.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _mips_instructions[] =
+static AsmArchInstruction const _mips_instructions[] =
 {
 #include "mips.ins"
 #include "common.ins"

@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,7 @@ struct _AsmArch
 {
 	AsmArchPluginHelper helper;
 	Plugin * handle;
-	AsmArchPluginDefinition * definition;
+	AsmArchPluginDefinition const * definition;
 	AsmArchPlugin * plugin;
 	size_t instructions_cnt;
 	size_t registers_cnt;
@@ -135,7 +135,7 @@ int arch_can_decode(AsmArch * arch)
 
 
 /* arch_get_description */
-AsmArchDescription * arch_get_description(AsmArch * arch)
+AsmArchDescription const * arch_get_description(AsmArch * arch)
 {
 	return arch->definition->description;
 }
@@ -152,7 +152,7 @@ char const * arch_get_format(AsmArch * arch)
 
 
 /* arch_get_instruction */
-AsmArchInstruction * arch_get_instruction(AsmArch * arch, size_t index)
+AsmArchInstruction const * arch_get_instruction(AsmArch * arch, size_t index)
 {
 	if(index >= arch->instructions_cnt)
 		return NULL;
@@ -161,7 +161,7 @@ AsmArchInstruction * arch_get_instruction(AsmArch * arch, size_t index)
 
 
 /* arch_get_instruction_by_name */
-AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch,
+AsmArchInstruction const * arch_get_instruction_by_name(AsmArch * arch,
 		char const * name)
 {
 	size_t i;
@@ -177,11 +177,11 @@ AsmArchInstruction * arch_get_instruction_by_name(AsmArch * arch,
 
 
 /* arch_get_instruction_by_opcode */
-AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch,
+AsmArchInstruction const * arch_get_instruction_by_opcode(AsmArch * arch,
 		uint8_t size, uint32_t opcode)
 {
 	size_t i;
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(arch, %u, 0x%x)\n", __func__, size, opcode);
@@ -199,7 +199,8 @@ AsmArchInstruction * arch_get_instruction_by_opcode(AsmArch * arch,
 
 
 /* arch_get_instruction_by_call */
-static int _call_operands(AsmArch * arch, AsmArchInstruction * instruction,
+static int _call_operands(AsmArch * arch,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 static int _call_operands_constant(AsmArchOperandDefinition definition,
 		AsmArchOperand * operand);
@@ -210,11 +211,11 @@ static int _call_operands_immediate(AsmArchOperandDefinition definition,
 static int _call_operands_register(AsmArch * arch,
 		AsmArchOperandDefinition definition, AsmArchOperand * operand);
 
-AsmArchInstruction * arch_get_instruction_by_call(AsmArch * arch,
+AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 		AsmArchInstructionCall * call)
 {
 	size_t i;
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 	int found = 0;
 
 #ifdef DEBUG
@@ -235,7 +236,8 @@ AsmArchInstruction * arch_get_instruction_by_call(AsmArch * arch,
 	return NULL;
 }
 
-static int _call_operands(AsmArch * arch, AsmArchInstruction * instruction,
+static int _call_operands(AsmArch * arch,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 	size_t i;
@@ -364,9 +366,9 @@ static int _call_operands_register(AsmArch * arch,
 		AsmArchOperandDefinition definition, AsmArchOperand * operand)
 {
 	char const * name = operand->value._register.name;
-	AsmArchDescription * desc;
+	AsmArchDescription const * desc;
 	uint32_t size;
-	AsmArchRegister * ar;
+	AsmArchRegister const * ar;
 
 	/* obtain the size */
 	if((desc = arch->definition->description) != NULL
@@ -393,7 +395,7 @@ char const * arch_get_name(AsmArch * arch)
 
 
 /* arch_get_register */
-AsmArchRegister * arch_get_register(AsmArch * arch, size_t index)
+AsmArchRegister const * arch_get_register(AsmArch * arch, size_t index)
 {
 	if(index >= arch->registers_cnt)
 		return NULL;
@@ -402,8 +404,8 @@ AsmArchRegister * arch_get_register(AsmArch * arch, size_t index)
 
 
 /* arch_get_register_by_id_size */
-AsmArchRegister * arch_get_register_by_id_size(AsmArch * arch, uint32_t id,
-		uint32_t size)
+AsmArchRegister const * arch_get_register_by_id_size(AsmArch * arch,
+		uint32_t id, uint32_t size)
 {
 	size_t i;
 
@@ -419,7 +421,8 @@ AsmArchRegister * arch_get_register_by_id_size(AsmArch * arch, uint32_t id,
 
 
 /* arch_get_register_by_name */
-AsmArchRegister * arch_get_register_by_name(AsmArch * arch, char const * name)
+AsmArchRegister const * arch_get_register_by_name(AsmArch * arch,
+		char const * name)
 {
 	size_t i;
 
@@ -434,8 +437,8 @@ AsmArchRegister * arch_get_register_by_name(AsmArch * arch, char const * name)
 
 
 /* arch_get_register_by_name_size */
-AsmArchRegister * arch_get_register_by_name_size(AsmArch * arch, char const * name,
-		uint32_t size)
+AsmArchRegister const * arch_get_register_by_name_size(AsmArch * arch,
+		char const * name, uint32_t size)
 {
 	size_t i;
 
@@ -532,7 +535,7 @@ int arch_decode_at(AsmArch * arch, AsmCode * code, off_t offset, size_t size,
 
 
 /* arch_encode */
-int arch_encode(AsmArch * arch, AsmArchInstruction * instruction,
+int arch_encode(AsmArch * arch, AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 #ifdef DEBUG

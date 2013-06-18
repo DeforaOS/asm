@@ -39,20 +39,20 @@ enum
 
 
 /* variables */
-static AsmArchDescription _arm_description =
+static AsmArchDescription const _arm_description =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _arm_registers[] =
+static AsmArchRegister const _arm_registers[] =
 {
 #include "arm.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _arm_instructions[] =
+static AsmArchInstruction const _arm_instructions[] =
 {
 #include "arm.ins"
 #include "common.ins"

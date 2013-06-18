@@ -22,20 +22,20 @@
 /* sparc64 */
 /* private */
 /* variables */
-static AsmArchDescription _sparc64_description =
+static AsmArchDescription const _sparc64_description =
 {
 	"elf", ASM_ARCH_ENDIAN_BIG, 64, 32, 32
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },
-static AsmArchRegister _sparc64_registers[] =
+static AsmArchRegister const _sparc64_registers[] =
 {
 #include "sparc.reg"
 	{ NULL, 0, 0, NULL }
 };
 #undef REG
 
-static AsmArchInstruction _sparc64_instructions[] =
+static AsmArchInstruction const _sparc64_instructions[] =
 {
 #include "sparc.ins"
 #include "common.ins"

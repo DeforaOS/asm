@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,8 @@ typedef struct _AsmCode AsmCode;
 /* functions */
 /* accessors */
 char const * asmcode_get_arch(AsmCode * code);
-AsmArchDescription * asmcode_get_arch_description(AsmCode * code);
+AsmArchDescription const * asmcode_get_arch_description(AsmCode * code);
+AsmArchInstruction const ** asmcode_get_arch_instructions(AsmCode * code);
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);
 

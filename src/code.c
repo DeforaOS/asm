@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2011-2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,7 +39,7 @@
 struct _AsmCode
 {
 	AsmArch * arch;
-	AsmArchDescription * description;
+	AsmArchDescription const * description;
 	AsmFormat * format;
 	char * filename;
 	FILE * fp;
@@ -241,7 +241,7 @@ char const * asmcode_get_arch(AsmCode * code)
 
 
 /* asmcode_get_arch_description */
-AsmArchDescription * asmcode_get_arch_description(AsmCode * code)
+AsmArchDescription const * asmcode_get_arch_description(AsmCode * code)
 {
 	return arch_get_description(code->arch);
 }
@@ -437,7 +437,7 @@ int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
-	AsmArchDescription * description;
+	AsmArchDescription const * description;
 
 	arch_init_buffer(code->arch, buffer, size);
 	description = arch_get_description(code->arch);
@@ -466,7 +466,7 @@ int asmcode_function(AsmCode * code, char const * function)
 /* asmcode_instruction */
 int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call)
 {
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 
 	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
 		return -1;
@@ -508,13 +508,13 @@ int asmcode_open(AsmCode * code, char const * filename)
 
 
 /* asmcode_print */
-static void _print_address(AsmArchDescription * description,
+static void _print_address(AsmArchDescription const * description,
 		unsigned long address);
 static void _print_immediate(AsmArchOperand * ao);
 
 int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 {
-	AsmArchDescription * description;
+	AsmArchDescription const * description;
 	char const * sep = " ";
 	size_t i;
 	uint8_t u8;
@@ -575,7 +575,8 @@ int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 	return 0;
 }
 
-static void _print_address(AsmArchDescription * description, unsigned long address)
+static void _print_address(AsmArchDescription const * description,
+		unsigned long address)
 {
 	uint32_t size = (description != NULL) ? description->address_size : 32;
 	char const * format = "%8lx:";

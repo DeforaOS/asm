@@ -56,4 +56,19 @@ typedef struct _AsmElement AsmSection;
 typedef AsmElementId AsmStringId;
 typedef struct _AsmElement AsmString;
 
+/* arch */
+typedef uint32_t AsmArchOperandDefinition;
+
+typedef struct _AsmArchInstruction
+{
+	char const * name;
+	uint32_t opcode;
+	AsmArchOperandDefinition flags;
+	AsmArchOperandDefinition op1;
+	AsmArchOperandDefinition op2;
+	AsmArchOperandDefinition op3;
+	AsmArchOperandDefinition op4;
+	AsmArchOperandDefinition op5;
+} AsmArchInstruction;
+
 #endif /* !DEVEL_ASM_COMMON_H */

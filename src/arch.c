@@ -387,6 +387,13 @@ static int _call_operands_register(AsmArch * arch,
 }
 
 
+/* arch_get_instructions */
+AsmArchInstruction const * arch_get_instructions(AsmArch * arch)
+{
+	return arch->definition->instructions;
+}
+
+
 /* arch_get_name */
 char const * arch_get_name(AsmArch * arch)
 {

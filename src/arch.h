@@ -45,6 +45,7 @@ AsmArchInstruction const * arch_get_instruction_by_opcode(AsmArch * arch,
 		uint8_t size, uint32_t opcode);
 AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 		AsmArchInstructionCall * call);
+AsmArchInstruction const * arch_get_instructions(AsmArch * arch);
 
 AsmArchRegister const * arch_get_register(AsmArch * arch, size_t index);
 AsmArchRegister const * arch_get_register_by_id_size(AsmArch * arch,

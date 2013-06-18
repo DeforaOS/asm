@@ -122,8 +122,6 @@ typedef enum _AsmArchOperandType
 		 | ((dsize) << AOD_SIZE) \
 		 | ((id) << AOD_VALUE))
 
-typedef uint32_t AsmArchOperandDefinition;
-
 typedef struct _AsmArchOperand
 {
 	AsmArchOperandDefinition definition;
@@ -159,18 +157,6 @@ typedef struct _AsmArchOperand
 		/* FIXME complete */
 	} value;
 } AsmArchOperand;
-
-typedef struct _AsmArchInstruction
-{
-	char const * name;
-	uint32_t opcode;
-	AsmArchOperandDefinition flags;
-	AsmArchOperandDefinition op1;
-	AsmArchOperandDefinition op2;
-	AsmArchOperandDefinition op3;
-	AsmArchOperandDefinition op4;
-	AsmArchOperandDefinition op5;
-} AsmArchInstruction;
 
 typedef struct _AsmArchInstructionCall
 {

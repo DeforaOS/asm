@@ -247,6 +247,13 @@ AsmArchDescription const * asmcode_get_arch_description(AsmCode * code)
 }
 
 
+/* asmcode_get_arch_instructions */
+AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code)
+{
+	return arch_get_instructions(code->arch);
+}
+
+
 /* asmcode_get_filename */
 char const * asmcode_get_filename(AsmCode * code)
 {

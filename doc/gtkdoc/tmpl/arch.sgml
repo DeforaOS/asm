@@ -260,6 +260,74 @@ AsmArch
 @id: 
 
 
+<!-- ##### STRUCT AsmArch ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM AsmArchEndian ##### -->
+<para>
+
+</para>
+
+@ASM_ARCH_ENDIAN_BIG: 
+@ASM_ARCH_ENDIAN_LITTLE: 
+@ASM_ARCH_ENDIAN_BOTH: 
+
+<!-- ##### TYPEDEF AsmArchOperandDefinition ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM AsmArchOperandType ##### -->
+<para>
+
+</para>
+
+@AOT_NONE: 
+@AOT_CONSTANT: 
+@AOT_IMMEDIATE: 
+@AOT_REGISTER: 
+@AOT_DREGISTER: 
+@AOT_DREGISTER2: 
+
+<!-- ##### STRUCT AsmArchPlugin ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION decode ##### -->
+<para>
+
+</para>
+
+@arch: 
+@call: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION destroy ##### -->
+<para>
+
+</para>
+
+@arch: 
+
+
+<!-- ##### USER_FUNCTION encode ##### -->
+<para>
+
+</para>
+
+@arch: 
+@instruction: 
+@call: 
+@Returns: 
+
+
 <!-- ##### USER_FUNCTION get_filename ##### -->
 <para>
 
@@ -319,6 +387,15 @@ AsmArch
 
 @arch: 
 @id: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION init ##### -->
+<para>
+
+</para>
+
+@helper: 
 @Returns: 
 
 

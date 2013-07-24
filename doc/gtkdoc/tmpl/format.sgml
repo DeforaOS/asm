@@ -20,17 +20,64 @@ AsmFormat
 <!-- ##### SECTION Image ##### -->
 
 
+<!-- ##### STRUCT AsmFormat ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AsmFormatPlugin ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### USER_FUNCTION decode ##### -->
 <para>
 
 </para>
 
+@arch: 
+@call: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION decode_section ##### -->
+<para>
+
+</para>
+
 @format: 
-@offset: 
-@size: 
-@base: 
+@section: 
 @calls: 
 @calls_cnt: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION destroy ##### -->
+<para>
+
+</para>
+
+@arch: 
+
+
+<!-- ##### USER_FUNCTION detect ##### -->
+<para>
+
+</para>
+
+@format: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION function ##### -->
+<para>
+
+</para>
+
+@format: 
+@function: 
 @Returns: 
 
 
@@ -73,6 +120,15 @@ AsmFormat
 @Returns: 
 
 
+<!-- ##### USER_FUNCTION init ##### -->
+<para>
+
+</para>
+
+@helper: 
+@Returns: 
+
+
 <!-- ##### USER_FUNCTION read ##### -->
 <para>
 
@@ -81,6 +137,16 @@ AsmFormat
 @arch: 
 @buf: 
 @size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION section ##### -->
+<para>
+
+</para>
+
+@format: 
+@section: 
 @Returns: 
 
 

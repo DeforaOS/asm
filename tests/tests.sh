@@ -79,8 +79,8 @@ target="$1"
 
 [ "$clean" -ne 0 ]			&& exit 0
 
-$DATE > "$target"
 FAILED=
+$DATE > "$target"
 _deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
 _deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"
 _deasm armeb		>> "$target"	|| FAILED="$FAILED armeb(error $?)"

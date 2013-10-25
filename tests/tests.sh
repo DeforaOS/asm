@@ -17,6 +17,7 @@
 
 
 #variables
+DATE="date"
 DEASM="../src/deasm-static"
 DEBUG="debug"
 
@@ -48,14 +49,18 @@ debug()
 #usage
 _usage()
 {
-	echo "Usage: tests.sh" 1>&2
+	echo "Usage: tests.sh [-c][-P prefix]" 1>&2
 	return 1
 }
 
 
 #main
-while getopts "P:" "name"; do
+clean=0
+while getopts "cP:" "name"; do
 	case "$name" in
+		c)
+			clean=1
+			;;
 		P)
 			#XXX ignored
 			;;
@@ -72,7 +77,9 @@ if [ $# -ne 1 ]; then
 fi
 target="$1"
 
-> "$target"
+[ "$clean" -ne 0 ]			&& exit 0
+
+$DATE > "$target"
 FAILED=
 _deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
 _deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"

@@ -61,7 +61,7 @@ sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
 sparc64.o_OBJS = sparc64.o
 sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 
-tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o yasep.o yasep16.o yasep32.o
+tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o tests.sh yasep.o yasep16.o yasep32.o
 	./tests.sh -P "$(PREFIX)" -- "tests.log"
 
 yasep.o_OBJS = yasep.o

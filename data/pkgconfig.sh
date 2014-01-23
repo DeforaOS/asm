@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2011-2013 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2011-2014 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 #variables
 PREFIX="/usr/local"
-. "../config.sh"
+[ -f "../config.sh" ] && . "../config.sh"
 DEBUG="_debug"
 DEVNULL="/dev/null"
 #executables
@@ -42,6 +42,14 @@ _debug()
 {
 	echo "$@" 1>&2
 	"$@"
+}
+
+
+#error
+_error()
+{
+	echo "pkgconfig.sh: $@" 1>&2
+	return 2
 }
 
 
@@ -85,6 +93,16 @@ if [ $# -eq 0 ]; then
 	exit $?
 fi
 
+#check the variables
+if [ -z "$PACKAGE" ]; then
+	_error "The PACKAGE variable needs to be set"
+	exit $?
+fi
+if [ -z "$VERSION" ]; then
+	_error "The VERSION variable needs to be set"
+	exit $?
+fi
+
 PKGCONFIG="$PREFIX/lib/pkgconfig"
 while [ $# -gt 0 ]; do
 	target="$1"
@@ -118,9 +136,11 @@ while [ $# -gt 0 ]; do
 	fi
 
 	#create
-	$DEBUG $SED -e "s;@PREFIX@;$PREFIX;" \
+	$DEBUG $SED -e "s;@PACKAGE@;$PACKAGE;" \
 			-e "s;@VERSION@;$VERSION;" \
-			-e "s;@RPATH@;$RPATH;" -- "$target.in" > "$target"
+			-e "s;@PREFIX@;$PREFIX;" \
+			-e "s;@RPATH@;$RPATH;" \
+			-- "$target.in" > "$target"
 	if [ $? -ne 0 ]; then
 		$DEBUG $RM -- "$target"
 		exit 2

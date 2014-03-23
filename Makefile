@@ -87,6 +87,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/mipsel.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc64.c \
+		$(PACKAGE)-$(VERSION)/src/arch/template.c \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep.c \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep16.c \
 		$(PACKAGE)-$(VERSION)/src/arch/yasep32.c \
@@ -168,6 +169,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/tests/java.asm \
 		$(PACKAGE)-$(VERSION)/tests/sparc.asm \
 		$(PACKAGE)-$(VERSION)/tests/sparc64.asm \
+		$(PACKAGE)-$(VERSION)/tests/template.asm \
 		$(PACKAGE)-$(VERSION)/tests/yasep.asm \
 		$(PACKAGE)-$(VERSION)/tests/yasep16.asm \
 		$(PACKAGE)-$(VERSION)/tests/yasep32.asm \

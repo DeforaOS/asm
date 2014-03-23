@@ -1,4 +1,4 @@
-TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o mipseb.o mipsel.o java.o sparc.o sparc64.o tests.log yasep.o yasep16.o yasep32.o
+TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o mipseb.o mipsel.o java.o sparc.o sparc64.o template.o tests.log yasep.o yasep16.o yasep32.o
 PREFIX	= /usr/local
 DESTDIR	=
 BINDIR	= $(PREFIX)/bin
@@ -61,6 +61,9 @@ sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
 sparc64.o_OBJS = sparc64.o
 sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 
+template.o_OBJS = template.o
+template.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a template -f flat
+
 tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o tests.sh yasep.o yasep16.o yasep32.o
 	./tests.sh -P "$(PREFIX)" -- "tests.log"
 
@@ -121,6 +124,9 @@ sparc.o: sparc.asm ../src/asm
 sparc64.o: sparc64.asm ../src/asm
 	$(AS) $(sparc64.o_ASFLAGS) -o sparc64.o sparc64.asm
 
+template.o: template.asm ../src/asm
+	$(AS) $(template.o_ASFLAGS) -o template.o template.asm
+
 yasep.o: yasep.asm ../src/asm
 	$(AS) $(yasep.o_ASFLAGS) -o yasep.o yasep.asm
 
@@ -131,7 +137,7 @@ yasep32.o: yasep32.asm ../src/asm yasep.asm
 	$(AS) $(yasep32.o_ASFLAGS) -o yasep32.o yasep32.asm
 
 clean:
-	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
+	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(template.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)

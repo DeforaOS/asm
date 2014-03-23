@@ -54,18 +54,16 @@ _test()
 
 	shift
 	echo -n "$test:" 1>&2
-	(echo
+	echo
 	echo "Testing: $test" "$@"
-	"$test" "$@") >> "$target" 2>&1
+	"$test" "$@" 2>&1
 	res=$?
 	if [ $res -ne 0 ]; then
 		echo " FAILED" 1>&2
 		FAILED="$FAILED $test($arch, error $res)"
 		return 2
-	else
-		echo " $arch PASS" 1>&2
-		return 0
 	fi
+	echo " $arch PASS" 1>&2
 }
 
 
@@ -103,7 +101,7 @@ target="$1"
 [ "$clean" -ne 0 ]			&& exit 0
 
 FAILED=
-$DATE > "$target"
+($DATE
 _test _deasm amd64
 _test _deasm arm
 _test _deasm armeb
@@ -120,7 +118,7 @@ _test _deasm sparc64
 _test _deasm template flat
 _test _deasm yasep flat
 _test _deasm yasep16 flat
-_test _deasm yasep32 flat
+_test _deasm yasep32 flat) > "$target"
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

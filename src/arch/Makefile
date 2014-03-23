@@ -1,4 +1,4 @@
-TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so mipseb.so mipsel.so sparc.so sparc64.so yasep.so yasep16.so yasep32.so
+TARGETS	= amd64.so arm.so armeb.so armel.so dalvik.so i386.so i386_real.so i486.so i586.so i686.so java.so mips.so mipseb.so mipsel.so sparc.so sparc64.so template.so yasep.so yasep16.so yasep32.so
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -130,6 +130,13 @@ sparc64_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 sparc64.so: $(sparc64_OBJS)
 	$(CCSHARED) -o sparc64.so $(sparc64_OBJS) $(sparc64_LDFLAGS)
 
+template_OBJS = template.o
+template_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
+template_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
+
+template.so: $(template_OBJS)
+	$(CCSHARED) -o template.so $(template_OBJS) $(template_LDFLAGS)
+
 yasep_OBJS = yasep.o
 yasep_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 yasep_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
@@ -199,6 +206,9 @@ sparc.o: sparc.c common.ins null.ins sparc.h sparc.ins sparc.reg
 sparc64.o: sparc64.c common.ins null.ins sparc.h sparc.ins sparc.reg
 	$(CC) $(sparc64_CFLAGS) -c sparc64.c
 
+template.o: template.c common.ins null.ins
+	$(CC) $(template_CFLAGS) -c template.c
+
 yasep.o: yasep.c common.ins null.ins yasep.h yasep.ins yasep.reg
 	$(CC) $(yasep_CFLAGS) -c yasep.c
 
@@ -209,7 +219,7 @@ yasep32.o: yasep32.c common.ins null.ins yasep.c yasep.h yasep.ins yasep.reg
 	$(CC) $(yasep32_CFLAGS) -c yasep32.c
 
 clean:
-	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(armeb_OBJS) $(armel_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(mipseb_OBJS) $(mipsel_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(yasep_OBJS) $(yasep16_OBJS) $(yasep32_OBJS)
+	$(RM) -- $(amd64_OBJS) $(arm_OBJS) $(armeb_OBJS) $(armel_OBJS) $(dalvik_OBJS) $(i386_OBJS) $(i386_real_OBJS) $(i486_OBJS) $(i586_OBJS) $(i686_OBJS) $(java_OBJS) $(mips_OBJS) $(mipseb_OBJS) $(mipsel_OBJS) $(sparc_OBJS) $(sparc64_OBJS) $(template_OBJS) $(yasep_OBJS) $(yasep16_OBJS) $(yasep32_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -248,6 +258,8 @@ install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0644 sparc64.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
+	$(INSTALL) -m 0644 template.so $(DESTDIR)$(LIBDIR)/Asm/arch/template.so
+	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0644 yasep.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0644 yasep16.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
@@ -271,6 +283,7 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/mipsel.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
+	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/template.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep32.so

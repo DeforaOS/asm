@@ -46,6 +46,29 @@ debug()
 }
 
 
+#test
+_test()
+{
+	test="$1"
+	arch="$2"
+
+	shift
+	echo -n "$test:" 1>&2
+	(echo
+	echo "Testing: $test" "$@"
+	"$test" "$@") >> "$target" 2>&1
+	res=$?
+	if [ $res -ne 0 ]; then
+		echo " FAILED" 1>&2
+		FAILED="$FAILED $test($arch, error $res)"
+		return 2
+	else
+		echo " $arch PASS" 1>&2
+		return 0
+	fi
+}
+
+
 #usage
 _usage()
 {
@@ -81,24 +104,25 @@ target="$1"
 
 FAILED=
 $DATE > "$target"
-_deasm amd64		>> "$target"	|| FAILED="$FAILED amd64(error $?)"
-_deasm arm		>> "$target"	|| FAILED="$FAILED arm(error $?)"
-_deasm armeb		>> "$target"	|| FAILED="$FAILED armeb(error $?)"
-_deasm armel		>> "$target"	|| FAILED="$FAILED armel(error $?)"
-_deasm dalvik flat	>> "$target"	|| FAILED="$FAILED dalvik(error $?)"
-_deasm i386		>> "$target"	|| FAILED="$FAILED i386(error $?)"
-_deasm i386_real flat	>> "$target"	|| FAILED="$FAILED i386_flat(error $?)"
-_deasm i486		>> "$target"	|| FAILED="$FAILED i486(error $?)"
-_deasm i586		>> "$target"	|| FAILED="$FAILED i586(error $?)"
-_deasm i686		>> "$target"	|| FAILED="$FAILED i686(error $?)"
-_deasm java flat	>> "$target"	|| FAILED="$FAILED java(error $?)"
-_deasm sparc		>> "$target"	|| FAILED="$FAILED sparc(error $?)"
-_deasm sparc64		>> "$target"	|| FAILED="$FAILED sparc64(error $?)"
-_deasm template flat	>> "$target"	|| FAILED="$FAILED template(error $?)"
-_deasm yasep flat	>> "$target"	|| FAILED="$FAILED yasep(error $?)"
-_deasm yasep16 flat	>> "$target"	|| FAILED="$FAILED yasep16(error $?)"
-_deasm yasep32 flat	>> "$target"	|| FAILED="$FAILED yasep32(error $?)"
-[ -z "$FAILED" ]			&& exit 0
-echo "Failed tests:$FAILED" 1>&2
-#XXX ignore errors for now
-#exit 2
+_test _deasm amd64
+_test _deasm arm
+_test _deasm armeb
+_test _deasm armel
+_test _deasm dalvik flat
+_test _deasm i386
+_test _deasm i386_real flat
+_test _deasm i486
+_test _deasm i586
+_test _deasm i686
+_test _deasm java flat
+_test _deasm sparc
+_test _deasm sparc64
+_test _deasm template flat
+_test _deasm yasep flat
+_test _deasm yasep16 flat
+_test _deasm yasep32 flat
+if [ -n "$FAILED" ]; then
+	echo "Failed tests:$FAILED" 1>&2
+	exit 2
+fi
+echo "All tests completed" 1>&2

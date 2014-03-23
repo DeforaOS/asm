@@ -25,7 +25,7 @@
 /* variables */
 static AsmArchDescription const _template_description =
 {
-	"elf", ASM_ARCH_ENDIAN_BOTH, 8, 8, 8
+	"flat", ASM_ARCH_ENDIAN_BOTH, 8, 8, 8
 };
 
 #define REG(name, size, id, description) { "" # name, size, id, description },

@@ -19,7 +19,7 @@
 #variables
 DATE="date"
 DEASM="../src/deasm-static"
-DEBUG="debug"
+DEBUG="_debug"
 
 
 #functions
@@ -39,7 +39,7 @@ _deasm()
 
 
 #debug
-debug()
+_debug()
 {
 	echo "$@" 1>&2
 	"$@"
@@ -101,7 +101,8 @@ target="$1"
 [ "$clean" -ne 0 ]			&& exit 0
 
 FAILED=
-($DATE
+(echo "Performing tests:" 1>&2
+$DATE
 _test _deasm amd64
 _test _deasm arm
 _test _deasm armeb

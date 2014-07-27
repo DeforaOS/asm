@@ -65,6 +65,7 @@ static AsmArchInstruction const _amd64_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"
+#include "i586.ins"
 #include "i686.ins"
 #include "amd64.ins"
 #include "common.ins"

@@ -41,6 +41,11 @@
 #endif
 
 
+/* flags */
+#define AOF_I386_MODRM	0x2
+#define AOF_I386_LAST	AOF_I386_MODRM
+
+
 /* helpers */
 /* opcodes */
 #define OP1F		(8 << AOD_SIZE)
@@ -101,7 +106,6 @@
 #define OP_st7		AO_REGISTER(AOF_IMPLICIT, 32, REG_st7_id)
 
 /* mod r/m byte */
-#define AOF_I386_MODRM	0x2
 #define OP_R8_R		AO_REGISTER(AOF_I386_MODRM, 8, 0)
 #define OP_R16_R	AO_REGISTER(AOF_I386_MODRM, 16, 0)
 #define OP_RW_R		AO_REGISTER(AOF_I386_MODRM, W, 0)

@@ -62,6 +62,7 @@ static AsmArchInstruction const _i686_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"
+#include "i586.ins"
 #include "i686.ins"
 #include "common.ins"
 #include "null.ins"

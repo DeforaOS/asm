@@ -86,6 +86,10 @@ typedef enum _AsmArchOperandType
 # define AO_2(op1, op2)	op1, op2, AOT_NONE, AOT_NONE, AOT_NONE
 # define AO_3(op1, op2, op3) \
 			op1, op2, op3, AOT_NONE, AOT_NONE
+# define AO_4(op1, op2, op3, op4) \
+			op1, op2, op3, op4, AOT_NONE
+# define AO_5(op1, op2, op3, op4, op5) \
+			op1, op2, op3, op4, op5
 # define AO_GET_FLAGS(operand)	((operand & AOM_FLAGS) >> AOD_FLAGS)
 # define AO_GET_OFFSET(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)
 # define AO_GET_DSIZE(operand)	((operand & AOM_OFFSET) >> AOD_OFFSET)

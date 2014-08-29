@@ -64,7 +64,7 @@ sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 template.o_OBJS = template.o
 template.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a template -f flat
 
-tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o sparc.o sparc64.o tests.sh yasep.o yasep16.o yasep32.o
+tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o python.sh sparc.o sparc64.o tests.sh yasep.o yasep16.o yasep32.o
 	./tests.sh -P "$(PREFIX)" -- "tests.log"
 
 yasep.o_OBJS = yasep.o

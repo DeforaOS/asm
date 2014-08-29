@@ -17,6 +17,7 @@
 
 
 #variables
+#executables
 DATE="date"
 DEASM="../src/deasm-static"
 DEBUG="_debug"
@@ -46,6 +47,25 @@ _debug()
 }
 
 
+#fail
+_fail()
+{
+	test="$1"
+
+	shift
+	echo -n "$test:" 1>&2
+	(echo
+	echo "Testing: ./$test" "$@"
+	"./$test" "$@") >> "$target" 2>&1
+	res=$?
+	if [ $res -ne 0 ]; then
+		echo " FAIL (error $res)" 1>&2
+	else
+		echo " PASS" 1>&2
+	fi
+}
+
+
 #test
 _test()
 {
@@ -54,16 +74,18 @@ _test()
 
 	shift
 	echo -n "$test:" 1>&2
-	echo
+	(echo
 	echo "Testing: $test" "$@"
-	"$test" "$@" 2>&1
+	"$test" "$@") >> "$target" 2>&1
 	res=$?
 	if [ $res -ne 0 ]; then
-		echo " FAILED" 1>&2
+		echo " FAIL" 1>&2
 		FAILED="$FAILED $test($arch, error $res)"
 		return 2
+	else
+		echo " $arch PASS" 1>&2
+		return 0
 	fi
-	echo " $arch PASS" 1>&2
 }
 
 
@@ -77,7 +99,7 @@ _usage()
 
 #main
 clean=0
-while getopts "cP:" "name"; do
+while getopts "cP:" name; do
 	case "$name" in
 		c)
 			clean=1
@@ -100,9 +122,9 @@ target="$1"
 
 [ "$clean" -ne 0 ]			&& exit 0
 
+$DATE > "$target"
 FAILED=
-(echo "Performing tests:" 1>&2
-$DATE
+echo "Performing tests:" 1>&2
 _test _deasm amd64
 _test _deasm arm
 _test _deasm armeb
@@ -119,7 +141,9 @@ _test _deasm sparc64
 _test _deasm template flat
 _test _deasm yasep flat
 _test _deasm yasep16 flat
-_test _deasm yasep32 flat) > "$target"
+_test _deasm yasep32 flat
+echo "Expected failures:" 1>&2
+_fail "python.sh"
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

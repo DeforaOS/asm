@@ -17,8 +17,9 @@
 
 
 #variables
+PYTHONDIR="../src/python"
 #executables
 MAKE="make"
 
 
-(cd ../src/python && $MAKE clean all)
+(cd "$PYTHONDIR" && $MAKE clean all)

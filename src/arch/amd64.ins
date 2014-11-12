@@ -16,8 +16,11 @@
 
 
 /* instructions */
-/* FIXME fix and complete */
+/* FIXME really implement the REX prefix */
 /* MOV		0x4989		2					*/
 { "mov",	0x4989,		OP2F, AO_0()				},
+/* SUB		0x4881		2					*/
+{ "sub",	0x4881,		OP2F, AO_2(OP_U8, OP_UW)		},
 /* SUB		0x4883		2					*/
+{ "sub",	0x4883,		OP2F, AO_2(OP_U8, OP_U8)		},
 { "sub",	0x4883,		OP2F, AO_2(OP_U8, OP_U8)		},

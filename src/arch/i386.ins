@@ -19,6 +19,8 @@
 #if defined(ARCH_i386_real) /* i386 in real mode */
 # define W		16
 # define uintW_t	uint16_t
+# define D		16
+# define uintD_t	uint16_t
 # define REG_AX_id	REG_ax_id
 # define REG_CX_id	REG_cx_id
 # define REG_DX_id	REG_dx_id
@@ -27,9 +29,24 @@
 # define REG_BP_id	REG_bp_id
 # define REG_SI_id	REG_si_id
 # define REG_DI_id	REG_di_id
+#elif defined(ARCH_amd64)
+# define W		64
+# define uintW_t	uint64_t
+# define D		32
+# define uintD_t	uint32_t
+# define REG_AX_id	REG_rax_id
+# define REG_CX_id	REG_rcx_id
+# define REG_DX_id	REG_rdx_id
+# define REG_BX_id	REG_rbx_id
+# define REG_SP_id	REG_rsp_id
+# define REG_BP_id	REG_rbp_id
+# define REG_SI_id	REG_rsi_id
+# define REG_DI_id	REG_rdi_id
 #else /* i386 and compatible in 32-bit protected mode */
 # define W		32
 # define uintW_t	uint32_t
+# define D		32
+# define uintD_t	uint32_t
 # define REG_AX_id	REG_eax_id
 # define REG_CX_id	REG_ecx_id
 # define REG_DX_id	REG_edx_id
@@ -80,6 +97,14 @@
 #define OP_BP		AO_REGISTER(AOF_IMPLICIT, W, REG_BP_id)
 #define OP_SI		AO_REGISTER(AOF_IMPLICIT, W, REG_SI_id)
 #define OP_DI		AO_REGISTER(AOF_IMPLICIT, W, REG_DI_id)
+#define OP_AXD		AO_REGISTER(AOF_IMPLICIT, D, REG_AX_id)
+#define OP_CXD		AO_REGISTER(AOF_IMPLICIT, D, REG_CX_id)
+#define OP_DXD		AO_REGISTER(AOF_IMPLICIT, D, REG_DX_id)
+#define OP_BXD		AO_REGISTER(AOF_IMPLICIT, D, REG_BX_id)
+#define OP_SPD		AO_REGISTER(AOF_IMPLICIT, D, REG_SP_id)
+#define OP_BPD		AO_REGISTER(AOF_IMPLICIT, D, REG_BP_id)
+#define OP_SID		AO_REGISTER(AOF_IMPLICIT, D, REG_SI_id)
+#define OP_DID		AO_REGISTER(AOF_IMPLICIT, D, REG_DI_id)
 #define OP_eax		AO_REGISTER(AOF_IMPLICIT, 32, REG_eax_id)
 #define OP_ecx		AO_REGISTER(AOF_IMPLICIT, 32, REG_ecx_id)
 #define OP_edx		AO_REGISTER(AOF_IMPLICIT, 32, REG_edx_id)

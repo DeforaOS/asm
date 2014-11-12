@@ -640,13 +640,14 @@ static int _elf_decode64(AsmFormatPlugin * format, int raw)
 		_swap_64_ehdr(&ehdr);
 	if(_decode64_shdr(format, &ehdr, &shdr) != 0)
 		return -1;
-	if(_decode64_addr(format, &ehdr, &base) != 0
-			|| _decode64_strtab(format, shdr, ehdr.e_shnum,
-				ehdr.e_shstrndx, &shstrtab, &shstrtab_cnt) != 0)
+	if(_decode64_addr(format, &ehdr, &base) != 0)
 	{
 		free(shdr);
 		return -1;
 	}
+	/* XXX ignore errors */
+	_decode64_strtab(format, shdr, ehdr.e_shnum, ehdr.e_shstrndx,
+			&shstrtab, &shstrtab_cnt);
 	for(i = 0; i < ehdr.e_shnum; i++)
 		if(shdr[i].sh_type == SHT_SYMTAB)
 		{

@@ -680,7 +680,7 @@ static int _decode64_shdr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 	size_t i;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s()\n", __func__);
+	fprintf(stderr, "DEBUG: %s() %u\n", __func__, ehdr->e_shentsize);
 #endif
 	if(ehdr->e_shentsize == 0)
 	{
@@ -744,7 +744,7 @@ static int _decode64_strtab(AsmFormatPlugin * format, Elf64_Shdr * shdr,
 	ssize_t size;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(%u)\n", __func__, ndx);
+	fprintf(stderr, "DEBUG: %s(%u) %lu\n", __func__, ndx, shdr_cnt);
 #endif
 	if(ndx >= shdr_cnt)
 		return -error_set_code(1, "%s: %s",

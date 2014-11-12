@@ -1,4 +1,5 @@
-TARGETS	= amd64.o arm.o armeb.o armel.o dalvik.o i386.o i386_real.o i486.o i586.o i686.o mips.o mipseb.o mipsel.o java.o sparc.o sparc64.o template.o tests.log yasep.o yasep16.o yasep32.o
+TARGETS	= $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)dalvik.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o $(OBJDIR)mips.o $(OBJDIR)mipseb.o $(OBJDIR)mipsel.o $(OBJDIR)java.o $(OBJDIR)sparc.o $(OBJDIR)sparc64.o $(OBJDIR)template.o $(OBJDIR)tests.log $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o
+OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
 BINDIR	= $(PREFIX)/bin
@@ -13,128 +14,128 @@ INSTALL	= install
 
 all: $(TARGETS)
 
-amd64.o_OBJS = amd64.o
+amd64.o_OBJS = $(OBJDIR)amd64.o
 amd64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a amd64
 
-arm.o_OBJS = arm.o
+arm.o_OBJS = $(OBJDIR)arm.o
 arm.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a arm
 
-armeb.o_OBJS = armeb.o
+armeb.o_OBJS = $(OBJDIR)armeb.o
 armeb.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a armeb
 
-armel.o_OBJS = armel.o
+armel.o_OBJS = $(OBJDIR)armel.o
 armel.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a armel
 
-dalvik.o_OBJS = dalvik.o
+dalvik.o_OBJS = $(OBJDIR)dalvik.o
 dalvik.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a dalvik -f flat
 
-i386.o_OBJS = i386.o
+i386.o_OBJS = $(OBJDIR)i386.o
 i386.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i386
 
-i386_real.o_OBJS = i386_real.o
+i386_real.o_OBJS = $(OBJDIR)i386_real.o
 i386_real.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i386_real -f flat
 
-i486.o_OBJS = i486.o
+i486.o_OBJS = $(OBJDIR)i486.o
 i486.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i486
 
-i586.o_OBJS = i586.o
+i586.o_OBJS = $(OBJDIR)i586.o
 i586.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i586
 
-i686.o_OBJS = i686.o
+i686.o_OBJS = $(OBJDIR)i686.o
 i686.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a i686
 
-mips.o_OBJS = mips.o
+mips.o_OBJS = $(OBJDIR)mips.o
 mips.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a mips
 
-mipseb.o_OBJS = mipseb.o
+mipseb.o_OBJS = $(OBJDIR)mipseb.o
 mipseb.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a mipseb
 
-mipsel.o_OBJS = mipsel.o
+mipsel.o_OBJS = $(OBJDIR)mipsel.o
 mipsel.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a mipsel
 
-java.o_OBJS = java.o
+java.o_OBJS = $(OBJDIR)java.o
 java.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a java -f flat
 
-sparc.o_OBJS = sparc.o
+sparc.o_OBJS = $(OBJDIR)sparc.o
 sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
 
-sparc64.o_OBJS = sparc64.o
+sparc64.o_OBJS = $(OBJDIR)sparc64.o
 sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 
-template.o_OBJS = template.o
+template.o_OBJS = $(OBJDIR)template.o
 template.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a template -f flat
 
-tests.log: amd64.o arm.o armeb.o armel.o i386.o i386_real.o i486.o i586.o i686.o python.sh sparc.o sparc64.o tests.sh yasep.o yasep16.o yasep32.o
-	./tests.sh -P "$(PREFIX)" -- "tests.log"
+$(OBJDIR)tests.log: $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o python.sh $(OBJDIR)sparc.o $(OBJDIR)sparc64.o tests.sh $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o
+	./tests.sh -P "$(PREFIX)" -- "$(OBJDIR)tests.log"
 
-yasep.o_OBJS = yasep.o
+yasep.o_OBJS = $(OBJDIR)yasep.o
 yasep.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a yasep -f flat
 
-yasep16.o_OBJS = yasep16.o
+yasep16.o_OBJS = $(OBJDIR)yasep16.o
 yasep16.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a yasep16 -f flat
 
-yasep32.o_OBJS = yasep32.o
+yasep32.o_OBJS = $(OBJDIR)yasep32.o
 yasep32.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a yasep32 -f flat
 
-amd64.o: amd64.asm ../src/asm
-	$(AS) $(amd64.o_ASFLAGS) -o amd64.o amd64.asm
+$(OBJDIR)amd64.o: amd64.asm
+	$(AS) $(amd64.o_ASFLAGS) -o $(OBJDIR)amd64.o amd64.asm
 
-arm.o: arm.asm ../src/arch/arm.so ../src/asm
-	$(AS) $(arm.o_ASFLAGS) -o arm.o arm.asm
+$(OBJDIR)arm.o: arm.asm
+	$(AS) $(arm.o_ASFLAGS) -o $(OBJDIR)arm.o arm.asm
 
-armeb.o: armeb.asm ../src/arch/armeb.so arm.asm ../src/asm
-	$(AS) $(armeb.o_ASFLAGS) -o armeb.o armeb.asm
+$(OBJDIR)armeb.o: armeb.asm
+	$(AS) $(armeb.o_ASFLAGS) -o $(OBJDIR)armeb.o armeb.asm
 
-armel.o: armel.asm ../src/arch/armel.so arm.asm ../src/asm
-	$(AS) $(armel.o_ASFLAGS) -o armel.o armel.asm
+$(OBJDIR)armel.o: armel.asm
+	$(AS) $(armel.o_ASFLAGS) -o $(OBJDIR)armel.o armel.asm
 
-dalvik.o: dalvik.asm ../src/asm
-	$(AS) $(dalvik.o_ASFLAGS) -o dalvik.o dalvik.asm
+$(OBJDIR)dalvik.o: dalvik.asm
+	$(AS) $(dalvik.o_ASFLAGS) -o $(OBJDIR)dalvik.o dalvik.asm
 
-i386.o: i386.asm ../src/asm
-	$(AS) $(i386.o_ASFLAGS) -o i386.o i386.asm
+$(OBJDIR)i386.o: i386.asm
+	$(AS) $(i386.o_ASFLAGS) -o $(OBJDIR)i386.o i386.asm
 
-i386_real.o: i386_real.asm ../src/asm
-	$(AS) $(i386_real.o_ASFLAGS) -o i386_real.o i386_real.asm
+$(OBJDIR)i386_real.o: i386_real.asm
+	$(AS) $(i386_real.o_ASFLAGS) -o $(OBJDIR)i386_real.o i386_real.asm
 
-i486.o: i486.asm ../src/asm
-	$(AS) $(i486.o_ASFLAGS) -o i486.o i486.asm
+$(OBJDIR)i486.o: i486.asm
+	$(AS) $(i486.o_ASFLAGS) -o $(OBJDIR)i486.o i486.asm
 
-i586.o: i586.asm ../src/asm
-	$(AS) $(i586.o_ASFLAGS) -o i586.o i586.asm
+$(OBJDIR)i586.o: i586.asm
+	$(AS) $(i586.o_ASFLAGS) -o $(OBJDIR)i586.o i586.asm
 
-i686.o: i686.asm ../src/asm
-	$(AS) $(i686.o_ASFLAGS) -o i686.o i686.asm
+$(OBJDIR)i686.o: i686.asm
+	$(AS) $(i686.o_ASFLAGS) -o $(OBJDIR)i686.o i686.asm
 
-mips.o: mips.asm ../src/asm
-	$(AS) $(mips.o_ASFLAGS) -o mips.o mips.asm
+$(OBJDIR)mips.o: mips.asm
+	$(AS) $(mips.o_ASFLAGS) -o $(OBJDIR)mips.o mips.asm
 
-mipseb.o: mipseb.asm mips.asm ../src/asm
-	$(AS) $(mipseb.o_ASFLAGS) -o mipseb.o mipseb.asm
+$(OBJDIR)mipseb.o: mipseb.asm
+	$(AS) $(mipseb.o_ASFLAGS) -o $(OBJDIR)mipseb.o mipseb.asm
 
-mipsel.o: mipsel.asm mips.asm ../src/asm
-	$(AS) $(mipsel.o_ASFLAGS) -o mipsel.o mipsel.asm
+$(OBJDIR)mipsel.o: mipsel.asm
+	$(AS) $(mipsel.o_ASFLAGS) -o $(OBJDIR)mipsel.o mipsel.asm
 
-java.o: java.asm ../src/asm
-	$(AS) $(java.o_ASFLAGS) -o java.o java.asm
+$(OBJDIR)java.o: java.asm
+	$(AS) $(java.o_ASFLAGS) -o $(OBJDIR)java.o java.asm
 
-sparc.o: sparc.asm ../src/asm
-	$(AS) $(sparc.o_ASFLAGS) -o sparc.o sparc.asm
+$(OBJDIR)sparc.o: sparc.asm
+	$(AS) $(sparc.o_ASFLAGS) -o $(OBJDIR)sparc.o sparc.asm
 
-sparc64.o: sparc64.asm ../src/asm
-	$(AS) $(sparc64.o_ASFLAGS) -o sparc64.o sparc64.asm
+$(OBJDIR)sparc64.o: sparc64.asm
+	$(AS) $(sparc64.o_ASFLAGS) -o $(OBJDIR)sparc64.o sparc64.asm
 
-template.o: template.asm ../src/asm
-	$(AS) $(template.o_ASFLAGS) -o template.o template.asm
+$(OBJDIR)template.o: template.asm
+	$(AS) $(template.o_ASFLAGS) -o $(OBJDIR)template.o template.asm
 
-yasep.o: yasep.asm ../src/asm
-	$(AS) $(yasep.o_ASFLAGS) -o yasep.o yasep.asm
+$(OBJDIR)yasep.o: yasep.asm
+	$(AS) $(yasep.o_ASFLAGS) -o $(OBJDIR)yasep.o yasep.asm
 
-yasep16.o: yasep16.asm ../src/asm yasep.asm
-	$(AS) $(yasep16.o_ASFLAGS) -o yasep16.o yasep16.asm
+$(OBJDIR)yasep16.o: yasep16.asm
+	$(AS) $(yasep16.o_ASFLAGS) -o $(OBJDIR)yasep16.o yasep16.asm
 
-yasep32.o: yasep32.asm ../src/asm yasep.asm
-	$(AS) $(yasep32.o_ASFLAGS) -o yasep32.o yasep32.asm
+$(OBJDIR)yasep32.o: yasep32.asm
+	$(AS) $(yasep32.o_ASFLAGS) -o $(OBJDIR)yasep32.o yasep32.asm
 
 clean:
 	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(template.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)

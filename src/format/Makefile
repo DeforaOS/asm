@@ -1,4 +1,5 @@
-TARGETS	= dex.so elf.so flat.so java.so pe.so
+TARGETS	= $(OBJDIR)dex.so $(OBJDIR)elf.so $(OBJDIR)flat.so $(OBJDIR)java.so $(OBJDIR)pe.so
+OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
 LIBDIR	= $(PREFIX)/lib
@@ -18,55 +19,55 @@ INSTALL	= install
 
 all: $(TARGETS)
 
-dex_OBJS = dex.o
+dex_OBJS = $(OBJDIR)dex.o
 dex_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 dex_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
-dex.so: $(dex_OBJS)
-	$(CCSHARED) -o dex.so $(dex_OBJS) $(dex_LDFLAGS)
+$(OBJDIR)dex.so: $(dex_OBJS)
+	$(CCSHARED) -o $(OBJDIR)dex.so $(dex_OBJS) $(dex_LDFLAGS)
 
-elf_OBJS = elf.o
+elf_OBJS = $(OBJDIR)elf.o
 elf_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 elf_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
-elf.so: $(elf_OBJS)
-	$(CCSHARED) -o elf.so $(elf_OBJS) $(elf_LDFLAGS)
+$(OBJDIR)elf.so: $(elf_OBJS)
+	$(CCSHARED) -o $(OBJDIR)elf.so $(elf_OBJS) $(elf_LDFLAGS)
 
-flat_OBJS = flat.o
+flat_OBJS = $(OBJDIR)flat.o
 flat_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 flat_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
-flat.so: $(flat_OBJS)
-	$(CCSHARED) -o flat.so $(flat_OBJS) $(flat_LDFLAGS)
+$(OBJDIR)flat.so: $(flat_OBJS)
+	$(CCSHARED) -o $(OBJDIR)flat.so $(flat_OBJS) $(flat_LDFLAGS)
 
-java_OBJS = java.o
+java_OBJS = $(OBJDIR)java.o
 java_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 java_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
-java.so: $(java_OBJS)
-	$(CCSHARED) -o java.so $(java_OBJS) $(java_LDFLAGS)
+$(OBJDIR)java.so: $(java_OBJS)
+	$(CCSHARED) -o $(OBJDIR)java.so $(java_OBJS) $(java_LDFLAGS)
 
-pe_OBJS = pe.o
+pe_OBJS = $(OBJDIR)pe.o
 pe_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 pe_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
-pe.so: $(pe_OBJS)
-	$(CCSHARED) -o pe.so $(pe_OBJS) $(pe_LDFLAGS)
+$(OBJDIR)pe.so: $(pe_OBJS)
+	$(CCSHARED) -o $(OBJDIR)pe.so $(pe_OBJS) $(pe_LDFLAGS)
 
-dex.o: dex.c
-	$(CC) $(dex_CFLAGS) -c dex.c
+$(OBJDIR)dex.o: dex.c
+	$(CC) $(dex_CFLAGS) -o $(OBJDIR)dex.o -c dex.c
 
-elf.o: elf.c
-	$(CC) $(elf_CFLAGS) -c elf.c
+$(OBJDIR)elf.o: elf.c
+	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf.o -c elf.c
 
-flat.o: flat.c
-	$(CC) $(flat_CFLAGS) -c flat.c
+$(OBJDIR)flat.o: flat.c
+	$(CC) $(flat_CFLAGS) -o $(OBJDIR)flat.o -c flat.c
 
-java.o: java.c
-	$(CC) $(java_CFLAGS) -c java.c
+$(OBJDIR)java.o: java.c
+	$(CC) $(java_CFLAGS) -o $(OBJDIR)java.o -c java.c
 
-pe.o: pe.c
-	$(CC) $(pe_CFLAGS) -c pe.c
+$(OBJDIR)pe.o: pe.c
+	$(CC) $(pe_CFLAGS) -o $(OBJDIR)pe.o -c pe.c
 
 clean:
 	$(RM) -- $(dex_OBJS) $(elf_OBJS) $(flat_OBJS) $(java_OBJS) $(pe_OBJS)
@@ -76,15 +77,15 @@ distclean: clean
 
 install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 dex.so $(DESTDIR)$(LIBDIR)/Asm/format/dex.so
+	$(INSTALL) -m 0755 $(OBJDIR)dex.so $(DESTDIR)$(LIBDIR)/Asm/format/dex.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 elf.so $(DESTDIR)$(LIBDIR)/Asm/format/elf.so
+	$(INSTALL) -m 0755 $(OBJDIR)elf.so $(DESTDIR)$(LIBDIR)/Asm/format/elf.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 flat.so $(DESTDIR)$(LIBDIR)/Asm/format/flat.so
+	$(INSTALL) -m 0755 $(OBJDIR)flat.so $(DESTDIR)$(LIBDIR)/Asm/format/flat.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 java.so $(DESTDIR)$(LIBDIR)/Asm/format/java.so
+	$(INSTALL) -m 0755 $(OBJDIR)java.so $(DESTDIR)$(LIBDIR)/Asm/format/java.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/format
-	$(INSTALL) -m 0644 pe.so $(DESTDIR)$(LIBDIR)/Asm/format/pe.so
+	$(INSTALL) -m 0755 $(OBJDIR)pe.so $(DESTDIR)$(LIBDIR)/Asm/format/pe.so
 
 uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/format/dex.so

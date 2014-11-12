@@ -1,4 +1,5 @@
 SUBDIRS	= Asm
+OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
 RM	= rm -f

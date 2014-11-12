@@ -20,71 +20,6 @@ AsmCode
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### STRUCT AsmCode ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### FUNCTION asmcode_decode ##### -->
-<para>
-
-</para>
-
-@code: 
-@raw: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asmcode_decode_at ##### -->
-<para>
-
-</para>
-
-@code: 
-@offset: 
-@size: 
-@base: 
-@calls: 
-@calls_cnt: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asmcode_decode_buffer ##### -->
-<para>
-
-</para>
-
-@code: 
-@buffer: 
-@size: 
-@calls: 
-@calls_cnt: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asmcode_decode_section ##### -->
-<para>
-
-</para>
-
-@code: 
-@section: 
-@calls: 
-@calls_cnt: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asmcode_function ##### -->
-<para>
-
-</para>
-
-@code: 
-@function: 
-@Returns: 
-
-
 <!-- ##### FUNCTION asmcode_get_arch ##### -->
 <para>
 
@@ -95,6 +30,15 @@ AsmCode
 
 
 <!-- ##### FUNCTION asmcode_get_arch_description ##### -->
+<para>
+
+</para>
+
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_get_arch_instructions ##### -->
 <para>
 
 </para>
@@ -118,6 +62,46 @@ AsmCode
 </para>
 
 @code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_function ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_section ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@size: 
+@base: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_set_string ##### -->
+<para>
+
+</para>
+
+@code: 
+@id: 
+@name: 
+@offset: 
+@length: 
 @Returns: 
 
 
@@ -191,17 +175,17 @@ AsmCode
 @strings_cnt: 
 
 
-<!-- ##### FUNCTION asmcode_instruction ##### -->
+<!-- ##### FUNCTION asmcode_function ##### -->
 <para>
 
 </para>
 
 @code: 
-@call: 
+@function: 
 @Returns: 
 
 
-<!-- ##### FUNCTION asmcode_print ##### -->
+<!-- ##### FUNCTION asmcode_instruction ##### -->
 <para>
 
 </para>
@@ -221,43 +205,68 @@ AsmCode
 @Returns: 
 
 
-<!-- ##### FUNCTION asmcode_set_function ##### -->
+<!-- ##### FUNCTION asmcode_decode ##### -->
 <para>
 
 </para>
 
 @code: 
-@id: 
-@name: 
-@offset: 
-@size: 
+@raw: 
 @Returns: 
 
 
-<!-- ##### FUNCTION asmcode_set_section ##### -->
+<!-- ##### FUNCTION asmcode_decode_at ##### -->
 <para>
 
 </para>
 
 @code: 
-@id: 
-@name: 
 @offset: 
 @size: 
 @base: 
+@calls: 
+@calls_cnt: 
 @Returns: 
 
 
-<!-- ##### FUNCTION asmcode_set_string ##### -->
+<!-- ##### FUNCTION asmcode_decode_buffer ##### -->
 <para>
 
 </para>
 
 @code: 
-@id: 
-@name: 
-@offset: 
-@length: 
+@buffer: 
+@size: 
+@calls: 
+@calls_cnt: 
 @Returns: 
+
+
+<!-- ##### FUNCTION asmcode_decode_section ##### -->
+<para>
+
+</para>
+
+@code: 
+@section: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asmcode_print ##### -->
+<para>
+
+</para>
+
+@code: 
+@call: 
+@Returns: 
+
+
+<!-- ##### STRUCT AsmCode ##### -->
+<para>
+
+</para>
 
 

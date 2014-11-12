@@ -20,67 +20,6 @@ AsmFormat
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### STRUCT AsmFormat ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### STRUCT AsmFormatPlugin ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### USER_FUNCTION decode ##### -->
-<para>
-
-</para>
-
-@arch: 
-@call: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION decode_section ##### -->
-<para>
-
-</para>
-
-@format: 
-@section: 
-@calls: 
-@calls_cnt: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION destroy ##### -->
-<para>
-
-</para>
-
-@arch: 
-
-
-<!-- ##### USER_FUNCTION detect ##### -->
-<para>
-
-</para>
-
-@format: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION function ##### -->
-<para>
-
-</para>
-
-@format: 
-@function: 
-@Returns: 
-
-
 <!-- ##### USER_FUNCTION get_filename ##### -->
 <para>
 
@@ -100,6 +39,49 @@ AsmFormat
 @functions_cnt: 
 
 
+<!-- ##### USER_FUNCTION read ##### -->
+<para>
+
+</para>
+
+@arch: 
+@buf: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION seek ##### -->
+<para>
+
+</para>
+
+@arch: 
+@offset: 
+@whence: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION write ##### -->
+<para>
+
+</para>
+
+@arch: 
+@buf: 
+@size: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION get_function_by_id ##### -->
+<para>
+
+</para>
+
+@arch: 
+@id: 
+@Returns: 
+
+
 <!-- ##### USER_FUNCTION get_section_by_id ##### -->
 <para>
 
@@ -117,47 +99,6 @@ AsmFormat
 
 @arch: 
 @id: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION init ##### -->
-<para>
-
-</para>
-
-@helper: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION read ##### -->
-<para>
-
-</para>
-
-@arch: 
-@buf: 
-@size: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION section ##### -->
-<para>
-
-</para>
-
-@format: 
-@section: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION seek ##### -->
-<para>
-
-</para>
-
-@arch: 
-@offset: 
-@whence: 
 @Returns: 
 
 
@@ -201,14 +142,83 @@ AsmFormat
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION write ##### -->
+<!-- ##### USER_FUNCTION decode ##### -->
 <para>
 
 </para>
 
 @arch: 
-@buf: 
-@size: 
+@call: 
 @Returns: 
+
+
+<!-- ##### USER_FUNCTION init ##### -->
+<para>
+
+</para>
+
+@helper: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION destroy ##### -->
+<para>
+
+</para>
+
+@arch: 
+
+
+<!-- ##### USER_FUNCTION function ##### -->
+<para>
+
+</para>
+
+@format: 
+@function: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION section ##### -->
+<para>
+
+</para>
+
+@format: 
+@section: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION detect ##### -->
+<para>
+
+</para>
+
+@format: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION decode_section ##### -->
+<para>
+
+</para>
+
+@format: 
+@section: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### STRUCT AsmFormatPlugin ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AsmFormat ##### -->
+<para>
+
+</para>
 
 

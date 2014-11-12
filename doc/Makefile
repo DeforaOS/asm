@@ -1,5 +1,6 @@
 SUBDIRS	= gtkdoc
-TARGETS	= gtkdoc/Asm.types gtkdoc/tmpl.stamp gtkdoc/sgml.stamp gtkdoc/html.stamp
+TARGETS	= $(OBJDIR)gtkdoc/Asm.types $(OBJDIR)gtkdoc/tmpl.stamp $(OBJDIR)gtkdoc/sgml.stamp $(OBJDIR)gtkdoc/html.stamp
+OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
 RM	= rm -f
@@ -13,17 +14,17 @@ all: subdirs $(TARGETS)
 subdirs:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE)) || exit; done
 
-gtkdoc/Asm.types:
-	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/Asm.types"
+$(OBJDIR)gtkdoc/Asm.types:
+	./gtkdoc.sh -P "$(PREFIX)" -- "$(OBJDIR)gtkdoc/Asm.types"
 
-gtkdoc/tmpl.stamp: gtkdoc/Asm.types
-	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/tmpl.stamp"
+$(OBJDIR)gtkdoc/tmpl.stamp: $(OBJDIR)gtkdoc/Asm.types
+	./gtkdoc.sh -P "$(PREFIX)" -- "$(OBJDIR)gtkdoc/tmpl.stamp"
 
-gtkdoc/sgml.stamp: gtkdoc/tmpl.stamp
-	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/sgml.stamp"
+$(OBJDIR)gtkdoc/sgml.stamp: $(OBJDIR)gtkdoc/tmpl.stamp
+	./gtkdoc.sh -P "$(PREFIX)" -- "$(OBJDIR)gtkdoc/sgml.stamp"
 
-gtkdoc/html.stamp: gtkdoc/Asm-docs.xml gtkdoc/sgml.stamp
-	./gtkdoc.sh -P "$(PREFIX)" -- "gtkdoc/html.stamp"
+$(OBJDIR)gtkdoc/html.stamp: gtkdoc/Asm-docs.xml $(OBJDIR)gtkdoc/sgml.stamp
+	./gtkdoc.sh -P "$(PREFIX)" -- "$(OBJDIR)gtkdoc/html.stamp"
 
 clean:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) clean) || exit; done
@@ -44,7 +45,7 @@ distclean:
 
 install: $(TARGETS)
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) install) || exit; done
-	./gtkdoc.sh -P "$(DESTDIR)$(PREFIX)" -i -- "gtkdoc/html.stamp"
+	./gtkdoc.sh -P "$(DESTDIR)$(PREFIX)" -i -- "$(OBJDIR)gtkdoc/html.stamp"
 
 uninstall:
 	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) uninstall) || exit; done

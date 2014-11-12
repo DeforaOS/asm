@@ -20,6 +20,27 @@ AsmArch
 <!-- ##### SECTION Image ##### -->
 
 
+<!-- ##### ENUM AsmArchEndian ##### -->
+<para>
+
+</para>
+
+@ASM_ARCH_ENDIAN_BIG: 
+@ASM_ARCH_ENDIAN_LITTLE: 
+@ASM_ARCH_ENDIAN_BOTH: 
+
+<!-- ##### ENUM AsmArchOperandType ##### -->
+<para>
+
+</para>
+
+@AOT_NONE: 
+@AOT_CONSTANT: 
+@AOT_IMMEDIATE: 
+@AOT_REGISTER: 
+@AOT_DREGISTER: 
+@AOT_DREGISTER2: 
+
 <!-- ##### MACRO AOD_FLAGS ##### -->
 <para>
 
@@ -55,28 +76,7 @@ AsmArch
 
 
 
-<!-- ##### MACRO AOF_IMPLICIT ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO AOF_SIGNED ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO AOI_REFERS_FUNCTION ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO AOI_REFERS_STRING ##### -->
+<!-- ##### MACRO AOM_TYPE ##### -->
 <para>
 
 </para>
@@ -104,14 +104,35 @@ AsmArch
 
 
 
-<!-- ##### MACRO AOM_TYPE ##### -->
+<!-- ##### MACRO AOM_VALUE ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO AOM_VALUE ##### -->
+<!-- ##### MACRO AOF_IMPLICIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOF_SIGNED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOI_REFERS_STRING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AOI_REFERS_FUNCTION ##### -->
 <para>
 
 </para>
@@ -152,44 +173,27 @@ AsmArch
 @op3: 
 
 
-<!-- ##### MACRO AO_CONSTANT ##### -->
+<!-- ##### MACRO AO_4 ##### -->
 <para>
 
 </para>
 
-@flags: 
-@size: 
-@value: 
+@op1: 
+@op2: 
+@op3: 
+@op4: 
 
 
-<!-- ##### MACRO AO_DREGISTER ##### -->
+<!-- ##### MACRO AO_5 ##### -->
 <para>
 
 </para>
 
-@flags: 
-@dsize: 
-@rsize: 
-@id: 
-
-
-<!-- ##### MACRO AO_DREGISTER2 ##### -->
-<para>
-
-</para>
-
-@flags: 
-@did: 
-@dsize: 
-@id: 
-
-
-<!-- ##### MACRO AO_GET_DSIZE ##### -->
-<para>
-
-</para>
-
-@operand: 
+@op1: 
+@op2: 
+@op3: 
+@op4: 
+@op5: 
 
 
 <!-- ##### MACRO AO_GET_FLAGS ##### -->
@@ -201,6 +205,14 @@ AsmArch
 
 
 <!-- ##### MACRO AO_GET_OFFSET ##### -->
+<para>
+
+</para>
+
+@operand: 
+
+
+<!-- ##### MACRO AO_GET_DSIZE ##### -->
 <para>
 
 </para>
@@ -240,6 +252,16 @@ AsmArch
 @operand: 
 
 
+<!-- ##### MACRO AO_CONSTANT ##### -->
+<para>
+
+</para>
+
+@flags: 
+@size: 
+@value: 
+
+
 <!-- ##### MACRO AO_IMMEDIATE ##### -->
 <para>
 
@@ -260,72 +282,26 @@ AsmArch
 @id: 
 
 
-<!-- ##### STRUCT AsmArch ##### -->
+<!-- ##### MACRO AO_DREGISTER ##### -->
 <para>
 
 </para>
 
+@flags: 
+@dsize: 
+@rsize: 
+@id: 
 
-<!-- ##### ENUM AsmArchEndian ##### -->
+
+<!-- ##### MACRO AO_DREGISTER2 ##### -->
 <para>
 
 </para>
 
-@ASM_ARCH_ENDIAN_BIG: 
-@ASM_ARCH_ENDIAN_LITTLE: 
-@ASM_ARCH_ENDIAN_BOTH: 
-
-<!-- ##### TYPEDEF AsmArchOperandDefinition ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ENUM AsmArchOperandType ##### -->
-<para>
-
-</para>
-
-@AOT_NONE: 
-@AOT_CONSTANT: 
-@AOT_IMMEDIATE: 
-@AOT_REGISTER: 
-@AOT_DREGISTER: 
-@AOT_DREGISTER2: 
-
-<!-- ##### STRUCT AsmArchPlugin ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### USER_FUNCTION decode ##### -->
-<para>
-
-</para>
-
-@arch: 
-@call: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION destroy ##### -->
-<para>
-
-</para>
-
-@arch: 
-
-
-<!-- ##### USER_FUNCTION encode ##### -->
-<para>
-
-</para>
-
-@arch: 
-@instruction: 
-@call: 
-@Returns: 
+@flags: 
+@did: 
+@dsize: 
+@id: 
 
 
 <!-- ##### USER_FUNCTION get_filename ##### -->
@@ -390,12 +366,14 @@ AsmArch
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION init ##### -->
+<!-- ##### USER_FUNCTION write ##### -->
 <para>
 
 </para>
 
-@helper: 
+@arch: 
+@buf: 
+@size: 
 @Returns: 
 
 
@@ -432,14 +410,53 @@ AsmArch
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION write ##### -->
+<!-- ##### USER_FUNCTION init ##### -->
+<para>
+
+</para>
+
+@helper: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION destroy ##### -->
 <para>
 
 </para>
 
 @arch: 
-@buf: 
-@size: 
+
+
+<!-- ##### USER_FUNCTION encode ##### -->
+<para>
+
+</para>
+
+@arch: 
+@instruction: 
+@call: 
 @Returns: 
+
+
+<!-- ##### USER_FUNCTION decode ##### -->
+<para>
+
+</para>
+
+@arch: 
+@call: 
+@Returns: 
+
+
+<!-- ##### STRUCT AsmArch ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AsmArchPlugin ##### -->
+<para>
+
+</para>
 
 

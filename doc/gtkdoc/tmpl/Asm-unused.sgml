@@ -1,0 +1,29 @@
+<!-- ##### SECTION tmpl/Asm.sgml:Image ##### -->
+
+
+
+<!-- ##### SECTION tmpl/Asm.sgml:Long_Description ##### -->
+<para>
+DeforaOS assembly and de-assembly framework.
+</para>
+
+
+<!-- ##### SECTION tmpl/Asm.sgml:See_Also ##### -->
+<para>
+DeforaOS Development Code Pre-Processor (CPP), DeforaOS Development C99 C
+compiler (C99)
+</para>
+
+
+<!-- ##### SECTION tmpl/Asm.sgml:Short_Description ##### -->
+DeforaOS Development Assembler
+
+
+<!-- ##### SECTION tmpl/Asm.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION tmpl/Asm.sgml:Title ##### -->
+Asm
+
+

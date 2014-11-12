@@ -20,12 +20,6 @@ Asm
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### STRUCT Asm ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### ENUM AsmPluginType ##### -->
 <para>
 
@@ -34,49 +28,13 @@ Asm
 @APT_ARCH: 
 @APT_FORMAT: 
 
-<!-- ##### FUNCTION asm_assemble ##### -->
+<!-- ##### FUNCTION asm_new ##### -->
 <para>
 
 </para>
 
-@a: 
-@prefs: 
-@infile: 
-@outfile: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_assemble_string ##### -->
-<para>
-
-</para>
-
-@a: 
-@prefs: 
-@outfile: 
-@string: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_close ##### -->
-<para>
-
-</para>
-
-@a: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_deassemble ##### -->
-<para>
-
-</para>
-
-@a: 
-@buffer: 
-@size: 
-@calls: 
-@calls_cnt: 
+@arch: 
+@format: 
 @Returns: 
 
 
@@ -97,86 +55,6 @@ Asm
 @Returns: 
 
 
-<!-- ##### FUNCTION asm_get_format ##### -->
-<para>
-
-</para>
-
-@a: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_guess_arch ##### -->
-<para>
-
-</para>
-
-@a: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_guess_format ##### -->
-<para>
-
-</para>
-
-@a: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_instruction ##### -->
-<para>
-
-</para>
-
-@a: 
-@name: 
-@operands_cnt: 
-@...: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_new ##### -->
-<para>
-
-</para>
-
-@arch: 
-@format: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_open_assemble ##### -->
-<para>
-
-</para>
-
-@a: 
-@outfile: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_open_deassemble ##### -->
-<para>
-
-</para>
-
-@a: 
-@filename: 
-@raw: 
-@Returns: 
-
-
-<!-- ##### FUNCTION asm_plugin_list ##### -->
-<para>
-
-</para>
-
-@type: 
-@decode: 
-@Returns: 
-
-
 <!-- ##### FUNCTION asm_set_arch ##### -->
 <para>
 
@@ -184,6 +62,15 @@ Asm
 
 @a: 
 @arch: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_get_format ##### -->
+<para>
+
+</para>
+
+@a: 
 @Returns: 
 
 
@@ -220,5 +107,118 @@ Asm
 @size: 
 @base: 
 @Returns: 
+
+
+<!-- ##### FUNCTION asm_guess_arch ##### -->
+<para>
+
+</para>
+
+@a: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_guess_format ##### -->
+<para>
+
+</para>
+
+@a: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_close ##### -->
+<para>
+
+</para>
+
+@a: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_assemble ##### -->
+<para>
+
+</para>
+
+@a: 
+@prefs: 
+@infile: 
+@outfile: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_assemble_string ##### -->
+<para>
+
+</para>
+
+@a: 
+@prefs: 
+@outfile: 
+@string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_open_assemble ##### -->
+<para>
+
+</para>
+
+@a: 
+@outfile: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_instruction ##### -->
+<para>
+
+</para>
+
+@a: 
+@name: 
+@operands_cnt: 
+@...: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_deassemble ##### -->
+<para>
+
+</para>
+
+@a: 
+@buffer: 
+@size: 
+@calls: 
+@calls_cnt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_open_deassemble ##### -->
+<para>
+
+</para>
+
+@a: 
+@filename: 
+@raw: 
+@Returns: 
+
+
+<!-- ##### FUNCTION asm_plugin_list ##### -->
+<para>
+
+</para>
+
+@type: 
+@decode: 
+@Returns: 
+
+
+<!-- ##### STRUCT Asm ##### -->
+<para>
+
+</para>
 
 

@@ -20,20 +20,6 @@ common
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### MACRO AET_COUNT ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO AET_LAST ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### TYPEDEF AsmElementId ##### -->
 <para>
 
@@ -50,10 +36,18 @@ common
 @AET_SECTION: 
 @AET_STRING: 
 
-<!-- ##### TYPEDEF AsmFunction ##### -->
+<!-- ##### MACRO AET_LAST ##### -->
 <para>
 
 </para>
+
+
+
+<!-- ##### MACRO AET_COUNT ##### -->
+<para>
+
+</para>
+
 
 
 <!-- ##### TYPEDEF AsmFunctionId ##### -->
@@ -62,7 +56,7 @@ common
 </para>
 
 
-<!-- ##### TYPEDEF AsmLabel ##### -->
+<!-- ##### TYPEDEF AsmFunction ##### -->
 <para>
 
 </para>
@@ -74,7 +68,7 @@ common
 </para>
 
 
-<!-- ##### TYPEDEF AsmSection ##### -->
+<!-- ##### TYPEDEF AsmLabel ##### -->
 <para>
 
 </para>
@@ -86,13 +80,25 @@ common
 </para>
 
 
-<!-- ##### TYPEDEF AsmString ##### -->
+<!-- ##### TYPEDEF AsmSection ##### -->
 <para>
 
 </para>
 
 
 <!-- ##### TYPEDEF AsmStringId ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmString ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF AsmArchOperandDefinition ##### -->
 <para>
 
 </para>

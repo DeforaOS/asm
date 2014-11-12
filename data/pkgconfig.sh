@@ -119,8 +119,9 @@ while [ $# -gt 0 ]; do
 
 	#install
 	if [ "$install" -eq 1 ]; then
+		source="${target#$OBJDIR}"
 		$DEBUG $MKDIR -- "$PKGCONFIG"			|| exit 2
-		$DEBUG $INSTALL "$target" "$PKGCONFIG/$target"	|| exit 2
+		$DEBUG $INSTALL "$target" "$PKGCONFIG/$source"	|| exit 2
 		continue
 	fi
 
@@ -129,18 +130,23 @@ while [ $# -gt 0 ]; do
 	if [ "$PREFIX" != "/usr" ]; then
 		RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
 		case $(uname -s) in
-			Darwin|SunOS)
+			Darwin)
 				RPATH="-Wl,-rpath,\${libdir}"
+				;;
+			SunOS)
+				RPATH="-Wl,-R\${libdir}"
 				;;
 		esac
 	fi
 
 	#create
+	source="${target#$OBJDIR}"
+	source="${source}.in"
 	$DEBUG $SED -e "s;@PACKAGE@;$PACKAGE;" \
 			-e "s;@VERSION@;$VERSION;" \
 			-e "s;@PREFIX@;$PREFIX;" \
 			-e "s;@RPATH@;$RPATH;" \
-			-- "$target.in" > "$target"
+			-- "$source" > "$target"
 	if [ $? -ne 0 ]; then
 		$DEBUG $RM -- "$target"
 		exit 2

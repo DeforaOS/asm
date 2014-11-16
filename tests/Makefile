@@ -1,4 +1,4 @@
-TARGETS	= $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)dalvik.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o $(OBJDIR)mips.o $(OBJDIR)mipseb.o $(OBJDIR)mipsel.o $(OBJDIR)java.o $(OBJDIR)sparc.o $(OBJDIR)sparc64.o $(OBJDIR)template.o $(OBJDIR)tests.log $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o
+TARGETS	= $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)dalvik.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o $(OBJDIR)mips.o $(OBJDIR)mipseb.o $(OBJDIR)mipsel.o $(OBJDIR)java.o $(OBJDIR)pylint.log $(OBJDIR)sparc.o $(OBJDIR)sparc64.o $(OBJDIR)template.o $(OBJDIR)tests.log $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -55,6 +55,9 @@ mipsel.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a mipsel
 
 java.o_OBJS = $(OBJDIR)java.o
 java.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a java -f flat
+
+$(OBJDIR)pylint.log: pylint.sh
+	./pylint.sh -P "$(PREFIX)" -- "$(OBJDIR)pylint.log"
 
 sparc.o_OBJS = $(OBJDIR)sparc.o
 sparc.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc
@@ -138,7 +141,8 @@ $(OBJDIR)yasep32.o: yasep32.asm
 	$(AS) $(yasep32.o_ASFLAGS) -o $(OBJDIR)yasep32.o yasep32.asm
 
 clean:
-	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(template.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
+	$(RM) -- $(amd64.o_OBJS) $(arm.o_OBJS) $(armeb.o_OBJS) $(armel.o_OBJS) $(dalvik.o_OBJS) $(i386.o_OBJS) $(i386_real.o_OBJS) $(i486.o_OBJS) $(i586.o_OBJS) $(i686.o_OBJS) $(mips.o_OBJS) $(mipseb.o_OBJS) $(mipsel.o_OBJS) $(java.o_OBJS) $(pylint.log_OBJS) $(sparc.o_OBJS) $(sparc64.o_OBJS) $(template.o_OBJS) $(tests.log_OBJS) $(yasep.o_OBJS) $(yasep16.o_OBJS) $(yasep32.o_OBJS)
+	./pylint.sh -c -P "$(PREFIX)" -- "pylint.log"
 	./tests.sh -c -P "$(PREFIX)" -- "tests.log"
 
 distclean: clean

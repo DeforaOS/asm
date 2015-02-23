@@ -36,78 +36,102 @@ $(OBJDIR)arch.o: arch.c ../src/arch.c
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch.o -c arch.c
 
 $(OBJDIR)arch/amd64.o: arch/amd64.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/amd64.o -c arch/amd64.c
 
 $(OBJDIR)arch/arm.o: arch/arm.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/arm.o -c arch/arm.c
 
 $(OBJDIR)arch/armeb.o: arch/armeb.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/armeb.o -c arch/armeb.c
 
 $(OBJDIR)arch/armel.o: arch/armel.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/armel.o -c arch/armel.c
 
 $(OBJDIR)arch/dalvik.o: arch/dalvik.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/dalvik.o -c arch/dalvik.c
 
 $(OBJDIR)arch/i386.o: arch/i386.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/i386.o -c arch/i386.c
 
 $(OBJDIR)arch/i386_real.o: arch/i386_real.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/i386_real.o -c arch/i386_real.c
 
 $(OBJDIR)arch/i486.o: arch/i486.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/i486.o -c arch/i486.c
 
 $(OBJDIR)arch/i586.o: arch/i586.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/i586.o -c arch/i586.c
 
 $(OBJDIR)arch/i686.o: arch/i686.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/i686.o -c arch/i686.c
 
 $(OBJDIR)arch/java.o: arch/java.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/java.o -c arch/java.c
 
 $(OBJDIR)arch/mips.o: arch/mips.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/mips.o -c arch/mips.c
 
 $(OBJDIR)arch/mipseb.o: arch/mipseb.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/mipseb.o -c arch/mipseb.c
 
 $(OBJDIR)arch/mipsel.o: arch/mipsel.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/mipsel.o -c arch/mipsel.c
 
 $(OBJDIR)arch/sparc.o: arch/sparc.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/sparc.o -c arch/sparc.c
 
 $(OBJDIR)arch/sparc64.o: arch/sparc64.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/sparc64.o -c arch/sparc64.c
 
 $(OBJDIR)arch/yasep.o: arch/yasep.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/yasep.o -c arch/yasep.c
 
 $(OBJDIR)arch/yasep16.o: arch/yasep16.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/yasep16.o -c arch/yasep16.c
 
 $(OBJDIR)arch/yasep32.o: arch/yasep32.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)arch/yasep32.o -c arch/yasep32.c
 
 $(OBJDIR)format.o: format.c ../src/format.c
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format.o -c format.c
 
 $(OBJDIR)format/dex.o: format/dex.c
+	@[ -d "$(OBJDIR)format" ] || $(MKDIR) -- "$(OBJDIR)format"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format/dex.o -c format/dex.c
 
 $(OBJDIR)format/elf.o: format/elf.c
+	@[ -d "$(OBJDIR)format" ] || $(MKDIR) -- "$(OBJDIR)format"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format/elf.o -c format/elf.c
 
 $(OBJDIR)format/flat.o: format/flat.c
+	@[ -d "$(OBJDIR)format" ] || $(MKDIR) -- "$(OBJDIR)format"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format/flat.o -c format/flat.c
 
 $(OBJDIR)format/java.o: format/java.c
+	@[ -d "$(OBJDIR)format" ] || $(MKDIR) -- "$(OBJDIR)format"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format/java.o -c format/java.c
 
 $(OBJDIR)format/pe.o: format/pe.c
+	@[ -d "$(OBJDIR)format" ] || $(MKDIR) -- "$(OBJDIR)format"
 	$(CC) $(libasm_CFLAGS) -o $(OBJDIR)format/pe.o -c format/pe.c
 
 clean:

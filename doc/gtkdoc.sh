@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2014 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2015 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -141,7 +141,16 @@ while [ $# -gt 0 ]; do
 			$DEBUG $MKDIR -- "$output"		|| exit 2
 			(cd "$output" &&
 				$DEBUG $GTKDOC_MKHTML "$MODULE" \
-					"${OBJDIR}$driver")	|| exit 2
+					"${OBJDIR}$driver")
+			#detect when gtk-doc is not available
+			res=$?
+			if [ $res -eq 127 ]; then
+				_error "$GTKDOC_MKHTML: Not available" \
+					"(not generating documentation)"
+				continue
+			elif [ $res -ne 0 ]; then
+				exit 2
+			fi
 			output="${OBJDIR}gtkdoc"
 			(cd "$output" &&
 				$DEBUG $GTKDOC_FIXXREF \

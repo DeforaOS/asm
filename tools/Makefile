@@ -27,9 +27,13 @@ $(OBJDIR)libasm.a: $(libasm_OBJS)
 	$(AR) -rc $(OBJDIR)libasm.a $(libasm_OBJS)
 	$(RANLIB) $(OBJDIR)libasm.a
 
-$(OBJDIR)libasm.so.0.0 $(OBJDIR)libasm.so.0 $(OBJDIR)libasm.so: $(libasm_OBJS)
+$(OBJDIR)libasm.so.0.0: $(libasm_OBJS)
 	$(CCSHARED) -o $(OBJDIR)libasm.so.0.0 $(libasm_OBJS) $(libasm_LDFLAGS)
+
+$(OBJDIR)libasm.so.0: $(OBJDIR)libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(OBJDIR)libasm.so.0
+
+$(OBJDIR)libasm.so: $(OBJDIR)libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(OBJDIR)libasm.so
 
 $(OBJDIR)arch.o: arch.c ../src/arch.c

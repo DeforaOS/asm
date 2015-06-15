@@ -38,9 +38,13 @@ $(OBJDIR)libasm.a: $(libasm_OBJS)
 	$(AR) -rc $(OBJDIR)libasm.a $(libasm_OBJS)
 	$(RANLIB) $(OBJDIR)libasm.a
 
-$(OBJDIR)libasm.so.0.0 $(OBJDIR)libasm.so.0 $(OBJDIR)libasm.so: $(libasm_OBJS)
+$(OBJDIR)libasm.so.0.0: $(libasm_OBJS)
 	$(CCSHARED) -o $(OBJDIR)libasm.so.0.0 -Wl,-soname,libasm.so.0 $(libasm_OBJS) $(libasm_LDFLAGS)
+
+$(OBJDIR)libasm.so.0: $(OBJDIR)libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(OBJDIR)libasm.so.0
+
+$(OBJDIR)libasm.so: $(OBJDIR)libasm.so.0.0
 	$(LN) -s -- libasm.so.0.0 $(OBJDIR)libasm.so
 
 asm_OBJS = $(OBJDIR)main.o
@@ -92,16 +96,25 @@ $(OBJDIR)deasm.o: deasm.c ../include/Asm.h ../include/Asm/arch.h ../include/Asm/
 	$(CC) $(deasm_CFLAGS) -o $(OBJDIR)deasm.o -c deasm.c
 
 clean:
-	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) clean) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" clean; \
+		else $(MAKE) clean; fi) || exit; done
 	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 
 distclean:
-	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) distclean) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" distclean; \
+		else $(MAKE) distclean; fi) || exit; done
 	$(RM) -- $(libasm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)
-	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) install) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" install; \
+		else $(MAKE) install; fi) || exit; done
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
 	$(INSTALL) -m 0644 $(OBJDIR)libasm.a $(DESTDIR)$(LIBDIR)/libasm.a
 	$(INSTALL) -m 0755 $(OBJDIR)libasm.so.0.0 $(DESTDIR)$(LIBDIR)/libasm.so.0.0
@@ -113,7 +126,10 @@ install: $(TARGETS)
 	$(INSTALL) -m 0755 $(OBJDIR)deasm $(DESTDIR)$(BINDIR)/deasm
 
 uninstall:
-	@for i in $(SUBDIRS); do (cd "$$i" && $(MAKE) uninstall) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" uninstall; \
+		else $(MAKE) uninstall; fi) || exit; done
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.a
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so.0.0
 	$(RM) -- $(DESTDIR)$(LIBDIR)/libasm.so.0

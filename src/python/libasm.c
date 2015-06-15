@@ -16,7 +16,7 @@
 
 
 #include <Python.h>
-#include "Devel/Asm.h"
+#include "Asm.h"
 
 
 /* libasm */

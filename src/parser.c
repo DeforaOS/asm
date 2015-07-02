@@ -419,7 +419,7 @@ static int _space(State * state)
 static int _statement(State * state)
 	/* ( function | [ space [ instruction ] ] ) newline */
 {
-	int ret;
+	int ret = 0;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);

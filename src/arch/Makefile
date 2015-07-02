@@ -259,8 +259,6 @@ install: $(TARGETS)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0755 $(OBJDIR)sparc64.so $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
-	$(INSTALL) -m 0755 $(OBJDIR)template.so $(DESTDIR)$(LIBDIR)/Asm/arch/template.so
-	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0755 $(OBJDIR)yasep.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
 	$(MKDIR) $(DESTDIR)$(LIBDIR)/Asm/arch
 	$(INSTALL) -m 0755 $(OBJDIR)yasep16.so $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
@@ -284,7 +282,6 @@ uninstall:
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/mipsel.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/sparc.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/sparc64.so
-	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/template.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep16.so
 	$(RM) -- $(DESTDIR)$(LIBDIR)/Asm/arch/yasep32.so

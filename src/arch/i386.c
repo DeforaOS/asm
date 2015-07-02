@@ -75,6 +75,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"i386",
 	"Intel 80386",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_i386_definition,
 	_i386_registers,
 	_i386_instructions,

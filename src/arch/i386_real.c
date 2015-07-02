@@ -76,6 +76,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"i386_real",
 	"Intel 80386 (real mode)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_i386_real_definition,
 	_i386_real_registers,
 	_i386_real_instructions,

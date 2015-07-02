@@ -275,6 +275,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"java",
 	"Java bytecode",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_java_definition,
 	_java_registers,
 	_java_instructions,

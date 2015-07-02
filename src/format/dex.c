@@ -144,6 +144,7 @@ AsmFormatPluginDefinition format_plugin =
 {
 	"dex",
 	"DEX",
+	LICENSE_GNU_LGPL3_FLAGS,
 	_dex_signature,
 	sizeof(_dex_signature),
 	_dex_init,

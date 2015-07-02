@@ -20,6 +20,7 @@
 
 # include <sys/types.h>
 # include <stdint.h>
+# include <System/license.h>
 # include "common.h"
 
 
@@ -213,6 +214,7 @@ typedef const struct _AsmArchPluginDefinition
 {
 	char const * name;
 	char const * description;
+	LicenseFlags license;
 
 	AsmArchDefinition const * definition;
 	AsmArchRegister const * registers;

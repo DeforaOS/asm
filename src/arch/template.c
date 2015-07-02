@@ -67,6 +67,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"template",
 	"Template",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_template_definition,
 	_template_registers,
 	_template_instructions,

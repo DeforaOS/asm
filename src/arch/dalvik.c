@@ -99,6 +99,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"dalvik",
 	"Dalvik bytecode",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_dalvik_definition,
 	_dalvik_registers,
 	_dalvik_instructions,

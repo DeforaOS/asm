@@ -192,6 +192,7 @@ AsmFormatPluginDefinition format_plugin =
 {
 	"elf",
 	"ELF",
+	LICENSE_GNU_LGPL3_FLAGS,
 	ELFMAG,
 	SELFMAG,
 	_elf_init,

@@ -53,6 +53,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"sparc64",
 	"Sun SPARC (64-bits)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_sparc64_definition,
 	_sparc64_registers,
 	_sparc64_instructions,

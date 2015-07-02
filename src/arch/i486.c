@@ -76,6 +76,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"i486",
 	"Intel 80486",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_i486_definition,
 	_i486_registers,
 	_i486_instructions,

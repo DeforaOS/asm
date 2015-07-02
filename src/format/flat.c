@@ -46,6 +46,7 @@ AsmFormatPluginDefinition format_plugin =
 {
 	"flat",
 	"Flat file",
+	LICENSE_GNU_LGPL3_FLAGS,
 	NULL,
 	0,
 	_flat_init,

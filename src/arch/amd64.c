@@ -84,6 +84,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"amd64",
 	"AMD64",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_amd64_definition,
 	_amd64_registers,
 	_amd64_instructions,

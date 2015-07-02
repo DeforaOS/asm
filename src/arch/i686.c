@@ -80,6 +80,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"i686",
 	"Intel 80686 (Pentium MMX)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_i686_definition,
 	_i686_registers,
 	_i686_instructions,

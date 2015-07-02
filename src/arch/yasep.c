@@ -67,6 +67,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	ARCH_NAME,
 	ARCH_DESCRIPTION,
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_yasep_definition,
 	_yasep_registers,
 	_yasep_instructions,

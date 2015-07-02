@@ -77,6 +77,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"i586",
 	"Intel 80586 (Pentium)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_i586_definition,
 	_i586_registers,
 	_i586_instructions,

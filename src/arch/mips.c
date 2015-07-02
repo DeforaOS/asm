@@ -61,6 +61,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"mips",
 	ARCH_DESCRIPTION,
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_mips_definition,
 	_mips_registers,
 	_mips_instructions,

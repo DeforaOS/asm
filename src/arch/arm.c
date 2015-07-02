@@ -74,6 +74,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"arm",
 	ARCH_DESCRIPTION,
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_arm_definition,
 	_arm_registers,
 	_arm_instructions,

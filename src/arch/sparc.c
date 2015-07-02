@@ -54,6 +54,7 @@ AsmArchPluginDefinition arch_plugin =
 {
 	"sparc",
 	"Sun SPARC (32-bits)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	&_sparc_definition,
 	_sparc_registers,
 	_sparc_instructions,

@@ -160,6 +160,7 @@ AsmFormatPluginDefinition format_plugin =
 {
 	"java",
 	"Java class",
+	LICENSE_GNU_LGPL3_FLAGS,
 	_java_signature,
 	sizeof(_java_signature),
 	_java_init,

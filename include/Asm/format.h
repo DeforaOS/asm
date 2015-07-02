@@ -19,6 +19,7 @@
 # define DEVEL_ASM_FORMAT_H
 
 # include <stdio.h>
+# include <System/license.h>
 # include "asm.h"
 
 
@@ -66,6 +67,7 @@ typedef struct _AsmFormatPluginDefinition
 {
 	char const * name;
 	char const * description;
+	LicenseFlags license;
 
 	char const * signature;
 	size_t signature_len;

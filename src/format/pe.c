@@ -234,6 +234,7 @@ AsmFormatPluginDefinition format_plugin =
 {
 	"pe",
 	"Portable Executable (PE)",
+	LICENSE_GNU_LGPL3_FLAGS,
 	_pe_msdos_signature,
 	sizeof(_pe_msdos_signature),
 	_pe_init,

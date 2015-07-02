@@ -31,7 +31,9 @@
 #include "Asm.h"
 
 /* portability */
-#define Elf64_Quarter		unsigned char
+#ifndef Elf64_Quarter
+# define Elf64_Quarter		unsigned char
+#endif
 #ifndef EM_486
 # define EM_486			6
 #endif

@@ -51,13 +51,7 @@ _debug()
 #fail
 _fail()
 {
-	test="$1"
-
-	shift
-	echo -n "$test:" 1>&2
-	(echo
-	echo "Testing: ./$test" "$@"
-	"./$test" "$@") >> "$target" 2>&1
+	_run "$@"
 	res=$?
 	if [ $res -ne 0 ]; then
 		echo " FAIL (error $res)" 1>&2
@@ -67,20 +61,28 @@ _fail()
 }
 
 
-#test
-_test()
+#run
+_run()
 {
 	test="$1"
-	arch="$2"
 
 	shift
 	echo -n "$test:" 1>&2
 	(echo
 	echo "Testing: $test" "$@"
 	"$test" "$@") >> "$target" 2>&1
+}
+
+
+#test
+_test()
+{
+	arch="$2"
+
+	_run "$@"
 	res=$?
 	if [ $res -ne 0 ]; then
-		echo " FAIL" 1>&2
+		echo " $arch FAIL" 1>&2
 		FAILED="$FAILED $test($arch, error $res)"
 		return 2
 	else

@@ -233,6 +233,7 @@ static int _pe_get_machine(char const * arch);
 AsmFormatPluginDefinition format_plugin =
 {
 	"pe",
+	"Portable Executable (PE)",
 	_pe_msdos_signature,
 	sizeof(_pe_msdos_signature),
 	_pe_init,

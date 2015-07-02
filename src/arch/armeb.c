@@ -15,5 +15,6 @@
 
 
 
-#define ARCH_ENDIAN	ASM_ARCH_ENDIAN_BIG
+#define ARCH_ENDIAN		ASM_ARCH_ENDIAN_BIG
+#define ARCH_DESCRIPTION	"ARM (big endian)"
 #include "arm.c"

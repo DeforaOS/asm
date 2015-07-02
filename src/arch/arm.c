@@ -23,6 +23,9 @@
 #ifndef ARCH_ENDIAN
 # define ARCH_ENDIAN	ASM_ARCH_ENDIAN_BOTH
 #endif
+#ifndef ARCH_DESCRIPTION
+# define ARCH_DESCRIPTION	"ARM"
+#endif
 
 
 /* arm */
@@ -39,7 +42,7 @@ enum
 
 
 /* variables */
-static AsmArchDescription const _arm_description =
+static AsmArchDefinition const _arm_definition =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
@@ -70,7 +73,8 @@ static AsmArchInstruction const _arm_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"arm",
-	&_arm_description,
+	ARCH_DESCRIPTION,
+	&_arm_definition,
 	_arm_registers,
 	_arm_instructions,
 	_arm_init,

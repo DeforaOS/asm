@@ -72,7 +72,7 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 
 static int _deasm_section(AsmCode * code, AsmSection * section)
 {
-	AsmArchDescription * description;
+	AsmArchDefinition * definition;
 	size_t size;
 	AsmArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;
@@ -84,8 +84,8 @@ static int _deasm_section(AsmCode * code, AsmSection * section)
 		error_print("deasm");
 		return -1;
 	}
-	description = asmcode_get_arch_description(code);
-	size = (description != NULL) ? description->address_size : 32;
+	definition = asmcode_get_arch_definition(code);
+	size = (definition != NULL) ? definition->address_size : 32;
 	switch(size)
 	{
 		case 64:

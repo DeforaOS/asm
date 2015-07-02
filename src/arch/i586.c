@@ -43,7 +43,7 @@ enum
 
 
 /* variables */
-static AsmArchDescription const _i586_description =
+static AsmArchDefinition const _i586_definition =
 {
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
 };
@@ -76,7 +76,8 @@ static AsmArchInstruction const _i586_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"i586",
-	&_i586_description,
+	"Intel 80586 (Pentium)",
+	&_i586_definition,
 	_i586_registers,
 	_i586_instructions,
 	_i386_init,

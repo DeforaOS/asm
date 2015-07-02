@@ -43,7 +43,7 @@ enum
 
 
 /* variables */
-static AsmArchDescription const _i486_description =
+static AsmArchDefinition const _i486_definition =
 {
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
 };
@@ -75,7 +75,8 @@ static AsmArchInstruction const _i486_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"i486",
-	&_i486_description,
+	"Intel 80486",
+	&_i486_definition,
 	_i486_registers,
 	_i486_instructions,
 	_i386_init,

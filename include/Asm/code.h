@@ -31,10 +31,14 @@ typedef struct _AsmCode AsmCode;
 /* functions */
 /* accessors */
 char const * asmcode_get_arch(AsmCode * code);
-AsmArchDescription const * asmcode_get_arch_description(AsmCode * code);
+char const * asmcode_get_arch_name(AsmCode * code);
+AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code);
+char const * asmcode_get_arch_description(AsmCode * code);
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);
+AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code);
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);
+char const * asmcode_get_format_description(AsmCode * code);
 
 AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
 		off_t offset, ssize_t size);

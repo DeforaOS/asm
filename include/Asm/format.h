@@ -65,6 +65,7 @@ typedef struct _AsmFormatPluginHelper
 typedef struct _AsmFormatPluginDefinition
 {
 	char const * name;
+	char const * description;
 
 	char const * signature;
 	size_t signature_len;

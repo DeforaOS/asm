@@ -143,6 +143,7 @@ static int _dex_decode_uleb128(AsmFormatPlugin * format, uint32_t * u32);
 AsmFormatPluginDefinition format_plugin =
 {
 	"dex",
+	"DEX",
 	_dex_signature,
 	sizeof(_dex_signature),
 	_dex_init,

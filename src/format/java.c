@@ -159,6 +159,7 @@ static int _java_decode_section(AsmFormatPlugin * format, AsmSection * section,
 AsmFormatPluginDefinition format_plugin =
 {
 	"java",
+	"Java class",
 	_java_signature,
 	sizeof(_java_signature),
 	_java_init,

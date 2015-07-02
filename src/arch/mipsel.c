@@ -15,5 +15,6 @@
 
 
 
-#define ARCH_ENDIAN	ASM_ARCH_ENDIAN_LITTLE
+#define ARCH_ENDIAN		ASM_ARCH_ENDIAN_LITTLE
+#define ARCH_DESCRIPTION	"MIPS (little endian)"
 #include "mips.c"

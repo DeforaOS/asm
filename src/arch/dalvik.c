@@ -60,7 +60,7 @@ enum
 
 /* variables */
 /* plug-in */
-static AsmArchDescription const _dalvik_description =
+static AsmArchDefinition const _dalvik_definition =
 {
 	"dex", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
@@ -98,7 +98,8 @@ static int _dalvik_decode(AsmArchPlugin * plugin,
 AsmArchPluginDefinition arch_plugin =
 {
 	"dalvik",
-	&_dalvik_description,
+	"Dalvik bytecode",
+	&_dalvik_definition,
 	_dalvik_registers,
 	_dalvik_instructions,
 	_dalvik_init,

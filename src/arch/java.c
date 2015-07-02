@@ -32,7 +32,7 @@ struct _AsmArchPlugin
 
 
 /* variables */
-static AsmArchDescription const _java_description =
+static AsmArchDefinition const _java_definition =
 {
 	"java", ASM_ARCH_ENDIAN_BIG, 32, 8, 0
 };
@@ -274,7 +274,8 @@ static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 AsmArchPluginDefinition arch_plugin =
 {
 	"java",
-	&_java_description,
+	"Java bytecode",
+	&_java_definition,
 	_java_registers,
 	_java_instructions,
 	_java_init,

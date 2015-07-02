@@ -22,7 +22,7 @@
 /* sparc */
 /* private */
 /* variables */
-static AsmArchDescription const _sparc_description =
+static AsmArchDefinition const _sparc_definition =
 {
 	"elf", ASM_ARCH_ENDIAN_BIG, 32, 32, 32
 };
@@ -53,7 +53,8 @@ static AsmArchInstruction const _sparc_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"sparc",
-	&_sparc_description,
+	"Sun SPARC (32-bits)",
+	&_sparc_definition,
 	_sparc_registers,
 	_sparc_instructions,
 	_sparc_init,

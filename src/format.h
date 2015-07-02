@@ -42,6 +42,7 @@ void format_delete(AsmFormat * format);
 /* accessors */
 int format_can_decode(AsmFormat * format);
 
+char const * format_get_description(AsmFormat * format);
 char const * format_get_name(AsmFormat * format);
 
 /* useful */

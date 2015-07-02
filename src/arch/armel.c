@@ -15,5 +15,6 @@
 
 
 
-#define ARCH_ENDIAN	ASM_ARCH_ENDIAN_LITTLE
+#define ARCH_ENDIAN		ASM_ARCH_ENDIAN_LITTLE
+#define ARCH_DESCRIPTION	"ARM (little endian)"
 #include "arm.c"

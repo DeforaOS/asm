@@ -45,6 +45,7 @@ static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 AsmFormatPluginDefinition format_plugin =
 {
 	"flat",
+	"Flat file",
 	NULL,
 	0,
 	_flat_init,

@@ -34,7 +34,8 @@ void arch_delete(AsmArch * arch);
 /* accessors */
 int arch_can_decode(AsmArch * arch);
 
-AsmArchDescription const * arch_get_description(AsmArch * arch);
+AsmArchDefinition const * arch_get_definition(AsmArch * arch);
+char const * arch_get_description(AsmArch * arch);
 char const * arch_get_format(AsmArch * arch);
 char const * arch_get_name(AsmArch * arch);
 
@@ -54,6 +55,7 @@ AsmArchRegister const * arch_get_register_by_name(AsmArch * arch,
 		char const * name);
 AsmArchRegister const * arch_get_register_by_name_size(AsmArch * arch,
 		char const * name, uint32_t size);
+AsmArchRegister const * arch_get_registers(AsmArch * arch);
 
 /* useful */
 int arch_init(AsmArch * arch, char const * filename, FILE * fp);

@@ -325,6 +325,7 @@ int asm_plugin_list(AsmPluginType type, int decode)
 #else
 	char const ext[] = ".so";
 #endif
+	char const * description;
 	AsmArch * arch;
 	AsmFormat * format;
 
@@ -356,19 +357,23 @@ int asm_plugin_list(AsmPluginType type, int decode)
 		if(type == APT_ARCH && (arch = arch_new(de->d_name)) != NULL
 				&& (decode == 0 || arch_can_decode(arch)))
 		{
-			fprintf(stderr, "%s%s", sep, de->d_name);
+			description = arch_get_description(arch);
+			fprintf(stderr, "%s%s (%s)", sep, arch_get_name(arch),
+					description);
 			arch_delete(arch);
 		}
 		else if(type == APT_FORMAT && (format = format_new(de->d_name))
 				!= NULL && (decode == 0
 					|| format_can_decode(format)))
 		{
-			fprintf(stderr, "%s%s", sep, de->d_name);
+			description = format_get_description(format);
+			fprintf(stderr, "%s%s (%s)", sep,
+					format_get_name(format), description);
 			format_delete(format);
 		}
 		else
 			continue;
-		sep = ", ";
+		sep = "\n";
 	}
 	free(path);
 	closedir(dir);

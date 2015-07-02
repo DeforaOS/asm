@@ -46,7 +46,7 @@ enum
 
 
 /* variables */
-static AsmArchDescription const _amd64_description =
+static AsmArchDefinition const _amd64_definition =
 {
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
 };
@@ -83,7 +83,8 @@ static AsmArchInstruction const _amd64_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"amd64",
-	&_amd64_description,
+	"AMD64",
+	&_amd64_definition,
 	_amd64_registers,
 	_amd64_instructions,
 	_i386_init,

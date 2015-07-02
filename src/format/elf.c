@@ -191,6 +191,7 @@ static ElfStrtab shstrtab = { NULL, 0 };	/* section string table */
 AsmFormatPluginDefinition format_plugin =
 {
 	"elf",
+	"ELF",
 	ELFMAG,
 	SELFMAG,
 	_elf_init,

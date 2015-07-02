@@ -34,14 +34,14 @@ typedef enum _AsmArchEndian
 	ASM_ARCH_ENDIAN_BOTH	= 0x3
 } AsmArchEndian;
 
-typedef struct _AsmArchDescription
+typedef struct _AsmArchDefinition
 {
 	char const * format;		/* default format plug-in */
 	AsmArchEndian endian;
 	uint32_t address_size;
 	uint32_t alignment;
 	uint32_t instruction_size;	/* 0 if not constant */
-} AsmArchDescription;
+} AsmArchDefinition;
 
 /* operands */
 typedef enum _AsmArchOperandType
@@ -212,8 +212,9 @@ typedef struct _AsmArchPlugin AsmArchPlugin;
 typedef const struct _AsmArchPluginDefinition
 {
 	char const * name;
+	char const * description;
 
-	AsmArchDescription const * description;
+	AsmArchDefinition const * definition;
 	AsmArchRegister const * registers;
 	AsmArchInstruction const * instructions;
 

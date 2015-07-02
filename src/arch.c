@@ -134,8 +134,15 @@ int arch_can_decode(AsmArch * arch)
 }
 
 
+/* arch_get_definition */
+AsmArchDefinition const * arch_get_definition(AsmArch * arch)
+{
+	return arch->definition->definition;
+}
+
+
 /* arch_get_description */
-AsmArchDescription const * arch_get_description(AsmArch * arch)
+char const * arch_get_description(AsmArch * arch)
 {
 	return arch->definition->description;
 }
@@ -144,9 +151,9 @@ AsmArchDescription const * arch_get_description(AsmArch * arch)
 /* arch_get_format */
 char const * arch_get_format(AsmArch * arch)
 {
-	if(arch->definition->description != NULL
-			&& arch->definition->description->format != NULL)
-		return arch->definition->description->format;
+	if(arch->definition->definition != NULL
+			&& arch->definition->definition->format != NULL)
+		return arch->definition->definition->format;
 	return "elf";
 }
 
@@ -337,7 +344,7 @@ static int _call_operands_dregister(AsmArch * arch,
 	return 0;
 }
 
-static int _call_operands_immediate(AsmArchOperandDefinition definition,
+static int _call_operands_immediate(AsmArchOperandDefinition opdefinition,
 		AsmArchOperand * operand)
 {
 	uint64_t value;
@@ -346,42 +353,42 @@ static int _call_operands_immediate(AsmArchOperandDefinition definition,
 	/* check if the size fits */
 	value = operand->value.immediate.value;
 #if 0 /* XXX ignore for now */
-	if((size = AO_GET_SIZE(definition)) > 0
-			&& AO_GET_FLAGS(definition) & AOF_SIGNED)
+	if((size = AO_GET_SIZE(opdefinition)) > 0
+			&& AO_GET_FLAGS(opdefinition) & AOF_SIGNED)
 		size--;
 #else
-	size = AO_GET_SIZE(definition);
+	size = AO_GET_SIZE(opdefinition);
 #endif
 	value >>= size;
 	if(value > 0)
 		return -1;
 	/* check if it is signed */
 	if(operand->value.immediate.negative
-			&& !(AO_GET_FLAGS(definition) & AOF_SIGNED))
+			&& !(AO_GET_FLAGS(opdefinition) & AOF_SIGNED))
 		return -1;
 	return 0;
 }
 
 static int _call_operands_register(AsmArch * arch,
-		AsmArchOperandDefinition definition, AsmArchOperand * operand)
+		AsmArchOperandDefinition opdefinition, AsmArchOperand * operand)
 {
 	char const * name = operand->value._register.name;
-	AsmArchDescription const * desc;
+	AsmArchDefinition const * definition;
 	uint32_t size;
 	AsmArchRegister const * ar;
 
 	/* obtain the size */
-	if((desc = arch->definition->description) != NULL
-			&& desc->instruction_size != 0)
-		size = desc->instruction_size;
+	if((definition = arch->definition->definition) != NULL
+			&& definition->instruction_size != 0)
+		size = definition->instruction_size;
 	else
-		size = AO_GET_SIZE(definition);
+		size = AO_GET_SIZE(opdefinition);
 	/* check if it exists */
 	if((ar = arch_get_register_by_name_size(arch, name, size)) == NULL)
 		return -1;
 	/* for implicit instructions it must match */
-	if(AO_GET_FLAGS(definition) & AOF_IMPLICIT
-			&& AO_GET_VALUE(definition) != ar->id)
+	if(AO_GET_FLAGS(opdefinition) & AOF_IMPLICIT
+			&& AO_GET_VALUE(opdefinition) != ar->id)
 		return -1;
 	return 0;
 }
@@ -458,6 +465,13 @@ AsmArchRegister const * arch_get_register_by_name_size(AsmArch * arch,
 		else if(strcmp(arch->definition->registers[i].name, name) == 0)
 			return &arch->definition->registers[i];
 	return NULL;
+}
+
+
+/* arch_get_registers */
+AsmArchRegister const * arch_get_registers(AsmArch * arch)
+{
+	return arch->definition->registers;
 }
 
 

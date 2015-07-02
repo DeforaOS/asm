@@ -23,7 +23,7 @@
 /* template */
 /* private */
 /* variables */
-static AsmArchDescription const _template_description =
+static AsmArchDefinition const _template_definition =
 {
 	"flat", ASM_ARCH_ENDIAN_BOTH, 8, 8, 8
 };
@@ -66,7 +66,8 @@ static int _template_encode(AsmArchPlugin * plugin,
 AsmArchPluginDefinition arch_plugin =
 {
 	"template",
-	&_template_description,
+	"Template",
+	&_template_definition,
 	_template_registers,
 	_template_instructions,
 	_template_init,

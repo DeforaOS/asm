@@ -19,14 +19,17 @@
 #include "Asm.h"
 
 #ifndef ARCH_ENDIAN
-# define ARCH_ENDIAN	ASM_ARCH_ENDIAN_BOTH
+# define ARCH_ENDIAN		ASM_ARCH_ENDIAN_BOTH
+#endif
+#ifndef ARCH_DESCRIPTION
+# define ARCH_DESCRIPTION	"MIPS"
 #endif
 
 
 /* mips */
 /* private */
 /* variables */
-static AsmArchDescription const _mips_description =
+static AsmArchDefinition const _mips_definition =
 {
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
@@ -57,7 +60,8 @@ static AsmArchInstruction const _mips_instructions[] =
 AsmArchPluginDefinition arch_plugin =
 {
 	"mips",
-	&_mips_description,
+	ARCH_DESCRIPTION,
+	&_mips_definition,
 	_mips_registers,
 	_mips_instructions,
 	_mips_init,

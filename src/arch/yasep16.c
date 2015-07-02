@@ -15,7 +15,8 @@
 
 
 
-#define ARCH_yasep	16
+#define ARCH_yasep		16
 #define ARCH_yasep16
-#define _yasep_name	"yasep16"
+#define ARCH_NAME		"yasep16"
+#define ARCH_DESCRIPTION	"YASEP (16-bits)"
 #include "yasep.c"

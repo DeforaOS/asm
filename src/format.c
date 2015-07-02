@@ -150,6 +150,13 @@ char const * format_get_arch(AsmFormat * format)
 }
 
 
+/* format_get_description */
+char const * format_get_description(AsmFormat * format)
+{
+	return format->definition->description;
+}
+
+
 /* format_get_name */
 char const * format_get_name(AsmFormat * format)
 {

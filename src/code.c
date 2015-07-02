@@ -39,7 +39,7 @@
 struct _AsmCode
 {
 	AsmArch * arch;
-	AsmArchDescription const * description;
+	AsmArchDefinition const * definition;
 	AsmFormat * format;
 	char * filename;
 	FILE * fp;
@@ -106,7 +106,7 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 		asmcode_delete(code);
 		return NULL;
 	}
-	code->description = arch_get_description(code->arch);
+	code->definition = arch_get_definition(code->arch);
 	return code;
 }
 
@@ -156,7 +156,7 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 		asmcode_delete(code);
 		return NULL;
 	}
-	code->description = arch_get_description(code->arch);
+	code->definition = arch_get_definition(code->arch);
 	return code;
 }
 
@@ -240,8 +240,15 @@ char const * asmcode_get_arch(AsmCode * code)
 }
 
 
+/* asmcode_get_arch_definition */
+AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code)
+{
+	return arch_get_definition(code->arch);
+}
+
+
 /* asmcode_get_arch_description */
-AsmArchDescription const * asmcode_get_arch_description(AsmCode * code)
+char const * asmcode_get_arch_description(AsmCode * code)
 {
 	return arch_get_description(code->arch);
 }
@@ -251,6 +258,13 @@ AsmArchDescription const * asmcode_get_arch_description(AsmCode * code)
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code)
 {
 	return arch_get_instructions(code->arch);
+}
+
+
+/* asmcode_get_arch_registers */
+AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code)
+{
+	return arch_get_registers(code->arch);
 }
 
 
@@ -264,9 +278,18 @@ char const * asmcode_get_filename(AsmCode * code)
 /* asmcode_get_format */
 char const * asmcode_get_format(AsmCode * code)
 {
-	if(code->format != NULL)
-		return format_get_name(code->format);
-	return arch_get_format(code->arch);
+	if(code->format == NULL)
+		return arch_get_format(code->arch);
+	return format_get_name(code->format);
+}
+
+
+/* asmcode_get_format_description */
+char const * asmcode_get_format_description(AsmCode * code)
+{
+	if(code->format == NULL)
+		return NULL;
+	return format_get_description(code->format);
 }
 
 
@@ -444,10 +467,7 @@ int asmcode_decode_buffer(AsmCode * code, char const * buffer, size_t size,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
 	int ret;
-	AsmArchDescription const * description;
-
 	arch_init_buffer(code->arch, buffer, size);
-	description = arch_get_description(code->arch);
 	ret = arch_decode(code->arch, code, 0, calls, calls_cnt);
 	arch_exit(code->arch);
 	return ret;
@@ -515,23 +535,23 @@ int asmcode_open(AsmCode * code, char const * filename)
 
 
 /* asmcode_print */
-static void _print_address(AsmArchDescription const * description,
+static void _print_address(AsmArchDefinition const * definition,
 		unsigned long address);
 static void _print_immediate(AsmArchOperand * ao);
 
 int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 {
-	AsmArchDescription const * description;
+	AsmArchDefinition const * definition;
 	char const * sep = " ";
 	size_t i;
 	uint8_t u8;
 	AsmArchOperand * ao;
 	char const * name;
 
-	description = arch_get_description(code->arch);
+	definition = arch_get_definition(code->arch);
 	if(arch_seek(code->arch, call->offset, SEEK_SET) < 0)
 		return -1;
-	_print_address(description, call->base);
+	_print_address(definition, call->base);
 	for(i = 0; i < call->size; i++)
 	{
 		if(arch_read(code->arch, &u8, sizeof(u8)) != sizeof(u8))
@@ -582,10 +602,10 @@ int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 	return 0;
 }
 
-static void _print_address(AsmArchDescription const * description,
+static void _print_address(AsmArchDefinition const * definition,
 		unsigned long address)
 {
-	uint32_t size = (description != NULL) ? description->address_size : 32;
+	uint32_t size = (definition != NULL) ? definition->address_size : 32;
 	char const * format = "%8lx:";
 
 	switch(size)

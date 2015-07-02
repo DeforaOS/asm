@@ -19,9 +19,10 @@
 #include <System.h>
 #include "Asm.h"
 #ifndef ARCH_yasep
-# define ARCH_yasep	32
+# define ARCH_yasep		32
 # define ARCH_yasep32
-# define _yasep_name	"yasep"
+# define ARCH_NAME		"yasep"
+# define ARCH_DESCRIPTION	"YASEP"
 #endif
 
 
@@ -29,7 +30,7 @@
 /* private */
 /* variables */
 /* plug-in */
-static AsmArchDescription const _yasep_description =
+static AsmArchDefinition const _yasep_definition =
 {
 	"flat", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
@@ -64,8 +65,9 @@ static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 /* variables */
 AsmArchPluginDefinition arch_plugin =
 {
-	_yasep_name,
-	&_yasep_description,
+	ARCH_NAME,
+	ARCH_DESCRIPTION,
+	&_yasep_definition,
 	_yasep_registers,
 	_yasep_instructions,
 	_yasep_init,

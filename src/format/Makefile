@@ -27,7 +27,7 @@ dex_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 $(OBJDIR)dex.so: $(dex_OBJS)
 	$(CCSHARED) -o $(OBJDIR)dex.so $(dex_OBJS) $(dex_LDFLAGS)
 
-elf_OBJS = $(OBJDIR)elf.o
+elf_OBJS = $(OBJDIR)elf.o $(OBJDIR)elf/common.o $(OBJDIR)elf/elf32.o $(OBJDIR)elf/elf64.o
 elf_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
 elf_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
@@ -58,8 +58,20 @@ $(OBJDIR)pe.so: $(pe_OBJS)
 $(OBJDIR)dex.o: dex.c
 	$(CC) $(dex_CFLAGS) -o $(OBJDIR)dex.o -c dex.c
 
-$(OBJDIR)elf.o: elf.c
+$(OBJDIR)elf.o: elf.c elf/common.h
 	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf.o -c elf.c
+
+$(OBJDIR)elf/common.o: elf/common.c elf/common.h
+	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
+	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/common.o -c elf/common.c
+
+$(OBJDIR)elf/elf32.o: elf/elf32.c elf/common.h elf/format.c
+	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
+	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/elf32.o -c elf/elf32.c
+
+$(OBJDIR)elf/elf64.o: elf/elf64.c elf/common.h elf/format.c
+	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
+	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/elf64.o -c elf/elf64.c
 
 $(OBJDIR)flat.o: flat.c
 	$(CC) $(flat_CFLAGS) -o $(OBJDIR)flat.o -c flat.c

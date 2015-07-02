@@ -131,10 +131,15 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/project.conf \
 		$(PACKAGE)-$(VERSION)/src/format/dex.c \
 		$(PACKAGE)-$(VERSION)/src/format/elf.c \
+		$(PACKAGE)-$(VERSION)/src/format/elf/common.c \
+		$(PACKAGE)-$(VERSION)/src/format/elf/elf32.c \
+		$(PACKAGE)-$(VERSION)/src/format/elf/elf64.c \
 		$(PACKAGE)-$(VERSION)/src/format/flat.c \
 		$(PACKAGE)-$(VERSION)/src/format/java.c \
 		$(PACKAGE)-$(VERSION)/src/format/pe.c \
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
+		$(PACKAGE)-$(VERSION)/src/format/elf/common.h \
+		$(PACKAGE)-$(VERSION)/src/format/elf/format.c \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
 		$(PACKAGE)-$(VERSION)/tools/arch.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/amd64.c \

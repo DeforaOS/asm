@@ -87,9 +87,12 @@ extern const ElfSectionValues elf_section_values[];
 /* functions */
 int elf_error(AsmFormatPlugin * format);
 
+int elfinit_32(AsmFormatPlugin * format);
+int elfinit_64(AsmFormatPlugin * format);
+
 /* ElfSection */
-int elfsection_64(AsmFormatPlugin * format, char const * name);
 int elfsection_32(AsmFormatPlugin * format, char const * name);
+int elfsection_64(AsmFormatPlugin * format, char const * name);
 
 /* ElfStrtab */
 int elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,

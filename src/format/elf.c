@@ -41,14 +41,12 @@ static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
 /* ELF32 */
-static int _init_32(AsmFormatPlugin * format);
 static int _destroy_32(AsmFormatPlugin * format);
 static void _swap_32_ehdr(Elf32_Ehdr * ehdr);
 static void _swap_32_phdr(Elf32_Phdr * phdr);
 static void _swap_32_shdr(Elf32_Shdr * shdr);
 
 /* ELF64 */
-static int _init_64(AsmFormatPlugin * format);
 static int _destroy_64(AsmFormatPlugin * format);
 static void _swap_64_ehdr(Elf64_Ehdr * ehdr);
 static void _swap_64_phdr(Elf64_Phdr * phdr);
@@ -149,14 +147,14 @@ static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 	}
 	if(elf->arch->capacity == ELFCLASS32)
 	{
-		if(_init_32(elf) != 0)
+		if(elfinit_32(elf) != 0)
 			return NULL;
 		elf->destroy = _destroy_32;
 		elf->section = elfsection_32;
 	}
 	else if(elf->arch->capacity == ELFCLASS64)
 	{
-		if(_init_64(elf) != 0)
+		if(elfinit_64(elf) != 0)
 			return NULL;
 		elf->destroy = _destroy_64;
 		elf->section = elfsection_64;
@@ -741,46 +739,6 @@ static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 
 
 /* ELF32 */
-/* init_32 */
-static int _init_32(AsmFormatPlugin * format)
-{
-	AsmFormatPluginHelper * helper = format->helper;
-	Elf * elf = format;
-	ElfArch * ea = elf->arch;
-	Elf32_Ehdr hdr;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s()\n", __func__);
-#endif
-	memset(&hdr, 0, sizeof(hdr));
-	memcpy(&hdr.e_ident, ELFMAG, SELFMAG);
-	hdr.e_ident[EI_CLASS] = ELFCLASS32;
-	hdr.e_ident[EI_DATA] = ea->endian;
-	hdr.e_ident[EI_VERSION] = EV_CURRENT;
-	if(ea->endian == ELFDATA2MSB)
-	{
-		hdr.e_type = _htob16(ET_REL);
-		hdr.e_machine = _htob16(ea->machine);
-		hdr.e_version = _htob32(EV_CURRENT);
-		hdr.e_ehsize = _htob16(sizeof(hdr));
-		hdr.e_shentsize = _htob16(sizeof(Elf32_Shdr));
-		hdr.e_shstrndx = _htob16(SHN_UNDEF);
-	}
-	else
-	{
-		hdr.e_type = _htol16(ET_REL);
-		hdr.e_machine = _htol16(ea->machine);
-		hdr.e_version = _htol32(EV_CURRENT);
-		hdr.e_ehsize = _htol16(sizeof(hdr));
-		hdr.e_shentsize = _htol16(sizeof(Elf32_Shdr));
-		hdr.e_shstrndx = _htol16(SHN_UNDEF);
-	}
-	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
-		return elf_error(format);
-	return 0;
-}
-
-
 /* exit_32 */
 static int _destroy_32_phdr(AsmFormatPlugin * format, Elf32_Off offset);
 static int _destroy_32_shdr(AsmFormatPlugin * format, Elf32_Off offset);
@@ -953,45 +911,6 @@ static void _swap_32_shdr(Elf32_Shdr * shdr)
 
 
 /* ELF64 */
-/* init_64 */
-static int _init_64(AsmFormatPlugin * format)
-{
-	AsmFormatPluginHelper * helper = format->helper;
-	Elf * elf = format;
-	ElfArch * ea = elf->arch;
-	Elf64_Ehdr hdr;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s()\n", __func__);
-#endif
-	memset(&hdr, 0, sizeof(hdr));
-	memcpy(&hdr.e_ident, ELFMAG, SELFMAG);
-	hdr.e_ident[EI_CLASS] = ELFCLASS64;
-	hdr.e_ident[EI_DATA] = ea->endian;
-	hdr.e_ident[EI_VERSION] = EV_CURRENT;
-	if(ea->endian == ELFDATA2MSB)
-	{
-		hdr.e_type = _htob16(ET_REL);
-		hdr.e_machine = _htob16(ea->machine);
-		hdr.e_version = _htob32(EV_CURRENT);
-		hdr.e_ehsize = _htob16(sizeof(hdr));
-		hdr.e_shentsize = _htob16(sizeof(Elf64_Shdr));
-	}
-	else
-	{
-		hdr.e_type = _htol16(ET_REL);
-		hdr.e_machine = _htol16(ea->machine);
-		hdr.e_version = _htol32(EV_CURRENT);
-		hdr.e_ehsize = _htol16(sizeof(hdr));
-		hdr.e_shentsize = _htol16(sizeof(Elf64_Shdr));
-	}
-	hdr.e_shstrndx = SHN_UNDEF;
-	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
-		return -1;
-	return 0;
-}
-
-
 /* exit_64 */
 static int _destroy_64_phdr(AsmFormatPlugin * format, Elf64_Off offset);
 static int _destroy_64_shdr(AsmFormatPlugin * format, Elf64_Off offset);

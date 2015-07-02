@@ -20,10 +20,12 @@
 #include "common.h"
 
 #if (ELFSIZE == 64)
+# define elfinit		elfinit_64
 # define elfsection		elfsection_64
 # define esSZ			es64
 # define esSZ_cnt		es64_cnt
 #elif (ELFSIZE == 32)
+# define elfinit		elfinit_32
 # define elfsection		elfsection_32
 # define esSZ			es32
 # define esSZ_cnt		es32_cnt
@@ -34,6 +36,46 @@
 
 /* public */
 /* functions */
+/* elfinit */
+int elfinit(AsmFormatPlugin * format)
+{
+	AsmFormatPluginHelper * helper = format->helper;
+	Elf * elf = format;
+	ElfArch * ea = elf->arch;
+	Elf_Ehdr hdr;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	memset(&hdr, 0, sizeof(hdr));
+	memcpy(&hdr.e_ident, ELFMAG, SELFMAG);
+	hdr.e_ident[EI_CLASS] = ELFCLASS;
+	hdr.e_ident[EI_DATA] = ea->endian;
+	hdr.e_ident[EI_VERSION] = EV_CURRENT;
+	if(ea->endian == ELFDATA2MSB)
+	{
+		hdr.e_type = _htob16(ET_REL);
+		hdr.e_machine = _htob16(ea->machine);
+		hdr.e_version = _htob32(EV_CURRENT);
+		hdr.e_ehsize = _htob16(sizeof(hdr));
+		hdr.e_shentsize = _htob16(sizeof(Elf_Shdr));
+		hdr.e_shstrndx = _htob16(SHN_UNDEF);
+	}
+	else
+	{
+		hdr.e_type = _htol16(ET_REL);
+		hdr.e_machine = _htol16(ea->machine);
+		hdr.e_version = _htol32(EV_CURRENT);
+		hdr.e_ehsize = _htol16(sizeof(hdr));
+		hdr.e_shentsize = _htol16(sizeof(Elf_Shdr));
+		hdr.e_shstrndx = _htol16(SHN_UNDEF);
+	}
+	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
+		return -1;
+	return 0;
+}
+
+
 /* elfsection */
 static ElfSectionValues const * _section_values(char const * name);
 

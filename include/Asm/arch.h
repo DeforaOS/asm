@@ -39,8 +39,8 @@ typedef struct _AsmArchDefinition
 {
 	char const * format;		/* default format plug-in */
 	AsmArchEndian endian;
-	uint32_t address_size;
-	uint32_t alignment;
+	uint32_t address_size;		/* in bits */
+	uint32_t alignment;		/* in bits */
 	uint32_t instruction_size;	/* 0 if not constant */
 } AsmArchDefinition;
 

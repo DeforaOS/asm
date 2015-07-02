@@ -17,6 +17,7 @@
 
 
 #variables
+PROGNAME="tests.sh"
 #executables
 DATE="date"
 DEASM="../src/deasm-static"
@@ -92,7 +93,7 @@ _test()
 #usage
 _usage()
 {
-	echo "Usage: tests.sh [-c][-P prefix]" 1>&2
+	echo "Usage: $PROGNAME [-c][-P prefix] target" 1>&2
 	return 1
 }
 

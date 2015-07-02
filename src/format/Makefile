@@ -8,6 +8,7 @@ CPPFLAGSF= -I ../../include
 CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags libSystem`
 CFLAGS	= -Wall -g -O2 -fPIC -pedantic
+LDFLAGSF= -W `pkg-config --libs libSystem`
 AR	= ar
 RANLIB	= ranlib
 CCSHARED= $(CC) -shared

@@ -19,10 +19,10 @@
 #include "../../include/Asm.h"
 
 
-/* libasm */
+/* libAsm */
 /* private */
 /* constants */
-static char const _libasm_asm_name[] = "libasm::Asm";
+static char const _libasm_asm_name[] = "libAsm::Asm";
 
 
 /* prototypes */

@@ -22,72 +22,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#ifdef __OpenBSD__
-# include <elf_abi.h>
-#else
-# include <elf.h>
-#endif
-#include "Asm.h"
-
-/* portability */
-#ifndef Elf64_Quarter
-# define Elf64_Quarter		unsigned char
-#endif
-#ifndef EM_486
-# define EM_486			6
-#endif
+#include "elf/common.h"
 
 
 /* ELF */
 /* private */
-/* types */
-typedef struct _AsmFormatPlugin Elf;
-
-typedef struct _ElfArch
-{
-	char const * arch;
-	unsigned char machine;
-	unsigned char capacity;
-	unsigned char endian;
-	uint64_t addralign;
-} ElfArch;
-
-typedef struct _ElfSectionValues
-{
-	char const * name;
-	Elf32_Word type;	/* works for 64-bit too */
-	Elf32_Word flags;
-} ElfSectionValues;
-
-typedef struct _ElfStrtab
-{
-	char * buf;
-	size_t cnt;
-} ElfStrtab;
-
-struct _AsmFormatPlugin
-{
-	AsmFormatPluginHelper * helper;
-
-	ElfArch * arch;
-	int (*destroy)(AsmFormatPlugin * format);
-	int (*section)(AsmFormatPlugin * format, char const * name);
-	int (*decode)(AsmFormatPlugin * format, int raw);
-
-	/* ELF32 */
-	Elf32_Shdr * es32;
-	int es32_cnt;
-
-	/* ELF64 */
-	Elf64_Shdr * es64;
-	int es64_cnt;
-};
-
-
 /* prototypes */
-static int _elf_error(AsmFormatPlugin * format);
-
 /* plug-in */
 static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 		char const * arch);
@@ -103,7 +43,6 @@ static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 /* ELF32 */
 static int _init_32(AsmFormatPlugin * format);
 static int _destroy_32(AsmFormatPlugin * format);
-static int _section_32(AsmFormatPlugin * format, char const * name);
 static void _swap_32_ehdr(Elf32_Ehdr * ehdr);
 static void _swap_32_phdr(Elf32_Phdr * phdr);
 static void _swap_32_shdr(Elf32_Shdr * shdr);
@@ -111,14 +50,9 @@ static void _swap_32_shdr(Elf32_Shdr * shdr);
 /* ELF64 */
 static int _init_64(AsmFormatPlugin * format);
 static int _destroy_64(AsmFormatPlugin * format);
-static int _section_64(AsmFormatPlugin * format, char const * name);
 static void _swap_64_ehdr(Elf64_Ehdr * ehdr);
 static void _swap_64_phdr(Elf64_Phdr * phdr);
 static void _swap_64_shdr(Elf64_Shdr * shdr);
-
-/* ElfStrtab */
-static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
-		char const * name);
 
 
 /* variables */
@@ -157,35 +91,6 @@ static const ElfArch * elf_arch_native = &elf_arch[7];
 # error "Unsupported architecture"
 #endif
 
-static ElfSectionValues elf_section_values[] =
-{
-	{ ".bss",	SHT_NOBITS,	SHF_ALLOC | SHF_WRITE		},
-	{ ".comment",	SHT_PROGBITS,	0				},
-	{ ".data",	SHT_PROGBITS,	SHF_ALLOC | SHF_WRITE		},
-	{ ".data1",	SHT_PROGBITS,	SHF_ALLOC | SHF_WRITE		},
-	{ ".debug",	SHT_PROGBITS,	0				},
-	{ ".dynamic",	SHT_DYNAMIC,	0				},
-	{ ".dynstr",	SHT_STRTAB,	SHF_ALLOC			},
-	{ ".dynsym",	SHT_DYNSYM,	SHF_ALLOC			},
-	{ ".fini",	SHT_PROGBITS,	SHF_ALLOC | SHF_EXECINSTR	},
-	{ ".got",	SHT_PROGBITS,	0				},
-	{ ".hash",	SHT_HASH,	SHF_ALLOC			},
-	{ ".init",	SHT_PROGBITS,	SHF_ALLOC | SHF_EXECINSTR	},
-	{ ".interp",	SHT_PROGBITS,	0				},
-	{ ".line",	SHT_PROGBITS,	0				},
-	{ ".note",	SHT_NOTE,	0				},
-	{ ".plt",	SHT_PROGBITS,	0				},
-	{ ".rodata",	SHT_PROGBITS,	SHF_ALLOC			},
-	{ ".rodata1",	SHT_PROGBITS,	SHF_ALLOC			},
-	{ ".shstrtab",	SHT_STRTAB,	0				},
-	{ ".strtab",	SHT_STRTAB,	0				},
-	{ ".symtab",	SHT_SYMTAB,	0				},
-	{ ".text",	SHT_PROGBITS,	SHF_ALLOC | SHF_EXECINSTR	},
-	{ NULL,		0,		0				}
-};
-
-static ElfStrtab shstrtab = { NULL, 0 };	/* section string table */
-
 
 /* public */
 /* variables */
@@ -209,14 +114,6 @@ AsmFormatPluginDefinition format_plugin =
 
 /* private */
 /* functions */
-/* elf_error */
-static int _elf_error(AsmFormatPlugin * format)
-{
-	return -error_set_code(1, "%s: %s", format->helper->get_filename(
-				format->helper->format), strerror(errno));
-}
-
-
 /* plug-in */
 /* elf_init */
 static ElfArch * _init_arch(char const * arch);
@@ -234,6 +131,8 @@ static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 	elf->helper = helper;
 	elf->destroy = NULL;
 	elf->decode = NULL;
+	elf->shstrtab.buf = NULL;
+	elf->shstrtab.cnt = 0;
 	elf->es32 = NULL;
 	elf->es32_cnt = 0;
 	elf->es64 = NULL;
@@ -253,14 +152,14 @@ static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 		if(_init_32(elf) != 0)
 			return NULL;
 		elf->destroy = _destroy_32;
-		elf->section = _section_32;
+		elf->section = elfsection_32;
 	}
 	else if(elf->arch->capacity == ELFCLASS64)
 	{
 		if(_init_64(elf) != 0)
 			return NULL;
 		elf->destroy = _destroy_64;
-		elf->section = _section_64;
+		elf->section = elfsection_64;
 	}
 	else
 		return NULL;
@@ -484,7 +383,7 @@ static int _decode32_shdr(AsmFormatPlugin * format, Elf32_Ehdr * ehdr,
 		return -1;
 	size = sizeof(**shdr) * ehdr->e_shnum;
 	if((*shdr = malloc(size)) == NULL)
-		return -_elf_error(format);
+		return -elf_error(format);
 	if(helper->read(helper->format, *shdr, size) != size)
 	{
 		free(*shdr);
@@ -548,7 +447,7 @@ static int _decode32_strtab(AsmFormatPlugin * format, Elf32_Shdr * shdr,
 	if(helper->seek(helper->format, shdr->sh_offset, SEEK_SET) < 0)
 		return -1;
 	if((*strtab = malloc(shdr->sh_size)) == NULL)
-		return -_elf_error(format);
+		return -elf_error(format);
 	if(helper->read(helper->format, *strtab, shdr->sh_size)
 			!= shdr->sh_size)
 	{
@@ -699,7 +598,7 @@ static int _decode64_shdr(AsmFormatPlugin * format, Elf64_Ehdr * ehdr,
 		return -1;
 	size = sizeof(**shdr) * ehdr->e_shnum;
 	if((*shdr = malloc(size)) == NULL)
-		return -_elf_error(format);
+		return -elf_error(format);
 	if(helper->read(helper->format, *shdr, size) != size)
 	{
 		free(*shdr);
@@ -765,7 +664,7 @@ static int _decode64_strtab(AsmFormatPlugin * format, Elf64_Shdr * shdr,
 		return -1;
 	size = sizeof(**strtab) * shdr->sh_size;
 	if((*strtab = malloc(size)) == NULL)
-		return -_elf_error(format);
+		return -elf_error(format);
 	if(helper->read(helper->format, *strtab, size) != size)
 	{
 		free(*strtab);
@@ -841,25 +740,6 @@ static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
 }
 
 
-/* section_values */
-static ElfSectionValues * _section_values(char const * name)
-{
-	ElfSectionValues * esv;
-	int cmp;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
-#endif
-	for(esv = elf_section_values; esv->name != NULL; esv++)
-		if((cmp = strcmp(esv->name, name)) == 0)
-			return esv;
-		else if(cmp > 0)
-			break;
-	for(; esv->name != NULL; esv++);
-	return esv;
-}
-
-
 /* ELF32 */
 /* init_32 */
 static int _init_32(AsmFormatPlugin * format)
@@ -896,7 +776,7 @@ static int _init_32(AsmFormatPlugin * format)
 		hdr.e_shstrndx = _htol16(SHN_UNDEF);
 	}
 	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
-		return _elf_error(format);
+		return elf_error(format);
 	return 0;
 }
 
@@ -909,24 +789,26 @@ static int _destroy_32(AsmFormatPlugin * format)
 {
 	int ret = 0;
 	AsmFormatPluginHelper * helper = format->helper;
+	Elf * elf = format;
 	long offset;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if(_section_32(format, ".shstrtab") != 0)
+	if(elfsection_32(format, ".shstrtab") != 0)
 		ret = -1;
-	else if(helper->write(helper->format, shstrtab.buf, shstrtab.cnt)
-			!= (ssize_t)shstrtab.cnt)
+	else if(helper->write(helper->format, elf->shstrtab.buf,
+				elf->shstrtab.cnt)
+			!= (ssize_t)elf->shstrtab.cnt)
 		ret = -1;
 	else if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		ret = -1;
 	else if(_destroy_32_phdr(format, offset) != 0
 			|| _destroy_32_shdr(format, offset) != 0)
 		ret = -1;
-	free(shstrtab.buf);
-	shstrtab.buf = NULL;
-	shstrtab.cnt = 0;
+	free(elf->shstrtab.buf);
+	elf->shstrtab.buf = NULL;
+	elf->shstrtab.cnt = 0;
 	return ret;
 }
 
@@ -945,7 +827,7 @@ static int _destroy_32_phdr(AsmFormatPlugin * format, Elf32_Off offset)
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0)
 		return -1;
 	if(helper->read(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
-		return _elf_error(format);
+		return elf_error(format);
 	if(ea->endian == ELFDATA2MSB)
 	{
 		hdr.e_shoff = _htob32(offset);
@@ -979,7 +861,7 @@ static int _destroy_32_shdr(AsmFormatPlugin * format, Elf32_Off offset)
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)
-		return _elf_error(format);
+		return elf_error(format);
 	memset(&hdr, 0, sizeof(hdr));
 	if(ea->endian == ELFDATA2MSB)
 	{
@@ -1017,41 +899,6 @@ static int _destroy_32_shdr(AsmFormatPlugin * format, Elf32_Off offset)
 				!= sizeof(Elf32_Shdr))
 			return -1;
 	}
-	return 0;
-}
-
-
-/* section_32 */
-static int _section_32(AsmFormatPlugin * format, char const * name)
-{
-	AsmFormatPluginHelper * helper = format->helper;
-	Elf * elf = format;
-	int ss;
-	Elf32_Shdr * p;
-	ElfSectionValues * esv;
-	long offset;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
-#endif
-	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
-		return -1;
-	if((p = realloc(elf->es32, sizeof(*p) * (elf->es32_cnt + 1))) == NULL)
-		return _elf_error(format);
-	elf->es32 = p;
-	p = &elf->es32[elf->es32_cnt++];
-	memset(p, 0, sizeof(*p));
-	esv = _section_values(name);
-	p->sh_name = ss;
-	p->sh_type = esv->type;
-	p->sh_flags = esv->flags;
-	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
-		return -1;
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() offset %ld\n", __func__, offset);
-#endif
-	p->sh_offset = offset;
-	p->sh_link = SHN_UNDEF; /* FIXME */
 	return 0;
 }
 
@@ -1153,21 +1000,23 @@ static int _destroy_64(AsmFormatPlugin * format)
 {
 	int ret = 0;
 	AsmFormatPluginHelper * helper = format->helper;
+	Elf * elf = format;
 	long offset;
 
-	if(_section_64(format, ".shstrtab") != 0)
+	if(elfsection_64(format, ".shstrtab") != 0)
 		ret = 1;
-	else if(helper->write(helper->format, shstrtab.buf, shstrtab.cnt)
-				!= (ssize_t)shstrtab.cnt)
+	else if(helper->write(helper->format, elf->shstrtab.buf,
+				elf->shstrtab.cnt)
+			!= (ssize_t)elf->shstrtab.cnt)
 		ret = -1;
 	else if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
 		ret = -1;
 	else if(_destroy_64_phdr(format, offset) != 0
 			|| _destroy_64_shdr(format, offset) != 0)
 		ret = 1;
-	free(shstrtab.buf);
-	shstrtab.buf = NULL;
-	shstrtab.cnt = 0;
+	free(elf->shstrtab.buf);
+	elf->shstrtab.buf = NULL;
+	elf->shstrtab.cnt = 0;
 	return ret;
 }
 
@@ -1214,7 +1063,7 @@ static int _destroy_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 	int i;
 
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)
-		return _elf_error(format);
+		return elf_error(format);
 	memset(&hdr, 0, sizeof(hdr));
 	if(ea->endian == ELFDATA2MSB)
 	{
@@ -1249,41 +1098,6 @@ static int _destroy_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 				!= sizeof(Elf64_Shdr))
 			return -1;
 	}
-	return 0;
-}
-
-
-/* section_64 */
-static int _section_64(AsmFormatPlugin * format, char const * name)
-{
-	AsmFormatPluginHelper * helper = format->helper;
-	Elf * elf = format;
-	int ss;
-	Elf64_Shdr * p;
-	ElfSectionValues * esv;
-	long offset;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
-#endif
-	if((ss = _elfstrtab_set(format, &shstrtab, name)) < 0)
-		return 1;
-	if((p = realloc(elf->es64, sizeof(*p) * (elf->es64_cnt + 1))) == NULL)
-		return _elf_error(format);
-	elf->es64 = p;
-	p = &elf->es64[elf->es64_cnt++];
-	memset(p, 0, sizeof(*p));
-	esv = _section_values(name);
-	p->sh_name = ss;
-	p->sh_type = esv->type;
-	p->sh_flags = esv->flags;
-	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) < 0)
-		return -1;
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s() offset %ld\n", __func__, offset);
-#endif
-	p->sh_offset = offset;
-	p->sh_link = SHN_UNDEF; /* FIXME */
 	return 0;
 }
 
@@ -1334,35 +1148,4 @@ static void _swap_64_shdr(Elf64_Shdr * shdr)
 	shdr->sh_info = _bswap32(shdr->sh_info);
 	shdr->sh_addralign = _bswap64(shdr->sh_addralign);
 	shdr->sh_entsize = _bswap64(shdr->sh_entsize);
-}
-
-
-/* ElfStrtab */
-/* private */
-/* functions */
-/* elfstrtab_get */
-static int _elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
-		char const * name)
-{
-	size_t len;
-	size_t cnt;
-	char * p;
-
-	if((len = strlen(name)) == 0 && strtab->cnt != 0)
-		return 0;
-	if((cnt = strtab->cnt) == 0)
-		cnt++;
-	if((p = realloc(strtab->buf, sizeof(char) * (cnt + len + 1))) == NULL)
-		return -_elf_error(format);
-	else if(strtab->buf == NULL)
-		p[0] = '\0';
-	strtab->buf = p;
-	if(len == 0)
-	{
-		strtab->cnt = cnt;
-		return 0;
-	}
-	strtab->cnt = cnt + len + 1;
-	memcpy(&strtab->buf[cnt], name, len + 1);
-	return cnt;
 }

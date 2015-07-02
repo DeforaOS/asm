@@ -45,7 +45,7 @@ static int _deasm_section(AsmCode * code, AsmSection * section);
 static int _deasm(char const * arch, char const * format, char const * filename,
 		int raw)
 {
-	int ret;
+	int ret = -1;
 	Asm * a;
 	AsmCode * code;
 	AsmSection * sections;
@@ -58,6 +58,7 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 		error_print("deasm");
 	else
 	{
+		ret = 0;
 		printf("%s: %s-%s\n", filename, asm_get_format(a),
 				asm_get_arch(a));
 		asmcode_get_sections(code, &sections, &sections_cnt);

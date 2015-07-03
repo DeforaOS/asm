@@ -9,6 +9,7 @@ CPPFLAGSF= -I ../include
 CPPFLAGS=
 CFLAGSF	= -W `pkg-config --cflags cpp`
 CFLAGS	= -Wall -g -O2 -pedantic
+LDFLAGSF= `pkg-config --libs cpp`
 LDFLAGS	= 
 AR	= ar
 RANLIB	= ranlib
@@ -32,7 +33,7 @@ subdirs:
 
 libAsm_OBJS = $(OBJDIR)arch.o $(OBJDIR)asm.o $(OBJDIR)code.o $(OBJDIR)format.o $(OBJDIR)parser.o $(OBJDIR)token.o
 libAsm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS) -fPIC
-libAsm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) `pkg-config --libs cpp`
+libAsm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
 $(OBJDIR)libAsm.a: $(libAsm_OBJS)
 	$(AR) -rc $(OBJDIR)libAsm.a $(libAsm_OBJS)
@@ -54,7 +55,7 @@ asm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L$(OBJDIR). -Wl,-rpath,$(LIBDIR) -lAsm
 $(OBJDIR)asm: $(asm_OBJS) $(OBJDIR)libAsm.so
 	$(CC) -o $(OBJDIR)asm $(asm_OBJS) $(asm_LDFLAGS)
 asm-static_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
-asm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) `pkg-config --libs cpp` $(OBJDIR)main.o $(OBJDIR)libAsm.a
+asm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) $(OBJDIR)main.o $(OBJDIR)libAsm.a
 
 $(OBJDIR)asm-static: $(asm-static_OBJS) $(OBJDIR)main.o $(OBJDIR)libAsm.a
 	$(CC) -o $(OBJDIR)asm-static $(asm-static_OBJS) $(asm-static_LDFLAGS)
@@ -66,7 +67,7 @@ deasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L$(OBJDIR). -Wl,-rpath,$(LIBDIR) -lAsm
 $(OBJDIR)deasm: $(deasm_OBJS) $(OBJDIR)libAsm.so
 	$(CC) -o $(OBJDIR)deasm $(deasm_OBJS) $(deasm_LDFLAGS)
 deasm-static_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
-deasm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) `pkg-config --libs cpp` $(OBJDIR)deasm.o $(OBJDIR)libAsm.a
+deasm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) $(OBJDIR)deasm.o $(OBJDIR)libAsm.a
 
 $(OBJDIR)deasm-static: $(deasm-static_OBJS) $(OBJDIR)deasm.o $(OBJDIR)libAsm.a
 	$(CC) -o $(OBJDIR)deasm-static $(deasm-static_OBJS) $(deasm-static_LDFLAGS)

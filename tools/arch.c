@@ -37,6 +37,7 @@ extern AsmArchPluginDefinition arch_plugin_mipseb;
 extern AsmArchPluginDefinition arch_plugin_mipsel;
 extern AsmArchPluginDefinition arch_plugin_sparc;
 extern AsmArchPluginDefinition arch_plugin_sparc64;
+extern AsmArchPluginDefinition arch_plugin_template;
 extern AsmArchPluginDefinition arch_plugin_yasep;
 extern AsmArchPluginDefinition arch_plugin_yasep16;
 extern AsmArchPluginDefinition arch_plugin_yasep32;
@@ -63,6 +64,7 @@ static struct
 	{ "mipsel",	NULL	},
 	{ "sparc",	NULL	},
 	{ "sparc64",	NULL	},
+	{ "template",	NULL	},
 	{ "yasep",	NULL	},
 	{ "yasep16",	NULL	},
 	{ "yasep32",	NULL	}
@@ -100,9 +102,10 @@ AsmArch * arch_new(char const * name)
 		_arch[13].definition = &arch_plugin_mipsel;
 		_arch[14].definition = &arch_plugin_sparc;
 		_arch[15].definition = &arch_plugin_sparc64;
-		_arch[16].definition = &arch_plugin_yasep;
-		_arch[17].definition = &arch_plugin_yasep16;
-		_arch[18].definition = &arch_plugin_yasep32;
+		_arch[16].definition = &arch_plugin_template;
+		_arch[17].definition = &arch_plugin_yasep;
+		_arch[18].definition = &arch_plugin_yasep16;
+		_arch[19].definition = &arch_plugin_yasep32;
 	}
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)

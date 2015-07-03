@@ -20,13 +20,13 @@
 #include "common.h"
 
 #if (ELFSIZE == 64)
-# define elfinit		elfinit_64
-# define elfsection		elfsection_64
+# define elf_init		elf64_init
+# define elf_section		elf64_section
 # define esSZ			es64
 # define esSZ_cnt		es64_cnt
 #elif (ELFSIZE == 32)
-# define elfinit		elfinit_32
-# define elfsection		elfsection_32
+# define elf_init		elf32_init
+# define elf_section		elf32_section
 # define esSZ			es32
 # define esSZ_cnt		es32_cnt
 #else
@@ -36,12 +36,12 @@
 
 /* public */
 /* functions */
-/* elfinit */
-int elfinit(AsmFormatPlugin * format)
+/* elf_init */
+int elf_init(AsmFormatPlugin * format)
 {
 	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format;
-	ElfArch * ea = elf->arch;
+	const ElfArch * ea = elf->arch;
 	Elf_Ehdr hdr;
 
 #ifdef DEBUG
@@ -76,10 +76,10 @@ int elfinit(AsmFormatPlugin * format)
 }
 
 
-/* elfsection */
+/* elf_section */
 static ElfSectionValues const * _section_values(char const * name);
 
-int elfsection(AsmFormatPlugin * format, char const * name)
+int elf_section(AsmFormatPlugin * format, char const * name)
 {
 	AsmFormatPluginHelper * helper = format->helper;
 	Elf * elf = format;

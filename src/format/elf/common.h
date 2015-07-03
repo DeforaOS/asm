@@ -63,7 +63,7 @@ struct _AsmFormatPlugin
 {
 	AsmFormatPluginHelper * helper;
 
-	ElfArch * arch;
+	const ElfArch * arch;
 	int (*destroy)(Elf * elf);
 	int (*section)(Elf * elf, char const * name);
 	int (*decode)(Elf * elf, int raw);
@@ -81,18 +81,14 @@ struct _AsmFormatPlugin
 
 
 /* constants */
+extern const ElfArch elf_arch[];
+extern const ElfArch * elf_arch_native;
+
 extern const ElfSectionValues elf_section_values[];
 
 
 /* functions */
 int elf_error(AsmFormatPlugin * format);
-
-int elfinit_32(AsmFormatPlugin * format);
-int elfinit_64(AsmFormatPlugin * format);
-
-/* ElfSection */
-int elfsection_32(AsmFormatPlugin * format, char const * name);
-int elfsection_64(AsmFormatPlugin * format, char const * name);
 
 /* ElfStrtab */
 int elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,

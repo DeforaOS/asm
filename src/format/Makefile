@@ -65,11 +65,11 @@ $(OBJDIR)elf/common.o: elf/common.c elf/common.h
 	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
 	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/common.o -c elf/common.c
 
-$(OBJDIR)elf/elf32.o: elf/elf32.c elf/common.h elf/format.c
+$(OBJDIR)elf/elf32.o: elf/elf32.c elf/common.h elf/format.h elf/format.c
 	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
 	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/elf32.o -c elf/elf32.c
 
-$(OBJDIR)elf/elf64.o: elf/elf64.c elf/common.h elf/format.c
+$(OBJDIR)elf/elf64.o: elf/elf64.c elf/common.h elf/format.h elf/format.c
 	@[ -d "$(OBJDIR)elf" ] || $(MKDIR) -- "$(OBJDIR)elf"
 	$(CC) $(elf_CFLAGS) -o $(OBJDIR)elf/elf64.o -c elf/elf64.c
 

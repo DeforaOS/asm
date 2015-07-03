@@ -24,6 +24,42 @@
 
 /* public */
 /* constants */
+const ElfArch elf_arch[] =
+{
+#if defined(EM_AMD64)
+	{ "amd64",	EM_AMD64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
+#elif defined(EM_X86_64)
+	{ "amd64",	EM_X86_64,	ELFCLASS64,	ELFDATA2LSB, 0x4 },
+#endif
+	{ "arm",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
+	{ "armeb",	EM_ARM,		ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "armel",	EM_ARM,		ELFCLASS32,	ELFDATA2LSB, 0x0 },
+	{ "i386",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i486",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i586",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "i686",	EM_386,		ELFCLASS32,	ELFDATA2LSB, 0x4 },
+	{ "mips",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "mipseb",	EM_MIPS,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "mipsel",	EM_MIPS,	ELFCLASS32,	ELFDATA2LSB, 0x0 },
+	{ "sparc",	EM_SPARC,	ELFCLASS32,	ELFDATA2MSB, 0x0 },
+	{ "sparc64",	EM_SPARCV9,	ELFCLASS64,	ELFDATA2MSB, 0x0 },
+	{ NULL,		'\0',		'\0',		'\0',        0x0 }
+};
+
+#if defined(__amd64__)
+const ElfArch * elf_arch_native = &elf_arch[0];
+#elif defined(__arm__)
+const ElfArch * elf_arch_native = &elf_arch[1];
+#elif defined(__i386__)
+const ElfArch * elf_arch_native = &elf_arch[2];
+#elif defined(__sparc64__)
+const ElfArch * elf_arch_native = &elf_arch[8];
+#elif defined(__sparc__)
+const ElfArch * elf_arch_native = &elf_arch[7];
+#else
+# error "Unsupported architecture"
+#endif
+
 const ElfSectionValues elf_section_values[] =
 {
 	{ ".bss",	SHT_NOBITS,	SHF_ALLOC | SHF_WRITE		},

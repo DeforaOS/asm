@@ -20,7 +20,7 @@
 PROGNAME="tests.sh"
 #executables
 DATE="date"
-DEASM="../src/deasm-static"
+DEASM="${OBJDIR}../tools/deasm-static"
 DEBUG="_debug"
 
 

@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright (c) 2012 Pierre Pronchery <khorben@defora.org> */
+/* Copyright (c) 2015 Pierre Pronchery <khorben@defora.org> */
 /* This file is part of DeforaOS Devel Asm */
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,4 @@
 
 
 
-#define format_plugin format_plugin_elf
-#include "../src/format/elf.c"
-#include "../src/format/elf/common.c"
+#include "../src/format/elf/elf32.c"

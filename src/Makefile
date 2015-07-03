@@ -1,5 +1,5 @@
 SUBDIRS	= arch format
-TARGETS	= $(OBJDIR)libAsm.a $(OBJDIR)libAsm.so.0.0 $(OBJDIR)libAsm.so.0 $(OBJDIR)libAsm.so $(OBJDIR)asm $(OBJDIR)asm-static $(OBJDIR)deasm $(OBJDIR)deasm-static
+TARGETS	= $(OBJDIR)libAsm.a $(OBJDIR)libAsm.so.0.0 $(OBJDIR)libAsm.so.0 $(OBJDIR)libAsm.so $(OBJDIR)asm $(OBJDIR)deasm
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -54,11 +54,6 @@ asm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L$(OBJDIR). -Wl,-rpath,$(LIBDIR) -lAsm
 
 $(OBJDIR)asm: $(asm_OBJS) $(OBJDIR)libAsm.so
 	$(CC) -o $(OBJDIR)asm $(asm_OBJS) $(asm_LDFLAGS)
-asm-static_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
-asm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) $(OBJDIR)main.o $(OBJDIR)libAsm.a
-
-$(OBJDIR)asm-static: $(asm-static_OBJS) $(OBJDIR)main.o $(OBJDIR)libAsm.a
-	$(CC) -o $(OBJDIR)asm-static $(asm-static_OBJS) $(asm-static_LDFLAGS)
 
 deasm_OBJS = $(OBJDIR)deasm.o
 deasm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
@@ -66,11 +61,6 @@ deasm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) -L$(OBJDIR). -Wl,-rpath,$(LIBDIR) -lAsm
 
 $(OBJDIR)deasm: $(deasm_OBJS) $(OBJDIR)libAsm.so
 	$(CC) -o $(OBJDIR)deasm $(deasm_OBJS) $(deasm_LDFLAGS)
-deasm-static_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS)
-deasm-static_LDFLAGS = $(LDFLAGSF) $(LDFLAGS) $(OBJDIR)deasm.o $(OBJDIR)libAsm.a
-
-$(OBJDIR)deasm-static: $(deasm-static_OBJS) $(OBJDIR)deasm.o $(OBJDIR)libAsm.a
-	$(CC) -o $(OBJDIR)deasm-static $(deasm-static_OBJS) $(deasm-static_LDFLAGS)
 
 $(OBJDIR)arch.o: arch.c ../include/Asm/arch.h ../include/Asm/asm.h arch.h code.h ../config.h
 	$(CC) -D PREFIX=\"$(PREFIX)\" $(libAsm_CFLAGS) -o $(OBJDIR)arch.o -c arch.c
@@ -101,14 +91,14 @@ clean:
 		if [ -n "$(OBJDIR)" ]; then \
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" clean; \
 		else $(MAKE) clean; fi) || exit; done
-	$(RM) -- $(libAsm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
+	$(RM) -- $(libAsm_OBJS) $(asm_OBJS) $(deasm_OBJS)
 
 distclean:
 	@for i in $(SUBDIRS); do (cd "$$i" && \
 		if [ -n "$(OBJDIR)" ]; then \
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" distclean; \
 		else $(MAKE) distclean; fi) || exit; done
-	$(RM) -- $(libAsm_OBJS) $(asm_OBJS) $(asm-static_OBJS) $(deasm_OBJS) $(deasm-static_OBJS)
+	$(RM) -- $(libAsm_OBJS) $(asm_OBJS) $(deasm_OBJS)
 	$(RM) -- $(TARGETS)
 
 install: $(TARGETS)

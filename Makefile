@@ -165,9 +165,15 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/format.c \
 		$(PACKAGE)-$(VERSION)/tools/format/dex.c \
 		$(PACKAGE)-$(VERSION)/tools/format/elf.c \
+		$(PACKAGE)-$(VERSION)/tools/format/elf/elf32.c \
+		$(PACKAGE)-$(VERSION)/tools/format/elf/elf64.c \
 		$(PACKAGE)-$(VERSION)/tools/format/flat.c \
 		$(PACKAGE)-$(VERSION)/tools/format/java.c \
 		$(PACKAGE)-$(VERSION)/tools/format/pe.c \
+		$(PACKAGE)-$(VERSION)/tools/../src/asm.c \
+		$(PACKAGE)-$(VERSION)/tools/../src/code.c \
+		$(PACKAGE)-$(VERSION)/tools/../src/parser.c \
+		$(PACKAGE)-$(VERSION)/tools/../src/token.c \
 		$(PACKAGE)-$(VERSION)/tools/Makefile \
 		$(PACKAGE)-$(VERSION)/tools/project.conf \
 		$(PACKAGE)-$(VERSION)/tests/amd64.asm \

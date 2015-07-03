@@ -139,6 +139,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/format/pe.c \
 		$(PACKAGE)-$(VERSION)/src/format/Makefile \
 		$(PACKAGE)-$(VERSION)/src/format/elf/common.h \
+		$(PACKAGE)-$(VERSION)/src/format/elf/format.h \
 		$(PACKAGE)-$(VERSION)/src/format/elf/format.c \
 		$(PACKAGE)-$(VERSION)/src/format/project.conf \
 		$(PACKAGE)-$(VERSION)/tools/arch.c \

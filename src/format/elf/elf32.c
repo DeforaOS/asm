@@ -17,9 +17,9 @@
 
 #include <System.h>
 #define ELFSIZE 32
-#include "format.h"
+#include "elf.h"
 
-#include "format.c"
+#include "elf.c"
 
 
 /* ELF32 */

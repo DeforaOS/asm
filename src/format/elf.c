@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "elf/common.h"
-#include "elf/format.h"
+#include "elf/elf.h"
 
 
 /* ELF */

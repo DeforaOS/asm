@@ -22,7 +22,7 @@ INSTALL	= install
 
 all: $(TARGETS)
 
-libAsm_OBJS = $(OBJDIR)arch.o $(OBJDIR)arch/amd64.o $(OBJDIR)arch/arm.o $(OBJDIR)arch/armeb.o $(OBJDIR)arch/armel.o $(OBJDIR)arch/dalvik.o $(OBJDIR)arch/i386.o $(OBJDIR)arch/i386_real.o $(OBJDIR)arch/i486.o $(OBJDIR)arch/i586.o $(OBJDIR)arch/i686.o $(OBJDIR)arch/java.o $(OBJDIR)arch/mips.o $(OBJDIR)arch/mipseb.o $(OBJDIR)arch/mipsel.o $(OBJDIR)arch/sparc.o $(OBJDIR)arch/sparc64.o $(OBJDIR)arch/yasep.o $(OBJDIR)arch/yasep16.o $(OBJDIR)arch/yasep32.o $(OBJDIR)format.o $(OBJDIR)format/dex.o $(OBJDIR)format/elf.o $(OBJDIR)format/elf/elf32.o $(OBJDIR)format/elf/elf64.o $(OBJDIR)format/flat.o $(OBJDIR)format/java.o $(OBJDIR)format/pe.o $(OBJDIR)../src/asm.o $(OBJDIR)../src/code.o $(OBJDIR)../src/parser.o $(OBJDIR)../src/token.o
+libAsm_OBJS = $(OBJDIR)arch.o $(OBJDIR)arch/amd64.o $(OBJDIR)arch/arm.o $(OBJDIR)arch/armeb.o $(OBJDIR)arch/armel.o $(OBJDIR)arch/dalvik.o $(OBJDIR)arch/i386.o $(OBJDIR)arch/i386_real.o $(OBJDIR)arch/i486.o $(OBJDIR)arch/i586.o $(OBJDIR)arch/i686.o $(OBJDIR)arch/java.o $(OBJDIR)arch/mips.o $(OBJDIR)arch/mipseb.o $(OBJDIR)arch/mipsel.o $(OBJDIR)arch/sparc.o $(OBJDIR)arch/sparc64.o $(OBJDIR)arch/template.o $(OBJDIR)arch/yasep.o $(OBJDIR)arch/yasep16.o $(OBJDIR)arch/yasep32.o $(OBJDIR)format.o $(OBJDIR)format/dex.o $(OBJDIR)format/elf.o $(OBJDIR)format/elf/elf32.o $(OBJDIR)format/elf/elf64.o $(OBJDIR)format/flat.o $(OBJDIR)format/java.o $(OBJDIR)format/pe.o $(OBJDIR)../src/asm.o $(OBJDIR)../src/code.o $(OBJDIR)../src/parser.o $(OBJDIR)../src/token.o
 libAsm_CFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(CFLAGSF) $(CFLAGS) -fPIC
 libAsm_LDFLAGS = $(LDFLAGSF) $(LDFLAGS)
 
@@ -115,6 +115,10 @@ $(OBJDIR)arch/sparc.o: arch/sparc.c
 $(OBJDIR)arch/sparc64.o: arch/sparc64.c
 	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
 	$(CC) $(libAsm_CFLAGS) -o $(OBJDIR)arch/sparc64.o -c arch/sparc64.c
+
+$(OBJDIR)arch/template.o: arch/template.c
+	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"
+	$(CC) $(libAsm_CFLAGS) -o $(OBJDIR)arch/template.o -c arch/template.c
 
 $(OBJDIR)arch/yasep.o: arch/yasep.c
 	@[ -d "$(OBJDIR)arch" ] || $(MKDIR) -- "$(OBJDIR)arch"

@@ -159,6 +159,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/tools/arch/mipsel.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/sparc.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/sparc64.c \
+		$(PACKAGE)-$(VERSION)/tools/arch/template.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep16.c \
 		$(PACKAGE)-$(VERSION)/tools/arch/yasep32.c \

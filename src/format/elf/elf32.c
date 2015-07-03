@@ -71,7 +71,7 @@ int elf32_destroy(AsmFormatPlugin * format)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	if(elfsection_32(format, ".shstrtab") != 0)
+	if(elf32_section(format, ".shstrtab") != 0)
 		ret = -1;
 	else if(helper->write(helper->format, elf->shstrtab.buf,
 				elf->shstrtab.cnt)

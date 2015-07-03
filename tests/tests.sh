@@ -146,7 +146,7 @@ _test _deasm yasep flat
 _test _deasm yasep16 flat
 _test _deasm yasep32 flat
 echo "Expected failures:" 1>&2
-_fail "python.sh"
+_fail "./python.sh"
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

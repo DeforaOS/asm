@@ -68,7 +68,7 @@ sparc64.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a sparc64
 template.o_OBJS = $(OBJDIR)template.o
 template.o_ASFLAGS = $(CPPFLAGSF) $(CPPFLAGS) $(ASFLAGS) -a template -f flat
 
-$(OBJDIR)tests.log: $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o python.sh $(OBJDIR)sparc.o $(OBJDIR)sparc64.o tests.sh $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o
+$(OBJDIR)tests.log: $(OBJDIR)amd64.o $(OBJDIR)arm.o $(OBJDIR)armeb.o $(OBJDIR)armel.o $(OBJDIR)i386.o $(OBJDIR)i386_real.o $(OBJDIR)i486.o $(OBJDIR)i586.o $(OBJDIR)i686.o python.sh $(OBJDIR)sparc.o $(OBJDIR)sparc64.o tests.sh $(OBJDIR)yasep.o $(OBJDIR)yasep16.o $(OBJDIR)yasep32.o $(OBJDIR)../tools/asm-static $(OBJDIR)../tools/deasm-static
 	./tests.sh -P "$(PREFIX)" -- "$(OBJDIR)tests.log"
 
 yasep.o_OBJS = $(OBJDIR)yasep.o

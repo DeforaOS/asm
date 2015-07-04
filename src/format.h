@@ -37,6 +37,7 @@ typedef int (*AsmFormatSetStringCallback)(void * priv, AsmStringId id,
 
 /* functions */
 AsmFormat * format_new(char const * format);
+AsmFormat * format_new_match(char const * filename, FILE * fp);
 void format_delete(AsmFormat * format);
 
 /* accessors */

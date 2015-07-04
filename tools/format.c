@@ -41,6 +41,10 @@ static struct
 };
 
 
+/* prototypes */
+static void _format_init(void);
+
+
 /* public */
 /* functions */
 /* format_new */
@@ -53,14 +57,7 @@ AsmFormat * format_new(char const * format)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, format);
 #endif
-	if(_formats[0].definition == NULL)
-	{
-		_formats[0].definition = &format_plugin_dex;
-		_formats[1].definition = &format_plugin_elf;
-		_formats[2].definition = &format_plugin_flat;
-		_formats[3].definition = &format_plugin_java;
-		_formats[4].definition = &format_plugin_pe;
-	}
+	_format_init();
 	if(format == NULL)
 	{
 		error_set_code(1, "%s", strerror(EINVAL));
@@ -97,4 +94,47 @@ AsmFormat * format_new(char const * format)
 	f->helper.seek = _format_helper_seek;
 	f->helper.write = _format_helper_write;
 	return f;
+}
+
+
+/* format_new_match */
+AsmFormat * format_new_match(char const * filename, FILE * fp)
+{
+	AsmFormat * format;
+	size_t i;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\", %p)\n", __func__, filename, fp);
+#endif
+	_format_init();
+	if(filename == NULL || fp == NULL)
+	{
+		error_set_code(1, "%s", strerror(EINVAL));
+		return NULL;
+	}
+	for(i = 0; i < sizeof(_formats) / sizeof(*_formats); i++)
+	{
+		if((format = format_new(_formats[i].name)) == NULL)
+			continue;
+		if(format_init(format, NULL, filename, fp) == 0
+				&& format_match(format) > 0)
+			return format;
+		format_delete(format);
+	}
+	return NULL;
+}
+
+
+/* private */
+/* functions */
+static void _format_init(void)
+{
+	if(_formats[0].definition == NULL)
+	{
+		_formats[0].definition = &format_plugin_dex;
+		_formats[1].definition = &format_plugin_elf;
+		_formats[2].definition = &format_plugin_flat;
+		_formats[3].definition = &format_plugin_java;
+		_formats[4].definition = &format_plugin_pe;
+	}
 }

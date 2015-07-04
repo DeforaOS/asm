@@ -16,6 +16,7 @@
 
 
 #include <System.h>
+#include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -116,6 +117,60 @@ AsmFormat * format_new(char const * format)
 	f->helper.seek = _format_helper_seek;
 	f->helper.write = _format_helper_write;
 	return f;
+}
+#endif
+
+
+#ifndef STANDALONE
+/* format_new_match */
+AsmFormat * format_new_match(char const * filename, FILE * fp)
+{
+	char const path[] = LIBDIR "/" PACKAGE "/format";
+	DIR * dir;
+	struct dirent * de;
+	size_t len;
+#ifdef __APPLE__
+	char const ext[] = ".dylib";
+#else
+	char const ext[] = ".so";
+#endif
+	int hasflat = 0;
+	AsmFormat * format = NULL;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
+#endif
+	if((dir = opendir(path)) == NULL)
+	{
+		error_set_code(1, "%s: %s", path, strerror(errno));
+		return NULL;
+	}
+	while((de = readdir(dir)) != NULL)
+	{
+		if((len = strlen(de->d_name)) < sizeof(ext))
+			continue;
+		if(strcmp(&de->d_name[len - sizeof(ext) + 1], ext) != 0)
+			continue;
+		de->d_name[len - sizeof(ext) + 1] = '\0';
+		if(strcmp(de->d_name, "flat") == 0)
+			hasflat = 1;
+		if((format = format_new(de->d_name)) == NULL)
+			continue;
+		if(format_init(format, NULL, filename, fp) == 0
+				&& format_match(format) == 1)
+			break;
+		format_delete(format);
+		format = NULL;
+	}
+	closedir(dir);
+	/* fallback on the "flat" format plug-in if necessary and available */
+	if(format == NULL && hasflat && (format = format_new("flat")) != NULL
+			&& format_init(format, NULL, filename, fp) != 0)
+		{
+			format_delete(format);
+			format = NULL;
+		}
+	return format;
 }
 #endif
 

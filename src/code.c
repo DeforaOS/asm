@@ -20,7 +20,6 @@
 
 #include <System.h>
 #include <assert.h>
-#include <dirent.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -112,8 +111,6 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 
 
 /* asmcode_new_file */
-static AsmFormat * _new_file_format(char const * filename, FILE * fp);
-
 AsmCode * asmcode_new_file(char const * arch, char const * format,
 		char const * filename)
 {
@@ -136,7 +133,7 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 	memset(code, 0, sizeof(*code));
 	code->filename = string_new(filename);
 	if(format == NULL)
-		code->format = _new_file_format(filename, fp);
+		code->format = format_new_match(filename, fp);
 	else if((code->format = format_new(format)) != NULL
 			&& format_init(code->format, NULL, filename, fp) != 0)
 	{
@@ -158,56 +155,6 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 	}
 	code->definition = arch_get_definition(code->arch);
 	return code;
-}
-
-static AsmFormat * _new_file_format(char const * filename, FILE * fp)
-{
-	char const path[] = LIBDIR "/" PACKAGE "/format";
-	DIR * dir;
-	struct dirent * de;
-	size_t len;
-#ifdef __APPLE__
-	char const ext[] = ".dylib";
-#else
-	char const ext[] = ".so";
-#endif
-	int hasflat = 0;
-	AsmFormat * format = NULL;
-
-#ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
-#endif
-	if((dir = opendir(path)) == NULL)
-	{
-		error_set_code(1, "%s: %s", path, strerror(errno));
-		return NULL;
-	}
-	while((de = readdir(dir)) != NULL)
-	{
-		if((len = strlen(de->d_name)) < sizeof(ext))
-			continue;
-		if(strcmp(&de->d_name[len - sizeof(ext) + 1], ext) != 0)
-			continue;
-		de->d_name[len - sizeof(ext) + 1] = '\0';
-		if(strcmp(de->d_name, "flat") == 0)
-			hasflat = 1;
-		if((format = format_new(de->d_name)) == NULL)
-			continue;
-		if(format_init(format, NULL, filename, fp) == 0
-				&& format_match(format) == 1)
-			break;
-		format_delete(format);
-		format = NULL;
-	}
-	closedir(dir);
-	/* fallback on the "flat" format plug-in if necessary and available */
-	if(format == NULL && hasflat && (format = format_new("flat")) != NULL
-			&& format_init(format, NULL, filename, fp) != 0)
-		{
-			format_delete(format);
-			format = NULL;
-		}
-	return format;
 }
 
 

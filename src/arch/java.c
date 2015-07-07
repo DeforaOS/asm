@@ -362,7 +362,7 @@ static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
-	AsmArchInstruction * ai;
+	AsmArchInstruction const * ai;
 	size_t i;
 	AsmArchOperand * ao;
 	uint16_t u16;

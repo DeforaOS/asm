@@ -39,7 +39,7 @@ static AsmArchDefinition const _java_definition =
 
 static AsmArchRegister const _java_registers[] =
 {
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 
 #define OP1F		(8 << AOD_SIZE)

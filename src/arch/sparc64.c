@@ -27,11 +27,12 @@ static AsmArchDefinition const _sparc64_definition =
 	"elf", ASM_ARCH_ENDIAN_BIG, 64, 32, 32
 };
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _sparc64_registers[] =
 {
 #include "sparc.reg"
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

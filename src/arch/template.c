@@ -28,10 +28,11 @@ static AsmArchDefinition const _template_definition =
 	"flat", ASM_ARCH_ENDIAN_BOTH, 8, 8, 8
 };
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _template_registers[] =
 {
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

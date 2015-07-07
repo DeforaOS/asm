@@ -35,11 +35,12 @@ static AsmArchDefinition const _yasep_definition =
 	"flat", ASM_ARCH_ENDIAN_LITTLE, 32, 16, 0
 };
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _yasep_registers[] =
 {
 #include "yasep.reg"
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

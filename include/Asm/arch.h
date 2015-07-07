@@ -175,11 +175,15 @@ typedef struct _AsmArchInstructionCall
 	size_t size;
 } AsmArchInstructionCall;
 
+/* register flags */
+#define ARF_ALIAS	0x1
+
 typedef struct _AsmArchRegister
 {
 	char const * name;
 	uint32_t size;
 	uint32_t id;
+	unsigned int flags;
 	char const * description;
 } AsmArchRegister;
 

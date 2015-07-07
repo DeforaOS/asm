@@ -25,7 +25,7 @@
 /* private */
 /* types */
 /* register sizes */
-#define REG(name, size, id, description) REG_ ## name ## _size = size,
+#define REG(name, size, id, flags, description) REG_ ## name ## _size = size,
 enum
 {
 #include "i386.reg"
@@ -34,7 +34,7 @@ enum
 #undef REG
 
 /* register ids */
-#define REG(name, size, id, description) REG_ ## name ## _id = id,
+#define REG(name, size, id, flags, description) REG_ ## name ## _id = id,
 enum
 {
 #include "i386.reg"
@@ -51,13 +51,14 @@ static AsmArchDefinition const _amd64_definition =
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
 };
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _amd64_registers[] =
 {
 #include "i386.reg"
 #include "i686.reg"
 #include "amd64.reg"
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

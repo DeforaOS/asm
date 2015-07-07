@@ -32,7 +32,7 @@
 /* private */
 /* types */
 /* register ids */
-#define REG(name, size, id, description) REG_ ## name ## _id = id,
+#define REG(name, size, id, flags, description) REG_ ## name ## _id = id,
 enum
 {
 #include "arm.reg"
@@ -47,11 +47,12 @@ static AsmArchDefinition const _arm_definition =
 	"elf", ARCH_ENDIAN, 32, 32, 32
 };
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _arm_registers[] =
 {
 #include "arm.reg"
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

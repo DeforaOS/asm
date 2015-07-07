@@ -40,7 +40,8 @@ typedef struct _DalvikDecode
 
 /* constants */
 /* register sizes */
-#define REG(name, size, id, description) REG_dalvik_ ## name ## _size = size,
+#define REG(name, size, id, flags, description) \
+	REG_dalvik_ ## name ## _size = size,
 enum
 {
 #include "dalvik.reg"
@@ -49,7 +50,7 @@ enum
 #undef REG
 
 /* register ids */
-#define REG(name, size, id, description) REG_dalvik_ ## name ## _id = id,
+#define REG(name, size, id, flags, description) REG_dalvik_ ## name ## _id = id,
 enum
 {
 #include "dalvik.reg"
@@ -66,11 +67,12 @@ static AsmArchDefinition const _dalvik_definition =
 };
 
 
-#define REG(name, size, id, description) { "" # name, size, id, description },
+#define REG(name, size, id, flags, description) \
+	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _dalvik_registers[] =
 {
 #include "dalvik.reg"
-	{ NULL, 0, 0, NULL }
+	{ NULL, 0, 0, 0, NULL }
 };
 #undef REG
 

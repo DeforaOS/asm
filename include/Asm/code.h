@@ -35,22 +35,20 @@ char const * asmcode_get_arch_name(AsmCode * code);
 AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code);
 char const * asmcode_get_arch_description(AsmCode * code);
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);
-AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code);
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);
 char const * asmcode_get_format_description(AsmCode * code);
-
-AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
-		off_t offset, ssize_t size);
-AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
-		off_t offset, ssize_t size, off_t base);
-AsmString * asmcode_set_string(AsmCode * code, int id, char const * name,
-		off_t offset, ssize_t length);
 
 /* functions */
 AsmFunction * asmcode_get_function_by_id(AsmCode * code, AsmFunctionId id);
 void asmcode_get_functions(AsmCode * code, AsmFunction ** functions,
 		size_t * functions_cnt);
+
+AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t size);
+
+/* registers */
+AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code);
 
 /* sections */
 AsmSection * asmcode_get_section_by_id(AsmCode * code, AsmSectionId id);
@@ -58,10 +56,16 @@ AsmSection * asmcode_get_section_by_name(AsmCode * code, char const * name);
 void asmcode_get_sections(AsmCode * code, AsmSection ** sections,
 		size_t * sections_cnt);
 
+AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t size, off_t base);
+
 /* strings */
 AsmString * asmcode_get_string_by_id(AsmCode * code, AsmStringId id);
 void asmcode_get_strings(AsmCode * code, AsmString ** strings,
 		size_t * strings_cnt);
+
+AsmString * asmcode_set_string(AsmCode * code, int id, char const * name,
+		off_t offset, ssize_t length);
 
 
 /* useful */

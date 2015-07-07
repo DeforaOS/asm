@@ -52,7 +52,7 @@ static AsmArchDefinition const _arm_definition =
 static AsmArchRegister const _arm_registers[] =
 {
 #include "arm.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

@@ -72,7 +72,7 @@ static AsmArchDefinition const _dalvik_definition =
 static AsmArchRegister const _dalvik_registers[] =
 {
 #include "dalvik.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

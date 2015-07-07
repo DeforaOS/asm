@@ -39,7 +39,7 @@ static AsmArchDefinition const _mips_definition =
 static AsmArchRegister const _mips_registers[] =
 {
 #include "mips.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

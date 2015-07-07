@@ -54,7 +54,7 @@ static AsmArchDefinition const _i386_real_definition =
 static AsmArchRegister const _i386_real_registers[] =
 {
 #include "i386.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

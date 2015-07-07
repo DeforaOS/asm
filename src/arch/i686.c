@@ -59,7 +59,7 @@ static AsmArchRegister const _i686_registers[] =
 {
 #include "i386.reg"
 #include "i686.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

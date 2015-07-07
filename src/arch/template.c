@@ -32,7 +32,7 @@ static AsmArchDefinition const _template_definition =
 	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _template_registers[] =
 {
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

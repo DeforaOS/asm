@@ -57,7 +57,7 @@ static AsmArchDefinition const _i486_definition =
 static AsmArchRegister const _i486_registers[] =
 {
 #include "i386.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

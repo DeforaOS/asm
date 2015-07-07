@@ -40,7 +40,7 @@ static AsmArchDefinition const _yasep_definition =
 static AsmArchRegister const _yasep_registers[] =
 {
 #include "yasep.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

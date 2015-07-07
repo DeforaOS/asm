@@ -32,7 +32,7 @@ static AsmArchDefinition const _sparc64_definition =
 static AsmArchRegister const _sparc64_registers[] =
 {
 #include "sparc.reg"
-	{ NULL, 0, 0, 0, NULL }
+#include "null.reg"
 };
 #undef REG
 

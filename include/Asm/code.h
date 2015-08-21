@@ -31,7 +31,6 @@ typedef struct _AsmCode AsmCode;
 /* functions */
 /* accessors */
 char const * asmcode_get_arch(AsmCode * code);
-char const * asmcode_get_arch_name(AsmCode * code);
 AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code);
 char const * asmcode_get_arch_description(AsmCode * code);
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);

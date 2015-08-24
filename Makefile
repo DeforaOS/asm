@@ -1,5 +1,5 @@
 PACKAGE	= Asm
-VERSION	= 0.2.1
+VERSION	= 0.2.2
 SUBDIRS	= data doc include src tools tests
 RM	= rm -f
 LN	= ln -f

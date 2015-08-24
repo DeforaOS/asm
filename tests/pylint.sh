@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2014 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2014-2015 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -90,7 +90,7 @@ fi
 target="$1"
 
 #clean
-[ $clean -ne 0 ] && return 0
+[ $clean -ne 0 ] && exit 0
 
 ret=0
 (date

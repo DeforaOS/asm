@@ -1,4 +1,7 @@
+Makefile
 *.a
 *.o
 *.so
 *.so.*
+/config.h
+/config.sh

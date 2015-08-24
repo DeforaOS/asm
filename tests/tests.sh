@@ -29,7 +29,7 @@ DEBUG="_debug"
 _deasm()
 {
 	[ $# -lt 1 ] && return 1
-	file="$1.o"
+	file="${OBJDIR}$1.o"
 	arch="$1"
 	cmd="$DEASM"
 	format=""

@@ -122,6 +122,7 @@ dist:
 		$(PACKAGE)-$(VERSION)/src/arch/mips.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/mips.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/null.ins \
+		$(PACKAGE)-$(VERSION)/src/arch/null.reg \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.h \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.ins \
 		$(PACKAGE)-$(VERSION)/src/arch/sparc.reg \

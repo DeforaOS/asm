@@ -124,7 +124,7 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 #endif
 	if((fp = fopen(filename, "r")) == NULL)
 	{
-		error_set_code(1, "%s: %s", filename, strerror(errno));
+		error_set_code(-errno, "%s: %s", filename, strerror(errno));
 		return NULL;
 	}
 	if((code = object_new(sizeof(*code))) == NULL)
@@ -173,8 +173,8 @@ int asmcode_delete(AsmCode * code)
 	if(code->arch != NULL)
 		arch_delete(code->arch);
 	if(code->fp != NULL && fclose(code->fp) != 0)
-		ret |= error_set_code(2, "%s: %s", code->filename, strerror(
-					errno));
+		ret |= error_set_code(2, "%s: %s", code->filename,
+				strerror(errno));
 	string_delete(code->filename);
 	object_delete(code);
 	return ret;
@@ -380,7 +380,7 @@ int asmcode_close(AsmCode * code)
 	if(code->format != NULL)
 		ret |= format_exit(code->format);
 	if(code->fp != NULL && fclose(code->fp) != 0 && ret == 0)
-		ret |= -error_set_code(1, "%s: %s", code->filename,
+		ret |= -error_set_code(-errno, "%s: %s", code->filename,
 				strerror(errno));
 	code->fp = NULL;
 	_asmcode_string_delete_all(code);
@@ -464,7 +464,8 @@ int asmcode_open(AsmCode * code, char const * filename)
 	if(code->filename != NULL || code->fp != NULL)
 		return -error_set_code(1, "A file is already opened");
 	if((fp = fopen(filename, "w+")) == NULL)
-		return -error_set_code(1, "%s: %s", filename, strerror(errno));
+		return -error_set_code(-errno, "%s: %s", filename,
+				strerror(errno));
 	if((ret = asmcode_open_file(code, filename, fp)) == 0)
 		return 0;
 	fclose(fp);
@@ -655,7 +656,7 @@ static AsmElement * _asmcode_element_append(AsmCode * code, AsmElementType type)
 
 	if((p = realloc(p, sizeof(*p) * (cnt + 1))) == NULL)
 	{
-		error_set_code(1, "%s", strerror(errno));
+		error_set_code(-errno, "%s", strerror(errno));
 		return NULL;
 	}
 	code->elements[type] = p;
@@ -717,7 +718,7 @@ static int _asmcode_function_set(AsmFunction * codefunction, AsmFunctionId id,
 	char * p = NULL;
 
 	if(name != NULL && (p = string_new(name)) == NULL)
-		return -error_set_code(1, "%s", strerror(errno));
+		return -error_set_code(-errno, "%s", strerror(errno));
 	codefunction->id = id;
 	free(codefunction->name);
 	codefunction->name = p;
@@ -813,7 +814,7 @@ static int _asmcode_string_read(AsmCode * code, AsmString * codestring)
 	if((offset = arch_seek(code->arch, 0, SEEK_CUR)) < 0)
 		return -1;
 	if((buf = malloc(codestring->size + 1)) == NULL)
-		return -error_set_code(1, "%s", strerror(errno));
+		return -error_set_code(-errno, "%s", strerror(errno));
 	if(arch_seek(code->arch, codestring->offset, SEEK_SET)
 			!= codestring->offset)
 		return -1;

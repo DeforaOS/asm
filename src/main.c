@@ -53,6 +53,8 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 
 	if((a = asm_new(arch, format)) == NULL)
 		return error_print(PROGNAME);
+	if(outfile == NULL)
+		outfile = ASM_FILENAME_DEFAULT;
 	if(asm_assemble(a, prefs, infile, outfile) != 0)
 		ret = error_print(PROGNAME);
 	asm_delete(a);
@@ -82,6 +84,8 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 	int ret = 0;
 	Asm * a;
 
+	if(outfile == NULL && format == NULL)
+		format = "flat";
 	if((a = asm_new(arch, format)) == NULL)
 		return error_print(PROGNAME);
 	if(asm_assemble_string(a, prefs, outfile, string) != 0)
@@ -100,7 +104,7 @@ static unsigned int _usage(void)
 "  -D	Set a variable in the pre-processor\n"
 "  -a	Target architecture\n"
 "  -f	Target file format\n"
-"  -o	Filename to use for output (default: " ASM_FILENAME_DEFAULT ")\n"
+"  -o	Filename to use for output\n"
 "  -l	List the architectures and formats available\n", stderr);
 	return 1;
 }
@@ -115,7 +119,7 @@ int main(int argc, char * argv[])
 	int ret;
 	AsmPrefs prefs;
 	int o;
-	char * outfile = ASM_FILENAME_DEFAULT;
+	char * outfile = NULL;
 	char const * arch = NULL;
 	char const * format = NULL;
 	char const * string = NULL;

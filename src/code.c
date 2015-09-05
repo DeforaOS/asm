@@ -481,6 +481,8 @@ int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp)
 	String const * arch;
 	String const * format;
 
+	if(fp == NULL)
+		return -error_set_code(-EINVAL, strerror(EINVAL));
 	if(code->filename != NULL || code->fp != NULL)
 		return -error_set_code(1, "A file is already opened");
 	if(filename != NULL && (p = string_new(filename)) == NULL)

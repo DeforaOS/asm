@@ -31,6 +31,7 @@ int asmcode_delete(AsmCode * code);
 /* useful */
 /* common */
 int asmcode_open(AsmCode * code, char const * filename);
+int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp);
 int asmcode_close(AsmCode * code);
 
 /* elements */

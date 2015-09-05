@@ -458,27 +458,52 @@ int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call)
 /* asmcode_open */
 int asmcode_open(AsmCode * code, char const * filename)
 {
+	int ret;
+	FILE * fp;
+
 	if(code->filename != NULL || code->fp != NULL)
 		return -error_set_code(1, "A file is already opened");
-	if((code->filename = string_new(filename)) == NULL)
-		return -1;
-	if((code->fp = fopen(filename, "w+")) == NULL)
+	if((fp = fopen(filename, "w+")) == NULL)
 		return -error_set_code(1, "%s: %s", filename, strerror(errno));
-	if(arch_init(code->arch, code->filename, code->fp) == 0)
+	if((ret = asmcode_open_file(code, filename, fp)) == 0)
+		return 0;
+	fclose(fp);
+	unlink(filename); /* XXX may fail */
+	return ret;
+}
+
+
+/* asmcode_open_file */
+int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp)
+{
+	String * p;
+	String const * arch;
+	String const * format;
+
+	if(code->filename != NULL || code->fp != NULL)
+		return -error_set_code(1, "A file is already opened");
+	if(filename != NULL && (p = string_new(filename)) == NULL)
+		return -1;
+	if(arch_init(code->arch, filename, fp) == 0)
 	{
+		arch = arch_get_name(code->arch);
+		format = arch_get_format(code->arch);
 		if(code->format == NULL)
-			code->format = format_new(arch_get_format(code->arch));
-		if(code->format != NULL && format_init(code->format,
-					arch_get_name(code->arch),
-					code->filename, code->fp) == 0)
+			code->format = format_new(format);
+		if(code->format != NULL
+				&& format_init(code->format, arch, filename,
+					fp) == 0)
+		{
+			code->filename = p;
+			code->fp = fp;
 			return 0;
+		}
+		if(code->format != NULL)
+			format_exit(code->format);
+		code->format = NULL;
 		arch_exit(code->arch);
 	}
-	fclose(code->fp);
-	code->fp = NULL;
-	unlink(code->filename); /* XXX may fail */
-	string_delete(code->filename);
-	code->filename = NULL;
+	string_delete(p);
 	return -1;
 }
 

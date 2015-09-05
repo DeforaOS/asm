@@ -99,6 +99,9 @@ static int _deasm_section(AsmCode * code, AsmSection * section)
 		case 20:
 			printf("\n%05lx:\n", section->base);
 			break;
+		case 16:
+			printf("\n%04lx:\n", section->base);
+			break;
 		case 32:
 		default:
 			printf("\n%08lx:\n", section->base);

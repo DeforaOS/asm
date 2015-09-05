@@ -34,6 +34,7 @@
 /* prototypes */
 static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 		char const * infile, char const * outfile);
+static int _asm_list(void);
 static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 		char const * outfile, char const * string);
 
@@ -52,6 +53,21 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 		ret = error_print("asm");
 	asm_delete(a);
 	return ret;
+}
+
+
+/* asm_list */
+static int _asm_list(void)
+{
+	int res = 0;
+
+	if(asm_plugin_list(APT_ARCH, 0) != 0)
+		res = error_print("asm");
+	else
+		putchar('\n');
+	if(asm_plugin_list(APT_FORMAT, 0) != 0)
+		res = error_print("asm");
+	return (res == 0) ? 0 : 2;
 }
 
 
@@ -118,14 +134,7 @@ int main(int argc, char * argv[])
 				outfile = optarg;
 				break;
 			case 'l':
-				o = 0;
-				if(asm_plugin_list(APT_ARCH, 0) != 0)
-					o = error_print("asm");
-				else
-					putchar('\n');
-				if(asm_plugin_list(APT_FORMAT, 0) != 0)
-					o = error_print("asm");
-				return (o == 0) ? 0 : 2;
+				return _asm_list();
 			case 's':
 				string = optarg;
 				break;

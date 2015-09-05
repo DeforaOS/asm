@@ -67,6 +67,7 @@ static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 static char const * _asm_guess_arch(void);
 
 static int _asm_open(Asm * a, char const * outfile);
+static int _asm_open_file(Asm * a, char const * outfile, FILE * fp);
 
 
 /* public */
@@ -193,8 +194,13 @@ int asm_assemble_string(Asm * a, AsmPrefs * prefs, char const * outfile,
 {
 	int ret;
 
-	/* FIXME should also allow standard output, or return a buffer */
-	if(_asm_open(a, outfile) != 0)
+	/* FIXME should also support returning a buffer */
+	if(outfile == NULL)
+	{
+		if(_asm_open_file(a, NULL, stdout) != 0)
+			return -1;
+	}
+	else if(_asm_open(a, outfile) != 0)
 		return -1;
 	ret = parser_string(prefs, a->code, string);
 	ret |= asm_close(a);
@@ -289,7 +295,8 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 /* asm_open_assemble */
 int asm_open_assemble(Asm * a, char const * outfile)
 {
-	return _asm_open(a, outfile);
+	return (outfile != NULL) ? _asm_open(a, outfile)
+		: _asm_open_file(a, NULL, stdout);
 }
 
 
@@ -420,4 +427,21 @@ static int _asm_open(Asm * a, char const * outfile)
 	if(outfile == NULL)
 		return 0;
 	return asmcode_open(a->code, outfile);
+}
+
+
+/* asm_open_file */
+static int _asm_open_file(Asm * a, char const * outfile, FILE * fp)
+{
+	char const * arch = a->arch;
+	char const * format = a->format;
+
+	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
+		return -1;
+	if(a->code != NULL)
+		return -error_set_code(1, "%s: Operation in progress",
+				asmcode_get_filename(a->code));
+	if((a->code = asmcode_new(arch, format)) == NULL)
+		return -1;
+	return asmcode_open_file(a->code, outfile, fp);
 }

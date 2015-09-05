@@ -498,13 +498,14 @@ static int _instruction(State * state)
 	memset(&state->call, 0, sizeof(state->call));
 	/* instruction_name */
 	ret = _instruction_name(state);
-	if(!_parser_in_set(state, TS_SPACE))
-		return ret;
-	/* [ space ] */
-	ret |= _space(state);
-	/* [ operand_list ] */
-	if(_parser_in_set(state, TS_OPERAND_LIST))
-		ret |= _operand_list(state);
+	if(_parser_in_set(state, TS_SPACE))
+	{
+		/* [ space */
+		ret |= _space(state);
+		/* [ operand_list ] ] */
+		if(_parser_in_set(state, TS_OPERAND_LIST))
+			ret |= _operand_list(state);
+	}
 	/* call the current instruction */
 	if(state->call.name != NULL)
 	{

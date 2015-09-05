@@ -25,6 +25,7 @@ extern AsmFormatPluginDefinition format_plugin_dex;
 extern AsmFormatPluginDefinition format_plugin_elf;
 extern AsmFormatPluginDefinition format_plugin_flat;
 extern AsmFormatPluginDefinition format_plugin_java;
+extern AsmFormatPluginDefinition format_plugin_mbr;
 extern AsmFormatPluginDefinition format_plugin_pe;
 
 static struct
@@ -37,6 +38,7 @@ static struct
 	{ "elf",	NULL	},
 	{ "flat",	NULL	},
 	{ "java",	NULL	},
+	{ "mbr",	NULL	},
 	{ "pe",		NULL	}
 };
 
@@ -135,6 +137,7 @@ static void _format_init(void)
 		_formats[1].definition = &format_plugin_elf;
 		_formats[2].definition = &format_plugin_flat;
 		_formats[3].definition = &format_plugin_java;
-		_formats[4].definition = &format_plugin_pe;
+		_formats[4].definition = &format_plugin_mbr;
+		_formats[5].definition = &format_plugin_pe;
 	}
 }

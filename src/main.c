@@ -24,6 +24,10 @@
 #include "Asm/asm.h"
 #include "../config.h"
 
+#ifndef PROGNAME
+# define PROGNAME "asm"
+#endif
+
 
 /* as */
 /* private */
@@ -48,9 +52,9 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print("asm");
+		return error_print(PROGNAME);
 	if(asm_assemble(a, prefs, infile, outfile) != 0)
-		ret = error_print("asm");
+		ret = error_print(PROGNAME);
 	asm_delete(a);
 	return ret;
 }
@@ -62,11 +66,11 @@ static int _asm_list(void)
 	int res = 0;
 
 	if(asm_plugin_list(APT_ARCH, 0) != 0)
-		res = error_print("asm");
+		res = error_print(PROGNAME);
 	else
 		putchar('\n');
 	if(asm_plugin_list(APT_FORMAT, 0) != 0)
-		res = error_print("asm");
+		res = error_print(PROGNAME);
 	return (res == 0) ? 0 : 2;
 }
 
@@ -79,9 +83,9 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print("asm");
+		return error_print(PROGNAME);
 	if(asm_assemble_string(a, prefs, outfile, string) != 0)
-		ret = error_print("asm");
+		ret = error_print(PROGNAME);
 	asm_delete(a);
 	return ret;
 }
@@ -90,14 +94,14 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 /* usage */
 static unsigned int _usage(void)
 {
-	fputs("Usage: asm [-D name][-a arch][-f format][-o file] file\n"
-"       asm [-D name][-a arch][-f format][-o file] -s string\n"
-"       asm -l\n"
+	fputs("Usage: " PROGNAME " [-D name][-a arch][-f format][-o file] file\n"
+"       " PROGNAME " [-D name][-a arch][-f format][-o file] -s string\n"
+"       " PROGNAME " -l\n"
 "  -D	Set a variable in the pre-processor\n"
 "  -a	Target architecture\n"
 "  -f	Target file format\n"
 "  -o	Filename to use for output (default: " ASM_FILENAME_DEFAULT ")\n"
-"  -l	List available architectures and formats\n", stderr);
+"  -l	List the architectures and formats available\n", stderr);
 	return 1;
 }
 
@@ -172,7 +176,7 @@ static int _main_add_define(AsmPrefs * prefs, char * define)
 	value = strtok(define, "=");
 	if((p = realloc(prefs->defines, sizeof(*p) * (prefs->defines_cnt + 1)))
 			== NULL)
-		return -error_set_print("asm", 1, "%s", strerror(errno));
+		return -error_set_print(PROGNAME, 1, "%s", strerror(errno));
 	prefs->defines = p;
 	prefs->defines[prefs->defines_cnt++] = define;
 	return 0;

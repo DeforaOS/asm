@@ -165,7 +165,7 @@ int main(int argc, char * argv[])
 
 static int _main_add_define(AsmPrefs * prefs, char * define)
 {
-	char ** p;
+	AsmPrefsDefine * p;
 	char * value;
 
 #ifdef DEBUG
@@ -178,6 +178,7 @@ static int _main_add_define(AsmPrefs * prefs, char * define)
 			== NULL)
 		return -error_set_print(PROGNAME, 1, "%s", strerror(errno));
 	prefs->defines = p;
-	prefs->defines[prefs->defines_cnt++] = define;
+	prefs->defines[prefs->defines_cnt].name = define;
+	prefs->defines[prefs->defines_cnt++].value = value;
 	return 0;
 }

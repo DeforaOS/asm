@@ -25,9 +25,15 @@
 /* types */
 typedef struct _Asm Asm;
 
+typedef struct _AsmPrefsDefine
+{
+	char const * name;
+	char const * value;
+} AsmPrefsDefine;
+
 typedef struct _AsmPrefs
 {
-	char ** defines;
+	AsmPrefsDefine * defines;
 	size_t defines_cnt;
 } AsmPrefs;
 

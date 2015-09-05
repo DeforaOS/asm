@@ -174,7 +174,8 @@ static int _parser_defines(State * state, AsmPrefs * ap)
 	}
 	if(ret == 0 && ap != NULL)
 		for(i = 0; i < ap->defines_cnt; i++)
-			ret |= cpp_define_add(state->cpp, ap->defines[i], NULL);
+			ret |= cpp_define_add(state->cpp, ap->defines[i].name,
+					ap->defines[i].value);
 	return ret;
 }
 
@@ -288,7 +289,8 @@ int parser_string(AsmPrefs * ap, AsmCode * code, char const * string)
 	if(ap != NULL)
 		for(i = 0; i < ap->defines_cnt; i++)
 			/* FIXME check errors */
-			cpp_define_add(state.cpp, ap->defines[i], NULL);
+			cpp_define_add(state.cpp, ap->defines[i].name,
+					ap->defines[i].value);
 	if(_parser_scan(&state) != 0)
 		return _parser_error(&state, "%s", error_get());
 	if(_program(&state) != 0)

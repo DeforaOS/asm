@@ -41,7 +41,7 @@ struct _AsmArch
 {
 	AsmArchPluginHelper helper;
 	Plugin * handle;
-	AsmArchPluginDefinition const * definition;
+	AsmArchPluginDefinition * definition;
 	AsmArchPlugin * plugin;
 	size_t instructions_cnt;
 	size_t registers_cnt;

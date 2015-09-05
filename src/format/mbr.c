@@ -29,6 +29,15 @@ struct _AsmFormatPlugin
 };
 
 
+/* constants */
+static const AsmSectionId _mbr_section_id_text = 0;
+static const AsmSectionId _mbr_section_id_data = 1;
+static const AsmSectionId _mbr_section_id_signature = 2;
+static const uint8_t _mbr_signature[2] = { 0x55, 0xaa };
+static const size_t _mbr_size_text = 446;
+static const size_t _mbr_size_data = 64;
+
+
 /* prototypes */
 /* plug-in */
 static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
@@ -89,12 +98,16 @@ static int _mbr_decode(AsmFormatPlugin * format, int raw)
 	AsmFormatPluginHelper * helper = format->helper;
 
 	if(helper->seek(helper->format, 0, SEEK_END) >= 512
-			&& helper->set_section(helper->format, 0, 0,
-				".text", 0, 446, 0) != NULL
-			&& helper->set_section(helper->format, 1, 0,
-				".data", 446, 64, 0) != NULL
-			&& helper->set_section(helper->format, 2, 0,
-				".sig", 510, 2, 0) != NULL)
+			&& helper->set_section(helper->format,
+				_mbr_section_id_text, 0, ".text", 0,
+				_mbr_size_text, 0) != NULL
+			&& helper->set_section(helper->format,
+				_mbr_section_id_data, 0, ".data",
+				_mbr_size_text, _mbr_size_data, 0) != NULL
+			&& helper->set_section(helper->format,
+				_mbr_section_id_signature, 0, ".signature",
+				_mbr_size_text + _mbr_size_data,
+				sizeof(_mbr_signature), 0) != NULL)
 		return 0;
 	return -1;
 }
@@ -121,7 +134,7 @@ static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
 static char const * _mbr_detect(AsmFormatPlugin * format)
 {
 	AsmFormatPluginHelper * helper = format->helper;
-	unsigned char buf[512];
+	uint8_t buf[512];
 
 	if(helper->seek(helper->format, 0, SEEK_SET) != 0
 			|| helper->read(helper->format, buf, sizeof(buf))
@@ -131,7 +144,7 @@ static char const * _mbr_detect(AsmFormatPlugin * format)
 				"Could not read the bootloader image");
 		return NULL;
 	}
-	if(buf[510] != 0x55 || buf[511] != 0xaa)
+	if(buf[510] != _mbr_signature[0] || buf[511] != _mbr_signature[1])
 	{
 		error_set_code(1, "%s: %s 0x%x", format_plugin.name,
 				"Could not find the MBR signature");

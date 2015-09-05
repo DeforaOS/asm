@@ -61,8 +61,8 @@ static AsmFunction * _format_helper_set_function(AsmFormat * format,
 		AsmFunctionId id, char const * name, off_t offset,
 		ssize_t size);
 static AsmSection * _format_helper_set_section(AsmFormat * format,
-		AsmSectionId id, char const * name, off_t offset, ssize_t size,
-		off_t base);
+		AsmSectionId id, unsigned int flags, char const * name,
+		off_t offset, ssize_t size, off_t base);
 static AsmString * _format_helper_set_string(AsmFormat * format, AsmStringId id,
 		char const * name, off_t offset, ssize_t size);
 
@@ -402,10 +402,11 @@ static AsmFunction * _format_helper_set_function(AsmFormat * format,
 
 /* format_helper_set_section */
 static AsmSection * _format_helper_set_section(AsmFormat * format,
-		AsmSectionId id, char const * name, off_t offset, ssize_t size,
-		off_t base)
+		AsmSectionId id, unsigned int flags, char const * name,
+		off_t offset, ssize_t size, off_t base)
 {
-	return asmcode_set_section(format->code, id, name, offset, size, base);
+	return asmcode_set_section(format->code, id, flags,
+			name, offset, size, base);
 }
 
 

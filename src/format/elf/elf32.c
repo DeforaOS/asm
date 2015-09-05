@@ -233,7 +233,7 @@ int elf32_decode(AsmFormatPlugin * format, int raw)
 			continue;
 		if((raw || (shdr[i].sh_type == SHT_PROGBITS && shdr[i].sh_flags
 						& SHF_EXECINSTR))
-				&& helper->set_section(helper->format, i,
+				&& helper->set_section(helper->format, i, 0,
 					&shstrtab[shdr[i].sh_name],
 					shdr[i].sh_offset, shdr[i].sh_size,
 					base + shdr[i].sh_offset) == NULL)

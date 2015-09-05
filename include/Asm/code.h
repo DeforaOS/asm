@@ -55,8 +55,8 @@ AsmSection * asmcode_get_section_by_name(AsmCode * code, char const * name);
 void asmcode_get_sections(AsmCode * code, AsmSection ** sections,
 		size_t * sections_cnt);
 
-AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
-		off_t offset, ssize_t size, off_t base);
+AsmSection * asmcode_set_section(AsmCode * code, int id, unsigned int flags,
+		char const * name, off_t offset, ssize_t size, off_t base);
 
 /* strings */
 AsmString * asmcode_get_string_by_id(AsmCode * code, AsmStringId id);

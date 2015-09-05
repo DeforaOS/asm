@@ -28,6 +28,7 @@ typedef int AsmElementId;
 typedef struct _AsmElement
 {
 	AsmElementId id;
+	unsigned int flags;
 	char * name;
 	off_t offset;
 	ssize_t size;

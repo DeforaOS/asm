@@ -294,8 +294,8 @@ static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
 	fprintf(stderr, "DEBUG: %s(%lu, %ld, %lu)\n", __func__, id, offset,
 			size);
 #endif
-	return (helper->set_section(helper->format, id, ".text", offset, size,
-				0) != NULL) ? 0 : -1;
+	return (helper->set_section(helper->format, id, 0,
+				".text", offset, size, 0) != NULL) ? 0 : -1;
 }
 
 static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,

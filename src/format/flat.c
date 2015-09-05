@@ -89,7 +89,7 @@ static int _flat_decode(AsmFormatPlugin * format, int raw)
 	off_t offset;
 
 	if((offset = helper->seek(helper->format, 0, SEEK_END)) >= 0
-			&& helper->set_section(helper->format, 0, ".text", 0,
+			&& helper->set_section(helper->format, 0, 0, ".text", 0,
 				offset, 0) != NULL)
 		return 0;
 	return -1;

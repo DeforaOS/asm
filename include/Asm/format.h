@@ -55,8 +55,8 @@ typedef struct _AsmFormatPluginHelper
 	AsmSection * (*set_function)(AsmFormat * format, int id,
 			char const * name, off_t offset, ssize_t size);
 	AsmSection * (*set_section)(AsmFormat * format, int id,
-			char const * name, off_t offset, ssize_t size,
-			off_t base);
+			unsigned int flags, char const * name, off_t offset,
+			ssize_t size, off_t base);
 	AsmString * (*set_string)(AsmFormat * format, int id, char const * name,
 			off_t offset, ssize_t size);
 	int (*decode)(AsmFormat * format, off_t offset, size_t size, off_t base,

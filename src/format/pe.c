@@ -435,7 +435,7 @@ static int _pe_decode(AsmFormatPlugin * format, int raw)
 		/* the $ sign has a special meaning for the linker */
 		if((q = strchr(psh.name, '$')) != NULL)
 			*q = '\0';
-		if(helper->set_section(helper->format, i, psh.name,
+		if(helper->set_section(helper->format, i, 0, psh.name,
 					psh.raw_offset, psh.raw_size,
 					psh.vaddr + base) == NULL)
 			break;

@@ -87,11 +87,14 @@ static void _mbr_destroy(AsmFormatPlugin * format)
 static int _mbr_decode(AsmFormatPlugin * format, int raw)
 {
 	AsmFormatPluginHelper * helper = format->helper;
-	off_t offset;
 
-	if((offset = helper->seek(helper->format, 0, SEEK_END)) >= 0
-			&& helper->set_section(helper->format, 0, ".text", 0,
-				offset, 0) != NULL)
+	if(helper->seek(helper->format, 0, SEEK_END) >= 512
+			&& helper->set_section(helper->format, 0, 0,
+				".text", 0, 446, 0) != NULL
+			&& helper->set_section(helper->format, 1, 0,
+				".data", 446, 64, 0) != NULL
+			&& helper->set_section(helper->format, 2, 0,
+				".sig", 510, 2, 0) != NULL)
 		return 0;
 	return -1;
 }
@@ -103,10 +106,14 @@ static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
 {
 	AsmFormatPluginHelper * helper = format->helper;
 
-	if(section->id != 0)
-		return -1;
-	return helper->decode(helper->format, section->offset, section->size,
-			section->base, calls, calls_cnt);
+	if(section->id == 0)
+		return helper->decode(helper->format, section->offset,
+				section->size, section->base,
+				calls, calls_cnt);
+	if(section->id == 1 || section->id == 2)
+		/* FIXME decode as data */
+		return 0;
+	return -1;
 }
 
 

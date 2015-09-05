@@ -52,8 +52,8 @@ AsmFunction * asm_set_function(Asm * a, char const * name, off_t offset,
 		ssize_t size);
 
 /* sections */
-AsmSection * asm_set_section(Asm * a, char const * name, off_t offset,
-		ssize_t size, off_t base);
+AsmSection * asm_set_section(Asm * a, unsigned int flags, char const * name,
+		off_t offset, ssize_t size, off_t base);
 
 
 /* useful */

@@ -56,7 +56,8 @@ static void _asmcode_element_delete_all(AsmCode * code, AsmElementType type);
 static AsmElement * _asmcode_element_get_by_id(AsmCode * code,
 		AsmElementType type, AsmElementId id);
 static int _asmcode_element_set(AsmElement * element, AsmElementId id,
-		char const * name, off_t offset, ssize_t size, off_t base);
+		unsigned int flags, char const * name, off_t offset,
+		ssize_t size, off_t base);
 
 /* functions */
 static void _asmcode_function_delete_all(AsmCode * code);
@@ -69,7 +70,8 @@ static AsmFunction * _asmcode_function_append(AsmCode * code);
 
 /* sections */
 static AsmSection * _asmcode_section_get_by_id(AsmCode * code, AsmSectionId id);
-static int _asmcode_section_set(AsmSection * section, int id, char const * name,
+static int _asmcode_section_set(AsmSection * section, int id,
+		unsigned int flags, char const * name,
 		off_t offset, ssize_t size, off_t base);
 
 static AsmSection * _asmcode_section_append(AsmCode * code);
@@ -319,8 +321,8 @@ AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
 
 
 /* asmcode_set_section */
-AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
-		off_t offset, ssize_t size, off_t base)
+AsmSection * asmcode_set_section(AsmCode * code, int id, unsigned int flags,
+		char const * name, off_t offset, ssize_t size, off_t base)
 {
 	AsmSection * ret = NULL;
 
@@ -332,8 +334,8 @@ AsmSection * asmcode_set_section(AsmCode * code, int id, char const * name,
 		ret = _asmcode_section_get_by_id(code, id);
 	if(ret == NULL)
 		ret = _asmcode_section_append(code);
-	if(ret == NULL || _asmcode_section_set(ret, id, name, offset, size,
-				base) != 0)
+	if(ret == NULL || _asmcode_section_set(ret, id, flags, name,
+				offset, size, base) != 0)
 		return NULL;
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() => %d\n", __func__, ret->id);
@@ -604,13 +606,15 @@ int asmcode_section(AsmCode * code, char const * section)
 /* elements */
 /* asmcode_element_set */
 static int _asmcode_element_set(AsmElement * element, AsmElementId id,
-		char const * name, off_t offset, ssize_t size, off_t base)
+		unsigned int flags, char const * name,
+		off_t offset, ssize_t size, off_t base)
 {
 	char * p = NULL;
 
 	if(name != NULL && (p = string_new(name)) == NULL)
 		return -1;
 	element->id = id;
+	element->flags = flags;
 	free(element->name);
 	element->name = p;
 	element->offset = offset;
@@ -715,10 +719,12 @@ static AsmSection * _asmcode_section_get_by_id(AsmCode * code, AsmSectionId id)
 
 
 /* asmcode_section_set */
-static int _asmcode_section_set(AsmSection * section, int id, char const * name,
+static int _asmcode_section_set(AsmSection * section, int id,
+		unsigned int flags, char const * name,
 		off_t offset, ssize_t size, off_t base)
 {
-	return _asmcode_element_set(section, id, name, offset, size, base);
+	return _asmcode_element_set(section, id, flags, name,
+			offset, size, base);
 }
 
 
@@ -754,7 +760,8 @@ static AsmString * _asmcode_string_get_by_id(AsmCode * code, AsmStringId id)
 static int _asmcode_string_set(AsmCode * code, AsmString * codestring, int id,
 		char const * name, off_t offset, ssize_t length)
 {
-	if(_asmcode_element_set(codestring, id, name, offset, length, 0) != 0)
+	if(_asmcode_element_set(codestring, id, 0, name,
+				offset, length, 0) != 0)
 		return -1;
 	if(name == NULL && length > 0)
 		_asmcode_string_read(code, codestring);

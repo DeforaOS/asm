@@ -358,7 +358,7 @@ static int _java_decode(AsmFormatPlugin * format, int raw)
 	/* XXX consider the whole file as a section */
 	if((end = helper->seek(helper->format, 0, SEEK_END)) < 0)
 		return -1;
-	return (helper->set_section(helper->format, 0, ".text", 0, end, 0)
+	return (helper->set_section(helper->format, 0, 0, ".text", 0, end, 0)
 			!= NULL) ? 0 : -1;
 }
 

@@ -103,27 +103,28 @@ static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
 			== NULL)
 	{
-		u16 = u8;
+		u16 = u8 << 8;
 		if(helper->peek(helper->arch, &u8, sizeof(u8)) == sizeof(u8))
 		{
-			opcode = (u16 << 8) | u8;
-			ai = helper->get_instruction_by_opcode(helper->arch, 16,
-					opcode);
-			if(ai != NULL)
+			u16 |= u8;
+			if((ai = helper->get_instruction_by_opcode(helper->arch,
+							16, u16)) != NULL)
+			{
+				opcode = u16;
 				helper->read(helper->arch, &u8, sizeof(u8));
-			else
-				opcode >>= 8;
+			}
 		}
-		if(ai == NULL)
-		{
-			call->name = "db";
-			call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
-			call->operands[0].value.immediate.name = NULL;
-			call->operands[0].value.immediate.value = opcode;
-			call->operands[0].value.immediate.negative = 0;
-			call->operands_cnt = 1;
-			return 0;
-		}
+	}
+	if(ai == NULL)
+	{
+		/* no opcode was recognized */
+		call->name = "db";
+		call->operands[0].definition = AO_IMMEDIATE(0, 8, 0);
+		call->operands[0].value.immediate.name = NULL;
+		call->operands[0].value.immediate.value = opcode;
+		call->operands[0].value.immediate.negative = 0;
+		call->operands_cnt = 1;
+		return 0;
 	}
 	if((ai = _decode_opcode(plugin, ai)) == NULL)
 		return -1;

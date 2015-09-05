@@ -46,7 +46,7 @@ enum
 /* variables */
 static AsmArchDefinition const _i386_real_definition =
 {
-	"elf", ASM_ARCH_ENDIAN_LITTLE, 20, 8, 0
+	"mbr", ASM_ARCH_ENDIAN_LITTLE, 20, 8, 0
 };
 
 #define REG(name, size, id, flags, description) \

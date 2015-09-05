@@ -36,6 +36,7 @@ static const AsmSectionId _mbr_section_id_signature = 2;
 static const uint8_t _mbr_signature[2] = { 0x55, 0xaa };
 static const size_t _mbr_size_text = 446;
 static const size_t _mbr_size_data = 64;
+static const uint8_t _mbr_zeros[512];
 
 
 /* prototypes */
@@ -88,7 +89,26 @@ static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 /* mbr_destroy */
 static void _mbr_destroy(AsmFormatPlugin * format)
 {
+	int ret = 0;
+	AsmFormatPluginHelper * helper = format->helper;
+	long offset;
+	ssize_t size;
+
+	/* FIXME support writing to the data section too */
+	if((offset = helper->seek(helper->format, 0, SEEK_CUR)) > 446)
+		ret = -1;
+	else
+	{
+		size = sizeof(_mbr_zeros) - sizeof(_mbr_signature) - offset;
+		if(helper->write(helper->format, _mbr_zeros, size) != size
+				|| helper->write(helper->format,
+					_mbr_signature,
+					sizeof(_mbr_signature))
+				!= sizeof(_mbr_signature))
+			ret = -1;
+	}
 	object_delete(format);
+	/* FIXME may have failed */
 }
 
 

@@ -476,7 +476,7 @@ int asmcode_open(AsmCode * code, char const * filename)
 /* asmcode_open_file */
 int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp)
 {
-	String * p;
+	String * p = NULL;
 	String const * arch;
 	String const * format;
 
@@ -484,15 +484,14 @@ int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp)
 		return -error_set_code(1, "A file is already opened");
 	if(filename != NULL && (p = string_new(filename)) == NULL)
 		return -1;
-	if(arch_init(code->arch, filename, fp) == 0)
+	if(arch_init(code->arch, p, fp) == 0)
 	{
 		arch = arch_get_name(code->arch);
 		format = arch_get_format(code->arch);
 		if(code->format == NULL)
 			code->format = format_new(format);
 		if(code->format != NULL
-				&& format_init(code->format, arch, filename,
-					fp) == 0)
+				&& format_init(code->format, arch, p, fp) == 0)
 		{
 			code->filename = p;
 			code->fp = fp;

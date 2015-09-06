@@ -435,12 +435,17 @@ static int _asm_open_file(Asm * a, char const * outfile, FILE * fp)
 {
 	char const * arch = a->arch;
 	char const * format = a->format;
+	char const * filename;
 
 	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
 		return -1;
 	if(a->code != NULL)
-		return -error_set_code(1, "%s: Operation in progress",
-				asmcode_get_filename(a->code));
+	{
+		filename = asmcode_get_filename(a->code);
+		return -error_set_code(1, "%s%sOperation in progress",
+				(filename != NULL) ? filename : "",
+				(filename != NULL) ? ": " : "");
+	}
 	if((a->code = asmcode_new(arch, format)) == NULL)
 		return -1;
 	return asmcode_open_file(a->code, outfile, fp);

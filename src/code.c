@@ -133,7 +133,8 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 		return NULL;
 	}
 	memset(code, 0, sizeof(*code));
-	code->filename = string_new(filename);
+	if(filename != NULL)
+		code->filename = string_new(filename);
 	if(format == NULL)
 		code->format = format_new_match(filename, fp);
 	else if((code->format = format_new(format)) != NULL
@@ -150,7 +151,8 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 		arch_delete(code->arch);
 		code->arch = NULL;
 	}
-	if(code->filename == NULL || code->arch == NULL || code->format == NULL)
+	if((filename != NULL && code->filename == NULL)
+			|| code->arch == NULL || code->format == NULL)
 	{
 		asmcode_delete(code);
 		return NULL;
@@ -173,7 +175,9 @@ int asmcode_delete(AsmCode * code)
 	if(code->arch != NULL)
 		arch_delete(code->arch);
 	if(code->fp != NULL && fclose(code->fp) != 0)
-		ret |= error_set_code(2, "%s: %s", code->filename,
+		ret |= error_set_code(2, "%s%s%s",
+				(code->filename != NULL) ? code->filename : "",
+				(code->filename != NULL) ? ": " : "",
 				strerror(errno));
 	string_delete(code->filename);
 	object_delete(code);

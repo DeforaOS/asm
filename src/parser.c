@@ -284,7 +284,7 @@ int parser_string(AsmPrefs * ap, AsmCode * code, char const * string)
 	prefs.filters = CPP_FILTER_COMMENT;
 	memset(&state, 0, sizeof(state));
 	state.code = code;
-	if((state.cpp = cpp_new(&prefs)) == NULL)
+	if((state.cpp = cpp_new_string(&prefs, string)) == NULL)
 		return -1;
 	if(ap != NULL)
 		for(i = 0; i < ap->defines_cnt; i++)

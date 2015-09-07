@@ -37,9 +37,9 @@ enum
 #define REG(name, size, id, flags, description) REG_ ## name ## _id = id,
 enum
 {
+#include "amd64.reg"
 #include "i386.reg"
 #include "i686.reg"
-#include "amd64.reg"
 	REG_id_count
 };
 #undef REG
@@ -55,9 +55,9 @@ static AsmArchDefinition const _amd64_definition =
 	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _amd64_registers[] =
 {
+#include "amd64.reg"
 #include "i386.reg"
 #include "i686.reg"
-#include "amd64.reg"
 #include "null.reg"
 };
 #undef REG

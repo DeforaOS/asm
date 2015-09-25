@@ -786,11 +786,17 @@ static off_t _arch_seek_buffer(AsmArch * arch, off_t offset, int whence)
 	}
 	else if(whence == SEEK_CUR)
 	{
-		if(offset < 0 && -offset > arch->buffer_pos)
-			return -error_set_code(1, "%s", "Invalid seek");
-		if(offset > 0 && (size_t)offset + arch->buffer_pos
-				>= arch->buffer_cnt)
-			return -error_set_code(1, "%s", "Invalid seek");
+		if(offset < 0)
+		{
+			if((size_t)(-offset) > arch->buffer_pos)
+				return -error_set_code(1, "%s", "Invalid seek");
+		}
+		else if(offset > 0)
+		{
+			if((size_t)offset + arch->buffer_pos
+					>= arch->buffer_cnt)
+				return -error_set_code(1, "%s", "Invalid seek");
+		}
 		arch->buffer_pos += offset;
 	}
 	else

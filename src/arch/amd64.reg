@@ -15,6 +15,7 @@ REG(r12, 64,	0x0c, 0,	"General-purpose register")
 REG(r13, 64,	0x0d, 0,	"General-purpose register")
 REG(r14, 64,	0x0e, 0,	"General-purpose register")
 REG(r15, 64,	0x0f, 0,	"General-purpose register")
+REG(rip, 64,	0x10, 0,	"Instruction pointer")
 /* aliases */
 /* 8 bits */
 REG(r0b, 8,	0x00, ARF_ALIAS,NULL)

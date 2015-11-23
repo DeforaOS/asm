@@ -257,7 +257,7 @@ int parser(AsmPrefs * ap, AsmCode * code, char const * infile)
 	if(_parser_scan(&state) != 0)
 	{
 		cpp_delete(state.cpp);
-		return _parser_error(&state, "%s", error_get());
+		return _parser_error(&state, "%s", error_get(NULL));
 	}
 	if(_program(&state) != 0)
 		error_set_code(1, "%s%s%u%s%u%s", infile,
@@ -295,7 +295,7 @@ int parser_string(AsmPrefs * ap, AsmCode * code, char const * string)
 				return -1;
 			}
 	if(_parser_scan(&state) != 0)
-		return _parser_error(&state, "%s", error_get());
+		return _parser_error(&state, "%s", error_get(NULL));
 	if(_program(&state) != 0)
 		error_set_code(1, "%s%u%s%u%s", "Compilation failed with ",
 				state.error_cnt, " error(s) and ",
@@ -380,7 +380,7 @@ static int _section_name(State * state)
 	fprintf(stderr, "%s\"%s\"\n", "DEBUG: section ", section);
 #endif
 	if(asmcode_section(state->code, section) != 0)
-		ret |= _parser_error(state, "%s", error_get());
+		ret |= _parser_error(state, "%s", error_get(NULL));
 	free(section);
 	return ret;
 }
@@ -479,7 +479,7 @@ static int _function_name(State * state)
 	fprintf(stderr, "DEBUG: %s \"%s\"\n", "function", function);
 #endif
 	if(asmcode_function(state->code, function) != 0)
-		ret |= _parser_error(state, "%s", error_get());
+		ret |= _parser_error(state, "%s", error_get(NULL));
 	free(function);
 	return ret;
 }
@@ -510,7 +510,7 @@ static int _instruction(State * state)
 	if(state->call.name != NULL)
 	{
 		if(asmcode_instruction(state->code, &state->call) != 0)
-			ret |= _parser_error(state, "%s", error_get());
+			ret |= _parser_error(state, "%s", error_get(NULL));
 		free(state->call.name);
 	}
 	/* FIXME memory leak (register names...) */

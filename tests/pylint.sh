@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2014-2015 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2014-2016 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -26,22 +26,46 @@
 
 #variables
 PROGNAME="pylint.sh"
+PROJECTCONF="../project.conf"
 #executables
+DATE="date"
 DEBUG="_debug"
 FIND="find"
 PYLINT="pep8"
+SORT="sort"
+TR="tr"
 
 
 #functions
 #pylint
 _pylint()
 {
-	filename="$1"
+	subdirs="data doc src tests tools"
 
-	#XXX ignores errors
-	$DEBUG $PYLINT -- "$filename" 2>&1 | while read line; do
-		echo "$line" 1>&2
-		echo "$line"
+	$DATE
+	echo
+	while read line; do
+		case "$line" in
+			"["*)
+				break
+				;;
+			"subdirs="*)
+				subdirs=${line#subdirs=}
+				subdirs=$(echo "$subdirs" | $TR ',' ' ')
+				;;
+		esac
+	done < "$PROJECTCONF"
+	for subdir in $subdirs; do
+		[ -d "../$subdir" ] || continue
+		for filename in $($FIND "../$subdir" -name '*.py' | $SORT); do
+			$DEBUG $PYLINT -- "$filename" 2>&1
+			if [ $? -eq 0 ]; then
+				echo "$filename:"
+			else
+				#XXX ignore errors
+				echo "$PROGNAME: $filename: FAIL" 1>&2
+			fi
+		done
 	done
 }
 
@@ -49,7 +73,7 @@ _pylint()
 #debug
 _debug()
 {
-	echo "$@" 1>&2
+	echo "$@" 1>&3
 	"$@"
 	res=$?
 	#ignore errors when the command is not available
@@ -92,10 +116,5 @@ target="$1"
 #clean
 [ $clean -ne 0 ] && exit 0
 
-ret=0
-(date
-echo
-$FIND "../doc" "../src" "../tests" "../tools" -name '*.py' | while read filename; do
-	_pylint "$filename"
-done) > "$target"
-exit $ret
+exec 3>&1
+_pylint > "$target"

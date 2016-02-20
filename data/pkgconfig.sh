@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2011-2014 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2011-2015 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@ PREFIX="/usr/local"
 [ -f "../config.sh" ] && . "../config.sh"
 DEBUG="_debug"
 DEVNULL="/dev/null"
+PROGNAME="pkgconfig.sh"
 #executables
 INSTALL="install -m 0644"
 MKDIR="mkdir -m 0755 -p"
@@ -40,7 +41,7 @@ SED="sed"
 #debug
 _debug()
 {
-	echo "$@" 1>&2
+	echo "$@" 1>&3
 	"$@"
 }
 
@@ -48,7 +49,7 @@ _debug()
 #error
 _error()
 {
-	echo "pkgconfig.sh: $@" 1>&2
+	echo "$PROGNAME: $@" 1>&2
 	return 2
 }
 
@@ -56,7 +57,7 @@ _error()
 #usage
 _usage()
 {
-	echo "Usage: pkgconfig.sh [-c|-i|-u][-P prefix] target..." 1>&2
+	echo "Usage: $PROGNAME [-c|-i|-u][-P prefix] target..." 1>&2
 	return 1
 }
 
@@ -104,6 +105,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 PKGCONFIG="$PREFIX/lib/pkgconfig"
+exec 3>&1
 while [ $# -gt 0 ]; do
 	target="$1"
 	shift
@@ -121,7 +123,11 @@ while [ $# -gt 0 ]; do
 	if [ "$install" -eq 1 ]; then
 		source="${target#$OBJDIR}"
 		$DEBUG $MKDIR -- "$PKGCONFIG"			|| exit 2
-		$DEBUG $INSTALL "$target" "$PKGCONFIG/$source"	|| exit 2
+		basename="$source"
+		if [ "${source##*/}" != "$source" ]; then
+			basename="${source##*/}"
+		fi
+		$DEBUG $INSTALL "$target" "$PKGCONFIG/$basename"|| exit 2
 		continue
 	fi
 

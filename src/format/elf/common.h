@@ -33,6 +33,9 @@
 # endif
 
 # if defined(ELFSIZE) && (ELFSIZE == 32)
+#  ifndef ELFCLASS
+#   define ELFCLASS	ELFCLASS32
+#  endif
 #  ifndef Elf_Addr
 #   define Elf_Addr	Elf32_Addr
 #  endif
@@ -91,6 +94,9 @@
 #   define Elf_Word	Elf32_Word
 #  endif
 # elif defined(ELFSIZE) && (ELFSIZE == 64)
+#  ifndef ELFCLASS
+#   define ELFCLASS	ELFCLASS64
+#  endif
 #  ifndef Elf_Addr
 #   define Elf_Addr	Elf64_Addr
 #  endif

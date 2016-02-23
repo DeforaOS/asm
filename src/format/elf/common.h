@@ -17,20 +17,20 @@
 #ifndef ASM_FORMAT_ELF_COMMON_H
 # define ASM_FORMAT_ELF_COMMON_H
 
-#ifdef __OpenBSD__
-# include <elf_abi.h>
-#else
-# include <elf.h>
-#endif
-# include "Asm.h"
+# ifdef __OpenBSD__
+#  include <elf_abi.h>
+# else
+#  include <elf.h>
+# endif
+#  include "Asm.h"
 
 /* portability */
-#ifndef Elf64_Quarter
-# define Elf64_Quarter		unsigned char
-#endif
-#ifndef EM_486
-# define EM_486			6
-#endif
+# ifndef Elf64_Quarter
+#  define Elf64_Quarter		unsigned char
+# endif
+# ifndef EM_486
+#  define EM_486		6
+# endif
 
 
 /* ELF */

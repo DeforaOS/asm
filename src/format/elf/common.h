@@ -94,4 +94,4 @@ int elf_error(AsmFormatPlugin * format);
 int elfstrtab_set(AsmFormatPlugin * format, ElfStrtab * strtab,
 		char const * name);
 
-#endif
+#endif /* !ASM_FORMAT_ELF_COMMON_H */

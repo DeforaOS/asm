@@ -32,6 +32,124 @@
 #  define EM_486		6
 # endif
 
+# if defined(ELFSIZE) && (ELFSIZE == 32)
+#  ifndef Elf_Addr
+#   define Elf_Addr	Elf32_Addr
+#  endif
+#  ifndef Elf_Dyn
+#   define Elf_Dyn	Elf32_Dyn
+#  endif
+#  ifndef Elf_Ehdr
+#   define Elf_Ehdr	Elf32_Ehdr
+#  endif
+#  ifndef Elf_Half
+#   define Elf_Half	Elf32_Half
+#  endif
+#  ifndef Elf_Off
+#   define Elf_Off	Elf32_Off
+#  endif
+#  ifndef Elf_Nhdr
+#   define Elf_Nhdr	Elf32_Nhdr
+#  endif
+#  ifndef Elf_Phdr
+#   define Elf_Phdr	Elf32_Phdr
+#  endif
+#  ifndef Elf_Rel
+#   define Elf_Rel	Elf32_Rel
+#  endif
+#  ifndef Elf_Rela
+#   define Elf_Rela	Elf32_Rela
+#  endif
+#  ifndef Elf_Shdr
+#   define Elf_Shdr	Elf32_Shdr
+#  endif
+#  ifndef Elf_SOff
+#   define Elf_SOff	Elf32_SOff
+#  endif
+#  ifndef Elf_Sword
+#   define Elf_Sword	Elf32_Sword
+#  endif
+#  ifndef Elf_Sym
+#   define Elf_Sym	Elf32_Sym
+#  endif
+#  ifndef Elf_Verdaux
+#   define Elf_Verdaux	Elf32_Verdaux
+#  endif
+#  ifndef Elf_Verdef
+#   define Elf_Verdef	Elf32_Verdef
+#  endif
+#  ifndef Elf_Vernaux
+#   define Elf_Vernaux	Elf32_Vernaux
+#  endif
+#  ifndef Elf_Verneed
+#   define Elf_Verneed	Elf32_Verneed
+#  endif
+#  ifndef Elf_Versym
+#   define Elf_Versym	Elf32_Versym
+#  endif
+#  ifndef Elf_Word
+#   define Elf_Word	Elf32_Word
+#  endif
+# elif defined(ELFSIZE) && (ELFSIZE == 64)
+#  ifndef Elf_Addr
+#   define Elf_Addr	Elf64_Addr
+#  endif
+#  ifndef Elf_Dyn
+#   define Elf_Dyn	Elf64_Dyn
+#  endif
+#  ifndef Elf_Ehdr
+#   define Elf_Ehdr	Elf64_Ehdr
+#  endif
+#  ifndef Elf_Half
+#   define Elf_Half	Elf64_Half
+#  endif
+#  ifndef Elf_Off
+#   define Elf_Off	Elf64_Off
+#  endif
+#  ifndef Elf_Nhdr
+#   define Elf_Nhdr	Elf64_Nhdr
+#  endif
+#  ifndef Elf_Phdr
+#   define Elf_Phdr	Elf64_Phdr
+#  endif
+#  ifndef Elf_Rel
+#   define Elf_Rel	Elf64_Rel
+#  endif
+#  ifndef Elf_Rela
+#   define Elf_Rela	Elf64_Rela
+#  endif
+#  ifndef Elf_Shdr
+#   define Elf_Shdr	Elf64_Shdr
+#  endif
+#  ifndef Elf_SOff
+#   define Elf_SOff	Elf64_SOff
+#  endif
+#  ifndef Elf_Sword
+#   define Elf_Sword	Elf64_Sword
+#  endif
+#  ifndef Elf_Sym
+#   define Elf_Sym	Elf64_Sym
+#  endif
+#  ifndef Elf_Verdaux
+#   define Elf_Verdaux	Elf64_Verdaux
+#  endif
+#  ifndef Elf_Verdef
+#   define Elf_Verdef	Elf64_Verdef
+#  endif
+#  ifndef Elf_Vernaux
+#   define Elf_Vernaux	Elf64_Vernaux
+#  endif
+#  ifndef Elf_Verneed
+#   define Elf_Verneed	Elf64_Verneed
+#  endif
+#  ifndef Elf_Versym
+#   define Elf_Versym	Elf64_Versym
+#  endif
+#  ifndef Elf_Word
+#   define Elf_Word	Elf64_Word
+#  endif
+# endif
+
 
 /* ELF */
 /* types */

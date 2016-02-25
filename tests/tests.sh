@@ -21,7 +21,7 @@ PROGNAME="tests.sh"
 #executables
 DATE="date"
 DEASM="${OBJDIR}../tools/deasm-static"
-DEBUG="_debug"
+DEBUG=
 
 
 #functions
@@ -95,20 +95,23 @@ _test()
 #usage
 _usage()
 {
-	echo "Usage: $PROGNAME [-c][-P prefix] target" 1>&2
+	echo "Usage: $PROGNAME [-cv][-P prefix] target" 1>&2
 	return 1
 }
 
 
 #main
 clean=0
-while getopts "cP:" name; do
+while getopts "cP:v" name; do
 	case "$name" in
 		c)
 			clean=1
 			;;
 		P)
 			#XXX ignored
+			;;
+		v)
+			DEBUG="_debug"
 			;;
 		?)
 			_usage

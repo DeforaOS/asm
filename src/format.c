@@ -182,7 +182,8 @@ void format_delete(AsmFormat * format)
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	format_exit(format);
-	plugin_delete(format->handle);
+	if(format->handle != NULL)
+		plugin_delete(format->handle);
 	object_delete(format);
 }
 

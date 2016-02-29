@@ -23,8 +23,11 @@
 PKG_CONFIG_PATH="$PWD/../data:$LIBDIR/pkgconfig"
 PYTHONDIR="../src/python"
 #executables
+CONFIGURE="configure"
 MAKE="make"
 
 
 [ -n "$OBJDIR" ] && PKG_CONFIG_PATH="${OBJDIR}../data:$LIBDIR/pkgconfig"
-(cd "$PYTHONDIR" && PKG_CONFIG_PATH="$PKG_CONFIG_PATH" $MAKE clean all)
+(cd "$PYTHONDIR" &&
+	$CONFIGURE -v &&
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH" $MAKE clean all)

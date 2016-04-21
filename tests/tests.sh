@@ -22,6 +22,7 @@ PROGNAME="tests.sh"
 DATE="date"
 DEASM="${OBJDIR}../tools/deasm-static"
 DEBUG=
+PKGCONFIG="pkg-config"
 
 
 #functions
@@ -128,6 +129,15 @@ target="$1"
 
 [ "$clean" -ne 0 ]			&& exit 0
 
+tests=
+failures=
+
+if $PKGCONFIG --exists python-2.7; then
+	tests="$tests ./python.sh"
+else
+	failures="$failures ./python.sh"
+fi
+
 $DATE > "$target"
 FAILED=
 echo "Performing tests:" 1>&2
@@ -148,8 +158,13 @@ _test _deasm template flat
 _test _deasm yasep flat
 _test _deasm yasep16 flat
 _test _deasm yasep32 flat
+for test in $tests; do
+	_test "$test"
+done
 echo "Expected failures:" 1>&2
-_fail "./python.sh"
+for test in $failures; do
+	_fail "$test"
+done
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

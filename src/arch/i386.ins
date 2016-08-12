@@ -729,6 +729,7 @@
 { "in",		0xec,		OP1F, AO_2(OP_al, OP_dx)		},
 /* IN		0xed		1     AX          dx			*/
 { "in",		0xed,		OP1F, AO_2(OP_AX, OP_dx)		},
+#ifndef ARCH_amd64
 /* INC		0x40 +rd	1					*/
 { "inc",	0x40,		OP1F, AO_1(OP_AX)			},
 { "inc",	0x41,		OP1F, AO_1(OP_CX)			},
@@ -738,6 +739,7 @@
 { "inc",	0x45,		OP1F, AO_1(OP_BP)			},
 { "inc",	0x46,		OP1F, AO_1(OP_SI)			},
 { "inc",	0x47,		OP1F, AO_1(OP_DI)			},
+#endif
 /* INC		0xfe /0		1     r/m8				*/
 { "incb",	0xfe,		OP1F, AO_1(OP_RM8_D0+0)			},
 { "incb",	0xfe,		OP1F, AO_1(OP_RM8_D8+0)			},

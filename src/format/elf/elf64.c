@@ -128,6 +128,7 @@ static int _destroy_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 
 	if(helper->seek(helper->format, 0, SEEK_END) < 0)
 		return elf_error(format);
+	/* write the undefined section reference */
 	memset(&hdr, 0, sizeof(hdr));
 	if(ea->endian == ELFDATA2MSB)
 	{
@@ -141,6 +142,7 @@ static int _destroy_64_shdr(AsmFormatPlugin * format, Elf64_Off offset)
 	}
 	if(helper->write(helper->format, &hdr, sizeof(hdr)) != sizeof(hdr))
 		return -1;
+	/* write the sections */
 	for(i = 0; i < elf->es64_cnt; i++)
 	{
 		if(i + 1 == elf->es64_cnt)

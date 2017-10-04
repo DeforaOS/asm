@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2014-2016 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2014-2017 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ DATE="date"
 DEBUG="_debug"
 FIND="find"
 PYLINT="pep8"
-SORT="sort"
+SORT="sort -n"
 TR="tr"
 
 
@@ -43,7 +43,6 @@ _pylint()
 	subdirs="data doc src tests tools"
 
 	$DATE
-	echo
 	while read line; do
 		case "$line" in
 			"["*)
@@ -58,9 +57,11 @@ _pylint()
 	for subdir in $subdirs; do
 		[ -d "../$subdir" ] || continue
 		for filename in $($FIND "../$subdir" -name '*.py' | $SORT); do
+			echo
+			echo "Testing: $filename"
 			$DEBUG $PYLINT -- "$filename" 2>&1
 			if [ $? -eq 0 ]; then
-				echo "$filename:"
+				echo "$PROGNAME: $filename: OK" 1>&2
 			else
 				#XXX ignore errors
 				echo "$PROGNAME: $filename: FAIL" 1>&2
@@ -85,17 +86,20 @@ _debug()
 #usage
 _usage()
 {
-	echo "Usage: $PROGNAME [-c] target" 1>&2
+	echo "Usage: $PROGNAME [-c] target..." 1>&2
 	return 1
 }
 
 
 #main
 clean=0
-while getopts "cP:" name; do
+while getopts "cO:P:" name; do
 	case "$name" in
 		c)
 			clean=1
+			;;
+		O)
+			export "${OPTARG%%=*}"="${OPTARG#*=}"
 			;;
 		P)
 			#XXX ignored for compatibility
@@ -107,14 +111,18 @@ while getopts "cP:" name; do
 	esac
 done
 shift $((OPTIND - 1))
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
 	_usage
 	exit $?
 fi
-target="$1"
 
 #clean
 [ $clean -ne 0 ] && exit 0
 
 exec 3>&1
-_pylint > "$target"
+while [ $# -gt 0 ]; do
+	target="$1"
+	shift
+
+	_pylint > "$target"					|| exit 2
+done

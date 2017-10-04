@@ -216,8 +216,8 @@ static int _deasm_list(void)
 static int _usage(void)
 {
 	fputs("Usage: " PROGNAME " [-a arch][-f format][-D] filename\n"
-"       deasm [-a arch] -s string\n"
-"       deasm -l\n"
+"       " PROGNAME " [-a arch] -s string\n"
+"       " PROGNAME " -l\n"
 "  -a	Force the given architecture\n"
 "  -f	Force the given file format\n"
 "  -D	Deassemble all sections\n"

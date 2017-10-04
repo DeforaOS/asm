@@ -82,12 +82,13 @@ _test()
 
 	_run "$@"
 	res=$?
+	[ -n "$arch" ] && echo -n " $arch" 1>&2
 	if [ $res -ne 0 ]; then
-		echo " $arch FAIL" 1>&2
+		echo " FAIL" 1>&2
 		FAILED="$FAILED $test($arch, error $res)"
 		return 2
 	else
-		echo " $arch PASS" 1>&2
+		echo " PASS" 1>&2
 		return 0
 	fi
 }

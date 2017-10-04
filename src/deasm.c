@@ -197,12 +197,18 @@ static int _string_ishex(int c)
 /* deasm_list */
 static int _deasm_list(void)
 {
+	int res = 0;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	asm_plugin_list(APT_ARCH, 1);
-	asm_plugin_list(APT_FORMAT, 1);
-	return 0;
+	if(asm_plugin_list(APT_ARCH, 1) != 0)
+		res = error_print(PROGNAME);
+	else
+		putchar('\n');
+	if(asm_plugin_list(APT_FORMAT, 1) != 0)
+		res = error_print(PROGNAME);
+	return (res == 0) ? 0 : 2;
 }
 
 

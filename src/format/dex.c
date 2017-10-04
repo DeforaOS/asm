@@ -126,16 +126,15 @@ static char _dex_signature[4] = "dex\n";
 
 /* prototypes */
 /* plug-in */
-static AsmFormatPlugin * _dex_init(AsmFormatPluginHelper * helper,
-		char const * arch);
-static void _dex_destroy(AsmFormatPlugin * format);
-static char const * _dex_detect(AsmFormatPlugin * format);
-static int _dex_decode(AsmFormatPlugin * format, int raw);
-static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
+static Dex * _dex_init(AsmFormatPluginHelper * helper, char const * arch);
+static void _dex_destroy(Dex * dex);
+static char const * _dex_detect(Dex * dex);
+static int _dex_decode(Dex * dex, int raw);
+static int _dex_decode_section(Dex * dex, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
 
-static int _dex_decode_sleb128(AsmFormatPlugin * format, int32_t * s32);
-static int _dex_decode_uleb128(AsmFormatPlugin * format, uint32_t * u32);
+static int _dex_decode_sleb128(Dex * dex, int32_t * s32);
+static int _dex_decode_uleb128(Dex * dex, uint32_t * u32);
 
 
 /* public */
@@ -161,8 +160,7 @@ AsmFormatPluginDefinition format_plugin =
 /* functions */
 /* plug-in */
 /* dex_init */
-static AsmFormatPlugin * _dex_init(AsmFormatPluginHelper * helper,
-		char const * arch)
+static Dex * _dex_init(AsmFormatPluginHelper * helper, char const * arch)
 {
 	Dex * dex;
 
@@ -185,35 +183,32 @@ static AsmFormatPlugin * _dex_init(AsmFormatPluginHelper * helper,
 
 
 /* dex_destroy */
-static void _dex_destroy(AsmFormatPlugin * format)
+static void _dex_destroy(Dex * dex)
 {
-	Dex * dex = format;
-
 	free(dex->dmii);
 	object_delete(dex);
 }
 
 
 /* dex_detect */
-static char const * _dex_detect(AsmFormatPlugin * format)
+static char const * _dex_detect(Dex * dex)
 {
+	(void) dex;
+
 	/* XXX some sections might contain native code */
 	return "dalvik";
 }
 
 
 /* dex_decode */
-static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw);
-static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
-		size_t size);
-static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
-		size_t size);
-static int _decode_map_string_id(AsmFormatPlugin * format, off_t offset,
-		size_t size);
+static int _decode_map(Dex * dex, DexHeader * dh, int raw);
+static int _decode_map_code(Dex * dex, size_t id, off_t offset, size_t size);
+static int _decode_map_method_id(Dex * dex, off_t offset, size_t size);
+static int _decode_map_string_id(Dex * dex, off_t offset, size_t size);
 
-static int _dex_decode(AsmFormatPlugin * format, int raw)
+static int _dex_decode(Dex * dex, int raw)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	DexHeader dh;
 
 #ifdef DEBUG
@@ -224,15 +219,15 @@ static int _dex_decode(AsmFormatPlugin * format, int raw)
 	if(helper->read(helper->format, &dh, sizeof(dh)) != sizeof(dh))
 		return -1;
 	dh.map_off = _htol32(dh.map_off);
-	if(_decode_map(format, &dh, raw) != 0)
+	if(_decode_map(dex, &dh, raw) != 0)
 		return -1;
 	return 0;
 }
 
-static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw)
+static int _decode_map(Dex * dex, DexHeader * dh, int raw)
 {
 	int ret = 0;
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	uint32_t size;
 	uint32_t i;
 	off_t offset;
@@ -265,15 +260,15 @@ static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw)
 		switch(dmi.type)
 		{
 			case TYPE_CODE_ITEM:
-				ret |= _decode_map_code(format, i, dmi.offset,
+				ret |= _decode_map_code(dex, i, dmi.offset,
 						dmi.size);
 				break;
 			case TYPE_METHOD_ID_ITEM:
-				ret |= _decode_map_method_id(format, dmi.offset,
+				ret |= _decode_map_method_id(dex, dmi.offset,
 						dmi.size);
 				break;
 			case TYPE_STRING_ID_ITEM:
-				ret |= _decode_map_string_id(format, dmi.offset,
+				ret |= _decode_map_string_id(dex, dmi.offset,
 						dmi.size);
 				break;
 		}
@@ -285,10 +280,9 @@ static int _decode_map(AsmFormatPlugin * format, DexHeader * dh, int raw)
 	return ret;
 }
 
-static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
-		size_t size)
+static int _decode_map_code(Dex * dex, size_t id, off_t offset, size_t size)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(%lu, %ld, %lu)\n", __func__, id, offset,
@@ -298,11 +292,9 @@ static int _decode_map_code(AsmFormatPlugin * format, size_t id, off_t offset,
 				".text", offset, size, 0) != NULL) ? 0 : -1;
 }
 
-static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
-		size_t size)
+static int _decode_map_method_id(Dex * dex, off_t offset, size_t size)
 {
-	AsmFormatPluginHelper * helper = format->helper;
-	Dex * dex = format;
+	AsmFormatPluginHelper * helper = dex->helper;
 	ssize_t s;
 	size_t i;
 	AsmString * string;
@@ -337,10 +329,9 @@ static int _decode_map_method_id(AsmFormatPlugin * format, off_t offset,
 	return 0;
 }
 
-static int _decode_map_string_id(AsmFormatPlugin * format, off_t offset,
-		size_t size)
+static int _decode_map_string_id(Dex * dex, off_t offset, size_t size)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	DexStringIdItem * dsii;
 	ssize_t s;
 	size_t i;
@@ -376,10 +367,10 @@ static int _decode_map_string_id(AsmFormatPlugin * format, off_t offset,
 
 
 /* dex_decode_section */
-static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
+static int _dex_decode_section(Dex * dex, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	DexMapCodeItem dmci;
 	size_t i;
 	off_t seek;
@@ -451,25 +442,23 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 			}
 			/* encoded catch handler */
 			/* list size */
-			if(_dex_decode_uleb128(format, &u32) != 0)
+			if(_dex_decode_uleb128(dex, &u32) != 0)
 				return -1;
 			for(; u32 > 0; u32--)
 			{
 				/* handler size */
-				if(_dex_decode_sleb128(format, &s32) != 0)
+				if(_dex_decode_sleb128(dex, &s32) != 0)
 					return -1;
 				/* address pairs */
 				for(j = abs(s32); j > 0; j--)
 				{
-					if(_dex_decode_uleb128(format, &v32)
-							!= 0)
+					if(_dex_decode_uleb128(dex, &v32) != 0)
 						return -1;
-					if(_dex_decode_uleb128(format, &v32)
-							!= 0)
+					if(_dex_decode_uleb128(dex, &v32) != 0)
 						return -1;
 				}
 				/* catch-all address */
-				if(s32 <= 0 && _dex_decode_uleb128(format, &v32)
+				if(s32 <= 0 && _dex_decode_uleb128(dex, &v32)
 						!= 0)
 					return -1;
 			}
@@ -484,9 +473,9 @@ static int _dex_decode_section(AsmFormatPlugin * format, AsmSection * section,
 
 
 /* dex_decode_sleb128 */
-static int _dex_decode_sleb128(AsmFormatPlugin * format, int32_t * s32)
+static int _dex_decode_sleb128(Dex * dex, int32_t * s32)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	uint32_t ret = 0;
 	size_t i;
 	unsigned char c;
@@ -506,9 +495,9 @@ static int _dex_decode_sleb128(AsmFormatPlugin * format, int32_t * s32)
 
 
 /* dex_decode_uleb128 */
-static int _dex_decode_uleb128(AsmFormatPlugin * format, uint32_t * u32)
+static int _dex_decode_uleb128(Dex * dex, uint32_t * u32)
 {
-	AsmFormatPluginHelper * helper = format->helper;
+	AsmFormatPluginHelper * helper = dex->helper;
 	uint32_t ret = 0;
 	size_t i;
 	unsigned char c;

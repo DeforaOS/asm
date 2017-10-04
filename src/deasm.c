@@ -77,7 +77,7 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 
 static int _deasm_section(AsmCode * code, AsmSection * section)
 {
-	AsmArchDefinition * definition;
+	AsmArchDefinition const * definition;
 	size_t size;
 	AsmArchInstructionCall * calls = NULL;
 	size_t calls_cnt = 0;

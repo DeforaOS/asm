@@ -19,6 +19,7 @@
 #variables
 PROGNAME="tests.sh"
 #executables
+ASM="${OBJDIR}../tools/asm-static"
 DATE="date"
 DEASM="${OBJDIR}../tools/deasm-static"
 DEBUG=
@@ -142,6 +143,8 @@ fi
 $DATE > "$target"
 FAILED=
 echo "Performing tests:" 1>&2
+_test "$ASM" -l
+_test "$DEASM" -l
 _test _deasm amd64
 _test _deasm arm
 _test _deasm armeb

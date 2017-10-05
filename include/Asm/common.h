@@ -40,9 +40,10 @@ typedef enum _AsmElementType
 	AET_FUNCTION = 0,
 	AET_LABEL,
 	AET_SECTION,
-	AET_STRING
+	AET_STRING,
+	AET_SYMBOL
 } AsmElementType;
-# define AET_LAST AET_STRING
+# define AET_LAST AET_SYMBOL
 # define AET_COUNT (AET_LAST + 1)
 
 typedef AsmElementId AsmFunctionId;
@@ -56,6 +57,9 @@ typedef struct _AsmElement AsmSection;
 
 typedef AsmElementId AsmStringId;
 typedef struct _AsmElement AsmString;
+
+typedef AsmElementId AsmSymbolId;
+typedef struct _AsmElement AsmSymbol;
 
 /* arch */
 typedef uint32_t AsmArchOperandDefinition;

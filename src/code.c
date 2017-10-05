@@ -86,6 +86,16 @@ static int _asmcode_string_set(AsmCode * code, AsmString * codestring,
 static AsmString * _asmcode_string_append(AsmCode * code);
 static int _asmcode_string_read(AsmCode * code, AsmString * codestring);
 
+/* symbols */
+static void _asmcode_symbol_delete_all(AsmCode * code);
+
+static AsmSymbol * _asmcode_symbol_get_by_id(AsmCode * code, AsmSymbolId id);
+static int _asmcode_symbol_set(AsmCode * code, AsmSymbol * symbol,
+		int id, char const * name, off_t offset, ssize_t length);
+
+static AsmSymbol * _asmcode_symbol_append(AsmCode * code);
+static int _asmcode_symbol_read(AsmCode * code, AsmSymbol * symbol);
+
 
 /* functions */
 /* asmcode_new */
@@ -387,6 +397,7 @@ int asmcode_close(AsmCode * code)
 		ret |= -error_set_code(-errno, "%s: %s", code->filename,
 				strerror(errno));
 	code->fp = NULL;
+	_asmcode_symbol_delete_all(code);
 	_asmcode_string_delete_all(code);
 	_asmcode_function_delete_all(code);
 	return ret;
@@ -833,5 +844,76 @@ static int _asmcode_string_read(AsmCode * code, AsmString * codestring)
 	buf[codestring->size] = '\0';
 	free(codestring->name);
 	codestring->name = buf;
+	return arch_seek(code->arch, offset, SEEK_SET);
+}
+
+
+/* symbols */
+/* asmcode_symbol_delete_all */
+static void _asmcode_symbol_delete_all(AsmCode * code)
+{
+	_asmcode_element_delete_all(code, AET_SYMBOL);
+}
+
+
+/* asmcode_symbol_get_by_id */
+static AsmSymbol * _asmcode_symbol_get_by_id(AsmCode * code, AsmSymbolId id)
+{
+	AsmSymbol * ret;
+
+	if((ret = _asmcode_element_get_by_id(code, AET_SYMBOL, id)) == NULL)
+		return NULL;
+	if(ret->name == NULL && ret->size > 0)
+		_asmcode_symbol_read(code, ret);
+	return ret;
+}
+
+
+/* asmcode_symbol_set */
+static int _asmcode_symbol_set(AsmCode * code, AsmSymbol * symbol, int id,
+		char const * name, off_t offset, ssize_t length)
+{
+	if(_asmcode_element_set(symbol, id, 0, name,
+				offset, length, 0) != 0)
+		return -1;
+	if(name == NULL && length > 0)
+		_asmcode_symbol_read(code, symbol);
+	return 0;
+}
+
+
+/* asmcode_symbol_append */
+static AsmSymbol * _asmcode_symbol_append(AsmCode * code)
+{
+	return _asmcode_element_append(code, AET_SYMBOL);
+}
+
+
+/* asmcode_symbol_read */
+static int _asmcode_symbol_read(AsmCode * code, AsmSymbol * symbol)
+{
+	off_t offset; /* XXX should not have to be kept */
+	char * buf;
+
+	/* FIXME if offset < 0 read until '\0' */
+	if(symbol->offset < 0 || symbol->size < 0)
+		return -error_set_code(1, "%s", "Insufficient information to"
+				" read symbol");
+	if((offset = arch_seek(code->arch, 0, SEEK_CUR)) < 0)
+		return -1;
+	if((buf = malloc(symbol->size + 1)) == NULL)
+		return error_set_code(-errno, "%s", strerror(errno));
+	if(arch_seek(code->arch, symbol->offset, SEEK_SET)
+			!= symbol->offset)
+		return -1;
+	if(arch_read(code->arch, buf, symbol->size) != symbol->size)
+	{
+		free(buf);
+		arch_seek(code->arch, offset, SEEK_SET);
+		return -1;
+	}
+	buf[symbol->size] = '\0';
+	free(symbol->name);
+	symbol->name = buf;
 	return arch_seek(code->arch, offset, SEEK_SET);
 }

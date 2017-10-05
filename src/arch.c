@@ -154,7 +154,7 @@ char const * arch_get_format(AsmArch * arch)
 	if(arch->definition->definition != NULL
 			&& arch->definition->definition->format != NULL)
 		return arch->definition->definition->format;
-	return "elf";
+	return NULL;
 }
 
 

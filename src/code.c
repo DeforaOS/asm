@@ -183,7 +183,7 @@ int asmcode_delete(AsmCode * code)
 	if(code->arch != NULL)
 		arch_delete(code->arch);
 	if(code->fp != NULL && fclose(code->fp) != 0)
-		ret |= error_set_code(2, "%s%s%s",
+		ret |= -error_set_code(-errno, "%s%s%s",
 				(code->filename != NULL) ? code->filename : "",
 				(code->filename != NULL) ? ": " : "",
 				strerror(errno));
@@ -495,9 +495,9 @@ int asmcode_open_file(AsmCode * code, char const * filename, FILE * fp)
 	String const * format;
 
 	if(fp == NULL)
-		return -error_set_code(-EINVAL, strerror(EINVAL));
+		return -error_set_code(-EINVAL, "%s", strerror(EINVAL));
 	if(code->filename != NULL || code->fp != NULL)
-		return -error_set_code(1, "A file is already opened");
+		return -error_set_code(1, "%s", "A file is already opened");
 	if(filename != NULL && (p = string_new(filename)) == NULL)
 		return -1;
 	if(arch_init(code->arch, p, fp) == 0)
@@ -901,7 +901,7 @@ static int _asmcode_symbol_read(AsmCode * code, AsmSymbol * symbol)
 	if((offset = arch_seek(code->arch, 0, SEEK_CUR)) < 0)
 		return -1;
 	if((buf = malloc(symbol->size + 1)) == NULL)
-		return error_set_code(-errno, "%s", strerror(errno));
+		return -error_set_code(-errno, "%s", strerror(errno));
 	if(arch_seek(code->arch, symbol->offset, SEEK_SET)
 			!= symbol->offset)
 		return -1;

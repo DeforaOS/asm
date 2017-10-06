@@ -49,6 +49,7 @@ struct _AsmCode
 
 
 /* prototypes */
+/* useful */
 /* elements */
 static void _asmcode_element_delete_all(AsmCode * code, AsmElementType type);
 
@@ -642,6 +643,7 @@ int asmcode_section(AsmCode * code, char const * section)
 
 
 /* private */
+/* useful */
 /* elements */
 /* asmcode_element_set */
 static int _asmcode_element_set(AsmElement * element, AsmElementId id,

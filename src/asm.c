@@ -423,7 +423,7 @@ static char const * _asm_guess_arch(void)
 	{
 		if(uname(&uts) != 0)
 		{
-			error_set_code(1, "%s", strerror(errno));
+			error_set_code(-errno, "%s", strerror(errno));
 			return NULL;
 		}
 		cached = 1;

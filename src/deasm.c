@@ -220,7 +220,7 @@ static int _usage(void)
 "       " PROGNAME " -l\n"
 "  -a	Force the given architecture\n"
 "  -f	Force the given file format\n"
-"  -D	Deassemble all sections\n"
+"  -D	Disassemble all sections\n"
 "  -l	List all the architectures and file formats available\n", stderr);
 	return 1;
 }

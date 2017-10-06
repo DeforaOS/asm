@@ -44,10 +44,11 @@ static const uint8_t _mbr_zeros[512];
 static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 		char const * arch);
 static int _mbr_destroy(AsmFormatPlugin * format);
+static char const * _mbr_guess(AsmFormatPlugin * format, char const * hint);
+static char const * _mbr_detect(AsmFormatPlugin * format);
 static int _mbr_decode(AsmFormatPlugin * format, int raw);
 static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
-static char const * _mbr_detect(AsmFormatPlugin * format);
 
 
 /* public */
@@ -62,6 +63,7 @@ AsmFormatPluginDefinition format_plugin =
 	0,
 	_mbr_init,
 	_mbr_destroy,
+	_mbr_guess,
 	NULL,
 	NULL,
 	_mbr_detect,
@@ -109,6 +111,24 @@ static int _mbr_destroy(AsmFormatPlugin * format)
 	}
 	object_delete(format);
 	return ret;
+}
+
+
+/* mbr_guess */
+static char const * _mbr_guess(AsmFormatPlugin * format, char const * hint)
+{
+	char const * arch[] = { "amd64", "i386", "i386_real", "i486", "i586",
+		"i686" };
+	size_t i;
+	(void) format;
+
+	/* XXX is it possible to switch in 32-bits (or 64-bits) mode? */
+	if(hint == NULL)
+		return "i386_real";
+	for(i = 0; i < sizeof(arch) / sizeof(*arch); i++)
+		if(string_compare(hint, arch[i]) == 0)
+			return "i386_real";
+	return NULL;
 }
 
 

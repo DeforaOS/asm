@@ -52,6 +52,8 @@ int format_init(AsmFormat * format, char const * arch, char const * filename,
 		FILE * fp);
 int format_exit(AsmFormat * format);
 
+char const * format_guess_arch(AsmFormat * format, char const * hint);
+
 int format_function(AsmFormat * format, char const * function);
 int format_section(AsmFormat * format, char const * section);
 

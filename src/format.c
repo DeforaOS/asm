@@ -297,6 +297,15 @@ int format_function(AsmFormat * format, char const * function)
 }
 
 
+/* format_guess_arch */
+char const * format_guess_arch(AsmFormat * format, char const * hint)
+{
+	if(format->definition->guess == NULL)
+		return NULL;
+	return format->definition->guess(format->plugin, hint);
+}
+
+
 /* format_init */
 int format_init(AsmFormat * format, char const * arch, char const * filename,
 		FILE * fp)

@@ -75,9 +75,13 @@ typedef struct _AsmFormatPluginDefinition
 	AsmFormatPlugin * (*init)(AsmFormatPluginHelper * helper,
 			char const * arch);
 	int (*destroy)(AsmFormatPlugin * format);
+
+	/* assembly */
+	char const * (*guess)(AsmFormatPlugin * format, char const * hint);
 	int (*function)(AsmFormatPlugin * format, char const * function);
 	int (*section)(AsmFormatPlugin * format, char const * section);
 
+	/* disassembly */
 	char const * (*detect)(AsmFormatPlugin * format);
 	int (*decode)(AsmFormatPlugin * format, int raw);
 	int (*decode_section)(AsmFormatPlugin * format, AsmSection * section,

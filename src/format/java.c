@@ -147,6 +147,7 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 static AsmFormatPlugin * _java_init(AsmFormatPluginHelper * helper,
 		char const * arch);
 static int _java_destroy(AsmFormatPlugin * format);
+static char const * _java_guess(AsmFormatPlugin * format, char const * hint);
 static char const * _java_detect(AsmFormatPlugin * format);
 static int _java_decode(AsmFormatPlugin * format, int raw);
 static int _java_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -165,6 +166,7 @@ AsmFormatPluginDefinition format_plugin =
 	sizeof(_java_signature),
 	_java_init,
 	_java_destroy,
+	_java_guess,
 	NULL,
 	NULL,
 	_java_detect,
@@ -326,6 +328,17 @@ static int _destroy_attribute_table(AsmFormatPlugin * format)
 		return -1;
 	/* XXX output the attributes */
 	return 0;
+}
+
+
+/* java_guess */
+static char const * _java_guess(AsmFormatPlugin * format, char const * hint)
+{
+	(void) format;
+
+	if(hint == NULL || string_compare(hint, "java") == 0)
+		return "java";
+	return NULL;
 }
 
 

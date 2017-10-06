@@ -34,6 +34,7 @@ static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 		char const * arch);
 static int _elf_destroy(AsmFormatPlugin * format);
 static int _elf_section(AsmFormatPlugin * format, char const * name);
+static char const * _elf_guess(AsmFormatPlugin * format, char const * hint);
 static char const * _elf_detect(AsmFormatPlugin * format);
 static int _elf_decode(AsmFormatPlugin * format, int raw);
 static int _elf_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -52,6 +53,7 @@ AsmFormatPluginDefinition format_plugin =
 	SELFMAG,
 	_elf_init,
 	_elf_destroy,
+	_elf_guess,
 	NULL,
 	_elf_section,
 	_elf_detect,
@@ -152,6 +154,46 @@ static int _elf_section(AsmFormatPlugin * format, char const * name)
 	if(format->section == NULL)
 		return -1;
 	return format->section(format, name);
+}
+
+
+/* elf_guess */
+static char const * _elf_guess(AsmFormatPlugin * format, char const * hint)
+{
+	/* XXX share these tables with _elf_detect() */
+	struct
+	{
+		char const * quirk;
+		char const * arch;
+	} quirks[] =
+	{
+		{ "arm", "armel" },
+		{ "mips", "mipsel" },
+		{ "x86", "i686" },
+		{ "x86-64", "amd64" },
+		{ "x86_64", "amd64" }
+	};
+	char const * arch[] =
+	{
+		"alpha",
+		"amd64",
+		"armeb", "armel",
+		"i386", "i486", "i586", "i686",
+		"mips", "mips64",
+		"sparc", "sparc64",
+	};
+	size_t i;
+	(void) format;
+
+	if(hint == NULL)
+		return NULL;
+	for(i = 0; i < sizeof(quirks) / sizeof(*quirks); i++)
+		if(string_compare(hint, quirks[i].quirk) == 0)
+			return quirks[i].arch;
+	for(i = 0; i < sizeof(arch) / sizeof(*arch); i++)
+		if(string_compare(hint, arch[i]) == 0)
+			return hint;
+	return NULL;
 }
 
 

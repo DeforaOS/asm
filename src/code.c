@@ -19,6 +19,7 @@
 
 
 #include <System.h>
+#include <sys/utsname.h>
 #include <assert.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -99,6 +100,9 @@ static int _asmcode_symbol_read(AsmCode * code, AsmSymbol * symbol);
 
 /* functions */
 /* asmcode_new */
+static char const * _new_arch(void);
+static char const * _new_arch_from_format(AsmCode * code, char const * format);
+
 AsmCode * asmcode_new(char const * arch, char const * format)
 {
 	AsmCode * code;
@@ -109,8 +113,19 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 	if((code = object_new(sizeof(*code))) == NULL)
 		return NULL;
 	memset(code, 0, sizeof(*code));
+	/* guess the architecture if necessary */
+	if(arch == NULL)
+	{
+		arch = (format != NULL) ? _new_arch_from_format(code, format)
+			: _new_arch();
+		if(arch == NULL)
+		{
+			asmcode_delete(code);
+			return NULL;
+		}
+	}
 	code->arch = arch_new(arch);
-	if(format != NULL)
+	if(format != NULL && code->format == NULL)
 		code->format = format_new(format);
 	if(code->arch == NULL)
 	{
@@ -118,6 +133,36 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 		return NULL;
 	}
 	return code;
+}
+
+static char const * _new_arch(void)
+{
+	static struct utsname uts;
+	static int cached = 0;
+
+	if(cached == 0)
+	{
+		if(uname(&uts) != 0)
+		{
+			error_set_code(-errno, "%s", strerror(errno));
+			return NULL;
+		}
+		cached = 1;
+	}
+	return uts.machine;
+}
+
+static char const * _new_arch_from_format(AsmCode * code, char const * format)
+{
+	char const * arch;
+
+	if((code->format = format_new(format)) == NULL)
+		return NULL;
+	if((arch = _new_arch()) != NULL)
+		arch = format_guess_arch(code->format, arch);
+	if(arch == NULL)
+		arch = format_guess_arch(code->format, NULL);
+	return arch;
 }
 
 

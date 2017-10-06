@@ -218,6 +218,7 @@ static char const _pe_header_signature[4] = "PE\0\0";
 /* plug-in */
 static AsmFormatPlugin * _pe_init(AsmFormatPluginHelper * helper,
 		char const * arch);
+static char const * _pe_guess(AsmFormatPlugin * format, char const * hint);
 static char const * _pe_detect(AsmFormatPlugin * format);
 static int _pe_decode(AsmFormatPlugin * format, int raw);
 static int _pe_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -239,6 +240,7 @@ AsmFormatPluginDefinition format_plugin =
 	sizeof(_pe_msdos_signature),
 	_pe_init,
 	NULL,
+	_pe_guess,
 	NULL,
 	NULL,
 	_pe_detect,
@@ -296,6 +298,36 @@ static AsmFormatPlugin * _pe_init(AsmFormatPluginHelper * helper,
 		return NULL;
 	}
 	return pe;
+}
+
+
+/* pe_guess */
+static char const * _pe_guess(AsmFormatPlugin * format, char const * hint)
+{
+	struct
+	{
+		char const * quirk;
+		char const * arch;
+	} quirks[] =
+	{
+		{ "arm", "armel" },
+		{ "mips", "mipsel" },
+		{ "x86", "i686" },
+		{ "x86-64", "amd64" },
+		{ "x86_64", "amd64" }
+	};
+	size_t i;
+	(void) format;
+
+	if(hint == NULL)
+		return NULL;
+	for(i = 0; i < sizeof(quirks) / sizeof(*quirks); i++)
+		if(string_compare(hint, quirks[i].quirk) == 0)
+			return quirks[i].arch;
+	for(i = 0; i < sizeof(_pe_arch) / sizeof(*_pe_arch); i++)
+		if(string_compare(_pe_arch[i].arch, hint) == 0)
+			return hint;
+	return NULL;
 }
 
 

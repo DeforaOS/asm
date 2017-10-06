@@ -128,6 +128,7 @@ static char _dex_signature[4] = "dex\n";
 /* plug-in */
 static Dex * _dex_init(AsmFormatPluginHelper * helper, char const * arch);
 static int _dex_destroy(Dex * dex);
+static char const * _dex_guess(Dex * dex, char const * hint);
 static char const * _dex_detect(Dex * dex);
 static int _dex_decode(Dex * dex, int raw);
 static int _dex_decode_section(Dex * dex, AsmSection * section,
@@ -148,6 +149,7 @@ AsmFormatPluginDefinition format_plugin =
 	sizeof(_dex_signature),
 	_dex_init,
 	_dex_destroy,
+	_dex_guess,
 	NULL,
 	NULL,
 	_dex_detect,
@@ -188,6 +190,18 @@ static int _dex_destroy(Dex * dex)
 	free(dex->dmii);
 	object_delete(dex);
 	return 0;
+}
+
+
+/* dex_guess */
+static char const * _dex_guess(Dex * dex, char const * hint)
+{
+	(void) dex;
+
+	/* XXX some sections might contain native code */
+	if(hint == NULL || string_compare(hint, "dalvik") == 0)
+		return "dalvik";
+	return NULL;
 }
 
 

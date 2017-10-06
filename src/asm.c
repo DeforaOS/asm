@@ -16,7 +16,6 @@
 
 
 #include <System.h>
-#include <sys/utsname.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <stdarg.h>
@@ -68,7 +67,7 @@ static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 static int _asm_can_open(Asm * a);
 
 /* useful */
-static char const * _asm_guess_arch(void);
+static char * _asm_guess_arch(void);
 
 static int _asm_open(Asm * a, char const * outfile);
 static int _asm_open_file(Asm * a, char const * outfile, FILE * fp);
@@ -247,11 +246,14 @@ int asm_function(Asm * a, char const * name)
 /* asm_guess_arch */
 int asm_guess_arch(Asm * a)
 {
-	char const * arch;
+	int ret;
+	char * arch;
 
 	if((arch = _asm_guess_arch()) == NULL)
 		return -1;
-	return asm_set_arch(a, arch);
+	ret = asm_set_arch(a, arch);
+	string_delete(arch);
+	return ret;
 }
 
 
@@ -414,21 +416,18 @@ static int _asm_can_open(Asm * a)
 
 /* useful */
 /* asm_guess_arch */
-static char const * _asm_guess_arch(void)
+static char * _asm_guess_arch(void)
 {
-	static struct utsname uts;
-	static int cached = 0;
+	char * ret = NULL;
+	AsmCode * code;
+	char const * arch;
 
-	if(cached == 0)
-	{
-		if(uname(&uts) != 0)
-		{
-			error_set_code(-errno, "%s", strerror(errno));
-			return NULL;
-		}
-		cached = 1;
-	}
-	return uts.machine;
+	if((code = asmcode_new(NULL, NULL)) == NULL)
+		return NULL;
+	if((arch = asmcode_get_arch(code)) != NULL)
+		ret = string_new(arch);
+	asmcode_delete(code);
+	return ret;
 }
 
 
@@ -438,8 +437,6 @@ static int _asm_open(Asm * a, char const * outfile)
 	char const * arch = a->arch;
 	char const * format = a->format;
 
-	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
-		return -1;
 	if(!_asm_can_open(a))
 		return -1;
 	if((a->code = asmcode_new(arch, format)) == NULL)
@@ -456,8 +453,6 @@ static int _asm_open_file(Asm * a, char const * outfile, FILE * fp)
 	char const * arch = a->arch;
 	char const * format = a->format;
 
-	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
-		return -1;
 	if(!_asm_can_open(a))
 		return -1;
 	if((a->code = asmcode_new(arch, format)) == NULL)

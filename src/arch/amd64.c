@@ -48,7 +48,13 @@ enum
 /* variables */
 static AsmArchDefinition const _amd64_definition =
 {
+#if defined(__APPLE__)
+	"mach-o", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
+#elif defined(__WIN32__)
+	"pe", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
+#else
 	"elf", ASM_ARCH_ENDIAN_LITTLE, 64, 8, 0
+#endif
 };
 
 #define REG(name, size, id, flags, description) \

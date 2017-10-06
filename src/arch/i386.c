@@ -45,11 +45,7 @@ enum
 /* variables */
 static AsmArchDefinition _i386_definition =
 {
-#ifdef __WIN32__
-	"pe", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
-#else
-	"elf", ASM_ARCH_ENDIAN_LITTLE, 32, 8, 0
-#endif
+#include "i386.def"
 };
 
 #define REG(name, size, id, flags, description) \

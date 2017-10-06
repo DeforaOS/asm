@@ -64,6 +64,10 @@ static const AsmPluginDescription _asm_plugin_description[APT_COUNT] =
 
 
 /* prototypes */
+/* accessors */
+static int _asm_can_open(Asm * a);
+
+/* useful */
 static char const * _asm_guess_arch(void);
 
 static int _asm_open(Asm * a, char const * outfile);
@@ -307,12 +311,8 @@ AsmCode * asm_open_deassemble(Asm * a, char const * filename, int raw)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, filename);
 #endif
-	if(a->code != NULL)
-	{
-		error_set_code(1, "%s: Operation in progress",
-				asmcode_get_filename(a->code));
+	if(!_asm_can_open(a))
 		return NULL;
-	}
 	if((a->code = asmcode_new_file(a->arch, a->format, filename)) == NULL
 			|| asmcode_decode(a->code, raw) != 0)
 		return NULL;
@@ -395,6 +395,24 @@ int asm_plugin_list(AsmPluginType type, int decode)
 
 /* private */
 /* functions */
+/* accessors */
+/* asm_can_open */
+static int _asm_can_open(Asm * a)
+{
+	char const * filename;
+
+	if(a->code == NULL)
+		return 1;
+	if((filename = asmcode_get_filename(a->code)) != NULL)
+		error_set_code(-EINPROGRESS, "%s: %s", filename,
+				strerror(EINPROGRESS));
+	else
+		error_set_code(-EINPROGRESS, "%s", strerror(EINPROGRESS));
+	return 0;
+}
+
+
+/* useful */
 /* asm_guess_arch */
 static char const * _asm_guess_arch(void)
 {
@@ -422,9 +440,8 @@ static int _asm_open(Asm * a, char const * outfile)
 
 	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
 		return -1;
-	if(a->code != NULL)
-		return -error_set_code(1, "%s: Operation in progress",
-				asmcode_get_filename(a->code));
+	if(!_asm_can_open(a))
+		return -1;
 	if((a->code = asmcode_new(arch, format)) == NULL)
 		return -1;
 	if(outfile == NULL)
@@ -438,17 +455,11 @@ static int _asm_open_file(Asm * a, char const * outfile, FILE * fp)
 {
 	char const * arch = a->arch;
 	char const * format = a->format;
-	char const * filename;
 
 	if(arch == NULL && (arch = _asm_guess_arch()) == NULL)
 		return -1;
-	if(a->code != NULL)
-	{
-		filename = asmcode_get_filename(a->code);
-		return -error_set_code(1, "%s%sOperation in progress",
-				(filename != NULL) ? filename : "",
-				(filename != NULL) ? ": " : "");
-	}
+	if(!_asm_can_open(a))
+		return -1;
 	if((a->code = asmcode_new(arch, format)) == NULL)
 		return -1;
 	return asmcode_open_file(a->code, outfile, fp);

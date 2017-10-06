@@ -146,7 +146,7 @@ static char _java_signature[4] = "\xca\xfe\xba\xbe";
 /* plug-in */
 static AsmFormatPlugin * _java_init(AsmFormatPluginHelper * helper,
 		char const * arch);
-static void _java_destroy(AsmFormatPlugin * format);
+static int _java_destroy(AsmFormatPlugin * format);
 static char const * _java_detect(AsmFormatPlugin * format);
 static int _java_decode(AsmFormatPlugin * format, int raw);
 static int _java_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -213,7 +213,7 @@ static int _destroy_field_table(AsmFormatPlugin * format);
 static int _destroy_method_table(AsmFormatPlugin * format);
 static int _destroy_attribute_table(AsmFormatPlugin * format);
 
-static void _java_destroy(AsmFormatPlugin * format)
+static int _java_destroy(AsmFormatPlugin * format)
 {
 	int ret = 0;
 
@@ -226,9 +226,10 @@ static void _java_destroy(AsmFormatPlugin * format)
 			|| _destroy_field_table(format) != 0
 			|| _destroy_method_table(format) != 0
 			|| _destroy_attribute_table(format) != 0)
-		ret = 1;
+		ret = -1;
 	free(format->constants);
 	object_delete(format);
+	return ret;
 }
 
 static int _destroy_constant_pool(AsmFormatPlugin * format)

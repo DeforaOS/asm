@@ -127,7 +127,7 @@ static char _dex_signature[4] = "dex\n";
 /* prototypes */
 /* plug-in */
 static Dex * _dex_init(AsmFormatPluginHelper * helper, char const * arch);
-static void _dex_destroy(Dex * dex);
+static int _dex_destroy(Dex * dex);
 static char const * _dex_detect(Dex * dex);
 static int _dex_decode(Dex * dex, int raw);
 static int _dex_decode_section(Dex * dex, AsmSection * section,
@@ -183,10 +183,11 @@ static Dex * _dex_init(AsmFormatPluginHelper * helper, char const * arch)
 
 
 /* dex_destroy */
-static void _dex_destroy(Dex * dex)
+static int _dex_destroy(Dex * dex)
 {
 	free(dex->dmii);
 	object_delete(dex);
+	return 0;
 }
 
 

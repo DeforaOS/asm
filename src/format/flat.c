@@ -33,7 +33,7 @@ struct _AsmFormatPlugin
 /* plug-in */
 static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
 		char const * arch);
-static void _flat_destroy(AsmFormatPlugin * format);
+static int _flat_destroy(AsmFormatPlugin * format);
 static int _flat_decode(AsmFormatPlugin * format, int raw);
 static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
@@ -76,9 +76,10 @@ static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
 
 
 /* flat_destroy */
-static void _flat_destroy(AsmFormatPlugin * format)
+static int _flat_destroy(AsmFormatPlugin * format)
 {
 	object_delete(format);
+	return 0;
 }
 
 

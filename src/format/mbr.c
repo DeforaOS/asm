@@ -43,7 +43,7 @@ static const uint8_t _mbr_zeros[512];
 /* plug-in */
 static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 		char const * arch);
-static void _mbr_destroy(AsmFormatPlugin * format);
+static int _mbr_destroy(AsmFormatPlugin * format);
 static int _mbr_decode(AsmFormatPlugin * format, int raw);
 static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
@@ -87,7 +87,7 @@ static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 
 
 /* mbr_destroy */
-static void _mbr_destroy(AsmFormatPlugin * format)
+static int _mbr_destroy(AsmFormatPlugin * format)
 {
 	int ret = 0;
 	AsmFormatPluginHelper * helper = format->helper;
@@ -108,7 +108,7 @@ static void _mbr_destroy(AsmFormatPlugin * format)
 			ret = -1;
 	}
 	object_delete(format);
-	/* FIXME may have failed */
+	return ret;
 }
 
 

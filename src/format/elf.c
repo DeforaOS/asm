@@ -32,7 +32,7 @@
 /* plug-in */
 static AsmFormatPlugin * _elf_init(AsmFormatPluginHelper * helper,
 		char const * arch);
-static void _elf_destroy(AsmFormatPlugin * format);
+static int _elf_destroy(AsmFormatPlugin * format);
 static int _elf_section(AsmFormatPlugin * format, char const * name);
 static char const * _elf_detect(AsmFormatPlugin * format);
 static int _elf_decode(AsmFormatPlugin * format, int raw);
@@ -129,19 +129,20 @@ static const ElfArch * _init_arch(char const * arch)
 
 
 /* elf_destroy */
-static void _elf_destroy(AsmFormatPlugin * format)
+static int _elf_destroy(AsmFormatPlugin * format)
 {
 	Elf * elf = format;
+	int ret = 0;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(format->destroy != NULL)
-		/* XXX may fail */
-		format->destroy(elf);
+		ret = format->destroy(elf);
 	free(elf->es32);
 	free(elf->es64);
 	object_delete(elf);
+	return ret;
 }
 
 

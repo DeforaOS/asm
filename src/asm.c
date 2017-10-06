@@ -281,7 +281,8 @@ int asm_instruction(Asm * a, char const * name, unsigned int operands_cnt, ...)
 	if((call.operands_cnt = operands_cnt) != 0)
 	{
 		va_start(ap, operands_cnt);
-		for(i = 0; i < 3 && i < operands_cnt; i++)
+		for(i = 0; i < sizeof(call.operands) / sizeof(*call.operands)
+				&& i < operands_cnt; i++)
 		{
 			operand = va_arg(ap, AsmArchOperand *);
 			memcpy(&call.operands[i], operand, sizeof(*operand));

@@ -329,8 +329,10 @@ int asm_plugin_list(AsmPluginType type, int decode)
 	struct dirent * de;
 	size_t len;
 	char const * sep = "";
-#ifdef __APPLE__
+#if defined(__APPLE__)
 	char const ext[] = ".dylib";
+#elif defined(__WIN32__)
+	char const ext[] = ".dll";
 #else
 	char const ext[] = ".so";
 #endif

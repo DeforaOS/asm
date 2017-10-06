@@ -129,8 +129,10 @@ AsmFormat * format_new_match(char const * filename, FILE * fp)
 	DIR * dir;
 	struct dirent * de;
 	size_t len;
-#ifdef __APPLE__
+#if defined(__APPLE__)
 	char const ext[] = ".dylib";
+#elif defined(__WIN32__)
+	char const ext[] = ".dll";
 #else
 	char const ext[] = ".so";
 #endif

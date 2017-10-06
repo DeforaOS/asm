@@ -136,7 +136,7 @@ AsmFormat * format_new_match(char const * filename, FILE * fp)
 #else
 	char const ext[] = ".so";
 #endif
-	int hasflat = 0;
+	AsmFormat * flat = NULL;
 	AsmFormat * format = NULL;
 
 #ifdef DEBUG
@@ -154,24 +154,23 @@ AsmFormat * format_new_match(char const * filename, FILE * fp)
 		if(strcmp(&de->d_name[len - sizeof(ext) + 1], ext) != 0)
 			continue;
 		de->d_name[len - sizeof(ext) + 1] = '\0';
-		if(strcmp(de->d_name, "flat") == 0)
-			hasflat = 1;
 		if((format = format_new(de->d_name)) == NULL)
 			continue;
 		if(format_init(format, NULL, filename, fp) == 0
 				&& format_match(format) == 1)
 			break;
-		format_delete(format);
+		if(strcmp(de->d_name, "flat") == 0)
+			flat = format;
+		else
+			format_delete(format);
 		format = NULL;
 	}
 	closedir(dir);
 	/* fallback on the "flat" format plug-in if necessary and available */
-	if(format == NULL && hasflat && (format = format_new("flat")) != NULL
-			&& format_init(format, NULL, filename, fp) != 0)
-		{
-			format_delete(format);
-			format = NULL;
-		}
+	if(format == NULL && flat != NULL)
+		return flat;
+	if(flat != NULL)
+		format_delete(flat);
 	return format;
 }
 #endif

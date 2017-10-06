@@ -38,7 +38,6 @@
 struct _AsmCode
 {
 	AsmArch * arch;
-	AsmArchDefinition const * definition;
 	AsmFormat * format;
 	char * filename;
 	FILE * fp;
@@ -117,7 +116,6 @@ AsmCode * asmcode_new(char const * arch, char const * format)
 		asmcode_delete(code);
 		return NULL;
 	}
-	code->definition = arch_get_definition(code->arch);
 	return code;
 }
 
@@ -167,7 +165,6 @@ AsmCode * asmcode_new_file(char const * arch, char const * format,
 		asmcode_delete(code);
 		return NULL;
 	}
-	code->definition = arch_get_definition(code->arch);
 	return code;
 }
 

@@ -183,6 +183,7 @@ void format_delete(AsmFormat * format)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
+	/* XXX may fail */
 	format_exit(format);
 	if(format->handle != NULL)
 		plugin_delete(format->handle);
@@ -274,16 +275,17 @@ char const * format_detect_arch(AsmFormat * format)
 /* format_exit */
 int format_exit(AsmFormat * format)
 {
+	int ret = 0;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(format->plugin != NULL && format->definition->destroy != NULL)
-		/* XXX may fail */
-		format->definition->destroy(format->plugin);
+		ret = format->definition->destroy(format->plugin);
 	format->plugin = NULL;
 	format->fp = NULL;
 	format->filename = NULL;
-	return 0;
+	return ret;
 }
 
 

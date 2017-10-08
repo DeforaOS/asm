@@ -468,12 +468,12 @@ static off_t _format_helper_seek(AsmFormat * format, off_t offset, int whence)
 {
 	if(whence == SEEK_SET)
 	{
-		if(fseek(format->fp, offset, whence) == 0)
+		if(fseeko(format->fp, offset, whence) == 0)
 			return offset;
 	}
 	else if(whence == SEEK_CUR || whence == SEEK_END)
 	{
-		if(fseek(format->fp, offset, whence) == 0)
+		if(fseeko(format->fp, offset, whence) == 0)
 			return ftello(format->fp);
 	}
 	else

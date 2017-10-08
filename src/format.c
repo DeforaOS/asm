@@ -144,7 +144,7 @@ AsmFormat * format_new_match(char const * filename, FILE * fp)
 #endif
 	if((dir = opendir(path)) == NULL)
 	{
-		error_set_code(1, "%s: %s", path, strerror(errno));
+		error_set_code(-errno, "%s: %s", path, strerror(errno));
 		return NULL;
 	}
 	while((de = readdir(dir)) != NULL)
@@ -339,7 +339,7 @@ int format_match(AsmFormat * format)
 #endif
 	if(s_len > 0)
 		if((buf = malloc(s_len)) == NULL)
-			ret = -error_set_code(1, "%s", strerror(errno));
+			ret = error_set_code(-errno, "%s", strerror(errno));
 	if(buf != NULL)
 	{
 		if(_format_helper_seek(format, 0, SEEK_SET) != 0)
@@ -454,7 +454,7 @@ static ssize_t _format_helper_read(AsmFormat * format, void * buf, size_t size)
 	if(fread(buf, size, 1, format->fp) == 1)
 		return size;
 	if(ferror(format->fp))
-		return -error_set_code(1, "%s: %s", format->filename,
+		return error_set_code(-errno, "%s: %s", format->filename,
 				strerror(errno));
 	if(feof(format->fp))
 		return -error_set_code(1, "%s: %s", format->filename,
@@ -479,7 +479,8 @@ static off_t _format_helper_seek(AsmFormat * format, off_t offset, int whence)
 	else
 		return -error_set_code(1, "%s: %s", format->filename,
 				"Invalid argument for seeking");
-	return -error_set_code(1, "%s: %s", format->filename, strerror(errno));
+	return error_set_code(-errno, "%s: %s", format->filename,
+			strerror(errno));
 }
 
 
@@ -490,7 +491,7 @@ static ssize_t _format_helper_write(AsmFormat * format, void const * buf,
 	if(fwrite(buf, size, 1, format->fp) == 1)
 		return size;
 	if(ferror(format->fp))
-		return -error_set_code(1, "%s: %s", format->filename,
+		return error_set_code(-errno, "%s: %s", format->filename,
 				strerror(errno));
 	if(feof(format->fp))
 		return -error_set_code(1, "%s: %s", format->filename,

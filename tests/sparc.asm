@@ -1,5 +1,5 @@
 /* $Id$ */
-.text
+.section text
 	ldd	[%r4 + %r7], %r11		/* 0xd6190007 */
 	ldub	[%r23], %r19			/* 0xe60dc000 */
 	sub	%r16, %r26, %r27		/* 0xb624001a */

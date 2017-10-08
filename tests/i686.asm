@@ -1,5 +1,5 @@
 /* $Id$ */
-.text
+.section text
 	emms					/* 0f 77		*/
 #if 1 /* FIXME doesn't work properly */
 	movd	%mm1, [%edx]

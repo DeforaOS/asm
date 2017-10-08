@@ -39,7 +39,14 @@ typedef struct _State
 	unsigned int error_cnt;
 	unsigned int warning_cnt;
 	AsmCode * code;
+
+	/* directive */
+	char * directive;
+	char * name;
+
+	/* instruction */
 	AsmArchInstructionCall call;
+
 	/* operands */
 	int address;
 	int negative;
@@ -58,8 +65,10 @@ static int _parser_warning(State * state, char const * format, ...);
 
 /* grammar */
 static int _program(State * state);
-static int _section(State * state);
-static int _section_name(State * state);
+static int _directive(State * state);
+static int _directive_name(State * state);
+static int _directive_args(State * state);
+static int _directive_arg(State * state);
 static int _newline(State * state);
 static int _space(State * state);
 static int _statement(State * state);
@@ -313,7 +322,7 @@ int parser_string(AsmPrefs * ap, AsmCode * code, char const * string)
 /* grammar */
 /* program */
 static int _program(State * state)
-	/* { section | statement } */
+	/* { directive | statement } */
 {
 	int ret = 0;
 
@@ -322,9 +331,9 @@ static int _program(State * state)
 #endif
 	for(;;)
 	{
-		if(_parser_in_set(state, TS_SECTION))
-			/* section */
-			ret |= _section(state);
+		if(_parser_in_set(state, TS_DIRECTIVE))
+			/* directive */
+			ret |= _directive(state);
 		else if(_parser_in_set(state, TS_STATEMENT))
 			/* statement */
 			ret |= _statement(state);
@@ -336,9 +345,9 @@ static int _program(State * state)
 }
 
 
-/* section */
-static int _section(State * state)
-	/* "." section_name newline */
+/* directive */
+static int _directive(State * state)
+	/* "." directive_name [ space [ directive_args ] ] newline */
 {
 	int ret;
 
@@ -347,10 +356,32 @@ static int _section(State * state)
 #endif
 	/* "." */
 	ret = _parser_check(state, AS_CODE_OPERATOR_DOT);
-	/* section_name */
-	if(!_parser_in_set(state, TS_SECTION_NAME))
-		return _parser_recover(state, AS_CODE_NEWLINE, "Section name");
-	ret |= _section_name(state);
+	/* directive_name */
+	if(!_parser_in_set(state, TS_DIRECTIVE_NAME))
+		return _parser_recover(state, AS_CODE_NEWLINE,
+				"Directive name");
+	ret |= _directive_name(state);
+	/* [ space [ directive_args ] ] */
+	if(_parser_in_set(state, TS_SPACE))
+	{
+		ret |= _space(state);
+		if(_parser_in_set(state, TS_DIRECTIVE_ARGS))
+			ret |= _directive_args(state);
+	}
+	if(string_compare(state->directive, "section") == 0
+			&& state->name != NULL)
+	{
+		if(asmcode_section(state->code, state->name) != 0)
+			ret |= _parser_error(state, "%s", error_get(NULL));
+	}
+	else
+		/* FIXME implement */
+		return error_set_code(1, "%s: %s", state->directive,
+				"Unknown directive");
+	free(state->directive);
+	state->directive = NULL;
+	free(state->name);
+	state->name = NULL;
 	/* newline */
 	if(!_parser_in_set(state, TS_NEWLINE))
 		return _parser_recover(state, AS_CODE_NEWLINE, "New line");
@@ -359,33 +390,67 @@ static int _section(State * state)
 }
 
 
-/* section_name */
-static int _section_name(State * state)
+/* directive_arg */
+static int _directive_arg(State * state)
+	/* WORD | NUMBER */
+{
+	char const * string;
+
+	if(state->token == NULL
+			|| (string = token_get_string(state->token)) == NULL
+			|| strlen(token_get_string(state->token)) == 0)
+		return error_set_code(1, "%s",
+				"Empty directive arguments are not allowed");
+	/* XXX only remembers the first argument */
+	if(state->name == NULL && (state->name = strdup(string)) == NULL)
+		return error_set_code(1, "%s", strerror(errno));
+	return _parser_scan(state);
+}
+
+
+/* directive_args */
+static int _directive_args(State * state)
+	/* directive_arg { space [ directive_arg ] } */
+{
+	int ret;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	ret = _directive_arg(state);
+	while(_parser_in_set(state, TS_SPACE))
+	{
+		/* space */
+		ret |= _space(state);
+		/* [ directive_arg ] */
+		if(_parser_in_set(state, TS_DIRECTIVE_ARG))
+			ret |= _directive_arg(state);
+	}
+	return ret;
+}
+
+
+/* directive_name */
+static int _directive_name(State * state)
 	/* WORD */
 {
 	int ret = 0;
-	char const * string = NULL;
-	size_t len;
-	char * section = NULL;
+	char const * string;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(state->token == NULL
 			|| (string = token_get_string(state->token)) == NULL
-			|| (len = strlen(token_get_string(state->token))) == 0)
+			|| strlen(token_get_string(state->token)) == 0)
 		return error_set_code(1, "%s",
-				"Sections with empty names are not allowed");
-	if((section = malloc(len + 2)) == NULL)
+				"Directives with empty names are not allowed");
+	if((state->directive = strdup(string)) == NULL)
 		return ret | error_set_code(1, "%s", strerror(errno));
-	snprintf(section, len + 2, ".%s", string);
 	ret |= _parser_scan(state);
 #ifdef DEBUG
-	fprintf(stderr, "%s\"%s\"\n", "DEBUG: section ", section);
+	fprintf(stderr, "%s\"%s\"\n", "DEBUG: directive ", state->directive);
 #endif
-	if(asmcode_section(state->code, section) != 0)
-		ret |= _parser_error(state, "%s", error_get(NULL));
-	free(section);
 	return ret;
 }
 

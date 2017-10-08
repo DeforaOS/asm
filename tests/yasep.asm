@@ -1,5 +1,5 @@
 /* $Id$ */
-.text
+.section text
 	add	$0x0e, %r1
 	add	%r0, %r1
 	and	$0x0d, %r1

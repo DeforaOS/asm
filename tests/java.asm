@@ -1,5 +1,5 @@
 /* $Id$ */
-.text
+.section text
 	aaload
 	aastore
 	aconst_null

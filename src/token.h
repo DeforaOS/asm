@@ -22,6 +22,10 @@
 /* protected */
 /* variables */
 extern TokenCode TS_ADDRESS[];
+extern TokenCode TS_DIRECTIVE[];
+extern TokenCode TS_DIRECTIVE_ARG[];
+extern TokenCode TS_DIRECTIVE_ARGS[];
+extern TokenCode TS_DIRECTIVE_NAME[];
 extern TokenCode TS_FUNCTION[];
 extern TokenCode TS_IMMEDIATE[];
 extern TokenCode TS_INSTRUCTION[];
@@ -29,8 +33,6 @@ extern TokenCode TS_NEWLINE[];
 extern TokenCode TS_OFFSET[];
 extern TokenCode TS_OPERAND_LIST[];
 extern TokenCode TS_REGISTER[];
-extern TokenCode TS_SECTION[];
-extern TokenCode TS_SECTION_NAME[];
 extern TokenCode TS_SIGN[];
 extern TokenCode TS_SPACE[];
 extern TokenCode TS_STATEMENT[];

@@ -1,8 +1,12 @@
-program:	{ section | statement }
+program:	{ directive | statement }
 
-section:	"." section_name newline
+directive:	"." directive_name [ space [ directive_args ] ] newline
 
-section_name:	WORD
+directive_name:	WORD
+
+directive_args:	directive_arg { space [ directive_arg ] }
+
+directive_arg:	WORD | NUMBER
 
 newline:	[ space ] NEWLINE
 

@@ -44,7 +44,7 @@ static void _i386_destroy(AsmArchPlugin * plugin);
 static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _i386_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 
 /* functions */
@@ -483,11 +483,13 @@ static int _decode_register(AsmArchPlugin * plugin,
 
 /* i386_encode */
 static int _encode_constant(AsmArchPlugin * plugin,
-		AsmArchOperandDefinition definition, AsmArchOperand * operand);
+		AsmArchOperandDefinition definition,
+		AsmArchOperand const * operand);
 static int _encode_dregister(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands);
-static int _encode_immediate(AsmArchPlugin * plugin, AsmArchOperand * operand);
+		AsmArchOperand const * operands);
+static int _encode_immediate(AsmArchPlugin * plugin,
+		AsmArchOperand const * operand);
 static int _encode_immediate8(AsmArchPlugin * plugin, uint8_t value);
 static int _encode_immediate16(AsmArchPlugin * plugin, uint16_t value);
 static int _encode_immediate24(AsmArchPlugin * plugin, uint32_t value);
@@ -496,14 +498,14 @@ static int _encode_opcode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction);
 static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands);
+		AsmArchOperand const * operands);
 static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands);
+		AsmArchOperand const * operands);
 
 static int _i386_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	uint32_t i;
 	AsmArchOperandDefinition definitions[3];
@@ -524,7 +526,8 @@ static int _i386_encode(AsmArchPlugin * plugin,
 }
 
 static int _encode_constant(AsmArchPlugin * plugin,
-		AsmArchOperandDefinition definition, AsmArchOperand * operand)
+		AsmArchOperandDefinition definition,
+		AsmArchOperand const * operand)
 {
 	AsmArchOperand ao;
 
@@ -537,11 +540,11 @@ static int _encode_constant(AsmArchPlugin * plugin,
 
 static int _encode_dregister(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands)
+		AsmArchOperand const * operands)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperandDefinition definition = definitions[*i];
-	AsmArchOperand * operand = &operands[*i];
+	AsmArchOperand const * operand = &operands[*i];
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	AsmArchRegister const * ar;
@@ -593,7 +596,8 @@ static int _encode_dregister(AsmArchPlugin * plugin, uint32_t * i,
 	return _encode_immediate(plugin, &ioperand);
 }
 
-static int _encode_immediate(AsmArchPlugin * plugin, AsmArchOperand * operand)
+static int _encode_immediate(AsmArchPlugin * plugin,
+		AsmArchOperand const * operand)
 {
 	uint64_t value = operand->value.immediate.value;
 
@@ -691,7 +695,7 @@ static int _encode_opcode(AsmArchPlugin * plugin,
 
 static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands)
+		AsmArchOperand const * operands)
 {
 	switch(operands[*i].definition)
 	{
@@ -716,11 +720,11 @@ static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 
 static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
-		AsmArchOperand * operands)
+		AsmArchOperand const * operands)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	AsmArchOperandDefinition definition = definitions[*i];
-	AsmArchOperand * operand = &operands[*i];
+	AsmArchOperand const * operand = &operands[*i];
 	char const * name = operand->value._register.name;
 	size_t size = AO_GET_SIZE(definition);
 	AsmArchRegister const * ar;

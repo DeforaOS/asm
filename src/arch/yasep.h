@@ -36,7 +36,7 @@ static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
 static void _yasep_destroy(AsmArchPlugin * plugin);
 static int _yasep_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
@@ -64,14 +64,14 @@ static void _yasep_destroy(AsmArchPlugin * plugin)
 /* yasep_encode */
 static int _encode_16(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 static int _encode_32(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 static int _yasep_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	return (instruction->opcode & 0x1)
 		? _encode_32(plugin, instruction, call)
@@ -80,7 +80,7 @@ static int _yasep_encode(AsmArchPlugin * plugin,
 
 static int _encode_16(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint16_t u16 = instruction->opcode;
@@ -121,7 +121,7 @@ static int _encode_16(AsmArchPlugin * plugin,
 
 static int _encode_32(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;

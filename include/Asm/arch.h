@@ -228,7 +228,7 @@ typedef const struct _AsmArchPluginDefinition
 	void (*destroy)(AsmArchPlugin * arch);
 	int (*encode)(AsmArchPlugin * arch,
 			AsmArchInstruction const * instruction,
-			AsmArchInstructionCall * call);
+			AsmArchInstructionCall const * call);
 	int (*decode)(AsmArchPlugin * arch, AsmArchInstructionCall * call);
 } AsmArchPluginDefinition;
 

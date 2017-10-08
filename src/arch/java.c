@@ -265,7 +265,7 @@ static AsmArchPlugin * _java_init(AsmArchPluginHelper * helper);
 static void _java_destroy(AsmArchPlugin * plugin);
 static int _java_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 
 
@@ -311,7 +311,7 @@ static void _java_destroy(AsmArchPlugin * plugin)
 /* java_encode */
 static int _java_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	size_t i;

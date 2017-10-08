@@ -36,7 +36,7 @@ static AsmArchPlugin * _mips_init(AsmArchPluginHelper * helper);
 static void _mips_destroy(AsmArchPlugin * plugin);
 static int _mips_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 
 /* functions */
@@ -63,7 +63,7 @@ static void _mips_destroy(AsmArchPlugin * plugin)
 /* mips_encode */
 static int _mips_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;

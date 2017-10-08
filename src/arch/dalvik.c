@@ -90,7 +90,7 @@ static AsmArchPlugin * _dalvik_init(AsmArchPluginHelper * helper);
 static void _dalvik_destroy(AsmArchPlugin * plugin);
 static int _dalvik_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 static int _dalvik_decode(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call);
 
@@ -136,7 +136,7 @@ static void _dalvik_destroy(AsmArchPlugin * plugin)
 /* dalvik_encode */
 static int _dalvik_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;

@@ -59,7 +59,7 @@ static int _template_decode(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call);
 static int _template_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 
 /* protected */
@@ -123,7 +123,7 @@ static int _template_decode(AsmArchPlugin * plugin,
 /* template_encode */
 static int _template_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t opcode;

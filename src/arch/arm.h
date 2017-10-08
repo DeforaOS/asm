@@ -34,7 +34,7 @@ static void _arm_destroy(AsmArchPlugin * plugin);
 static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _arm_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 
 /* functions */
@@ -306,7 +306,7 @@ static int _decode_unknown(AsmArchInstructionCall * call, uint32_t opcode)
 /* arm_encode */
 static int _arm_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;

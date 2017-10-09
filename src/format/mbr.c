@@ -57,7 +57,7 @@ static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
 AsmFormatPluginDefinition format_plugin =
 {
 	"mbr",
-	"MBR",
+	"Master Boot Record (MBR)",
 	LICENSE_GNU_LGPL3_FLAGS,
 	NULL,
 	0,

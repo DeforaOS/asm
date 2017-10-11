@@ -291,8 +291,11 @@ int format_exit(AsmFormat * format)
 /* format_function */
 int format_function(AsmFormat * format, char const * function)
 {
+	if(format->plugin == NULL || format->definition == NULL)
+		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->function == NULL)
-		return 0;
+		return -error_set_code(1, "%s: %s", format->definition->name,
+				"No support for functions");
 	return format->definition->function(format->plugin, function);
 }
 
@@ -357,8 +360,11 @@ int format_match(AsmFormat * format)
 /* format_section */
 int format_section(AsmFormat * format, char const * section)
 {
+	if(format->plugin == NULL || format->definition == NULL)
+		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->section == NULL)
-		return 0;
+		return -error_set_code(1, "%s: %s", format->definition->name,
+				"No support for sections");
 	return format->definition->section(format->plugin, section);
 }
 

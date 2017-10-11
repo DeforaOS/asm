@@ -291,6 +291,9 @@ int format_exit(AsmFormat * format)
 /* format_function */
 int format_function(AsmFormat * format, char const * function)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, function);
+#endif
 	if(format->plugin == NULL || format->definition == NULL)
 		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->function == NULL)
@@ -303,8 +306,15 @@ int format_function(AsmFormat * format, char const * function)
 /* format_guess_arch */
 char const * format_guess_arch(AsmFormat * format, char const * hint)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, hint);
+#endif
 	if(format->definition->guess == NULL)
 		return NULL;
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() => \"%s\"\n", __func__,
+			format->definition->guess(format->plugin, hint));
+#endif
 	return format->definition->guess(format->plugin, hint);
 }
 
@@ -360,6 +370,9 @@ int format_match(AsmFormat * format)
 /* format_section */
 int format_section(AsmFormat * format, char const * section)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
+#endif
 	if(format->plugin == NULL || format->definition == NULL)
 		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->section == NULL)
@@ -472,6 +485,9 @@ static ssize_t _format_helper_read(AsmFormat * format, void * buf, size_t size)
 /* format_helper_seek */
 static off_t _format_helper_seek(AsmFormat * format, off_t offset, int whence)
 {
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(%zd, %d)\n", __func__, offset, whence);
+#endif
 	if(whence == SEEK_SET)
 	{
 		if(fseeko(format->fp, offset, whence) == 0)

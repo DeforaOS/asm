@@ -55,6 +55,7 @@ AsmFormatPluginDefinition format_plugin =
 	_elf_destroy,
 	_elf_guess,
 	NULL,
+	NULL,
 	_elf_section,
 	_elf_detect,
 	_elf_decode,

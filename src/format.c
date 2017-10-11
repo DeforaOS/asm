@@ -271,6 +271,23 @@ char const * format_detect_arch(AsmFormat * format)
 }
 
 
+/* format_directive */
+int format_directive(AsmFormat * format, char const * directive, va_list args)
+{
+	int ret = 0;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, directive);
+#endif
+	if(format->plugin == NULL || format->definition == NULL)
+		return -error_set_code(1, "%s", "Plug-in not loaded");
+	if(format->definition->directive == NULL)
+		return -error_set_code(1, "%s: %s", format->definition->name,
+				"No support for directives");
+	return format->definition->directive(format->plugin, directive, args);
+}
+
+
 /* format_exit */
 int format_exit(AsmFormat * format)
 {

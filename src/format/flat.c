@@ -35,6 +35,7 @@ static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
 		char const * arch);
 static int _flat_destroy(AsmFormatPlugin * format);
 static char const * _flat_guess(AsmFormatPlugin * format, char const * hint);
+static int _flat_section(AsmFormatPlugin * format, char const * section);
 static int _flat_decode(AsmFormatPlugin * format, int raw);
 static int _flat_decode_section(AsmFormatPlugin * format, AsmSection * section,
 		AsmArchInstructionCall ** calls, size_t * calls_cnt);
@@ -55,6 +56,7 @@ AsmFormatPluginDefinition format_plugin =
 	_flat_guess,
 	NULL,
 	NULL,
+	_flat_section,
 	NULL,
 	_flat_decode,
 	_flat_decode_section
@@ -91,6 +93,17 @@ static char const * _flat_guess(AsmFormatPlugin * format, char const * hint)
 	(void) format;
 
 	return hint;
+}
+
+
+/* flat_section */
+static int _flat_section(AsmFormatPlugin * format, char const * section)
+{
+	(void) format;
+	(void) section;
+
+	/* ignore sections */
+	return 0;
 }
 
 

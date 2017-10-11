@@ -169,6 +169,7 @@ AsmFormatPluginDefinition format_plugin =
 	_java_guess,
 	NULL,
 	NULL,
+	NULL,
 	_java_detect,
 	_java_decode,
 	_java_decode_section

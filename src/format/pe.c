@@ -243,6 +243,7 @@ AsmFormatPluginDefinition format_plugin =
 	_pe_guess,
 	NULL,
 	NULL,
+	NULL,
 	_pe_detect,
 	_pe_decode,
 	_pe_decode_section

@@ -18,6 +18,7 @@
 #ifndef ASM_FORMAT_H
 # define ASM_FORMAT_H
 
+# include <stdarg.h>
 # include "Asm/common.h"
 # include "Asm/format.h"
 # include "code.h"
@@ -54,6 +55,7 @@ int format_exit(AsmFormat * format);
 
 char const * format_guess_arch(AsmFormat * format, char const * hint);
 
+int format_directive(AsmFormat * format, char const * directive, va_list args);
 int format_function(AsmFormat * format, char const * function);
 int format_section(AsmFormat * format, char const * section);
 

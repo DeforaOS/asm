@@ -45,6 +45,7 @@ static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 		char const * arch);
 static int _mbr_destroy(AsmFormatPlugin * format);
 static char const * _mbr_guess(AsmFormatPlugin * format, char const * hint);
+static int _mbr_section(AsmFormatPlugin * format, char const * section);
 static char const * _mbr_detect(AsmFormatPlugin * format);
 static int _mbr_decode(AsmFormatPlugin * format, int raw);
 static int _mbr_decode_section(AsmFormatPlugin * format, AsmSection * section,
@@ -66,6 +67,7 @@ AsmFormatPluginDefinition format_plugin =
 	_mbr_guess,
 	NULL,
 	NULL,
+	_mbr_section,
 	_mbr_detect,
 	_mbr_decode,
 	_mbr_decode_section
@@ -129,6 +131,17 @@ static char const * _mbr_guess(AsmFormatPlugin * format, char const * hint)
 		if(string_compare(hint, arch[i]) == 0)
 			return "i386_real";
 	return NULL;
+}
+
+
+/* mbr_section */
+static int _mbr_section(AsmFormatPlugin * format, char const * section)
+{
+	(void) format;
+	(void) section;
+
+	/* ignore sections */
+	return 0;
 }
 
 

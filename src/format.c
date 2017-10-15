@@ -272,19 +272,19 @@ char const * format_detect_arch(AsmFormat * format)
 
 
 /* format_directive */
-int format_directive(AsmFormat * format, char const * directive, va_list args)
+int format_directive(AsmFormat * format, char const * name, va_list args)
 {
 	int ret = 0;
 
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, directive);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	if(format->plugin == NULL || format->definition == NULL)
 		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->directive == NULL)
 		return -error_set_code(1, "%s: %s", format->definition->name,
 				"No support for directives");
-	return format->definition->directive(format->plugin, directive, args);
+	return format->definition->directive(format->plugin, name, args);
 }
 
 
@@ -306,17 +306,17 @@ int format_exit(AsmFormat * format)
 
 
 /* format_function */
-int format_function(AsmFormat * format, char const * function)
+int format_function(AsmFormat * format, char const * name)
 {
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, function);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	if(format->plugin == NULL || format->definition == NULL)
 		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->function == NULL)
 		return -error_set_code(1, "%s: %s", format->definition->name,
 				"No support for functions");
-	return format->definition->function(format->plugin, function);
+	return format->definition->function(format->plugin, name);
 }
 
 
@@ -385,17 +385,17 @@ int format_match(AsmFormat * format)
 
 
 /* format_section */
-int format_section(AsmFormat * format, char const * section)
+int format_section(AsmFormat * format, char const * name)
 {
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
 	if(format->plugin == NULL || format->definition == NULL)
 		return -error_set_code(1, "%s", "Plug-in not loaded");
 	if(format->definition->section == NULL)
 		return -error_set_code(1, "%s: %s", format->definition->name,
 				"No support for sections");
-	return format->definition->section(format->plugin, section);
+	return format->definition->section(format->plugin, name);
 }
 
 

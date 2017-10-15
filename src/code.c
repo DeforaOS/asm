@@ -491,9 +491,12 @@ int asmcode_decode_section(AsmCode * code, AsmSection * section,
 
 
 /* asmcode_function */
-int asmcode_function(AsmCode * code, char const * function)
+int asmcode_function(AsmCode * code, char const * name)
 {
-	return format_function(code->format, function);
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
+	return format_function(code->format, name);
 }
 
 
@@ -678,12 +681,12 @@ static void _print_immediate(AsmArchOperand * ao)
 
 
 /* asmcode_section */
-int asmcode_section(AsmCode * code, char const * section)
+int asmcode_section(AsmCode * code, char const * name)
 {
 #ifdef DEBUG
-	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, section);
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif
-	return format_section(code->format, section);
+	return format_section(code->format, name);
 }
 
 

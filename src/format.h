@@ -55,9 +55,9 @@ int format_exit(AsmFormat * format);
 
 char const * format_guess_arch(AsmFormat * format, char const * hint);
 
-int format_directive(AsmFormat * format, char const * directive, va_list args);
-int format_function(AsmFormat * format, char const * function);
-int format_section(AsmFormat * format, char const * section);
+int format_directive(AsmFormat * format, char const * name, va_list args);
+int format_function(AsmFormat * format, char const * name);
+int format_section(AsmFormat * format, char const * name);
 
 /* disassembly */
 int format_decode(AsmFormat * format, AsmCode * code, int raw);

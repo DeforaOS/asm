@@ -69,6 +69,8 @@ AsmString * asmcode_set_string(AsmCode * code, int id, char const * name,
 
 /* useful */
 /* assembly */
+int asmcode_directive(AsmCode * code, char const * name,
+		char const ** args, size_t args_cnt);
 int asmcode_function(AsmCode * code, char const * name);
 int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call);
 int asmcode_section(AsmCode * code, char const * name);

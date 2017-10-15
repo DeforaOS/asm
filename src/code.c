@@ -490,6 +490,17 @@ int asmcode_decode_section(AsmCode * code, AsmSection * section,
 }
 
 
+/* asmcode_directive */
+int asmcode_directive(AsmCode * code, char const * name, char const ** args,
+		size_t args_cnt)
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
+#endif
+	return format_directive(code->format, name, args, args_cnt);
+}
+
+
 /* asmcode_function */
 int asmcode_function(AsmCode * code, char const * name)
 {

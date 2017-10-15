@@ -272,7 +272,8 @@ char const * format_detect_arch(AsmFormat * format)
 
 
 /* format_directive */
-int format_directive(AsmFormat * format, char const * name, va_list args)
+int format_directive(AsmFormat * format, char const * name,
+		char const ** args, size_t args_cnt)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
@@ -282,7 +283,8 @@ int format_directive(AsmFormat * format, char const * name, va_list args)
 	if(format->definition->directive == NULL)
 		return -error_set_code(1, "%s: %s", format->definition->name,
 				"No support for directives");
-	return format->definition->directive(format->plugin, name, args);
+	return format->definition->directive(format->plugin, name, args,
+			args_cnt);
 }
 
 

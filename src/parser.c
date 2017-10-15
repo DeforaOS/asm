@@ -42,7 +42,8 @@ typedef struct _State
 
 	/* directive */
 	char * directive;
-	char * name;
+	char ** args;
+	size_t args_cnt;
 
 	/* instruction */
 	AsmArchInstructionCall call;
@@ -350,6 +351,7 @@ static int _directive(State * state)
 	/* "." directive_name [ space [ directive_args ] ] newline */
 {
 	int ret;
+	size_t i;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -368,20 +370,25 @@ static int _directive(State * state)
 		if(_parser_in_set(state, TS_DIRECTIVE_ARGS))
 			ret |= _directive_args(state);
 	}
-	if(string_compare(state->directive, "section") == 0
-			&& state->name != NULL)
+	/* execute the directive */
+	if(string_compare(state->directive, "section") == 0)
 	{
-		if(asmcode_section(state->code, state->name) != 0)
+		if(state->args_cnt != 1)
+			ret |= _parser_error(state, "%s",
+					"Sections expect a name");
+		else if(asmcode_section(state->code, state->args[0]) != 0)
 			ret |= _parser_error(state, "%s", error_get(NULL));
 	}
-	else
-		/* FIXME implement */
-		return error_set_code(1, "%s: %s", state->directive,
-				"Unknown directive");
+	else if(asmcode_directive(state->code, state->directive, state->args,
+				state->args_cnt) != 0)
+		ret |= _parser_error(state, "%s", error_get(NULL));
 	free(state->directive);
 	state->directive = NULL;
-	free(state->name);
-	state->name = NULL;
+	for(i = 0; i < state->args_cnt; i++)
+		free(state->args[i]);
+	free(state->args);
+	state->args = NULL;
+	state->args_cnt = 0;
 	/* newline */
 	if(!_parser_in_set(state, TS_NEWLINE))
 		return _parser_recover(state, AS_CODE_NEWLINE, "New line");
@@ -395,15 +402,21 @@ static int _directive_arg(State * state)
 	/* WORD | NUMBER */
 {
 	char const * string;
+	char ** p;
 
 	if(state->token == NULL
 			|| (string = token_get_string(state->token)) == NULL
 			|| strlen(token_get_string(state->token)) == 0)
 		return error_set_code(1, "%s",
 				"Empty directive arguments are not allowed");
-	/* XXX only remembers the first argument */
-	if(state->name == NULL && (state->name = strdup(string)) == NULL)
+	if((p = realloc(state->args, sizeof(*p) * (state->args_cnt + 1)))
+			== NULL)
 		return error_set_code(1, "%s", strerror(errno));
+	state->args = p;
+	p = &state->args[state->args_cnt];
+	if((*p = strdup(string)) == NULL)
+		return error_set_code(1, "%s", strerror(errno));
+	state->args_cnt++;
 	return _parser_scan(state);
 }
 

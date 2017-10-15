@@ -18,7 +18,6 @@
 #ifndef DEVEL_ASM_FORMAT_H
 # define DEVEL_ASM_FORMAT_H
 
-# include <stdarg.h>
 # include <stdio.h>
 # include <System/license.h>
 # include "asm.h"
@@ -80,7 +79,7 @@ typedef struct _AsmFormatPluginDefinition
 	/* assembly */
 	char const * (*guess)(AsmFormatPlugin * format, char const * hint);
 	int (*directive)(AsmFormatPlugin * format, char const * directive,
-			va_list args);
+			char const ** args, size_t size);
 	int (*function)(AsmFormatPlugin * format, char const * function);
 	int (*section)(AsmFormatPlugin * format, char const * section);
 

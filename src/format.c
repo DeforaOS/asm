@@ -274,8 +274,6 @@ char const * format_detect_arch(AsmFormat * format)
 /* format_directive */
 int format_directive(AsmFormat * format, char const * name, va_list args)
 {
-	int ret = 0;
-
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, name);
 #endif

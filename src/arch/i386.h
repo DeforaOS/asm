@@ -145,6 +145,7 @@ static int _decode_constant(AsmArchPlugin * plugin,
 {
 	AsmArchOperandDefinition aod = call->operands[i].definition;
 	AsmArchOperand * ao = &call->operands[i];
+	(void) plugin;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);

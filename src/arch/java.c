@@ -363,6 +363,7 @@ static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t u8;
 	AsmArchInstruction const * ai;
+	ssize_t s;
 	size_t i;
 	AsmArchOperand * ao;
 	uint16_t u16;
@@ -386,8 +387,8 @@ static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	}
 	call->name = ai->name;
 	/* tableswitch may be followed by padding */
-	if(ai->opcode == 0xaa && (i = call->offset % 4) > 0
-			&& helper->read(helper->arch, &u32, i) != i)
+	if(ai->opcode == 0xaa && (s = call->offset % 4) > 0
+			&& helper->read(helper->arch, &u32, s) != s)
 		return -1;
 	call->operands[0].definition = ai->op1;
 	call->operands[1].definition = ai->op2;

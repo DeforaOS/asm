@@ -400,7 +400,7 @@ static int _dex_decode_section(Dex * dex, AsmSection * section,
 {
 	AsmFormatPluginHelper * helper = dex->helper;
 	DexMapCodeItem dmci;
-	size_t i;
+	ssize_t i;
 	off_t seek;
 	AsmFunction * f;
 	size_t j;

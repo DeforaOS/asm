@@ -130,6 +130,10 @@ AsmArch * arch_new(char const * name)
 	if(a->definition->instructions != NULL)
 		for(; a->definition->instructions[a->instructions_cnt].name
 				!= NULL; a->instructions_cnt++);
+	a->prefixes_cnt = 0;
+	if(a->definition->prefixes != NULL)
+		for(; a->definition->prefixes[a->prefixes_cnt].name != NULL;
+				a->prefixes_cnt++);
 	a->registers_cnt = 0;
 	if(a->definition->registers != NULL)
 		for(; a->definition->registers[a->registers_cnt].name != NULL;

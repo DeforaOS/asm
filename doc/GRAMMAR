@@ -18,7 +18,9 @@ function:	function_name [ space ] ":"
 
 function_name:	WORD
 
-instruction:	instruction_name [ space [ operand_list ] ]
+instruction:	[ prefix space ] instruction_name [ space [ operand_list ] ]
+
+prefix:		WORD
 
 instruction_name:	WORD
 

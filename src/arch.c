@@ -44,6 +44,7 @@ struct _AsmArch
 	AsmArchPluginDefinition * definition;
 	AsmArchPlugin * plugin;
 	size_t instructions_cnt;
+	size_t prefixes_cnt;
 	size_t registers_cnt;
 
 	/* internal */
@@ -100,6 +101,10 @@ AsmArch * arch_new(char const * name)
 	if(a->definition->instructions != NULL)
 		for(; a->definition->instructions[a->instructions_cnt].name
 				!= NULL; a->instructions_cnt++);
+	a->prefixes_cnt = 0;
+	if(a->definition->prefixes != NULL)
+		for(; a->definition->prefixes[a->prefixes_cnt].name != NULL;
+				a->prefixes_cnt++);
 	a->registers_cnt = 0;
 	if(a->definition->registers != NULL)
 		for(; a->definition->registers[a->registers_cnt].name != NULL;
@@ -405,6 +410,43 @@ AsmArchInstruction const * arch_get_instructions(AsmArch * arch)
 char const * arch_get_name(AsmArch * arch)
 {
 	return arch->definition->name;
+}
+
+
+/* arch_get_prefix */
+AsmArchPrefix const * arch_get_prefix(AsmArch * arch, size_t index)
+{
+	if(index >= arch->prefixes_cnt)
+		return NULL;
+	return &arch->definition->prefixes[index];
+}
+
+
+/* arch_get_prefix_by_name */
+AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
+		char const * name)
+{
+	size_t i;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\") %zu\n", __func__, name,
+			arch->prefixes_cnt);
+#endif
+	for(i = 0; i < arch->prefixes_cnt; i++)
+		if(strcmp(arch->definition->prefixes[i].name, name) == 0)
+		{
+			fprintf(stderr, "DEBUG: %s() => \"%s\"\n", __func__,
+					name);
+			return &arch->definition->prefixes[i];
+		}
+	return NULL;
+}
+
+
+/* arch_get_prefixes */
+AsmArchPrefix const * arch_get_prefixes(AsmArch * arch)
+{
+	return arch->definition->prefixes;
 }
 
 

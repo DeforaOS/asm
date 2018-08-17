@@ -58,6 +58,12 @@ static AsmArchRegister const _i386_real_registers[] =
 };
 #undef REG
 
+static AsmArchPrefix const _i386_real_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
+};
+
 static AsmArchInstruction const _i386_real_instructions[] =
 {
 #include "i386.ins"
@@ -80,6 +86,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_i386_real_definition,
 	_i386_real_registers,
+	_i386_real_prefixes,
 	_i386_real_instructions,
 	_i386_init,
 	_i386_destroy,

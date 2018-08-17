@@ -104,6 +104,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_dalvik_definition,
 	_dalvik_registers,
+	NULL,
 	_dalvik_instructions,
 	_dalvik_init,
 	_dalvik_destroy,

@@ -33,9 +33,7 @@ typedef struct _AsmCode AsmCode;
 char const * asmcode_get_arch(AsmCode * code);
 AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code);
 char const * asmcode_get_arch_description(AsmCode * code);
-AsmArchInstruction const * asmcode_get_arch_instruction_by_name(AsmCode * code,
-		char const * name);
-AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);
+
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);
 char const * asmcode_get_format_description(AsmCode * code);
@@ -47,6 +45,16 @@ void asmcode_get_functions(AsmCode * code, AsmFunction ** functions,
 
 AsmFunction * asmcode_set_function(AsmCode * code, int id, char const * name,
 		off_t offset, ssize_t size);
+
+/* instructions */
+AsmArchInstruction const * asmcode_get_arch_instruction_by_name(AsmCode * code,
+		char const * name);
+AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);
+
+/* prefixes */
+AsmArchPrefix const * asmcode_get_arch_prefix_by_name(AsmCode * code,
+		char const * name);
+AsmArchPrefix const * asmcode_get_arch_prefixes(AsmCode * code);
 
 /* registers */
 AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code);

@@ -79,6 +79,7 @@ static int _instruction(State * state);
 static int _instruction_name(State * state);
 static int _operand_list(State * state);
 static int _operand(State * state);
+static int _prefix(State * state);
 static int _value(State * state);
 static int _symbol(State * state);
 static int _register(State * state);
@@ -379,7 +380,8 @@ static int _directive(State * state)
 		else if(asmcode_section(state->code, state->args[0]) != 0)
 			ret |= _parser_error(state, "%s", error_get(NULL));
 	}
-	else if(asmcode_directive(state->code, state->directive, state->args,
+	else if(asmcode_directive(state->code, state->directive,
+				(char const **)state->args,
 				state->args_cnt) != 0)
 		ret |= _parser_error(state, "%s", error_get(NULL));
 	free(state->directive);
@@ -569,17 +571,30 @@ static int _function_name(State * state)
 
 /* instruction */
 static int _instruction(State * state)
-	/* instruction_name [ space [ operand_list ] ] */
+	/* [ prefix space ] instruction_name [ space [ operand_list ] ] */
 {
-	int ret;
+	int ret = 0;
+	char const * string;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	/* reset the current instruction */
 	memset(&state->call, 0, sizeof(state->call));
+	/* [ prefix space ] */
+	if(_parser_in_set(state, TS_PREFIX)
+			&& (string = token_get_string(state->token)) != NULL
+			&& asmcode_get_arch_prefix_by_name(state->code,
+				string) != NULL)
+	{
+		ret |= _prefix(state);
+		if(_parser_in_set(state, TS_SPACE))
+			ret |= _space(state);
+		else
+			ret |= _parser_error(state, "%s", "Expected a space");
+	}
 	/* instruction_name */
-	ret = _instruction_name(state);
+	ret |= _instruction_name(state);
 	if(_parser_in_set(state, TS_SPACE))
 	{
 		/* [ space */
@@ -673,6 +688,18 @@ static int _operand(State * state)
 	else if(_parser_in_set(state, TS_ADDRESS))
 		return _address(state);
 	return _parser_error(state, "%s", "Expected value or address");
+}
+
+
+/* prefix */
+static int _prefix(State * state)
+	/* WORD */
+{
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	/* FIXME really implement */
+	return _parser_scan(state);
 }
 
 

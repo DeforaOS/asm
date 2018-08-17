@@ -64,6 +64,12 @@ static AsmArchInstruction const _i386_instructions[] =
 #include "null.ins"
 };
 
+static AsmArchPrefix const _i386_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
+};
+
 
 /* functions */
 #include "i386.h"
@@ -79,6 +85,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_i386_definition,
 	_i386_registers,
+	_i386_prefixes,
 	_i386_instructions,
 	_i386_init,
 	_i386_destroy,

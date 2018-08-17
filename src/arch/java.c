@@ -278,6 +278,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_java_definition,
 	_java_registers,
+	NULL,
 	_java_instructions,
 	_java_init,
 	_java_destroy,

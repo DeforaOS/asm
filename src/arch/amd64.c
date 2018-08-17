@@ -68,6 +68,13 @@ static AsmArchRegister const _amd64_registers[] =
 };
 #undef REG
 
+static AsmArchPrefix const _amd64_prefixes[] =
+{
+#include "i386.pre"
+#include "amd64.pre"
+#include "null.pre"
+};
+
 static AsmArchInstruction const _amd64_instructions[] =
 {
 #include "i386.ins"
@@ -94,6 +101,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_amd64_definition,
 	_amd64_registers,
+	_amd64_prefixes,
 	_amd64_instructions,
 	_i386_init,
 	_i386_destroy,

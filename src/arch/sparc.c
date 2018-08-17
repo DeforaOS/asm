@@ -58,6 +58,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_sparc_definition,
 	_sparc_registers,
+	NULL,
 	_sparc_instructions,
 	_sparc_init,
 	_sparc_destroy,

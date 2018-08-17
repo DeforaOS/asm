@@ -71,6 +71,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_yasep_definition,
 	_yasep_registers,
+	NULL,
 	_yasep_instructions,
 	_yasep_init,
 	_yasep_destroy,

@@ -44,6 +44,12 @@ typedef struct _AsmArchDefinition
 	uint32_t instruction_size;	/* 0 if not constant */
 } AsmArchDefinition;
 
+/* prefixes */
+typedef struct _AsmArchPrefix
+{
+	char const * name;
+} AsmArchPrefix;
+
 /* operands */
 typedef enum _AsmArchOperandType
 {
@@ -165,6 +171,7 @@ typedef struct _AsmArchOperand
 
 typedef struct _AsmArchInstructionCall
 {
+	char const * prefix;
 	char const * name;
 	AsmArchOperand operands[5];
 	uint32_t operands_cnt;
@@ -222,6 +229,7 @@ typedef const struct _AsmArchPluginDefinition
 
 	AsmArchDefinition const * definition;
 	AsmArchRegister const * registers;
+	AsmArchPrefix const * prefixes;
 	AsmArchInstruction const * instructions;
 
 	AsmArchPlugin * (*init)(AsmArchPluginHelper * helper);

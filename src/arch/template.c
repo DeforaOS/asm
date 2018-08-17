@@ -36,6 +36,14 @@ static AsmArchRegister const _template_registers[] =
 };
 #undef REG
 
+static AsmArchPrefix const _template_prefixes[] =
+{
+#if 0
+# include "template.pre"
+#endif
+#include "null.pre"
+};
+
 static AsmArchInstruction const _template_instructions[] =
 {
 #if 0
@@ -71,6 +79,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_template_definition,
 	_template_registers,
+	_template_prefixes,
 	_template_instructions,
 	_template_init,
 	_template_destroy,

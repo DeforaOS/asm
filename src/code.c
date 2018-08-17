@@ -275,6 +275,21 @@ AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code)
 }
 
 
+/* asmcode_get_arch_prefix_by_name */
+AsmArchPrefix const * asmcode_get_arch_prefix_by_name(AsmCode * code,
+		char const * name)
+{
+	return arch_get_prefix_by_name(code->arch, name);
+}
+
+
+/* asmcode_get_arch_prefixes */
+AsmArchPrefix const * asmcode_get_arch_prefixes(AsmCode * code)
+{
+	return arch_get_prefixes(code->arch);
+}
+
+
 /* asmcode_get_arch_registers */
 AsmArchRegister const * asmcode_get_arch_registers(AsmCode * code)
 {

@@ -48,6 +48,10 @@ AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 		AsmArchInstructionCall * call);
 AsmArchInstruction const * arch_get_instructions(AsmArch * arch);
 
+AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
+		char const * name);
+AsmArchPrefix const * arch_get_prefixes(AsmArch * arch);
+
 AsmArchRegister const * arch_get_register(AsmArch * arch, size_t index);
 AsmArchRegister const * arch_get_register_by_id_size(AsmArch * arch,
 		uint32_t id, uint32_t size);

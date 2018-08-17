@@ -32,6 +32,7 @@ extern TokenCode TS_INSTRUCTION[];
 extern TokenCode TS_NEWLINE[];
 extern TokenCode TS_OFFSET[];
 extern TokenCode TS_OPERAND_LIST[];
+extern TokenCode TS_PREFIX[];
 extern TokenCode TS_REGISTER[];
 extern TokenCode TS_SIGN[];
 extern TokenCode TS_SPACE[];

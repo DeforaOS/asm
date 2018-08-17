@@ -59,6 +59,12 @@ static AsmArchRegister const _i686_registers[] =
 };
 #undef REG
 
+static AsmArchPrefix const _i686_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
+};
+
 static AsmArchInstruction const _i686_instructions[] =
 {
 #include "i386.ins"
@@ -84,6 +90,7 @@ AsmArchPluginDefinition arch_plugin =
 	LICENSE_GNU_LGPL3_FLAGS,
 	&_i686_definition,
 	_i686_registers,
+	_i686_prefixes,
 	_i686_instructions,
 	_i386_init,
 	_i386_destroy,

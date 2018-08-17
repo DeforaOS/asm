@@ -82,6 +82,7 @@ static AsmFormatPlugin * _mbr_init(AsmFormatPluginHelper * helper,
 		char const * arch)
 {
 	AsmFormatPlugin * mbr;
+	(void) arch;
 
 	if((mbr = object_new(sizeof(*mbr))) == NULL)
 		return NULL;
@@ -149,6 +150,7 @@ static int _mbr_section(AsmFormatPlugin * format, char const * section)
 static int _mbr_decode(AsmFormatPlugin * format, int raw)
 {
 	AsmFormatPluginHelper * helper = format->helper;
+	(void) raw;
 
 	if(helper->seek(helper->format, 0, SEEK_END) >= 512
 			&& helper->set_section(helper->format,

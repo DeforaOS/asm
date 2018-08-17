@@ -32,6 +32,8 @@ static void _swap_64_shdr(Elf64_Shdr * shdr);
 /* elf64_detect */
 char const * elf64_detect(AsmFormatPlugin * format, Elf64_Ehdr * ehdr)
 {
+	(void) format;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif

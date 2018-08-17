@@ -32,6 +32,8 @@ static void _swap_32_shdr(Elf_Shdr * shdr);
 /* elf32_detect */
 char const * elf32_detect(AsmFormatPlugin * format, Elf_Ehdr * ehdr)
 {
+	(void) format;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif

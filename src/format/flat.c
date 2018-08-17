@@ -71,6 +71,7 @@ static AsmFormatPlugin * _flat_init(AsmFormatPluginHelper * helper,
 		char const * arch)
 {
 	AsmFormatPlugin * flat;
+	(void) arch;
 
 	if((flat = object_new(sizeof(*flat))) == NULL)
 		return NULL;
@@ -112,6 +113,7 @@ static int _flat_decode(AsmFormatPlugin * format, int raw)
 {
 	AsmFormatPluginHelper * helper = format->helper;
 	off_t offset;
+	(void) raw;
 
 	if((offset = helper->seek(helper->format, 0, SEEK_END)) >= 0
 			&& helper->set_section(helper->format, 0, 0, ".text", 0,

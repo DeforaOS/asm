@@ -6,3 +6,4 @@ Makefile
 *.so.*
 /config.h
 /config.sh
+/tags

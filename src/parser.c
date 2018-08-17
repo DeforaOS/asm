@@ -696,6 +696,7 @@ static int _value(State * state)
 
 /* symbol */
 static int _symbol(State * state)
+	/* WORD */
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);

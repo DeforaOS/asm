@@ -593,7 +593,6 @@ static int _instruction(State * state)
 	{
 		if(asmcode_instruction(state->code, &state->call) != 0)
 			ret |= _parser_error(state, "%s", error_get(NULL));
-		free(state->call.name);
 	}
 	/* FIXME memory leak (register names...) */
 	memset(&state->call, 0, sizeof(state->call));
@@ -606,6 +605,7 @@ static int _instruction_name(State * state)
 	/* WORD */
 {
 	char const * string;
+	AsmArchInstruction const * ai;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
@@ -616,8 +616,11 @@ static int _instruction_name(State * state)
 		return _parser_error(state, "%s", "Empty instructions are not"
 				" allowed");
 	}
-	if((state->call.name = strdup(string)) == NULL)
-		return error_set_code(1, "%s", strerror(errno));
+	if((ai = asmcode_get_arch_instruction_by_name(state->code, string))
+			== NULL)
+		return _parser_error(state, "%s: %s", string,
+				"Unknown instruction");
+	state->call.name = ai->name;
 	/* optimized free(state->operator); out */
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s() %s \"%s\"\n", __func__, "instruction ",

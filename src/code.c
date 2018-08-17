@@ -260,6 +260,14 @@ char const * asmcode_get_arch_description(AsmCode * code)
 }
 
 
+/* asmcode_get_arch_instruction_by_name */
+AsmArchInstruction const * asmcode_get_arch_instruction_by_name(AsmCode * code,
+		char const * name)
+{
+	return arch_get_instruction_by_name(code->arch, name);
+}
+
+
 /* asmcode_get_arch_instructions */
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code)
 {

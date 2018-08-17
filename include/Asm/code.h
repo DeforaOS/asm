@@ -33,6 +33,8 @@ typedef struct _AsmCode AsmCode;
 char const * asmcode_get_arch(AsmCode * code);
 AsmArchDefinition const * asmcode_get_arch_definition(AsmCode * code);
 char const * asmcode_get_arch_description(AsmCode * code);
+AsmArchInstruction const * asmcode_get_arch_instruction_by_name(AsmCode * code,
+		char const * name);
 AsmArchInstruction const * asmcode_get_arch_instructions(AsmCode * code);
 char const * asmcode_get_filename(AsmCode * code);
 char const * asmcode_get_format(AsmCode * code);

@@ -383,6 +383,7 @@
 	pushad					/* 60			*/
 	pushf					/* 9c			*/
 	pushfd					/* 9c			*/
+	rep stosb
 	ret
 	ret	$0x3412
 	rsm					/* 0f aa		*/

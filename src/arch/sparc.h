@@ -37,7 +37,7 @@ static void _sparc_destroy(AsmArchPlugin * plugin);
 static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _sparc_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call);
+		AsmArchInstructionCall const * call);
 
 
 /* functions */
@@ -105,21 +105,21 @@ static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 
 /* sparc_encode */
 static int _sparc_encode_branch(AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
+		AsmArchInstructionCall const * call, uint32_t * opcode);
 static int _sparc_encode_integer(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call,
+		AsmArchInstructionCall const * call,
 		uint32_t * opcode);
 static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
+		AsmArchInstructionCall const * call, uint32_t * opcode);
 static int _sparc_encode_sethi(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode);
+		AsmArchInstructionCall const * call, uint32_t * opcode);
 
 static int _sparc_encode(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call)
+		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
@@ -156,7 +156,7 @@ static int _sparc_encode(AsmArchPlugin * plugin,
 }
 
 static int _sparc_encode_branch(AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+		AsmArchInstructionCall const * call, uint32_t * opcode)
 {
 	uint32_t disp;
 
@@ -172,7 +172,7 @@ static int _sparc_encode_branch(AsmArchInstruction const * instruction,
 
 static int _sparc_encode_integer(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+		AsmArchInstructionCall const * call, uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
@@ -222,7 +222,7 @@ static int _sparc_encode_integer(AsmArchPlugin * plugin,
 
 static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call, uint32_t * opcode)
+		AsmArchInstructionCall const * call, uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t rd;
@@ -309,7 +309,7 @@ static int _sparc_encode_loadstore(AsmArchPlugin * plugin,
 
 static int _sparc_encode_sethi(AsmArchPlugin * plugin,
 		AsmArchInstruction const * instruction,
-		AsmArchInstructionCall * call,
+		AsmArchInstructionCall const * call,
 		uint32_t * opcode)
 {
 	AsmArchPluginHelper * helper = plugin->helper;

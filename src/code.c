@@ -632,12 +632,10 @@ int asmcode_print(AsmCode * code, AsmArchInstructionCall * call)
 	/* FIXME print on the following line if it was too long */
 	for(; i < 8; i++)
 		fputs("   ", stdout);
-	if(call->operands_cnt == 0)
-	{
-		printf(" %s\n", call->name);
-		return 0;
-	}
-	printf(" %-12s", call->name);
+	i = printf("%s%s %s", (call->prefix != NULL) ? " " : "",
+			(call->prefix != NULL) ? call->prefix : "", call->name);
+	for(; call->operands_cnt > 0 && i < 12; i++)
+		fputs(" ", stdout);
 	for(i = 0; i < call->operands_cnt; i++)
 	{
 		ao = &call->operands[i];

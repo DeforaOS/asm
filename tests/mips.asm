@@ -1,3 +1,3 @@
 /* $Id$ */
-.section text
+.section .text
 	nop

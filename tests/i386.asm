@@ -1,5 +1,5 @@
 /* $Id$ */
-.section text
+.section .text
 	aaa
 	aad
 	aad	$0x42

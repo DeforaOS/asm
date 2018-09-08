@@ -1,4 +1,4 @@
 /* $Id$ */
-.section text
+.section .text
 	/* CBW */
 	cbw

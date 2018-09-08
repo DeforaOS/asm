@@ -67,9 +67,11 @@ static int _parser_warning(State * state, char const * format, ...);
 /* grammar */
 static int _program(State * state);
 static int _directive(State * state);
-static int _directive_name(State * state);
-static int _directive_args(State * state);
 static int _directive_arg(State * state);
+static int _directive_args(State * state);
+static int _directive_name(State * state);
+static int _section_args(State * state);
+static int _section_name(State * state);
 static int _newline(State * state);
 static int _space(State * state);
 static int _statement(State * state);
@@ -369,7 +371,13 @@ static int _directive(State * state)
 	{
 		ret |= _space(state);
 		if(_parser_in_set(state, TS_DIRECTIVE_ARGS))
-			ret |= _directive_args(state);
+		{
+			/* XXX hack to allow dots in section names */
+			if(string_compare(state->directive, "section") == 0)
+				ret |= _section_args(state);
+			else
+				ret |= _directive_args(state);
+		}
 	}
 	/* execute the directive */
 	if(string_compare(state->directive, "section") == 0)
@@ -401,7 +409,7 @@ static int _directive(State * state)
 
 /* directive_arg */
 static int _directive_arg(State * state)
-	/* WORD | NUMBER */
+	/* WORD | NUMBER | "." */
 {
 	char const * string;
 	char ** p;
@@ -467,6 +475,52 @@ static int _directive_name(State * state)
 	fprintf(stderr, "%s\"%s\"\n", "DEBUG: directive ", state->directive);
 #endif
 	return ret;
+}
+
+
+/* section_args */
+static int _section_args(State * state)
+{
+	int ret;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s()\n", __func__);
+#endif
+	ret = _section_name(state);
+	while(_parser_in_set(state, TS_DIRECTIVE_ARGS))
+		/* section_name */
+		ret |= _section_name(state);
+	return ret;
+}
+
+
+/* section_name */
+static int _section_name(State * state)
+	/* WORD | NUMBER | "." */
+{
+	char const * string;
+	char * p;
+	size_t len;
+
+	if(state->token == NULL
+			|| (string = token_get_string(state->token)) == NULL
+			|| (len = strlen(token_get_string(state->token))) == 0)
+		return error_set_code(1, "%s",
+				"Empty section arguments are not allowed");
+	if(state->args == NULL)
+	{
+		if((state->args = malloc(sizeof(string))) == NULL
+				|| (state->args[0] = strdup(string)) == NULL)
+			return error_set_code(1, "%s", strerror(errno));
+		state->args_cnt = 1;
+		return _parser_scan(state);
+	}
+	if((p = realloc(state->args[0], strlen(state->args[0]) + len + 1))
+			== NULL)
+		return error_set_code(1, "%s", strerror(errno));
+	state->args[0] = p;
+	strcat(state->args[0], string);
+	return _parser_scan(state);
 }
 
 

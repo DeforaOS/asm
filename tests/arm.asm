@@ -1,5 +1,5 @@
 /* $Id$ */
-.section text
+.section .text
 	adc	%r3, %r4, %r5
 	adceq	%r3, %r4, %r5
 	adcne	%r3, %r4, %r5

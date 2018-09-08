@@ -1,5 +1,5 @@
 /* $Id$ */
-.section text
+.section .text
 	/* BSWAP */
 	bswap	%eax
 	bswap	%ecx

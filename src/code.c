@@ -677,7 +677,7 @@ static void _print_address(AsmArchDefinition const * definition,
 		unsigned long address)
 {
 	uint32_t size = (definition != NULL) ? definition->address_size : 32;
-	char const * format = "%8lx:";
+	char const * format;
 
 	switch(size)
 	{
@@ -687,7 +687,9 @@ static void _print_address(AsmArchDefinition const * definition,
 		case 20:
 			format = "%5lx:";
 			break;
+		case 32:
 		default:
+			format = "%8lx:";
 			break;
 	}
 	printf(format, address);

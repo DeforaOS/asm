@@ -537,8 +537,13 @@ int asmcode_function(AsmCode * code, char const * name)
 /* asmcode_instruction */
 int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call)
 {
+	AsmArchPrefix const * ap = NULL;
 	AsmArchInstruction const * ai;
 
+	if(call->prefix != NULL
+			&& (ap = arch_get_prefix_by_call(code->arch,
+					call)) == NULL)
+		return -1;
 	if((ai = arch_get_instruction_by_call(code->arch, call)) == NULL)
 		return -1;
 #ifdef DEBUG
@@ -546,7 +551,7 @@ int asmcode_instruction(AsmCode * code, AsmArchInstructionCall * call)
 			", 3 0x%x\n", call->name, ai->opcode, ai->op1, ai->op2,
 			ai->op3);
 #endif
-	return arch_encode(code->arch, ai, call);
+	return arch_encode(code->arch, ap, ai, call);
 }
 
 

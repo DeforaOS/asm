@@ -264,6 +264,7 @@ static AsmArchInstruction const _java_instructions[] =
 static AsmArchPlugin * _java_init(AsmArchPluginHelper * helper);
 static void _java_destroy(AsmArchPlugin * plugin);
 static int _java_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 static int _java_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
@@ -311,6 +312,7 @@ static void _java_destroy(AsmArchPlugin * plugin)
 
 /* java_encode */
 static int _java_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
@@ -322,6 +324,10 @@ static int _java_encode(AsmArchPlugin * plugin,
 	uint16_t u16;
 	uint32_t u32;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	if((helper->write(helper->arch, &instruction->opcode, 1)) != 1)
 		return -1;
 	/* FIXME tableswitch may need some padding */

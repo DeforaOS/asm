@@ -422,6 +422,16 @@ AsmArchPrefix const * arch_get_prefix(AsmArch * arch, size_t index)
 }
 
 
+/* arch_get_prefix_by_call */
+AsmArchPrefix const * arch_get_prefix_by_call(AsmArch * arch,
+		AsmArchInstructionCall * call)
+{
+	if(call->prefix == NULL)
+		return NULL;
+	return arch_get_prefix_by_name(arch, call->prefix);
+}
+
+
 /* arch_get_prefix_by_name */
 AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
 		char const * name)
@@ -439,6 +449,23 @@ AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
 					name);
 			return &arch->definition->prefixes[i];
 		}
+	return NULL;
+}
+
+
+/* arch_get_prefix_by_opcode */
+AsmArchPrefix const * arch_get_prefix_by_opcode(AsmArch * arch, uint8_t size,
+		uint32_t opcode)
+{
+	size_t i;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s(\"%s\") %zu\n", __func__, name,
+			arch->prefixes_cnt);
+#endif
+	for(i = 0; i < arch->prefixes_cnt; i++)
+		if(arch->definition->prefixes[i].opcode == opcode)
+			return &arch->definition->prefixes[i];
 	return NULL;
 }
 
@@ -598,13 +625,14 @@ int arch_decode_at(AsmArch * arch, AsmCode * code, off_t offset, size_t size,
 
 
 /* arch_encode */
-int arch_encode(AsmArch * arch, AsmArchInstruction const * instruction,
+int arch_encode(AsmArch * arch, AsmArchPrefix const * prefix,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call)
 {
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
-	return arch->definition->encode(arch->plugin, instruction, call);
+	return arch->definition->encode(arch->plugin, prefix, instruction, call);
 }
 
 
@@ -645,6 +673,7 @@ int arch_init(AsmArch * arch, char const * filename, FILE * fp)
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_function_by_id = _arch_get_function_by_id;
+	arch->helper.get_prefix_by_opcode = arch_get_prefix_by_opcode;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;
@@ -678,6 +707,7 @@ int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size)
 	arch->helper.arch = arch;
 	arch->helper.get_filename = _arch_get_filename;
 	arch->helper.get_function_by_id = _arch_get_function_by_id;
+	arch->helper.get_prefix_by_opcode = arch_get_prefix_by_opcode;
 	arch->helper.get_instruction_by_opcode = arch_get_instruction_by_opcode;
 	arch->helper.get_register_by_id_size = arch_get_register_by_id_size;
 	arch->helper.get_register_by_name_size = arch_get_register_by_name_size;

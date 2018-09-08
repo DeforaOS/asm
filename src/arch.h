@@ -48,8 +48,12 @@ AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 		AsmArchInstructionCall * call);
 AsmArchInstruction const * arch_get_instructions(AsmArch * arch);
 
+AsmArchPrefix const * arch_get_prefix_by_call(AsmArch * arch,
+		AsmArchInstructionCall * call);
 AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
 		char const * name);
+AsmArchPrefix const * arch_get_prefix_by_opcode(AsmArch * arch, uint8_t size,
+		uint32_t opcode);
 AsmArchPrefix const * arch_get_prefixes(AsmArch * arch);
 
 AsmArchRegister const * arch_get_register(AsmArch * arch, size_t index);
@@ -67,7 +71,8 @@ int arch_init_buffer(AsmArch * arch, char const * buffer, size_t size);
 int arch_exit(AsmArch * arch);
 
 /* assembly */
-int arch_encode(AsmArch * arch, AsmArchInstruction const * instruction,
+int arch_encode(AsmArch * arch, AsmArchPrefix const * prefix,
+		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall * call);
 
 /* deassembly */

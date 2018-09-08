@@ -204,6 +204,8 @@ typedef struct _AsmArchPluginHelper
 	/* accessors */
 	char const * (*get_filename)(AsmArch * arch);
 	AsmFunction * (*get_function_by_id)(AsmArch * arch, AsmFunctionId id);
+	AsmArchPrefix const * (*get_prefix_by_opcode)(AsmArch * arch,
+			uint8_t size, uint32_t opcode);
 	AsmArchInstruction const * (*get_instruction_by_opcode)(AsmArch * arch,
 			uint8_t size, uint32_t opcode);
 	AsmArchRegister const * (*get_register_by_id_size)(AsmArch * arch,
@@ -237,6 +239,7 @@ typedef const struct _AsmArchPluginDefinition
 	AsmArchPlugin * (*init)(AsmArchPluginHelper * helper);
 	void (*destroy)(AsmArchPlugin * arch);
 	int (*encode)(AsmArchPlugin * arch,
+			AsmArchPrefix const * prefix,
 			AsmArchInstruction const * instruction,
 			AsmArchInstructionCall const * call);
 	int (*decode)(AsmArchPlugin * arch, AsmArchInstructionCall * call);

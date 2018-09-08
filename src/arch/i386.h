@@ -43,6 +43,7 @@ static AsmArchPlugin * _i386_init(AsmArchPluginHelper * helper);
 static void _i386_destroy(AsmArchPlugin * plugin);
 static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _i386_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 
@@ -500,11 +501,13 @@ static int _encode_opcode(AsmArchPlugin * plugin,
 static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
 		AsmArchOperand const * operands);
+static int _encode_prefix(AsmArchPlugin * plugin, AsmArchPrefix const * prefix);
 static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
 		AsmArchOperand const * operands);
 
 static int _i386_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
@@ -514,6 +517,8 @@ static int _i386_encode(AsmArchPlugin * plugin,
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
 #endif
+	if(prefix != NULL && _encode_prefix(plugin, prefix) != 0)
+		return -1;
 	if(_encode_opcode(plugin, instruction) != 0)
 		return -1;
 	definitions[0] = instruction->op1;
@@ -717,6 +722,36 @@ static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 			break;
 	}
 	return 0;
+}
+
+static int _encode_prefix(AsmArchPlugin * plugin, AsmArchPrefix const * prefix)
+{
+	AsmArchOperand operand;
+
+#ifdef DEBUG
+	fprintf(stderr, "DEBUG: %s() size=%u opcode=0x%x\n", __func__,
+			AO_GET_SIZE(prefix->flags), prefix->opcode);
+#endif
+	memset(&operand, 0, sizeof(operand));
+	operand.definition = AO_IMMEDIATE(0, AO_GET_SIZE(prefix->flags), 0);
+	switch(AO_GET_SIZE(prefix->flags) >> 3)
+	{
+		case 0:
+			return 0;
+		case sizeof(uint8_t):
+			operand.value.immediate.value = prefix->opcode;
+			break;
+		case sizeof(uint16_t):
+			operand.value.immediate.value = _htob16(prefix->opcode);
+			break;
+		case 3:
+		case sizeof(uint32_t):
+			operand.value.immediate.value = _htob32(prefix->opcode);
+			break;
+		default:
+			return -error_set_code(1, "%s", "Invalid size");
+	}
+	return _encode_immediate(plugin, &operand);
 }
 
 static int _encode_register(AsmArchPlugin * plugin, uint32_t * i,

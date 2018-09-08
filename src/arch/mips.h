@@ -35,6 +35,7 @@ struct _AsmArchPlugin
 static AsmArchPlugin * _mips_init(AsmArchPluginHelper * helper);
 static void _mips_destroy(AsmArchPlugin * plugin);
 static int _mips_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 
@@ -62,12 +63,17 @@ static void _mips_destroy(AsmArchPlugin * plugin)
 
 /* mips_encode */
 static int _mips_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	/* FIXME really implement */
 	opcode = _htob32(opcode);
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))

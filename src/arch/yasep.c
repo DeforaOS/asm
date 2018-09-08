@@ -57,6 +57,7 @@ static AsmArchInstruction const _yasep_instructions[] =
 static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
 static void _yasep_destroy(AsmArchPlugin * plugin);
 static int _yasep_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);

@@ -66,6 +66,7 @@ static void _template_destroy(AsmArchPlugin * plugin);
 static int _template_decode(AsmArchPlugin * plugin,
 		AsmArchInstructionCall * call);
 static int _template_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 
@@ -131,12 +132,17 @@ static int _template_decode(AsmArchPlugin * plugin,
 
 /* template_encode */
 static int _template_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint8_t opcode;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	opcode = call->operands[0].value.immediate.value;
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))

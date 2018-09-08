@@ -89,6 +89,7 @@ static AsmArchInstruction const _dalvik_instructions[] =
 static AsmArchPlugin * _dalvik_init(AsmArchPluginHelper * helper);
 static void _dalvik_destroy(AsmArchPlugin * plugin);
 static int _dalvik_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 static int _dalvik_decode(AsmArchPlugin * plugin,
@@ -136,6 +137,7 @@ static void _dalvik_destroy(AsmArchPlugin * plugin)
 
 /* dalvik_encode */
 static int _dalvik_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
@@ -145,6 +147,10 @@ static int _dalvik_encode(AsmArchPlugin * plugin,
 	void const * buf;
 	ssize_t size;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	/* FIXME really implement */
 	switch(AO_GET_SIZE(instruction->flags))
 	{

@@ -33,6 +33,7 @@ static AsmArchPlugin * _arm_init(AsmArchPluginHelper * helper);
 static void _arm_destroy(AsmArchPlugin * plugin);
 static int _arm_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _arm_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 
@@ -305,6 +306,7 @@ static int _decode_unknown(AsmArchInstructionCall * call, uint32_t opcode)
 
 /* arm_encode */
 static int _arm_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
@@ -313,6 +315,10 @@ static int _arm_encode(AsmArchPlugin * plugin,
 	AsmArchRegister const * ar;
 	char const * p;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	switch(opcode & 0x0fffffff) /* ignore condition code */
 	{
 		/* branch, branch with link */

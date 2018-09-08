@@ -35,6 +35,7 @@ struct _AsmArchPlugin
 static AsmArchPlugin * _yasep_init(AsmArchPluginHelper * helper);
 static void _yasep_destroy(AsmArchPlugin * plugin);
 static int _yasep_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 static int _yasep_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
@@ -70,9 +71,16 @@ static int _encode_32(AsmArchPlugin * plugin,
 		AsmArchInstructionCall const * call);
 
 static int _yasep_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
+	AsmArchPluginHelper * helper = plugin->helper;
+
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	return (instruction->opcode & 0x1)
 		? _encode_32(plugin, instruction, call)
 		: _encode_16(plugin, instruction, call);

@@ -36,6 +36,7 @@ static AsmArchPlugin * _sparc_init(AsmArchPluginHelper * helper);
 static void _sparc_destroy(AsmArchPlugin * plugin);
 static int _sparc_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call);
 static int _sparc_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
 
@@ -118,12 +119,17 @@ static int _sparc_encode_sethi(AsmArchPlugin * plugin,
 		AsmArchInstructionCall const * call, uint32_t * opcode);
 
 static int _sparc_encode(AsmArchPlugin * plugin,
+		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
 	uint32_t opcode = instruction->opcode;
 
+	if(prefix != NULL)
+		return -error_set_code(1, "%s: %s",
+				helper->get_filename(helper->arch),
+				"Prefixes not supported for this architecture");
 	if((opcode & 0xc0000000) == 0xc0000000)
 	{
 		if(_sparc_encode_loadstore(plugin, instruction, call, &opcode)

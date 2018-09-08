@@ -91,6 +91,7 @@ static int _decode_register(AsmArchPlugin * plugin,
 static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
+	AsmArchPrefix const * ap = NULL;
 	AsmArchInstruction const * ai = NULL;
 	unsigned int opcode;
 	uint8_t u8;
@@ -101,6 +102,13 @@ static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
 	opcode = u8;
+	if((ap = helper->get_prefix_by_opcode(helper->arch, 8, opcode))
+			!= NULL)
+	{
+		if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
+			return -1;
+		opcode = u8;
+	}
 	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, opcode))
 			== NULL)
 	{
@@ -116,6 +124,8 @@ static int _i386_decode(AsmArchPlugin * plugin, AsmArchInstructionCall * call)
 			}
 		}
 	}
+	/* FIXME ignore prefixes when opcodes are not recognized */
+	call->prefix = (ap != NULL) ? ap->name : NULL;
 	if(ai == NULL)
 	{
 		/* no opcode was recognized */

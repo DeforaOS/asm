@@ -749,10 +749,15 @@ static int _operand(State * state)
 static int _prefix(State * state)
 	/* WORD */
 {
+	AsmArchPrefix const * prefix;
+
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	/* FIXME really implement */
+	/* this is not supposed to fail */
+	prefix = asmcode_get_arch_prefix_by_name(state->code,
+			token_get_string(state->token));
+	state->call.prefix = prefix->name;
 	return _parser_scan(state);
 }
 

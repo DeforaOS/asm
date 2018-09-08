@@ -57,18 +57,18 @@ static AsmArchRegister const _i486_registers[] =
 };
 #undef REG
 
-static AsmArchPrefix const _i486_prefixes[] =
-{
-#include "i386.pre"
-#include "null.pre"
-};
-
 static AsmArchInstruction const _i486_instructions[] =
 {
 #include "i386.ins"
 #include "i486.ins"
 #include "common.ins"
 #include "null.ins"
+};
+
+static AsmArchPrefix const _i486_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
 };
 
 

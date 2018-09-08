@@ -48,6 +48,8 @@ typedef struct _AsmArchDefinition
 typedef struct _AsmArchPrefix
 {
 	char const * name;
+	uint32_t opcode;
+	AsmArchOperandDefinition flags;
 } AsmArchPrefix;
 
 /* operands */

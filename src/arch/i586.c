@@ -48,12 +48,6 @@ static AsmArchDefinition const _i586_definition =
 #include "i386.def"
 };
 
-static AsmArchPrefix const _i586_prefixes[] =
-{
-#include "i386.pre"
-#include "null.pre"
-};
-
 #define REG(name, size, id, flags, description) \
 	{ "" # name, size, id, flags, description },
 static AsmArchRegister const _i586_registers[] =
@@ -70,6 +64,12 @@ static AsmArchInstruction const _i586_instructions[] =
 #include "i586.ins"
 #include "common.ins"
 #include "null.ins"
+};
+
+static AsmArchPrefix const _i586_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
 };
 
 

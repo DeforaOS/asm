@@ -68,13 +68,6 @@ static AsmArchRegister const _amd64_registers[] =
 };
 #undef REG
 
-static AsmArchPrefix const _amd64_prefixes[] =
-{
-#include "i386.pre"
-#include "amd64.pre"
-#include "null.pre"
-};
-
 static AsmArchInstruction const _amd64_instructions[] =
 {
 #include "i386.ins"
@@ -84,6 +77,13 @@ static AsmArchInstruction const _amd64_instructions[] =
 #include "amd64.ins"
 #include "common.ins"
 #include "null.ins"
+};
+
+static AsmArchPrefix const _amd64_prefixes[] =
+{
+#include "i386.pre"
+#include "amd64.pre"
+#include "null.pre"
 };
 
 

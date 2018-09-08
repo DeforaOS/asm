@@ -59,12 +59,6 @@ static AsmArchRegister const _i686_registers[] =
 };
 #undef REG
 
-static AsmArchPrefix const _i686_prefixes[] =
-{
-#include "i386.pre"
-#include "null.pre"
-};
-
 static AsmArchInstruction const _i686_instructions[] =
 {
 #include "i386.ins"
@@ -73,6 +67,12 @@ static AsmArchInstruction const _i686_instructions[] =
 #include "i686.ins"
 #include "common.ins"
 #include "null.ins"
+};
+
+static AsmArchPrefix const _i686_prefixes[] =
+{
+#include "i386.pre"
+#include "null.pre"
 };
 
 

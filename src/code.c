@@ -682,6 +682,7 @@ static void _print_address(AsmArchDefinition const * definition,
 	uint32_t size = (definition != NULL) ? definition->address_size : 32;
 	char const * format;
 
+	/* FIXME use if-else-if and ranges instead */
 	switch(size)
 	{
 		case 64:

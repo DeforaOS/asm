@@ -438,7 +438,7 @@ static int _directive_args(State * state)
 		/* space */
 		ret |= _space(state);
 		/* [ directive_arg ] */
-		if(_parser_in_set(state, TS_DIRECTIVE_ARG))
+		if(_parser_in_set(state, TS_DIRECTIVE_ARGS))
 			ret |= _directive_arg(state);
 	}
 	return ret;

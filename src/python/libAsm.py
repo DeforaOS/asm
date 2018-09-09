@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 #$Id$
-#Copyright (c) 2013-2014 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2013-2018 Pierre Pronchery <khorben@defora.org>
 #This file is part of DeforaOS Devel Asm
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU Lesser General Public License as published by

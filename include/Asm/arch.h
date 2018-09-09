@@ -185,7 +185,7 @@ typedef struct _AsmArchInstructionCall
 } AsmArchInstructionCall;
 
 /* register flags */
-#define ARF_ALIAS	0x1
+# define ARF_ALIAS	0x1
 
 typedef struct _AsmArchRegister
 {

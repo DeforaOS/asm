@@ -26,6 +26,7 @@ extern AsmArchPluginDefinition arch_plugin_arm;
 extern AsmArchPluginDefinition arch_plugin_armeb;
 extern AsmArchPluginDefinition arch_plugin_armel;
 extern AsmArchPluginDefinition arch_plugin_dalvik;
+extern AsmArchPluginDefinition arch_plugin_eth;
 extern AsmArchPluginDefinition arch_plugin_i386;
 extern AsmArchPluginDefinition arch_plugin_i386_real;
 extern AsmArchPluginDefinition arch_plugin_i486;
@@ -53,6 +54,7 @@ static struct
 	{ "armeb",	NULL	},
 	{ "armel",	NULL	},
 	{ "dalvik",	NULL	},
+	{ "eth",	NULL	},
 	{ "i386",	NULL	},
 	{ "i386_real",	NULL	},
 	{ "i486",	NULL	},
@@ -91,21 +93,22 @@ AsmArch * arch_new(char const * name)
 		_arch[2].definition = &arch_plugin_armeb;
 		_arch[3].definition = &arch_plugin_armel;
 		_arch[4].definition = &arch_plugin_dalvik;
-		_arch[5].definition = &arch_plugin_i386;
-		_arch[6].definition = &arch_plugin_i386_real;
-		_arch[7].definition = &arch_plugin_i486;
-		_arch[8].definition = &arch_plugin_i586;
-		_arch[9].definition = &arch_plugin_i686;
-		_arch[10].definition = &arch_plugin_java;
-		_arch[11].definition = &arch_plugin_mips;
-		_arch[12].definition = &arch_plugin_mipseb;
-		_arch[13].definition = &arch_plugin_mipsel;
-		_arch[14].definition = &arch_plugin_sparc;
-		_arch[15].definition = &arch_plugin_sparc64;
-		_arch[16].definition = &arch_plugin_template;
-		_arch[17].definition = &arch_plugin_yasep;
-		_arch[18].definition = &arch_plugin_yasep16;
-		_arch[19].definition = &arch_plugin_yasep32;
+		_arch[5].definition = &arch_plugin_eth;
+		_arch[6].definition = &arch_plugin_i386;
+		_arch[7].definition = &arch_plugin_i386_real;
+		_arch[8].definition = &arch_plugin_i486;
+		_arch[9].definition = &arch_plugin_i586;
+		_arch[10].definition = &arch_plugin_i686;
+		_arch[11].definition = &arch_plugin_java;
+		_arch[12].definition = &arch_plugin_mips;
+		_arch[13].definition = &arch_plugin_mipseb;
+		_arch[14].definition = &arch_plugin_mipsel;
+		_arch[15].definition = &arch_plugin_sparc;
+		_arch[16].definition = &arch_plugin_sparc64;
+		_arch[17].definition = &arch_plugin_template;
+		_arch[18].definition = &arch_plugin_yasep;
+		_arch[19].definition = &arch_plugin_yasep16;
+		_arch[20].definition = &arch_plugin_yasep32;
 	}
 	for(i = 0; i < sizeof(_arch) / sizeof(*_arch); i++)
 		if(strcmp(_arch[i].name, name) == 0)

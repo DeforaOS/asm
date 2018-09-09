@@ -444,11 +444,7 @@ AsmArchPrefix const * arch_get_prefix_by_name(AsmArch * arch,
 #endif
 	for(i = 0; i < arch->prefixes_cnt; i++)
 		if(strcmp(arch->definition->prefixes[i].name, name) == 0)
-		{
-			fprintf(stderr, "DEBUG: %s() => \"%s\"\n", __func__,
-					name);
 			return &arch->definition->prefixes[i];
-		}
 	return NULL;
 }
 

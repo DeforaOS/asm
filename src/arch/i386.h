@@ -522,7 +522,7 @@ static int _i386_encode(AsmArchPlugin * plugin,
 		AsmArchInstructionCall const * call)
 {
 	uint32_t i;
-	AsmArchOperandDefinition definitions[3];
+	AsmArchOperandDefinition definitions[ARO_COUNT];
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\")\n", __func__, instruction->name);
@@ -534,6 +534,8 @@ static int _i386_encode(AsmArchPlugin * plugin,
 	definitions[0] = instruction->op1;
 	definitions[1] = instruction->op2;
 	definitions[2] = instruction->op3;
+	for(i = 3; i < sizeof(definitions) / sizeof(*definitions); i++)
+		definitions[i] = 0x0;
 	for(i = 0; i < call->operands_cnt; i++)
 		if(_encode_operand(plugin, &i, definitions, call->operands)
 				!= 0)

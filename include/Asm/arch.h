@@ -175,7 +175,8 @@ typedef struct _AsmArchInstructionCall
 {
 	char const * prefix;
 	char const * name;
-	AsmArchOperand operands[5];
+# define ARO_COUNT	5
+	AsmArchOperand operands[ARO_COUNT];
 	uint32_t operands_cnt;
 
 	/* meta information */

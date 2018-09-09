@@ -38,9 +38,7 @@ static AsmArchRegister const _eth_registers[] =
 
 static AsmArchInstruction const _eth_instructions[] =
 {
-#if 0
-# include "eth.ins"
-#endif
+#include "eth.ins"
 #include "common.ins"
 #include "null.ins"
 };

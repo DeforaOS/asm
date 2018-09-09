@@ -45,19 +45,19 @@ static AsmArchInstruction const _eth_instructions[] =
 #include "null.ins"
 };
 
-struct _AsmArchPlugin
+typedef struct _AsmArchPlugin
 {
 	AsmArchPluginHelper * helper;
-};
+} EthArchPlugin;
 
 
 /* prototypes */
 /* plug-in */
-static AsmArchPlugin * _eth_init(AsmArchPluginHelper * helper);
-static void _eth_destroy(AsmArchPlugin * plugin);
-static int _eth_decode(AsmArchPlugin * plugin,
+static EthArchPlugin * _eth_init(AsmArchPluginHelper * helper);
+static void _eth_destroy(EthArchPlugin * plugin);
+static int _eth_decode(EthArchPlugin * plugin,
 		AsmArchInstructionCall * call);
-static int _eth_encode(AsmArchPlugin * plugin,
+static int _eth_encode(EthArchPlugin * plugin,
 		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call);
@@ -84,9 +84,9 @@ AsmArchPluginDefinition arch_plugin =
 /* functions */
 /* plug-in */
 /* eth_init */
-static AsmArchPlugin * _eth_init(AsmArchPluginHelper * helper)
+static EthArchPlugin * _eth_init(AsmArchPluginHelper * helper)
 {
-	AsmArchPlugin * plugin;
+	EthArchPlugin * plugin;
 
 	if((plugin = object_new(sizeof(*plugin))) == NULL)
 		return NULL;
@@ -96,14 +96,14 @@ static AsmArchPlugin * _eth_init(AsmArchPluginHelper * helper)
 
 
 /* eth_destroy */
-static void _eth_destroy(AsmArchPlugin * plugin)
+static void _eth_destroy(EthArchPlugin * plugin)
 {
 	object_delete(plugin);
 }
 
 
 /* eth_decode */
-static int _eth_decode(AsmArchPlugin * plugin,
+static int _eth_decode(EthArchPlugin * plugin,
 		AsmArchInstructionCall * call)
 {
 	AsmArchPluginHelper * helper = plugin->helper;
@@ -124,7 +124,7 @@ static int _eth_decode(AsmArchPlugin * plugin,
 
 
 /* eth_encode */
-static int _eth_encode(AsmArchPlugin * plugin,
+static int _eth_encode(EthArchPlugin * plugin,
 		AsmArchPrefix const * prefix,
 		AsmArchInstruction const * instruction,
 		AsmArchInstructionCall const * call)

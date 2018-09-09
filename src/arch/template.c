@@ -144,7 +144,7 @@ static int _template_encode(AsmArchPlugin * plugin,
 		return -error_set_code(1, "%s: %s",
 				helper->get_filename(helper->arch),
 				"Prefixes not supported for this architecture");
-	opcode = call->operands[0].value.immediate.value;
+	opcode = instruction->opcode;
 	if(helper->write(helper->arch, &opcode, sizeof(opcode))
 			!= sizeof(opcode))
 		return -1;

@@ -169,6 +169,7 @@ echo "Expected failures:" 1>&2
 for test in $failures; do
 	_fail "$test"
 done
+_fail _deasm eth
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

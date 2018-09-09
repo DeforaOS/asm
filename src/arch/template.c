@@ -120,7 +120,8 @@ static int _template_decode(AsmArchPlugin * plugin,
 
 	if(helper->read(helper->arch, &u8, sizeof(u8)) != sizeof(u8))
 		return -1;
-	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, 0)) == NULL)
+	if((ai = helper->get_instruction_by_opcode(helper->arch, 8, u8))
+			== NULL)
 		return -1;
 	call->name = ai->name;
 	call->operands[0].definition = ai->op1;

@@ -635,7 +635,7 @@ static int _encode_immediate(AsmArchPlugin * plugin,
 		case sizeof(uint32_t):
 			return _encode_immediate32(plugin, value);
 	}
-	return -error_set_code(1, "%s", "Invalid size");
+	return -error_set_code(1, "%s", "Invalid size for immediate value");
 }
 
 static int _encode_immediate8(AsmArchPlugin * plugin, uint8_t value)
@@ -706,7 +706,8 @@ static int _encode_opcode(AsmArchPlugin * plugin,
 					instruction->opcode);
 			break;
 		default:
-			return -error_set_code(1, "%s", "Invalid size");
+			return -error_set_code(1, "%s",
+					"Invalid size for opcode");
 	}
 	return _encode_immediate(plugin, &operand);
 }
@@ -761,7 +762,8 @@ static int _encode_prefix(AsmArchPlugin * plugin, AsmArchPrefix const * prefix)
 			operand.value.immediate.value = _htob32(prefix->opcode);
 			break;
 		default:
-			return -error_set_code(1, "%s", "Invalid size");
+			return -error_set_code(1, "%s",
+					"Invalid size for prefix");
 	}
 	return _encode_immediate(plugin, &operand);
 }

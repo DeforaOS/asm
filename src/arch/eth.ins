@@ -21,6 +21,37 @@
 
 /* immediate values */
 #define OP_U8		AO_IMMEDIATE(0, 8, 0)
+#define OP_U16		AO_IMMEDIATE(0, 16, 0)
+#define OP_U24		AO_IMMEDIATE(0, 24, 0)
+#define OP_U32		AO_IMMEDIATE(0, 32, 0)
+#define OP_U40		AO_IMMEDIATE(0, 40, 0)
+#define OP_U48		AO_IMMEDIATE(0, 48, 0)
+#define OP_U56		AO_IMMEDIATE(0, 56, 0)
+#define OP_U64		AO_IMMEDIATE(0, 64, 0)
+#define OP_U72		AO_IMMEDIATE(0, 72, 0)
+#define OP_U80		AO_IMMEDIATE(0, 80, 0)
+#define OP_U88		AO_IMMEDIATE(0, 88, 0)
+#define OP_U96		AO_IMMEDIATE(0, 96, 0)
+#define OP_U104		AO_IMMEDIATE(0, 104, 0)
+#define OP_U112		AO_IMMEDIATE(0, 112, 0)
+#define OP_U120		AO_IMMEDIATE(0, 120, 0)
+#define OP_U128		AO_IMMEDIATE(0, 128, 0)
+#define OP_U136		AO_IMMEDIATE(0, 136, 0)
+#define OP_U144		AO_IMMEDIATE(0, 144, 0)
+#define OP_U152		AO_IMMEDIATE(0, 152, 0)
+#define OP_U160		AO_IMMEDIATE(0, 160, 0)
+#define OP_U168		AO_IMMEDIATE(0, 168, 0)
+#define OP_U176		AO_IMMEDIATE(0, 176, 0)
+#define OP_U184		AO_IMMEDIATE(0, 184, 0)
+#define OP_U192		AO_IMMEDIATE(0, 192, 0)
+#define OP_U200		AO_IMMEDIATE(0, 200, 0)
+#define OP_U208		AO_IMMEDIATE(0, 208, 0)
+#define OP_U216		AO_IMMEDIATE(0, 216, 0)
+#define OP_U224		AO_IMMEDIATE(0, 224, 0)
+#define OP_U232		AO_IMMEDIATE(0, 232, 0)
+#define OP_U240		AO_IMMEDIATE(0, 240, 0)
+#define OP_U248		AO_IMMEDIATE(0, 248, 0)
+#define OP_U256		AO_IMMEDIATE(0, 256, 0)
 
 
 /* instructions */
@@ -78,37 +109,37 @@
 { "gas",	0x5a, OP1F,	AO_0()				},
 { "jumpdest",	0x5b, OP1F,	AO_0()				},
 { "push1",	0x60, OP1F,	AO_1(OP_U8)			},
-{ "push2",	0x61, OP1F,	AO_1(OP_U8)			},
-{ "push3",	0x62, OP1F,	AO_1(OP_U8)			},
-{ "push4",	0x63, OP1F,	AO_1(OP_U8)			},
-{ "push5",	0x64, OP1F,	AO_1(OP_U8)			},
-{ "push6",	0x65, OP1F,	AO_1(OP_U8)			},
-{ "push7",	0x66, OP1F,	AO_1(OP_U8)			},
-{ "push8",	0x67, OP1F,	AO_1(OP_U8)			},
-{ "push9",	0x68, OP1F,	AO_1(OP_U8)			},
-{ "push10",	0x69, OP1F,	AO_1(OP_U8)			},
-{ "push11",	0x6a, OP1F,	AO_1(OP_U8)			},
-{ "push12",	0x6b, OP1F,	AO_1(OP_U8)			},
-{ "push13",	0x6c, OP1F,	AO_1(OP_U8)			},
-{ "push14",	0x6d, OP1F,	AO_1(OP_U8)			},
-{ "push15",	0x6e, OP1F,	AO_1(OP_U8)			},
-{ "push16",	0x6f, OP1F,	AO_1(OP_U8)			},
-{ "push17",	0x70, OP1F,	AO_1(OP_U8)			},
-{ "push18",	0x71, OP1F,	AO_1(OP_U8)			},
-{ "push19",	0x72, OP1F,	AO_1(OP_U8)			},
-{ "push20",	0x73, OP1F,	AO_1(OP_U8)			},
-{ "push21",	0x74, OP1F,	AO_1(OP_U8)			},
-{ "push22",	0x75, OP1F,	AO_1(OP_U8)			},
-{ "push23",	0x76, OP1F,	AO_1(OP_U8)			},
-{ "push24",	0x77, OP1F,	AO_1(OP_U8)			},
-{ "push25",	0x78, OP1F,	AO_1(OP_U8)			},
-{ "push26",	0x79, OP1F,	AO_1(OP_U8)			},
-{ "push27",	0x7a, OP1F,	AO_1(OP_U8)			},
-{ "push28",	0x7b, OP1F,	AO_1(OP_U8)			},
-{ "push29",	0x7c, OP1F,	AO_1(OP_U8)			},
-{ "push30",	0x7d, OP1F,	AO_1(OP_U8)			},
-{ "push31",	0x7e, OP1F,	AO_1(OP_U8)			},
-{ "push32",	0x7f, OP1F,	AO_1(OP_U8)			},
+{ "push2",	0x61, OP1F,	AO_1(OP_U16)			},
+{ "push3",	0x62, OP1F,	AO_1(OP_U24)			},
+{ "push4",	0x63, OP1F,	AO_1(OP_U32)			},
+{ "push5",	0x64, OP1F,	AO_1(OP_U40)			},
+{ "push6",	0x65, OP1F,	AO_1(OP_U48)			},
+{ "push7",	0x66, OP1F,	AO_1(OP_U56)			},
+{ "push8",	0x67, OP1F,	AO_1(OP_U64)			},
+{ "push9",	0x68, OP1F,	AO_1(OP_U72)			},
+{ "push10",	0x69, OP1F,	AO_1(OP_U80)			},
+{ "push11",	0x6a, OP1F,	AO_1(OP_U88)			},
+{ "push12",	0x6b, OP1F,	AO_1(OP_U96)			},
+{ "push13",	0x6c, OP1F,	AO_1(OP_U104)			},
+{ "push14",	0x6d, OP1F,	AO_1(OP_U112)			},
+{ "push15",	0x6e, OP1F,	AO_1(OP_U120)			},
+{ "push16",	0x6f, OP1F,	AO_1(OP_U128)			},
+{ "push17",	0x70, OP1F,	AO_1(OP_U136)			},
+{ "push18",	0x71, OP1F,	AO_1(OP_U144)			},
+{ "push19",	0x72, OP1F,	AO_1(OP_U152)			},
+{ "push20",	0x73, OP1F,	AO_1(OP_U160)			},
+{ "push21",	0x74, OP1F,	AO_1(OP_U168)			},
+{ "push22",	0x75, OP1F,	AO_1(OP_U176)			},
+{ "push23",	0x76, OP1F,	AO_1(OP_U184)			},
+{ "push24",	0x77, OP1F,	AO_1(OP_U192)			},
+{ "push25",	0x78, OP1F,	AO_1(OP_U200)			},
+{ "push26",	0x79, OP1F,	AO_1(OP_U208)			},
+{ "push27",	0x7a, OP1F,	AO_1(OP_U216)			},
+{ "push28",	0x7b, OP1F,	AO_1(OP_U224)			},
+{ "push29",	0x7c, OP1F,	AO_1(OP_U232)			},
+{ "push30",	0x7d, OP1F,	AO_1(OP_U240)			},
+{ "push31",	0x7e, OP1F,	AO_1(OP_U248)			},
+{ "push32",	0x7f, OP1F,	AO_1(OP_U256)			},
 { "dup1",	0x80, OP1F,	AO_0()				},
 { "dup2",	0x81, OP1F,	AO_0()				},
 { "dup3",	0x82, OP1F,	AO_0()				},

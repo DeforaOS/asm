@@ -128,6 +128,10 @@ static int _encode_immediate8(AsmArchPlugin * plugin, uint8_t value);
 static int _encode_immediate16(AsmArchPlugin * plugin, uint16_t value);
 static int _encode_immediate24(AsmArchPlugin * plugin, uint32_t value);
 static int _encode_immediate32(AsmArchPlugin * plugin, uint32_t value);
+static int _encode_immediate40(AsmArchPlugin * plugin, uint64_t value);
+static int _encode_immediate48(AsmArchPlugin * plugin, uint64_t value);
+static int _encode_immediate56(AsmArchPlugin * plugin, uint64_t value);
+static int _encode_immediate64(AsmArchPlugin * plugin, uint64_t value);
 
 static int _eth_encode(EthArchPlugin * plugin,
 		AsmArchPrefix const * prefix,
@@ -168,6 +172,14 @@ static int _encode_immediate(AsmArchPlugin * plugin,
 			return _encode_immediate24(plugin, value);
 		case sizeof(uint32_t):
 			return _encode_immediate32(plugin, value);
+		case 5:
+			return _encode_immediate40(plugin, value);
+		case 6:
+			return _encode_immediate48(plugin, value);
+		case 7:
+			return _encode_immediate56(plugin, value);
+		case sizeof(uint64_t):
+			return _encode_immediate64(plugin, value);
 	}
 	return -error_set_code(1, "%s", "Invalid size for immediate value");
 }
@@ -206,6 +218,46 @@ static int _encode_immediate32(AsmArchPlugin * plugin, uint32_t value)
 	AsmArchPluginHelper * helper = plugin->helper;
 
 	value = _htob32(value);
+	if(helper->write(helper->arch, &value, sizeof(value)) != sizeof(value))
+		return -1;
+	return 0;
+}
+
+static int _encode_immediate40(AsmArchPlugin * plugin, uint64_t value)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+
+	value = _htob64(value) << 24;
+	if(helper->write(helper->arch, &value, 5) != 5)
+		return -1;
+	return 0;
+}
+
+static int _encode_immediate48(AsmArchPlugin * plugin, uint64_t value)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+
+	value = _htob64(value) << 16;
+	if(helper->write(helper->arch, &value, 6) != 6)
+		return -1;
+	return 0;
+}
+
+static int _encode_immediate56(AsmArchPlugin * plugin, uint64_t value)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+
+	value = _htob64(value) << 8;
+	if(helper->write(helper->arch, &value, 7) != 7)
+		return -1;
+	return 0;
+}
+
+static int _encode_immediate64(AsmArchPlugin * plugin, uint64_t value)
+{
+	AsmArchPluginHelper * helper = plugin->helper;
+
+	value = _htob64(value);
 	if(helper->write(helper->arch, &value, sizeof(value)) != sizeof(value))
 		return -1;
 	return 0;

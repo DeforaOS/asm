@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2017 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2018 Pierre Pronchery <khorben@defora.org>
 #This file is part of DeforaOS Devel Asm
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
@@ -169,6 +169,7 @@ echo "Expected failures:" 1>&2
 for test in $failures; do
 	_fail "$test"
 done
+_fail _deasm eth
 if [ -n "$FAILED" ]; then
 	echo "Failed tests:$FAILED" 1>&2
 	exit 2

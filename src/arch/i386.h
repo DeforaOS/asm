@@ -716,7 +716,7 @@ static int _encode_operand(AsmArchPlugin * plugin, uint32_t * i,
 		AsmArchOperandDefinition * definitions,
 		AsmArchOperand const * operands)
 {
-	switch(operands[*i].definition)
+	switch(AO_GET_TYPE(operands[*i].definition))
 	{
 		case AOT_CONSTANT:
 			return _encode_constant(plugin, definitions[*i],

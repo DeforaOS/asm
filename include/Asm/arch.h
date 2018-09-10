@@ -58,9 +58,10 @@ typedef enum _AsmArchOperandType
 	AOT_NONE	= 0x0,
 	AOT_CONSTANT	= 0x1,		/* flags |      0 |   size |  value */
 	AOT_IMMEDIATE	= 0x2,		/* flags |      0 |   size | refers */
-	AOT_REGISTER	= 0x3,		/* flags |      0 |   size |     id */
-	AOT_DREGISTER	= 0x4,		/* flags |  dsize |  rsize |     id */
-	AOT_DREGISTER2	= 0x5		/* flags |    did |  rsize |     id */
+	AOT_IMMEDIATE256= 0x3,		/* flags |      0 |   size | refers */
+	AOT_REGISTER	= 0x4,		/* flags |      0 |   size |     id */
+	AOT_DREGISTER	= 0x5,		/* flags |  dsize |  rsize |     id */
+	AOT_DREGISTER2	= 0x6		/* flags |    did |  rsize |     id */
 } AsmArchOperandType;
 
 /* displacement */
@@ -117,6 +118,11 @@ typedef enum _AsmArchOperandType
 		 | ((flags) << AOD_FLAGS) \
 		 | ((size) << AOD_SIZE) \
 		 | ((type) << AOD_VALUE))
+# define AO_IMMEDIATE256(flags, size, type) \
+		((AOT_IMMEDIATE256 << AOD_TYPE) \
+		 | ((flags) << AOD_FLAGS) \
+		 | ((size) << AOD_SIZE) \
+		 | ((type) << AOD_VALUE))
 # define AO_REGISTER(flags, size, id) \
 		((AOT_REGISTER << AOD_TYPE) \
 		 | ((flags) << AOD_FLAGS) \
@@ -161,6 +167,14 @@ typedef struct _AsmArchOperand
 			uint64_t value;
 			int negative;
 		} immediate;
+
+		/* AOT_IMMEDIATE256 */
+		struct
+		{
+			char const * name;		/* optional */
+			uint8_t value[32];
+			int negative;
+		} immediate256;
 
 		/* AOT_REGISTER */
 		struct

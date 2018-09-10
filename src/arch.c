@@ -222,6 +222,9 @@ static int _call_operands_immediate(AsmArchOperandDefinition definition,
 		AsmArchOperand * operand);
 static int _call_operands_register(AsmArch * arch,
 		AsmArchOperandDefinition definition, AsmArchOperand * operand);
+static AsmArchInstruction const * _call_update(
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call);
 
 AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 		AsmArchInstructionCall * call)
@@ -241,7 +244,7 @@ AsmArchInstruction const * arch_get_instruction_by_call(AsmArch * arch,
 			continue;
 		found = 1;
 		if(_call_operands(arch, ai, call) == 0)
-			return ai;
+			return _call_update(ai, call);
 	}
 	error_set_code(1, "%s \"%s\"", found ? "Invalid arguments to"
 			: "Unknown instruction", call->name);
@@ -396,6 +399,36 @@ static int _call_operands_register(AsmArch * arch,
 			&& AO_GET_VALUE(opdefinition) != ar->id)
 		return -1;
 	return 0;
+}
+
+static AsmArchInstruction const * _call_update(
+		AsmArchInstruction const * instruction,
+		AsmArchInstructionCall * call)
+{
+	size_t i;
+
+	for(i = 0; i < call->operands_cnt; i++)
+		switch(i)
+		{
+			case 0:
+				call->operands[i].definition = instruction->op1;
+				break;
+			case 1:
+				call->operands[i].definition = instruction->op2;
+				break;
+			case 2:
+				call->operands[i].definition = instruction->op3;
+				break;
+			case 3:
+				call->operands[i].definition = instruction->op4;
+				break;
+			case 4:
+				call->operands[i].definition = instruction->op5;
+				break;
+			default:
+				return NULL;
+		}
+	return instruction;
 }
 
 

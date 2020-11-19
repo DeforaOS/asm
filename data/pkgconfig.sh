@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2011-2017 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2011-2020 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -25,16 +25,18 @@
 
 
 #variables
+CONFIGSH="${0%/pkgconfig.sh}/../config.sh"
 PREFIX="/usr/local"
-[ -f "../config.sh" ] && . "../config.sh"
-DEBUG="_debug"
 DEVNULL="/dev/null"
 PROGNAME="pkgconfig.sh"
 #executables
+DEBUG="_debug"
 INSTALL="install -m 0644"
 MKDIR="mkdir -m 0755 -p"
 RM="rm -f"
 SED="sed"
+
+[ -f "$CONFIGSH" ] && . "$CONFIGSH"
 
 
 #functions
@@ -106,6 +108,16 @@ if [ -z "$VERSION" ]; then
 	_error "The VERSION variable needs to be set"
 	exit $?
 fi
+[ -z "$BINDIR" ] && BINDIR="$PREFIX/bin"
+[ -z "$DATADIR" ] && DATADIR="$PREFIX/share"
+[ -z "$INCLUDEDIR" ] && INCLUDEDIR="$PREFIX/include"
+[ -z "$LIBDIR" ] && LIBDIR="$PREFIX/lib"
+[ -z "$LIBEXECDIR" ] && LIBEXECDIR="$PREFIX/libexec"
+[ -z "$MANDIR" ] && MANDIR="$DATADIR/man"
+if [ -z "$SYSCONFDIR" ]; then
+	SYSCONFDIR="$PREFIX/etc"
+	[ "$PREFIX" = "/usr" ] && SYSCONFDIR="/etc"
+fi
 
 PKGCONFIG="$PREFIX/lib/pkgconfig"
 exec 3>&1
@@ -139,10 +151,10 @@ while [ $# -gt 0 ]; do
 	if [ "$PREFIX" != "/usr" ]; then
 		RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
 		case $(uname -s) in
-			Darwin)
+			"Darwin")
 				RPATH="-Wl,-rpath,\${libdir}"
 				;;
-			SunOS)
+			"SunOS")
 				RPATH="-Wl,-R\${libdir}"
 				;;
 		esac
@@ -152,10 +164,18 @@ while [ $# -gt 0 ]; do
 	source="${target#$OBJDIR}"
 	source="${source}.in"
 	([ -z "$OBJDIR" ] || $DEBUG $MKDIR -- "${target%/*}")	|| exit 2
-	$DEBUG $SED -e "s;@PACKAGE@;$PACKAGE;" \
-			-e "s;@VERSION@;$VERSION;" \
-			-e "s;@PREFIX@;$PREFIX;" \
-			-e "s;@RPATH@;$RPATH;" \
+	$DEBUG $SED -e "s;@PACKAGE@;$PACKAGE;g" \
+			-e "s;@VERSION@;$VERSION;g" \
+			-e "s;@PREFIX@;$PREFIX;g" \
+			-e "s;@BINDIR@;$BINDIR;g" \
+			-e "s;@DATADIR@;$DATADIR;g" \
+			-e "s;@INCLUDEDIR@;$INCLUDEDIR;g" \
+			-e "s;@LIBDIR@;$LIBDIR;g" \
+			-e "s;@LIBEXECDIR@;$LIBEXECDIR;g" \
+			-e "s;@MANDIR@;$MANDIR;g" \
+			-e "s;@PWD@;$PWD;g" \
+			-e "s;@RPATH@;$RPATH;g" \
+			-e "s;@SYSCONFDIR@;$SYSCONFDIR;g" \
 			-- "$source" > "$target"
 	if [ $? -ne 0 ]; then
 		$DEBUG $RM -- "$target"

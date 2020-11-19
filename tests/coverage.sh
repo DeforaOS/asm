@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2018 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2018-2020 Pierre Pronchery <khorben@defora.org>
 #This file is part of DeforaOS System libSystem
 #All rights reserved.
 #
@@ -30,6 +30,7 @@
 
 
 #variables
+CONFIGSH="${0%/coverage.sh}/../config.sh"
 CFLAGS=
 LDFLAGS=
 PROGNAME="coverage.sh"
@@ -39,10 +40,12 @@ CC="gcc -fprofile-arcs -ftest-coverage"
 DATE="date"
 FIND="find"
 GCOV="gcov"
-MAKE="make"
+[ -n "$MAKE" ] || MAKE="make"
 MKDIR="mkdir -p"
 MKTEMP="mktemp"
 RM="rm -f"
+
+[ -f "$CONFIGSH" ] && . "$CONFIGSH"
 
 
 #coverage
@@ -54,11 +57,15 @@ _coverage()
 		return 2
 	fi
 	#build the project in a separate directory
-	$MKDIR "$tmpdir/src" "$tmpdir/tests" "$tmpdir/tools" &&
-	(cd ../src && $MAKE CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" OBJDIR="$tmpdir/src/") &&
-	(cd ../tools && $MAKE CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" OBJDIR="$tmpdir/tools/") &&
+	for dir in src tools; do
+		[ -d "../$dir" ] || continue
+		$MKDIR "$tmpdir/$dir" &&
+		(cd "../$dir" && $MAKE CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" OBJDIR="$tmpdir/$dir/") || break
+	done &&
+	$MKDIR "$tmpdir/tests" &&
 	$MAKE CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" OBJDIR="$tmpdir/tests/" "$tmpdir/tests/$TARGET"
 	res=$?
+	unset dir
 	#look for any code executed
 	$FIND "$tmpdir" -name '*.gcda' | while read filename; do
 		echo
@@ -92,10 +99,13 @@ _usage()
 
 #main
 clean=0
-while getopts "cP:" name; do
+while getopts "cO:P:" name; do
 	case "$name" in
 		c)
 			clean=1
+			;;
+		O)
+			export "${OPTARG%%=*}"="${OPTARG#*=}"
 			;;
 		P)
 			#XXX ignored

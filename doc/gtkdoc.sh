@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2017 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2020 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 
 #variables
+CONFIGSH="${0%/gtkdoc.sh}/../config.sh"
 PREFIX="/usr/local"
 PROGNAME="gtkdoc.sh"
 #executables
@@ -38,9 +39,10 @@ GTKDOC_SCAN="gtkdoc-scan"
 INSTALL="install -m 0644"
 MKDIR="mkdir -m 0755 -p"
 RM="rm -f"
+RMDIR="rmdir"
 TOUCH="touch"
 
-[ -f "../config.sh" ] && . "../config.sh"
+[ -f "$CONFIGSH" ] && . "$CONFIGSH"
 
 
 #functions
@@ -57,6 +59,77 @@ _error()
 {
 	echo "$PROGNAME: $@" 1>&2
 	return 2
+}
+
+
+#gtkdoc_fixxref
+_gtkdoc_fixxref()
+{
+	module="$1"
+	moduledir="$2"
+	htmldir="$3"
+	outputdir="$4"
+
+	(cd "$outputdir" &&
+		$DEBUG $GTKDOC_FIXXREF \
+				--module="$module" \
+				--module-dir="$moduledir" \
+				--html-dir="$htmldir")	|| exit 2
+}
+
+
+#gtkdoc_mkdb
+_gtkdoc_mkdb()
+{
+	module="$1"
+	sourcedir="$2"
+	outputdir="$3"
+
+	(cd "$sourcedir" &&
+		$DEBUG $GTKDOC_MKDB --module="$module" \
+				--output-dir="$outputdir" \
+				--output-format="xml" --tmpl-dir="tmpl")
+}
+
+
+#gtkdoc_mkhtml
+_gtkdoc_mkhtml()
+{
+	module="$1"
+	path="$2"
+	driver="$3"
+	outputdir="$4"
+
+	(cd "$outputdir" &&
+		$DEBUG $GTKDOC_MKHTML --path "$path" "$module" "$driver")
+}
+
+
+#gtkdoc_mktmpl
+_gtkdoc_mktmpl()
+{
+	module="$1"
+	sourcedir="$2"
+	outputdir="$3"
+
+	(cd "$sourcedir" &&
+		$DEBUG $GTKDOC_MKTMPL --module="$module" \
+				--output-dir="$outputdir")
+}
+
+
+#gtkdoc_scan
+_gtkdoc_scan()
+{
+	module="$1"
+	sourcedir="$2"
+	outputdir="$3"
+
+	(cd ".." &&
+		$DEBUG $GTKDOC_SCAN --module="$module" \
+				--source-dir="$sourcedir" \
+				--output-dir="$outputdir")
+#		--rebuild-types
 }
 
 
@@ -129,23 +202,28 @@ while [ $# -gt 0 ]; do
 			file="${i##*/}"
 			$DEBUG $RM -- "$instdir/$MODULE/$file"	|| exit 2
 		done
+		if [ -d "$instdir/$MODULE" ]; then
+			$DEBUG $RMDIR -- "$instdir/$MODULE"	|| exit 2
+		fi
 		continue
 	fi
 
 	#create
 	case "$target" in
 		gtkdoc/html.stamp)
-			driver="../$MODULE-docs.xml"
-			if [ -n "$OBJDIR" ]; then
-				driver="gtkdoc/$MODULE-docs.xml"
-				$DEBUG $CP -- "$driver" "${OBJDIR}gtkdoc" \
-								|| exit 2
-			fi
 			output="${OBJDIR}gtkdoc/html"
 			$DEBUG $MKDIR -- "$output"		|| exit 2
-			(cd "$output" &&
-				$DEBUG $GTKDOC_MKHTML "$MODULE" \
-					"${OBJDIR}$driver")
+			driver="$MODULE-docs.xml"
+			oldpath="$PWD"
+			[ -n "$OBJDIR" ] && for file in \
+				"gtkdoc/$driver" \
+				"gtkdoc/xml/gtkdocentities.ent"; do
+				[ -f "$file" ] || continue
+				$DEBUG $CP -- "$file" \
+						"${OBJDIR}$file" || exit 2
+			done
+			_gtkdoc_mkhtml "$MODULE" "${oldpath%/*}" "../$driver" \
+					"$output"
 			#detect when gtk-doc is not available
 			res=$?
 			if [ $res -eq 127 ]; then
@@ -156,24 +234,7 @@ while [ $# -gt 0 ]; do
 				exit 2
 			fi
 			output="${OBJDIR}gtkdoc"
-			(cd "$output" &&
-				$DEBUG $GTKDOC_FIXXREF \
-					--module="$MODULE" \
-					--module-dir="html" \
-					--html-dir="$instdir")	|| exit 2
-			;;
-		gtkdoc/sgml.stamp)
-			output="xml"
-			if [ -n "$OBJDIR" ]; then
-				output="${OBJDIR}gtkdoc/xml"
-				$DEBUG $MKDIR -- "$output"	|| exit 2
-			fi
-			(cd "${OBJDIR}gtkdoc" &&
-				$DEBUG $GTKDOC_MKDB \
-					--module="$MODULE" \
-					--output-dir="$output" \
-					--output-format="xml" \
-					--tmpl-dir="tmpl")
+			_gtkdoc_fixxref "$MODULE" "html" "$instdir" "$output"
 			;;
 		gtkdoc/tmpl.stamp)
 			output="tmpl"
@@ -181,22 +242,28 @@ while [ $# -gt 0 ]; do
 				output="${OBJDIR}gtkdoc/tmpl"
 				$DEBUG $MKDIR -- "$output"	|| exit 2
 			fi
-			(cd "${OBJDIR}gtkdoc" &&
-				$DEBUG $GTKDOC_MKTMPL \
-					--module="$MODULE" \
-					--output-dir="$output")
+			_gtkdoc_mktmpl "$MODULE" "${OBJDIR}gtkdoc" "$output"
+			;;
+		gtkdoc/xml.stamp)
+			output="xml"
+			if [ -n "$OBJDIR" ]; then
+				output="${OBJDIR}gtkdoc"
+				sections="gtkdoc/$MODULE-sections.txt"
+				$DEBUG $MKDIR -- "$output/xml"	|| exit 2
+				$DEBUG $CP -- "$sections" "$output" \
+								|| exit 2
+				_gtkdoc_scan "$MODULE" "include" "$output"
+				output="${OBJDIR}gtkdoc/xml"
+			fi
+			_gtkdoc_mkdb "$MODULE" "${OBJDIR}gtkdoc" "$output"
 			;;
 		gtkdoc/*.types)
-			output="doc/gtkdoc"			|| exit 2
+			output="$PWD/gtkdoc"			|| exit 2
 			if [ -n "$OBJDIR" ]; then
 				output="${OBJDIR}gtkdoc"
 				$DEBUG $MKDIR -- "$output"	|| exit 2
 			fi
-			(cd ".." &&
-				$DEBUG $GTKDOC_SCAN \
-					--module="$MODULE" \
-					--source-dir="include" \
-					--output-dir="$output")
+			_gtkdoc_scan "$MODULE" "include" "$output"
 			;;
 		*)
 			_error "$target: Unknown type"
@@ -208,7 +275,7 @@ while [ $# -gt 0 ]; do
 		_error "$target: Could not create documentation"
 		install=0
 	fi
-	$TOUCH "$target"
+	$TOUCH "${OBJDIR}$target"
 
 	#install
 	if [ "$install" -eq 1 ]; then

@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2014-2017 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2014-2020 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -25,22 +25,27 @@
 
 
 #variables
+CONFIGSH="${0%/pylint.sh}/../config.sh"
 PROGNAME="pylint.sh"
 PROJECTCONF="../project.conf"
 #executables
 DATE="date"
 DEBUG="_debug"
 FIND="find"
+MKDIR="mkdir -p"
 PYLINT="pep8"
 SORT="sort -n"
 TR="tr"
+
+[ -f "$CONFIGSH" ] && . "$CONFIGSH"
 
 
 #functions
 #pylint
 _pylint()
 {
-	subdirs="data doc src tests tools"
+	res=0
+	subdirs=
 
 	$DATE
 	while read line; do
@@ -54,9 +59,13 @@ _pylint()
 				;;
 		esac
 	done < "$PROJECTCONF"
+	if [ ! -n "$subdirs" ]; then
+		_error "Could not locate directories to analyze"
+		return $?
+	fi
 	for subdir in $subdirs; do
 		[ -d "../$subdir" ] || continue
-		for filename in $($FIND "../$subdir" -name '*.py' | $SORT); do
+		for filename in $($FIND "../$subdir" -type f -a -name '*.py' | $SORT); do
 			echo
 			echo "Testing: $filename"
 			$DEBUG $PYLINT -- "$filename" 2>&1
@@ -68,6 +77,7 @@ _pylint()
 			fi
 		done
 	done
+	return $res
 }
 
 
@@ -80,6 +90,14 @@ _debug()
 	#ignore errors when the command is not available
 	[ $res -eq 127 ]					&& return 0
 	return $res
+}
+
+
+#error
+_error()
+{
+	echo "$PROGNAME: $@" 1>&2
+	return 2
 }
 
 
@@ -120,9 +138,15 @@ fi
 [ $clean -ne 0 ] && exit 0
 
 exec 3>&1
+ret=0
 while [ $# -gt 0 ]; do
 	target="$1"
+	dirname="${target%/*}"
 	shift
 
-	_pylint > "$target"					|| exit 2
+	if [ -n "$dirname" -a "$dirname" != "$target" ]; then
+		$MKDIR -- "$dirname"				|| ret=$?
+	fi
+	_pylint > "$target"					|| ret=$?
 done
+exit $ret

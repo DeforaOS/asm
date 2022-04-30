@@ -1,9 +1,12 @@
 Makefile
+*~
 *.a
+*.bak
 *.dylib
 *.o
 *.so
 *.so.*
+*.swp
 /config.ent
 /config.h
 /config.sh

@@ -487,6 +487,7 @@ AsmArchPrefix const * arch_get_prefix_by_opcode(AsmArch * arch, uint8_t size,
 		uint32_t opcode)
 {
 	size_t i;
+	AsmArchOperandDefinition flags;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s(\"%s\") %zu\n", __func__, name,
@@ -494,7 +495,15 @@ AsmArchPrefix const * arch_get_prefix_by_opcode(AsmArch * arch, uint8_t size,
 #endif
 	for(i = 0; i < arch->prefixes_cnt; i++)
 		if(arch->definition->prefixes[i].opcode == opcode)
+		{
+			if(size != 0)
+			{
+				flags = arch->definition->prefixes[i].flags;
+				if(AO_GET_SIZE(flags) != size)
+					continue;
+			}
 			return &arch->definition->prefixes[i];
+		}
 	return NULL;
 }
 

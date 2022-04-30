@@ -24,8 +24,8 @@
 #include "Asm/asm.h"
 #include "../config.h"
 
-#ifndef PROGNAME
-# define PROGNAME "asm"
+#ifndef PROGNAME_ASM
+# define PROGNAME_ASM "asm"
 #endif
 
 
@@ -52,11 +52,11 @@ static int _asm(AsmPrefs * prefs, char const * arch, char const * format,
 	Asm * a;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print(PROGNAME);
+		return error_print(PROGNAME_ASM);
 	if(outfile == NULL)
 		outfile = ASM_FILENAME_DEFAULT;
 	if(asm_assemble(a, prefs, infile, outfile) != 0)
-		ret = error_print(PROGNAME);
+		ret = error_print(PROGNAME_ASM);
 	asm_delete(a);
 	return ret;
 }
@@ -68,11 +68,11 @@ static int _asm_list(void)
 	int res = 0;
 
 	if(asm_plugin_list(APT_ARCH, 0) != 0)
-		res = error_print(PROGNAME);
+		res = error_print(PROGNAME_ASM);
 	else
 		putchar('\n');
 	if(asm_plugin_list(APT_FORMAT, 0) != 0)
-		res = error_print(PROGNAME);
+		res = error_print(PROGNAME_ASM);
 	return (res == 0) ? 0 : 2;
 }
 
@@ -87,9 +87,9 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 	if(outfile == NULL && format == NULL)
 		format = "flat";
 	if((a = asm_new(arch, format)) == NULL)
-		return error_print(PROGNAME);
+		return error_print(PROGNAME_ASM);
 	if(asm_assemble_string(a, prefs, outfile, string) != 0)
-		ret = error_print(PROGNAME);
+		ret = error_print(PROGNAME_ASM);
 	asm_delete(a);
 	return ret;
 }
@@ -98,9 +98,9 @@ static int _asm_string(AsmPrefs * prefs, char const * arch, char const * format,
 /* usage */
 static unsigned int _usage(void)
 {
-	fputs("Usage: " PROGNAME " [-D name][-a arch][-f format][-o file] file\n"
-"       " PROGNAME " [-D name][-a arch][-f format][-o file] -s string\n"
-"       " PROGNAME " -l\n"
+	fputs("Usage: " PROGNAME_ASM " [-D name][-a arch][-f format][-o file] file\n"
+"       " PROGNAME_ASM " [-D name][-a arch][-f format][-o file] -s string\n"
+"       " PROGNAME_ASM " -l\n"
 "  -D	Set a variable in the pre-processor\n"
 "  -a	Target architecture\n"
 "  -f	Target file format\n"
@@ -180,7 +180,7 @@ static int _main_add_define(AsmPrefs * prefs, char * define)
 	value = strtok(define, "=");
 	if((p = realloc(prefs->defines, sizeof(*p) * (prefs->defines_cnt + 1)))
 			== NULL)
-		return -error_set_print(PROGNAME, 1, "%s", strerror(errno));
+		return -error_set_print(PROGNAME_ASM, 1, "%s", strerror(errno));
 	prefs->defines = p;
 	prefs->defines[prefs->defines_cnt].name = define;
 	prefs->defines[prefs->defines_cnt++].value = value;

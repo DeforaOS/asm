@@ -24,8 +24,8 @@
 #include <errno.h>
 #include "Asm.h"
 
-#ifndef PROGNAME
-# define PROGNAME "deasm"
+#ifndef PROGNAME_DEASM
+# define PROGNAME_DEASM "deasm"
 #endif
 
 
@@ -57,9 +57,9 @@ static int _deasm(char const * arch, char const * format, char const * filename,
 	size_t i;
 
 	if((a = asm_new(arch, format)) == NULL)
-		return -error_print(PROGNAME);
+		return -error_print(PROGNAME_DEASM);
 	if((code = asm_open_deassemble(a, filename, raw)) == NULL)
-		error_print(PROGNAME);
+		error_print(PROGNAME_DEASM);
 	else
 	{
 		ret = 0;
@@ -86,7 +86,7 @@ static int _deasm_section(AsmCode * code, AsmSection * section)
 	printf("\nDisassembly of section %s:\n", section->name);
 	if(asmcode_decode_section(code, section, &calls, &calls_cnt) != 0)
 	{
-		error_print(PROGNAME);
+		error_print(PROGNAME_DEASM);
 		return -1;
 	}
 	definition = asmcode_get_arch_definition(code);
@@ -126,7 +126,7 @@ static int _deasm_buffer(char const * arch, char const * buffer, size_t size)
 	if((a = asm_new(arch, NULL)) == NULL)
 		return -1;
 	if((code = asm_deassemble(a, buffer, size, NULL, NULL)) == NULL)
-		error_print(PROGNAME);
+		error_print(PROGNAME_DEASM);
 	else
 	{
 		/* FIXME implement */
@@ -155,7 +155,8 @@ static int _deasm_string(char const * arch, char const * format,
 			format, string);
 #endif
 	if((s = malloc(len + 1)) == NULL)
-		return -error_set_print(PROGNAME, 1, "%s", strerror(errno));
+		return -error_set_print(PROGNAME_DEASM, 1, "%s",
+				strerror(errno));
 	for(i = 0, j = 0; i < len; i++)
 	{
 		if(str[i] != '\\')
@@ -203,11 +204,11 @@ static int _deasm_list(void)
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
 	if(asm_plugin_list(APT_ARCH, 1) != 0)
-		res = error_print(PROGNAME);
+		res = error_print(PROGNAME_DEASM);
 	else
 		putchar('\n');
 	if(asm_plugin_list(APT_FORMAT, 1) != 0)
-		res = error_print(PROGNAME);
+		res = error_print(PROGNAME_DEASM);
 	return (res == 0) ? 0 : 2;
 }
 
@@ -215,9 +216,9 @@ static int _deasm_list(void)
 /* usage */
 static int _usage(void)
 {
-	fputs("Usage: " PROGNAME " [-a arch][-f format][-D] filename\n"
-"       " PROGNAME " [-a arch] -s string\n"
-"       " PROGNAME " -l\n"
+	fputs("Usage: " PROGNAME_DEASM " [-a arch][-f format][-D] filename\n"
+"       " PROGNAME_DEASM " [-a arch] -s string\n"
+"       " PROGNAME_DEASM " -l\n"
 "  -a	Force the given architecture\n"
 "  -f	Force the given file format\n"
 "  -D	Disassemble all sections\n"

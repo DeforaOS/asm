@@ -25,8 +25,8 @@
 #include "token.h"
 #include "parser.h"
 
-#ifndef PROGNAME
-# define PROGNAME "asm"
+#ifndef PROGNAME_ASM
+# define PROGNAME_ASM "asm"
 #endif
 
 
@@ -220,7 +220,7 @@ static int _parser_error(State * state, char const * format, ...)
 {
 	va_list ap;
 
-	fputs(PROGNAME ": ", stderr);
+	fputs(PROGNAME_ASM ": ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
 		/* FIXME will be wrong when string-based input is supported */
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),
@@ -238,7 +238,7 @@ static int _parser_warning(State * state, char const * format, ...)
 {
 	va_list ap;
 
-	fputs(PROGNAME ": ", stderr);
+	fputs(PROGNAME_ASM ": ", stderr);
 	if(state->cpp != NULL && state->token != NULL)
 		/* FIXME will be wrong when string-based input is supported */
 		fprintf(stderr, "%s%s%u: ", cpp_get_filename(state->cpp),

@@ -260,6 +260,7 @@ static int _decode_map(Dex * dex, DexHeader * dh, int raw)
 	uint32_t i;
 	off_t offset;
 	DexMapItem dmi;
+	(void) raw;
 
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);

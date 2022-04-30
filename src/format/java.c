@@ -369,6 +369,7 @@ static int _java_decode(AsmFormatPlugin * format, int raw)
 {
 	AsmFormatPluginHelper * helper = format->helper;
 	off_t end;
+	(void) raw;
 
 	/* XXX consider the whole file as a section */
 	if((end = helper->seek(helper->format, 0, SEEK_END)) < 0)

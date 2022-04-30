@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2014-2020 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2014-2021 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -31,9 +31,10 @@ PROJECTCONF="../project.conf"
 #executables
 DATE="date"
 DEBUG="_debug"
+ECHO="/bin/echo"
 FIND="find"
 MKDIR="mkdir -p"
-PYLINT="pep8"
+PYLINT="flake8"
 SORT="sort -n"
 TR="tr"
 
@@ -65,17 +66,22 @@ _pylint()
 	fi
 	for subdir in $subdirs; do
 		[ -d "../$subdir" ] || continue
-		for filename in $($FIND "../$subdir" -type f -a -name '*.py' | $SORT); do
+		while read filename; do
+			[ -n "$filename" ] || continue
 			echo
-			echo "Testing: $filename"
+			$ECHO -n "$filename:"
 			$DEBUG $PYLINT -- "$filename" 2>&1
 			if [ $? -eq 0 ]; then
+				echo " OK"
 				echo "$PROGNAME: $filename: OK" 1>&2
 			else
 				#XXX ignore errors
+				echo "FAIL"
 				echo "$PROGNAME: $filename: FAIL" 1>&2
 			fi
-		done
+		done << EOF
+$($FIND "../$subdir" -type f -a -iname '*.py' | $SORT)
+EOF
 	done
 	return $res
 }
@@ -86,10 +92,6 @@ _debug()
 {
 	echo "$@" 1>&3
 	"$@"
-	res=$?
-	#ignore errors when the command is not available
-	[ $res -eq 127 ]					&& return 0
-	return $res
 }
 
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2017-2020 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2017-2022 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ _fixme_callback()
 			echo "_fixme_callback_asm"
 			return 0
 			;;
-		c|cc|cpp|cxx|h|js|v)
+		c|cc|cpp|cxx|go|h|js|v)
 			echo "_fixme_callback_c"
 			return 0
 			;;
@@ -199,10 +199,6 @@ _debug()
 {
 	echo "$@" 1>&3
 	"$@"
-	res=$?
-	#ignore errors when the command is not available
-	[ $res -eq 127 ]					&& return 0
-	return $res
 }
 
 

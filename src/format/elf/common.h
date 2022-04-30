@@ -17,7 +17,9 @@
 #ifndef ASM_FORMAT_ELF_COMMON_H
 # define ASM_FORMAT_ELF_COMMON_H
 
-# ifdef __OpenBSD__
+# if defined(__APPLE__)
+#  include "elf_netbsd.h"
+# elif defined(__OpenBSD__)
 #  include <elf_abi.h>
 # else
 #  include <elf.h>

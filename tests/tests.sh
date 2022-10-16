@@ -23,7 +23,10 @@ ASM="${OBJDIR}../tools/asm-static"
 DATE="date"
 DEASM="${OBJDIR}../tools/deasm-static"
 DEBUG=
+ECHO="echo"
 PKGCONFIG="pkg-config"
+UNAME="uname"
+[ $($UNAME -s) != "Darwin" ] || ECHO="/bin/echo"
 
 
 #functions
@@ -69,7 +72,7 @@ _run()
 	test="$1"
 
 	shift
-	echo -n "$test:" 1>&2
+	$ECHO -n "$test:" 1>&2
 	(echo
 	echo "Testing: $test" "$@"
 	"$test" "$@") >> "$target" 2>&1
@@ -83,7 +86,7 @@ _test()
 
 	_run "$@"
 	res=$?
-	[ -n "$arch" ] && echo -n " $arch" 1>&2
+	[ -n "$arch" ] && $ECHO -n " $arch" 1>&2
 	if [ $res -ne 0 ]; then
 		echo " FAIL" 1>&2
 		FAILED="$FAILED $test($arch, error $res)"

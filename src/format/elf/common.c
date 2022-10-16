@@ -46,18 +46,23 @@ const ElfArch elf_arch[] =
 	{ NULL,		'\0',		'\0',		'\0',        0x0 }
 };
 
-#if defined(__amd64__)
+#if defined(EM_AMD64) || defined(EM_X86_64)
+# define OFFSET 1
+#else
+# define OFFSET 0
+#endif
+#if defined(__amd64__) && (defined(EM_AMD64) || defined(EM_X86_64))
 const ElfArch * elf_arch_native = &elf_arch[0];
 #elif defined(__arm__)
-const ElfArch * elf_arch_native = &elf_arch[1];
+const ElfArch * elf_arch_native = &elf_arch[0 + OFFSET];
 #elif defined(__i386__)
-const ElfArch * elf_arch_native = &elf_arch[2];
+const ElfArch * elf_arch_native = &elf_arch[3 + OFFSET];
 #elif defined(__sparc64__)
-const ElfArch * elf_arch_native = &elf_arch[8];
+const ElfArch * elf_arch_native = &elf_arch[11 + OFFSET];
 #elif defined(__sparc__)
-const ElfArch * elf_arch_native = &elf_arch[7];
+const ElfArch * elf_arch_native = &elf_arch[10 + OFFSET];
 #else
-# error "Unsupported architecture"
+const ElfArch * elf_arch_native = NULL;
 #endif
 
 const ElfSectionValues elf_section_values[] =

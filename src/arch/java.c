@@ -319,7 +319,7 @@ static int _java_encode(AsmArchPlugin * plugin,
 	AsmArchPluginHelper * helper = plugin->helper;
 	size_t i;
 	AsmArchOperandDefinition definitions[3];
-	AsmArchOperand * ao;
+	AsmArchOperand const * ao;
 	uint8_t u8;
 	uint16_t u16;
 	uint32_t u32;

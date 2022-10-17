@@ -126,7 +126,8 @@ void arch_delete(AsmArch * arch)
 #ifdef DEBUG
 	fprintf(stderr, "DEBUG: %s()\n", __func__);
 #endif
-	plugin_delete(arch->handle);
+	if(arch->handle != NULL)
+		plugin_delete(arch->handle);
 	object_delete(arch);
 }
 

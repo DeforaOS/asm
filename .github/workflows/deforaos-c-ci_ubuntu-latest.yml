@@ -1,0 +1,29 @@
+name: DeforaOS C CI (ubuntu-latest)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: bootstrap libSystem
+      run: git clone https://github.com/DeforaOS/libSystem.git libSystem && for dir in include data src; do (cd libSystem/$dir && make PREFIX="$HOME/opt/DeforaOS" install); done
+    - name: bootstrap configure
+      run: git clone https://github.com/DeforaOS/configure.git configure && (cd configure/src && PKG_CONFIG_PATH="$HOME/opt/DeforaOS/lib/pkgconfig" make PREFIX="$HOME/opt/DeforaOS" install)
+    - name: bootstrap CPP
+      run: git clone https://github.com/DeforaOS/CPP.git CPP && (cd CPP && PKG_CONFIG_PATH="$HOME/opt/DeforaOS/lib/pkgconfig" make PREFIX="$HOME/opt/DeforaOS" install)
+    - name: configure
+      run: $HOME/opt/DeforaOS/bin/configure -p "$HOME/opt/DeforaOS"
+    - name: make
+      run: PKG_CONFIG_PATH="$HOME/opt/DeforaOS/lib/pkgconfig" make CCSHARED="cc -shared"
+    - name: make tests
+      run: PKG_CONFIG_PATH="$HOME/opt/DeforaOS/lib/pkgconfig" make CCSHARED="cc -shared" tests
+    - name: make distcheck
+      run: PKG_CONFIG_PATH="$HOME/opt/DeforaOS/lib/pkgconfig" make CCSHARED="cc -shared" distcheck

@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2011-2020 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2011-2022 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ DEVNULL="/dev/null"
 PROGNAME="pkgconfig.sh"
 #executables
 DEBUG="_debug"
-INSTALL="install -m 0644"
+INSTALL="install"
 MKDIR="mkdir -m 0755 -p"
 RM="rm -f"
 SED="sed"
@@ -40,6 +40,101 @@ SED="sed"
 
 
 #functions
+#pkgconfig
+_pkgconfig()
+{
+	#check the variables
+	if [ -z "$PACKAGE" ]; then
+		_error "The PACKAGE variable needs to be set"
+		return $?
+	fi
+	if [ -z "$VERSION" ]; then
+		_error "The VERSION variable needs to be set"
+		return $?
+	fi
+	[ -z "$BINDIR" ] && BINDIR="$PREFIX/bin"
+	[ -z "$DATADIR" ] && DATADIR="$PREFIX/share"
+	[ -z "$INCLUDEDIR" ] && INCLUDEDIR="$PREFIX/include"
+	[ -z "$LIBDIR" ] && LIBDIR="$PREFIX/lib"
+	[ -z "$LIBEXECDIR" ] && LIBEXECDIR="$PREFIX/libexec"
+	[ -z "$MANDIR" ] && MANDIR="$DATADIR/man"
+	[ -z "$SBINDIR" ] && SBINDIR="$PREFIX/sbin"
+	if [ -z "$SYSCONFDIR" ]; then
+		SYSCONFDIR="$PREFIX/etc"
+		[ "$PREFIX" = "/usr" ] && SYSCONFDIR="/etc"
+	fi
+	PKGCONFIG="$PREFIX/lib/pkgconfig"
+
+	while [ $# -gt 0 ]; do
+		target="$1"
+		shift
+
+		#clean
+		[ "$clean" -ne 0 ] && continue
+
+		#uninstall
+		if [ "$uninstall" -eq 1 ]; then
+			$DEBUG $RM -- "$PKGCONFIG/$target"	|| return 2
+			continue
+		fi
+
+		#install
+		if [ "$install" -eq 1 ]; then
+			source="${target#$OBJDIR}"
+			$DEBUG $MKDIR -- "$PKGCONFIG"		|| return 2
+			mode="-m 0644"
+			basename="$source"
+			if [ "${source##*/}" != "$source" ]; then
+				basename="${source##*/}"
+			fi
+			$DEBUG $INSTALL $mode "$target" "$PKGCONFIG/$basename" \
+								|| return 2
+			continue
+		fi
+
+		#portability
+		RPATH=
+		if [ "$PREFIX" != "/usr" ]; then
+			RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
+			case $(uname -s) in
+				"Darwin")
+					RPATH="-Wl,-rpath,\${libdir}"
+					;;
+				"SunOS")
+					RPATH="-Wl,-R\${libdir}"
+					;;
+			esac
+		fi
+
+		#create
+		source="${target#$OBJDIR}"
+		source="${source}.in"
+		([ -z "$OBJDIR" ] || $DEBUG $MKDIR -- "${target%/*}") \
+								|| return 2
+		$DEBUG $SED -e "s;@VENDOR@;$VENDOR;g" \
+			-e "s;@PACKAGE@;$PACKAGE;g" \
+			-e "s;@VERSION@;$VERSION;g" \
+			-e "s;@PREFIX@;$PREFIX;g" \
+			-e "s;@BINDIR@;$BINDIR;g" \
+			-e "s;@DATADIR@;$DATADIR;g" \
+			-e "s;@INCLUDEDIR@;$INCLUDEDIR;g" \
+			-e "s;@LIBDIR@;$LIBDIR;g" \
+			-e "s;@LIBEXECDIR@;$LIBEXECDIR;g" \
+			-e "s;@MANDIR@;$MANDIR;g" \
+			-e "s;@PWD@;$PWD;g" \
+			-e "s;@RPATH@;$RPATH;g" \
+			-e "s;@SBINDIR@;$SBINDIR;g" \
+			-e "s;@SYSCONFDIR@;$SYSCONFDIR;g" \
+			-- "$source" > "$target"
+		if [ $? -ne 0 ]; then
+			$RM -- "$target" 2> "$DEVNULL"
+			return 2
+		fi
+	done
+	return 0
+}
+
+
 #debug
 _debug()
 {
@@ -94,91 +189,10 @@ while getopts "ciuO:P:" name; do
 	esac
 done
 shift $(($OPTIND - 1))
-if [ $# -lt 0 ]; then
+if [ $# -lt 1 ]; then
 	_usage
 	exit $?
 fi
 
-#check the variables
-if [ -z "$PACKAGE" ]; then
-	_error "The PACKAGE variable needs to be set"
-	exit $?
-fi
-if [ -z "$VERSION" ]; then
-	_error "The VERSION variable needs to be set"
-	exit $?
-fi
-[ -z "$BINDIR" ] && BINDIR="$PREFIX/bin"
-[ -z "$DATADIR" ] && DATADIR="$PREFIX/share"
-[ -z "$INCLUDEDIR" ] && INCLUDEDIR="$PREFIX/include"
-[ -z "$LIBDIR" ] && LIBDIR="$PREFIX/lib"
-[ -z "$LIBEXECDIR" ] && LIBEXECDIR="$PREFIX/libexec"
-[ -z "$MANDIR" ] && MANDIR="$DATADIR/man"
-if [ -z "$SYSCONFDIR" ]; then
-	SYSCONFDIR="$PREFIX/etc"
-	[ "$PREFIX" = "/usr" ] && SYSCONFDIR="/etc"
-fi
-
-PKGCONFIG="$PREFIX/lib/pkgconfig"
 exec 3>&1
-while [ $# -gt 0 ]; do
-	target="$1"
-	shift
-
-	#clean
-	[ "$clean" -ne 0 ] && continue
-
-	#uninstall
-	if [ "$uninstall" -eq 1 ]; then
-		$DEBUG $RM -- "$PKGCONFIG/$target"		|| exit 2
-		continue
-	fi
-
-	#install
-	if [ "$install" -eq 1 ]; then
-		source="${target#$OBJDIR}"
-		$DEBUG $MKDIR -- "$PKGCONFIG"			|| exit 2
-		basename="$source"
-		if [ "${source##*/}" != "$source" ]; then
-			basename="${source##*/}"
-		fi
-		$DEBUG $INSTALL "$target" "$PKGCONFIG/$basename"|| exit 2
-		continue
-	fi
-
-	#portability
-	RPATH=
-	if [ "$PREFIX" != "/usr" ]; then
-		RPATH="-Wl,-rpath-link,\${libdir} -Wl,-rpath,\${libdir}"
-		case $(uname -s) in
-			"Darwin")
-				RPATH="-Wl,-rpath,\${libdir}"
-				;;
-			"SunOS")
-				RPATH="-Wl,-R\${libdir}"
-				;;
-		esac
-	fi
-
-	#create
-	source="${target#$OBJDIR}"
-	source="${source}.in"
-	([ -z "$OBJDIR" ] || $DEBUG $MKDIR -- "${target%/*}")	|| exit 2
-	$DEBUG $SED -e "s;@PACKAGE@;$PACKAGE;g" \
-			-e "s;@VERSION@;$VERSION;g" \
-			-e "s;@PREFIX@;$PREFIX;g" \
-			-e "s;@BINDIR@;$BINDIR;g" \
-			-e "s;@DATADIR@;$DATADIR;g" \
-			-e "s;@INCLUDEDIR@;$INCLUDEDIR;g" \
-			-e "s;@LIBDIR@;$LIBDIR;g" \
-			-e "s;@LIBEXECDIR@;$LIBEXECDIR;g" \
-			-e "s;@MANDIR@;$MANDIR;g" \
-			-e "s;@PWD@;$PWD;g" \
-			-e "s;@RPATH@;$RPATH;g" \
-			-e "s;@SYSCONFDIR@;$SYSCONFDIR;g" \
-			-- "$source" > "$target"
-	if [ $? -ne 0 ]; then
-		$DEBUG $RM -- "$target"
-		exit 2
-	fi
-done
+_pkgconfig "$@"
